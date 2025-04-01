@@ -239,7 +239,7 @@ zzzeeksphinx_module_prefixes = {
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = "contents"
+# master_doc = "contents"
 
 # General information about the project.
 project = "SQLAlchemy"
@@ -403,15 +403,15 @@ htmlhelp_basename = "SQLAlchemydoc"
 
 # Grouping the document tree into LaTeX files. List of tuples (source start
 # file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [
-    (
-        "contents",
-        "sqlalchemy_%s.tex" % release.replace(".", "_"),
-        "SQLAlchemy Documentation",
-        "Mike Bayer",
-        "manual",
-    )
-]
+# latex_documents = [
+#     (
+#         "contents",
+#         "sqlalchemy_%s.tex" % release.replace(".", "_"),
+#         "SQLAlchemy Documentation",
+#         "Mike Bayer",
+#         "manual",
+#     )
+# ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
