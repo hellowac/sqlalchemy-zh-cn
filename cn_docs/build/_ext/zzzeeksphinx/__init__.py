@@ -1,11 +1,15 @@
+# mypy: ignore-errors
+
 __version__ = "1.5.2"
 
+from sphinx.application import Sphinx
 
-def setup(app):
+
+def setup(app: Sphinx) -> dict:
     from . import (
         autodoc_mods,
         dialect_info,
-        mako,
+        # mako,
         sqlformatter,
         viewsource,
         scss,
@@ -17,12 +21,12 @@ def setup(app):
     # https://www.sphinx-doc.org/en/master/changes.html#id65
     app.setup_extension("sphinxcontrib.jquery")
 
-    # autodoc_mods.setup(app)
-    # dialect_info.setup(app)
+    autodoc_mods.setup(app)
+    dialect_info.setup(app)
     # mako.setup(app)
-    # sqlformatter.setup(app)
+    sqlformatter.setup(app)
     viewsource.setup(app)  # 源文件读取
-    # scss.setup(app)
+    scss.setup(app)
     render_pydomains.setup(app) # 引用缩写
     extras.setup(app) # 额外指令
 

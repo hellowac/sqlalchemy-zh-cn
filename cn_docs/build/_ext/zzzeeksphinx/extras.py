@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from docutils import nodes
 from docutils.nodes import Admonition
 from docutils.nodes import Element

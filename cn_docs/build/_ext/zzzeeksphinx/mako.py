@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from __future__ import absolute_import
 
 import os

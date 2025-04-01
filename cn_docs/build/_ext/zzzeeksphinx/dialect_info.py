@@ -1,4 +1,9 @@
+# mypy: ignore-errors
+
 import re
+from typing import Any as AnyType
+
+from sphinx.application import Sphinx
 
 from docutils import nodes
 from docutils.parsers.rst import directives
@@ -13,10 +18,10 @@ from sphinx.util.docutils import SphinxDirective
 class DialectDirective(SphinxDirective):
     has_content = True
 
-    _dialects = {}
+    _dialects: dict[str, AnyType] = {}
 
-    def _parse_content(self):
-        d = {}
+    def _parse_content(self) -> dict:
+        d: dict[str, AnyType] = {}
         d["default"] = self.content[0]
         d["text"] = []
         idx = 0
@@ -31,7 +36,7 @@ class DialectDirective(SphinxDirective):
         d["text"] = self.content[idx + 1 :]
         return d
 
-    def _dbapi_node(self):
+    def _dbapi_node(self) -> list:
 
         dialect_name, dbapi_name = self.dialect_name.split("+")
 
@@ -382,7 +387,8 @@ def process_dialect_table(app, doctree, fromdocname):
         node.replace_self([node.children[0]])
 
 
-def setup(app):
+def setup(app: Sphinx):
+
     app.add_node(dialecttable)
     app.add_directive("dialect", DialectDirective)
     app.add_directive("dialect-table", DialectTableDirective)

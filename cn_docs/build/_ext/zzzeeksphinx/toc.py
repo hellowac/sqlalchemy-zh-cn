@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 #!coding: utf-8
 import re
 from typing import cast

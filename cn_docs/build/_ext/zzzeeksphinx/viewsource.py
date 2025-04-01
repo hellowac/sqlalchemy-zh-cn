@@ -1,8 +1,12 @@
+# mypy: ignore-errors
+
 import ast
 import importlib
 import os
 import re
 import warnings
+
+from sphinx.application import Sphinx
 
 import docutils
 from docutils import nodes
@@ -23,7 +27,7 @@ def view_source(name, rawtext, text, lineno, inliner, options={}, content=[]):
     return [node], []
 
 
-def vendored_collect_pages(app):
+def vendored_collect_pages(app: Sphinx):
     # vendored from sphinx viewcode
     env = app.builder.env
     if not hasattr(env, "_viewcode_modules"):
@@ -351,7 +355,7 @@ class AutoSourceDirective(Directive):
         return [node]
 
 
-def setup(app):
+def setup(app: Sphinx):
     app.add_role("viewsource", view_source)
 
     app.add_directive("autosource", AutoSourceDirective)
