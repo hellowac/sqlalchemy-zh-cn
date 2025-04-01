@@ -1,0 +1,13 @@
+git+https://github.com/sqlalchemyorg/changelog.git#egg=changelog
+git+https://github.com/sqlalchemyorg/sphinx-paramlinks.git#egg=sphinx-paramlinks
+git+https://github.com/sqlalchemyorg/zzzeeksphinx.git#egg=zzzeeksphinx
+sphinx==5.3.0
+sphinx-copybutton==0.5.1
+sphinx-autobuild
+typing-extensions
+furo
+readthedocs-sphinx-search==0.3.2
+sphinx_copybutton
+sphinx-notfound-page
+sphinxcontrib-googleanalytics
+sphinx-inline-tabs

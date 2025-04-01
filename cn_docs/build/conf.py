@@ -14,12 +14,15 @@
 
 import os
 import sys
+from pathlib import Path
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath("../../lib"))
 sys.path.insert(0, os.path.abspath("../.."))  # examples
+sys.path.append(str(Path('./_ext').resolve()))  # _ext
 
 # was never needed, does not work as of python 3.12 due to conflicts
 # sys.path.insert(0, os.path.abspath("."))
@@ -35,17 +38,21 @@ needs_sphinx = "5.0.1"
 
 extensions = [
     "sphinx.ext.autodoc",
-    "zzzeeksphinx",
+    'sphinx.ext.todo', 
+    'sphinx.ext.coverage',
+    'sphinx_inline_tabs',
     "changelog",
     "sphinx_paramlinks",
     "sphinx_copybutton",
+    "zzzeeksphinx", # 自定义指令
 ]
-needs_extensions = {"zzzeeksphinx": "1.2.1"}
+# needs_extensions = {"zzzeeksphinx": "1.2.1"}
 
 # Add any paths that contain templates here, relative to this directory.
 # not sure why abspath() is needed here, some users
 # have reported this.
-templates_path = [os.path.abspath("templates")]
+# templates_path = [os.path.abspath("templates")]
+templates_path = ['_templates']
 
 # https://sphinx-copybutton.readthedocs.io/en/latest/use.html#strip-and-configure-input-prompts-for-code-cells
 copybutton_prompt_text = (
@@ -175,6 +182,9 @@ autodocmods_convert_modname_w_class = {
 # on the referencing side, a newer zzzeeksphinx extension
 # applies shorthand symbols to references so that we can have short
 # names that are still using absolute references.
+# 这里文档里面部分引用用了前缀的方式缩写，这里定义的缩写的 模块全路径,
+# 需要替换， 包括：
+# :class: :meth: :func:
 zzzeeksphinx_module_prefixes = {
     "_sa": "sqlalchemy",
     "_engine": "sqlalchemy.engine",
@@ -293,7 +303,8 @@ gettext_compact = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "zzzeeksphinx"
+# html_theme = "zzzeeksphinx"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -306,7 +317,7 @@ html_theme = "zzzeeksphinx"
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = "default.css"
+# html_style = "default.css"
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -327,7 +338,8 @@ html_title = "%s %s Documentation" % (project, version)
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+# html_static_path = []
+html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -342,7 +354,7 @@ html_last_updated_fmt = "%m/%d/%Y %H:%M:%S"
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
-html_additional_pages = {"notfound": "notfound.html"}
+# html_additional_pages = {"notfound": "notfound.html"}
 
 # If false, no module index is generated.
 html_domain_indices = False
