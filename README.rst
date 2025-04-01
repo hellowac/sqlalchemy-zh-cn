@@ -3,6 +3,8 @@ SQLAlchemy
 
 |PyPI| |Python| |Downloads|
 
+`中文 <./README.CN.rst>`_
+
 .. |PyPI| image:: https://img.shields.io/pypi/v/sqlalchemy
     :target: https://pypi.org/project/sqlalchemy
     :alt: PyPI
