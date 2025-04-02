@@ -5,21 +5,31 @@
 .. currentmodule:: sqlalchemy.orm
 
 ========================================
-Collection Customization and API Details
+集合自定义和 API 详细信息
 ========================================
 
-The :func:`_orm.relationship` function defines a linkage between two classes.
-When the linkage defines a one-to-many or many-to-many relationship, it's
-represented as a Python collection when objects are loaded and manipulated.
-This section presents additional information about collection configuration
-and techniques.
+Collection Customization and API Details
+
+.. tab:: 中文
+
+    :func:`_orm.relationship` 函数定义了两个类之间的链接。当链接定义为一对多或多对多关系时，加载和操作对象时，它表示为一个 Python 集合。本节介绍了有关集合配置和技术的其他信息。
+
+.. tab:: 英文
+
+    The :func:`_orm.relationship` function defines a linkage between two classes. When the linkage defines a one-to-many or many-to-many relationship, it's represented as a Python collection when objects are loaded and manipulated. This section presents additional information about collection configuration and techniques.
 
 
 
 .. _custom_collections:
 
-Customizing Collection Access
+自定义集合访问
 -----------------------------
+
+Customizing Collection Access
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Mapping a one-to-many or many-to-many relationship results in a collection of
 values accessible through an attribute on the parent instance.   The two
@@ -121,8 +131,14 @@ section :ref:`orm_custom_collection`.
 
 .. _orm_dictionary_collection:
 
-Dictionary Collections
+字典集合
 ~~~~~~~~~~~~~~~~~~~~~~
+
+Dictionary Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A little extra detail is needed when using a dictionary as a collection.
 This because objects are always loaded from the database as lists, and a key-generation
@@ -281,8 +297,14 @@ for examples.
 
 .. _key_collections_mutations:
 
-Dealing with Key Mutations and back-populating for Dictionary collections
+处理字典集合的键突变和反向填充
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Dealing with Key Mutations and back-populating for Dictionary collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using :func:`.attribute_keyed_dict`, the "key" for the dictionary
 is taken from an attribute on the target object.   **Changes to this key
@@ -362,8 +384,14 @@ collection as well::
 
 .. _orm_custom_collection:
 
-Custom Collection Implementations
+自定义集合实现
 ---------------------------------
+
+Custom Collection Implementations
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 You can use your own types for collections as well.  In simple cases,
 inheriting from ``list`` or ``set``, adding custom behavior, is all that's needed.
@@ -470,8 +498,14 @@ method that will instead take the place of the ``add`` method, in this
 case using a decorator ``@collection.appender``; this is illustrated in the
 next section.
 
-Annotating Custom Collections via Decorators
+通过装饰器注释自定义集合
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Annotating Custom Collections via Decorators
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Decorators can be used to tag the individual methods the ORM needs to manage
 collections. Use them when your class doesn't quite meet the regular interface
@@ -526,8 +560,14 @@ called with no arguments and must return an iterator.
 
 .. _dictionary_collections:
 
-Custom Dictionary-Based Collections
+自定义基于字典的集合
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Custom Dictionary-Based Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.KeyFuncDict` class can be used as
 a base class for your custom types or as a mix-in to quickly add ``dict``
@@ -582,8 +622,14 @@ methods in the basic dictionary interface for SQLAlchemy to use by default.
 Iteration will go through ``values()`` unless otherwise decorated.
 
 
-Instrumentation and Custom Types
+检测和自定义类型
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Instrumentation and Custom Types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Many custom types and existing library classes can be used as a entity
 collection type as-is without further ado. However, it is important to note
@@ -606,8 +652,14 @@ to restrict the decorations to just your usage in relationships. For example:
 The ORM uses this approach for built-ins, quietly substituting a trivial
 subclass when a ``list``, ``set`` or ``dict`` is used directly.
 
-Collection API
+集合 API
 -----------------------------
+
+Collection API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. currentmodule:: sqlalchemy.orm
 
@@ -629,8 +681,14 @@ Collection API
 .. autodata:: sqlalchemy.orm.MappedCollection
 
 
-Collection Internals
+集合内部结构
 -----------------------------
+
+Collection Internals
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. currentmodule:: sqlalchemy.orm.collections
 

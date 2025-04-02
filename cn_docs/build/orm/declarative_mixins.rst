@@ -1,7 +1,9 @@
 .. _orm_mixins_toplevel:
 
-Composing Mapped Hierarchies with Mixins
+使用 Mixins 组合映射层次结构
 ========================================
+
+Composing Mapped Hierarchies with Mixins
 
 A common need when mapping classes using the :ref:`Declarative
 <orm_declarative_mapping>` style is to share common functionality, such as
@@ -146,8 +148,10 @@ attribute is used on the newly defined class.
    to mark declarative mixins, assuming the mypy plugin is no longer in use.
 
 
-Augmenting the Base
+增强基础
 ~~~~~~~~~~~~~~~~~~~
+
+Augmenting the Base
 
 In addition to using a pure mixin, most of the techniques in this
 section can also be applied to the base class directly, for patterns that
@@ -250,8 +254,10 @@ example below::
     class MyModel(HasLogRecord, Base):
         name = mapped_column(String)
 
-Mixing in Columns
+混合列
 ~~~~~~~~~~~~~~~~~
+
+Mixing in Columns
 
 Columns can be indicated in mixins assuming the
 :ref:`Declarative table <orm_declarative_table>` style of configuration
@@ -318,8 +324,10 @@ applied to the target class.
 
 .. _orm_declarative_mixins_relationships:
 
-Mixing in Relationships
+混合关系
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+Mixing in Relationships
 
 Relationships created by :func:`~sqlalchemy.orm.relationship` are provided
 with declarative mixin classes exclusively using the
@@ -401,8 +409,10 @@ explicit primaryjoin which refers to pending mapped columns on both
 
 .. _orm_declarative_mixins_mapperproperty:
 
-Mixing in :func:`_orm.column_property` and other :class:`_orm.MapperProperty` classes
+混合 :func:`_orm.column_property` 和其他 :class:`_orm.MapperProperty` 类
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Mixing in :func:`_orm.column_property` and other :class:`_orm.MapperProperty` classes
 
 Like :func:`_orm.relationship`, other
 :class:`_orm.MapperProperty` subclasses such as
@@ -473,8 +483,10 @@ it produces the full expression:
 
 .. _decl_mixin_inheritance:
 
-Using Mixins and Base Classes with Mapped Inheritance Patterns
+使用 Mixins 和基类以及映射继承模式
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using Mixins and Base Classes with Mapped Inheritance Patterns
 
 When dealing with mapper inheritance patterns as documented at
 :ref:`inheritance_toplevel`, some additional capabilities are present
@@ -502,8 +514,10 @@ table that is locally mapped.
 The difference in behavior between these two use cases is demonstrated
 in the following two sections.
 
-Using :func:`_orm.declared_attr` with inheriting :class:`.Table` and :class:`.Mapper` arguments
+使用 :func:`_orm.declared_attr` 继承 :class:`.Table` 和 :class:`.Mapper` 参数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using :func:`_orm.declared_attr` with inheriting :class:`.Table` and :class:`.Mapper` arguments
 
 A common recipe with mixins is to create a ``def __tablename__(cls)``
 function that generates a name for the mapped :class:`.Table` dynamically.
@@ -638,8 +652,10 @@ for inheriting subclasses by default::
 
 .. _mixin_inheritance_columns:
 
-Using :func:`_orm.declared_attr` to generate table-specific inheriting columns
+使用 :func:`_orm.declared_attr` 生成特定于表的继承列
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using :func:`_orm.declared_attr` to generate table-specific inheriting columns
 
 In contrast to how ``__tablename__`` and other special names are handled when
 used with :class:`_orm.declared_attr`, when we mix in columns and properties (e.g.
@@ -713,8 +729,10 @@ function should be invoked **for each class in the hierarchy**, in *almost*
     :attr:`.declared_attr.cascading`.
 
 
-Combining Table/Mapper Arguments from Multiple Mixins
+组合来自多个 Mixins 的表/映射器参数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Combining Table/Mapper Arguments from Multiple Mixins
 
 In the case of ``__table_args__`` or ``__mapper_args__``
 specified with declarative mixins, you may want to combine
@@ -749,8 +767,10 @@ from multiple collections::
 
 .. _orm_mixins_named_constraints:
 
-Creating Indexes and Constraints with Naming Conventions on Mixins
+使用 Mixins 上的命名约定创建索引和约束
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creating Indexes and Constraints with Naming Conventions on Mixins
 
 Using named constraints such as :class:`.Index`, :class:`.UniqueConstraint`,
 :class:`.CheckConstraint`, where each object is to be unique to a specific

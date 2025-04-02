@@ -1,8 +1,10 @@
 .. _orm_mapping_classes_toplevel:
 
 ==========================
-ORM Mapped Class Overview
+ORM 映射类概述
 ==========================
+
+ORM Mapped Class Overview
 
 Overview of ORM class mapping configuration.
 
@@ -14,8 +16,10 @@ it's recommended to browse through the
 
 .. _orm_mapping_styles:
 
-ORM Mapping Styles
+ORM 映射样式
 ==================
+
+ORM Mapping Styles
 
 SQLAlchemy features two distinct styles of mapper configuration, which then
 feature further sub-options for how they are set up.   The variability in mapper
@@ -57,8 +61,10 @@ to each other by name within the configurational process.
 
 .. _orm_declarative_mapping:
 
-Declarative Mapping
+声明式映射
 -------------------
+
+Declarative Mapping
 
 The **Declarative Mapping** is the typical way that mappings are constructed in
 modern SQLAlchemy. The most common pattern is to first construct a base class
@@ -142,8 +148,10 @@ Documentation for Declarative mapping continues at :ref:`declarative_config_topl
 .. _classical_mapping:
 .. _orm_imperative_mapping:
 
-Imperative Mapping
+命令式映射
 -------------------
+
+Imperative Mapping
 
 An **imperative** or **classical** mapping refers to the configuration of a
 mapped class using the :meth:`_orm.registry.map_imperatively` method,
@@ -223,8 +231,10 @@ ultimately create the same configuration, consisting of a
 
 .. _orm_mapper_configuration_overview:
 
-Mapped Class Essential Components
+映射类基本组件
 ==================================
+
+Mapped Class Essential Components
 
 With all mapping forms, the mapping of the class can be configured in many ways
 by passing construction arguments that ultimately become part of the :class:`_orm.Mapper`
@@ -239,8 +249,10 @@ relationships being mapped along with that of attributes such as
 There are four general classes of configuration information that the
 :class:`_orm.Mapper` class looks for:
 
-The class to be mapped
+要映射的类
 ----------------------
+
+The class to be mapped
 
 This is a class that we construct in our application.
 There are generally no restrictions on the structure of this class. [1]_
@@ -255,8 +267,10 @@ When mapping with the :ref:`imperative <orm_imperative_mapping>` style, the
 class is passed directly as the
 :paramref:`_orm.registry.map_imperatively.class_` argument.
 
-The table, or other from clause object
+表或其他 from 子句对象
 --------------------------------------
+
+The table, or other from clause object
 
 In the vast majority of common cases this is an instance of
 :class:`_schema.Table`.  For more advanced use cases, it may also refer
@@ -284,8 +298,10 @@ class, but does not modify the given :class:`_schema.Table` or other
 
 .. _orm_mapping_properties:
 
-The properties dictionary
+属性字典
 -------------------------
+
+The properties dictionary
 
 This is a dictionary of all of the attributes
 that will be associated with the mapped class.    By default, the
@@ -307,8 +323,10 @@ properties dictionary is passed directly as the
 to :meth:`_orm.registry.map_imperatively`, which will pass it along to the
 :paramref:`_orm.Mapper.properties` parameter.
 
-Other mapper configuration parameters
+其他映射器配置参数
 -------------------------------------
+
+Other mapper configuration parameters
 
 When mapping with the :ref:`declarative <orm_declarative_mapping>` mapping
 style, additional mapper configuration arguments are configured via the
@@ -325,16 +343,20 @@ The full range of parameters accepted are documented at  :class:`_orm.Mapper`.
 .. _orm_mapped_class_behavior:
 
 
-Mapped Class Behavior
+映射类行为
 =====================
+
+Mapped Class Behavior
 
 Across all styles of mapping using the :class:`_orm.registry` object,
 the following behaviors are common:
 
 .. _mapped_class_default_constructor:
 
-Default Constructor
+默认构造函数
 -------------------
+
+Default Constructor
 
 The :class:`_orm.registry` applies a default constructor, i.e. ``__init__``
 method, to all mapped classes that don't explicitly have their own
@@ -413,8 +435,10 @@ will also feature the default constructor associated with the :class:`_orm.regis
 
 .. _mapped_class_load_events:
 
-Maintaining Non-Mapped State Across Loads
+在加载过程中维护非映射状态
 ------------------------------------------
+
+Maintaining Non-Mapped State Across Loads
 
 The ``__init__()`` method of the mapped class is invoked when the object
 is constructed directly in Python code::
@@ -506,8 +530,10 @@ below.
 
 .. _orm_mapper_inspection:
 
-Runtime Introspection of Mapped classes, Instances and Mappers
+映射类、实例和映射器的运行时自检
 ---------------------------------------------------------------
+
+Runtime Introspection of Mapped classes, Instances and Mappers
 
 A class that is mapped using :class:`_orm.registry` will also feature a few
 attributes that are common to all mappings:
@@ -549,8 +575,10 @@ attributes that are common to all mappings:
 
 .. _orm_mapper_inspection_mapper:
 
-Inspection of Mapper objects
+映射器对象的检查
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Inspection of Mapper objects
 
 As illustrated in the previous section, the :class:`_orm.Mapper` object is
 available from any mapped class, regardless of method, using the
@@ -597,8 +625,10 @@ As well as :attr:`_orm.Mapper.column_attrs`::
 
 .. _orm_mapper_inspection_instancestate:
 
-Inspection of Mapped Instances
+映射实例的检查
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Inspection of Mapped Instances
 
 The :func:`_sa.inspect` function also provides information about instances
 of a mapped class.  When applied to an instance of a mapped class, rather

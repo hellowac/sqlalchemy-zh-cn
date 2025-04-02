@@ -8,46 +8,79 @@
 
 .. _orm_expression_update_delete:
 
-ORM-Enabled INSERT, UPDATE, and DELETE statements
+启用 ORM 的 INSERT、UPDATE 和 DELETE 语句
 =================================================
 
-.. admonition:: About this Document
+ORM-Enabled INSERT, UPDATE, and DELETE statements
 
-    This section makes use of ORM mappings first illustrated in the
-    :ref:`unified_tutorial`, shown in the section
-    :ref:`tutorial_declaring_mapped_classes`, as well as inheritance
-    mappings shown in the section :ref:`inheritance_toplevel`.
+.. tab:: 中文
 
-    :doc:`View the ORM setup for this page <_dml_setup>`.
+    .. admonition:: 关于本文档
 
-The :meth:`_orm.Session.execute` method, in addition to handling ORM-enabled
-:class:`_sql.Select` objects, can also accommodate ORM-enabled
-:class:`_sql.Insert`, :class:`_sql.Update` and :class:`_sql.Delete` objects,
-in various ways which are each used to INSERT, UPDATE, or DELETE
-many database rows at once.  There is also dialect-specific support
-for ORM-enabled "upserts", which are INSERT statements that automatically
-make use of UPDATE for rows that already exist.
+        本节使用了在 :ref:`unified_tutorial` 中首次介绍的 ORM 映射，展示在 :ref:`tutorial_declaring_mapped_classes` 部分，以及在 :ref:`inheritance_toplevel` 部分展示的继承映射。
 
-The following table summarizes the calling forms that are discussed in this
-document:
+        :doc:`查看本页的 ORM 设置 <_dml_setup>`。
 
-=====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
-ORM Use Case                                            DML Construct Used                           Data is passed using ...                                                     Supports RETURNING?                                       Supports Multi-Table Mappings?
-=====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
-:ref:`orm_queryguide_bulk_insert`                       :func:`_dml.insert`                          List of dictionaries to :paramref:`_orm.Session.execute.params`              :ref:`yes <orm_queryguide_bulk_insert_returning>`         :ref:`yes <orm_queryguide_insert_joined_table_inheritance>`
-:ref:`orm_queryguide_bulk_insert_w_sql`                 :func:`_dml.insert`                          :paramref:`_orm.Session.execute.params` with :meth:`_dml.Insert.values`      :ref:`yes <orm_queryguide_bulk_insert_w_sql>`             :ref:`yes <orm_queryguide_insert_joined_table_inheritance>`
-:ref:`orm_queryguide_insert_values`                     :func:`_dml.insert`                          List of dictionaries to :meth:`_dml.Insert.values`                           :ref:`yes <orm_queryguide_insert_values>`                 no
-:ref:`orm_queryguide_upsert`                            :func:`_dml.insert`                          List of dictionaries to :meth:`_dml.Insert.values`                           :ref:`yes <orm_queryguide_upsert_returning>`              no
-:ref:`orm_queryguide_bulk_update`                       :func:`_dml.update`                          List of dictionaries to :paramref:`_orm.Session.execute.params`              no                                                        :ref:`yes <orm_queryguide_bulk_update_joined_inh>`
-:ref:`orm_queryguide_update_delete_where`               :func:`_dml.update`, :func:`_dml.delete`     keywords to :meth:`_dml.Update.values`                                       :ref:`yes <orm_queryguide_update_delete_where_returning>` :ref:`partial, with manual steps <orm_queryguide_update_delete_joined_inh>`
-=====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
+    :meth:`_orm.Session.execute` 方法除了处理启用 ORM 的 :class:`_sql.Select` 对象外，还可以以各种方式处理启用 ORM 的 :class:`_sql.Insert`、:class:`_sql.Update` 和 :class:`_sql.Delete` 对象，这些方式都用于一次性 INSERT、UPDATE 或 DELETE 多个数据库行。还支持方言特定的启用 ORM 的 "upserts"，即自动使用 UPDATE 的 INSERT 语句，用于已存在的行。
+
+    下表总结了本文档中讨论的调用形式：
+
+    =====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
+    ORM 用例                                                使用的 DML                                   数据通过  ... 传递                                                              支持     RETURNING?                                       支持多表映射?                  
+    =====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
+    :ref:`orm_queryguide_bulk_insert`                       :func:`_dml.insert`                          List of dictionaries to :paramref:`_orm.Session.execute.params`              :ref:`yes <orm_queryguide_bulk_insert_returning>`         :ref:`yes <orm_queryguide_insert_joined_table_inheritance>`
+    :ref:`orm_queryguide_bulk_insert_w_sql`                 :func:`_dml.insert`                          :paramref:`_orm.Session.execute.params` with :meth:`_dml.Insert.values`      :ref:`yes <orm_queryguide_bulk_insert_w_sql>`             :ref:`yes <orm_queryguide_insert_joined_table_inheritance>`
+    :ref:`orm_queryguide_insert_values`                     :func:`_dml.insert`                          List of dictionaries to :meth:`_dml.Insert.values`                           :ref:`yes <orm_queryguide_insert_values>`                 no
+    :ref:`orm_queryguide_upsert`                            :func:`_dml.insert`                          List of dictionaries to :meth:`_dml.Insert.values`                           :ref:`yes <orm_queryguide_upsert_returning>`              no
+    :ref:`orm_queryguide_bulk_update`                       :func:`_dml.update`                          List of dictionaries to :paramref:`_orm.Session.execute.params`              no                                                        :ref:`yes <orm_queryguide_bulk_update_joined_inh>`
+    :ref:`orm_queryguide_update_delete_where`               :func:`_dml.update`, :func:`_dml.delete`     keywords to :meth:`_dml.Update.values`                                       :ref:`yes <orm_queryguide_update_delete_where_returning>` :ref:`部分，采用手动步骤 <orm_queryguide_update_delete_joined_inh>`
+    =====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
+
+.. tab:: 英文
+
+    .. admonition:: About this Document
+
+        This section makes use of ORM mappings first illustrated in the
+        :ref:`unified_tutorial`, shown in the section
+        :ref:`tutorial_declaring_mapped_classes`, as well as inheritance
+        mappings shown in the section :ref:`inheritance_toplevel`.
+
+        :doc:`View the ORM setup for this page <_dml_setup>`.
+
+    The :meth:`_orm.Session.execute` method, in addition to handling ORM-enabled
+    :class:`_sql.Select` objects, can also accommodate ORM-enabled
+    :class:`_sql.Insert`, :class:`_sql.Update` and :class:`_sql.Delete` objects,
+    in various ways which are each used to INSERT, UPDATE, or DELETE
+    many database rows at once.  There is also dialect-specific support
+    for ORM-enabled "upserts", which are INSERT statements that automatically
+    make use of UPDATE for rows that already exist.
+
+    The following table summarizes the calling forms that are discussed in this
+    document:
+
+    =====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
+    ORM Use Case                                            DML Construct Used                           Data is passed using ...                                                     Supports RETURNING?                                       Supports Multi-Table Mappings?
+    =====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
+    :ref:`orm_queryguide_bulk_insert`                       :func:`_dml.insert`                          List of dictionaries to :paramref:`_orm.Session.execute.params`              :ref:`yes <orm_queryguide_bulk_insert_returning>`         :ref:`yes <orm_queryguide_insert_joined_table_inheritance>`
+    :ref:`orm_queryguide_bulk_insert_w_sql`                 :func:`_dml.insert`                          :paramref:`_orm.Session.execute.params` with :meth:`_dml.Insert.values`      :ref:`yes <orm_queryguide_bulk_insert_w_sql>`             :ref:`yes <orm_queryguide_insert_joined_table_inheritance>`
+    :ref:`orm_queryguide_insert_values`                     :func:`_dml.insert`                          List of dictionaries to :meth:`_dml.Insert.values`                           :ref:`yes <orm_queryguide_insert_values>`                 no
+    :ref:`orm_queryguide_upsert`                            :func:`_dml.insert`                          List of dictionaries to :meth:`_dml.Insert.values`                           :ref:`yes <orm_queryguide_upsert_returning>`              no
+    :ref:`orm_queryguide_bulk_update`                       :func:`_dml.update`                          List of dictionaries to :paramref:`_orm.Session.execute.params`              no                                                        :ref:`yes <orm_queryguide_bulk_update_joined_inh>`
+    :ref:`orm_queryguide_update_delete_where`               :func:`_dml.update`, :func:`_dml.delete`     keywords to :meth:`_dml.Update.values`                                       :ref:`yes <orm_queryguide_update_delete_where_returning>` :ref:`partial, with manual steps <orm_queryguide_update_delete_joined_inh>`
+    =====================================================   ==========================================   ========================================================================     ========================================================= ============================================================================
 
 
 
 .. _orm_queryguide_bulk_insert:
 
-ORM Bulk INSERT Statements
+ORM 批量 INSERT 语句
 --------------------------
+
+ORM Bulk INSERT Statements
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A :func:`_dml.insert` construct can be constructed in terms of an ORM class
 and passed to the :meth:`_orm.Session.execute` method.   A list of parameter
@@ -92,8 +125,14 @@ if these two names happen to be different.
 
 .. _orm_queryguide_bulk_insert_returning:
 
-Getting new objects with RETURNING
+使用 RETURNING 获取新对象
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Getting new objects with RETURNING
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -157,8 +196,14 @@ single INSERT statement so that RETURNING may be used.
 
 .. _orm_queryguide_bulk_insert_returning_ordered:
 
-Correlating RETURNING records with input data order
+将 RETURNING 记录与输入数据顺序关联
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Correlating RETURNING records with input data order
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using bulk INSERT with RETURNING, it's important to note that most
 database backends provide no formal guarantee of the order in which the
@@ -204,8 +249,14 @@ the operation will INSERT one row at a time::
 
 .. _orm_queryguide_insert_heterogeneous_params:
 
-Using Heterogeneous Parameter Dictionaries
+使用异构参数字典
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using Heterogeneous Parameter Dictionaries
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -259,8 +310,14 @@ in each dictionary while still maintaining row order, i.e.
 
 .. _orm_queryguide_insert_null_params:
 
+在 ORM 批量 INSERT 语句中发送 NULL 值
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Sending NULL values in ORM bulk INSERT statements
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+    
+.. tab:: 英文~
 
 The bulk ORM insert feature draws upon a behavior that is also present
 in the legacy "bulk" insert behavior, as well as in the ORM unit of work
@@ -364,8 +421,14 @@ the ``None`` value present in the third parameter dictionary.
 
 .. _orm_queryguide_insert_joined_table_inheritance:
 
-Bulk INSERT for Joined Table Inheritance
+用于连接表继承的批量 INSERT
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Bulk INSERT for Joined Table Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -411,8 +474,14 @@ the returned rows include values for all columns inserted::
 
 .. _orm_queryguide_bulk_insert_w_sql:
 
+使用 SQL 表达式的 ORM 批量插入
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ORM Bulk Insert with SQL Expressions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+    
+.. tab:: 英文~~~~
 
 The ORM bulk insert feature supports the addition of a fixed set of
 parameters which may include SQL expressions to be applied to every target row.
@@ -467,8 +536,14 @@ and then pass the additional records using "bulk" mode::
 
 .. _orm_queryguide_insert_values:
 
-ORM Bulk Insert with Per Row SQL Expressions
+使用每行 SQL 表达式的 ORM 批量插入
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ORM Bulk Insert with Per Row SQL Expressions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 
 ..  Setup code, not for display
@@ -573,8 +648,14 @@ or there is a need to embed per-row SQL expressions in each parameter set.
 
 .. _orm_queryguide_legacy_bulk_insert:
 
+旧会话批量 INSERT 方法
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Legacy Session Bulk INSERT Methods
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+    
+.. tab:: 英文~
 
 The :class:`_orm.Session` includes legacy methods for performing
 "bulk" INSERT and UPDATE statements.  These methods share implementations
@@ -601,8 +682,14 @@ The above is expressed using the new API as::
 
 .. _orm_queryguide_upsert:
 
-ORM "upsert" Statements
+ORM“upsert”语句
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+ORM "upsert" Statements
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Selected backends with SQLAlchemy may include dialect-specific :class:`_dml.Insert`
 constructs which additionally have the ability to perform "upserts", or INSERTs
@@ -679,8 +766,14 @@ as ORM mapped attribute keys, rather than column names:
 
 .. _orm_queryguide_upsert_returning:
 
-Using RETURNING with upsert statements
+将 RETURNING 与 upsert 语句结合使用
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using RETURNING with upsert statements
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 From the SQLAlchemy ORM's point of view, upsert statements look like regular
 :class:`_dml.Insert` constructs, which includes that :meth:`_dml.Insert.returning`
@@ -725,8 +818,14 @@ in the :class:`_orm.Session` object's :term:`identity map`.
 
 .. _orm_queryguide_bulk_update:
 
-ORM Bulk UPDATE by Primary Key
+ORM 按主键批量 UPDATE
 ------------------------------
+
+ORM Bulk UPDATE by Primary Key
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -812,8 +911,14 @@ support result rows.
 
 .. _orm_queryguide_bulk_update_disabling:
 
-Disabling Bulk ORM Update by Primary Key for an UPDATE statement with multiple parameter sets
+禁用具有多个参数集的 UPDATE 语句的按主键批量 ORM 更新
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Disabling Bulk ORM Update by Primary Key for an UPDATE statement with multiple parameter sets
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ORM Bulk Update by Primary Key feature, which runs an UPDATE statement
 per record which includes WHERE criteria for each primary key value, is
@@ -848,8 +953,14 @@ the :meth:`_orm.Session.connection` method to acquire the current
 
 .. _orm_queryguide_bulk_update_joined_inh:
 
+用于连接表继承的按主键批量 UPDATE
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Bulk UPDATE by Primary Key for Joined Table Inheritance
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+    
+.. tab:: 英文~
 
 ..  Setup code, not for display
 
@@ -898,8 +1009,14 @@ Example::
 
 .. _orm_queryguide_legacy_bulk_update:
 
-Legacy Session Bulk UPDATE Methods
+旧会话批量 UPDATE 方法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Legacy Session Bulk UPDATE Methods
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As discussed at :ref:`orm_queryguide_legacy_bulk_insert`, the
 :meth:`_orm.Session.bulk_update_mappings` method of :class:`_orm.Session` is
@@ -938,8 +1055,14 @@ Is expressed using the new API as::
 
 .. _orm_queryguide_update_delete_where:
 
-ORM UPDATE and DELETE with Custom WHERE Criteria
+使用自定义 WHERE 条件的 ORM UPDATE 和 DELETE
 ------------------------------------------------
+
+ORM UPDATE and DELETE with Custom WHERE Criteria
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -1001,8 +1124,14 @@ For a DELETE, an example of deleting rows based on criteria::
 
 .. _orm_queryguide_update_delete_caveats:
 
-Important Notes and Caveats for ORM-Enabled Update and Delete
+启用 ORM 的更新和删除的重要说明和注意事项
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Important Notes and Caveats for ORM-Enabled Update and Delete
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ORM-enabled UPDATE and DELETE features bypass ORM :term:`unit of work`
 automation in favor of being able to emit a single UPDATE or DELETE statement
@@ -1042,8 +1171,14 @@ that matches multiple rows at once without complexity.
 .. _orm_queryguide_update_delete_sync:
 
 
-Selecting a Synchronization Strategy
+选择同步策略
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Selecting a Synchronization Strategy
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When making use of :func:`_dml.update` or :func:`_dml.delete` in conjunction
 with ORM-enabled execution using :meth:`_orm.Session.execute`, additional
@@ -1143,8 +1278,14 @@ The following values for ``synchronize_session`` are supported:
 
 .. _orm_queryguide_update_delete_where_returning:
 
-Using RETURNING with UPDATE/DELETE and Custom WHERE Criteria
+使用 RETURNING 和 UPDATE/DELETE 以及自定义 WHERE 条件
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using RETURNING with UPDATE/DELETE and Custom WHERE Criteria
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :meth:`.UpdateBase.returning` method is fully compatible with
 ORM-enabled UPDATE and DELETE with WHERE criteria.   Full ORM objects
@@ -1176,8 +1317,14 @@ columns in their requested order.
 
 .. _orm_queryguide_update_delete_joined_inh:
 
-UPDATE/DELETE with Custom WHERE Criteria for Joined Table Inheritance
+使用 UPDATE/DELETE 和自定义 WHERE 条件进行连接表继承
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+UPDATE/DELETE with Custom WHERE Criteria for Joined Table Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -1269,8 +1416,14 @@ mappings, unless there is a performance rationale for using custom WHERE
 criteria.
 
 
-Legacy Query Methods
+旧式查询方法
 ~~~~~~~~~~~~~~~~~~~~
+
+Legacy Query Methods
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ORM enabled UPDATE/DELETE with WHERE feature was originally part of the
 now-legacy :class:`.Query` object, in the :meth:`_orm.Query.update`

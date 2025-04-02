@@ -1,7 +1,9 @@
 .. highlight:: pycon+sql
 
-Operator Reference
+操作符参考
 ===============================
+
+Operator Reference
 
 ..  Setup code, not for display
 
@@ -90,32 +92,59 @@ Operator Reference
     >>> conn.begin()
     BEGIN ...
 
+.. tab:: 中文
 
-This section details usage of the operators that are available
-to construct SQL expressions.
+    本节详细介绍了可用于构建 SQL 表达式的运算符的用法。
 
-These methods are presented in terms of the :class:`_sql.Operators`
-and :class:`_sql.ColumnOperators` base classes.   The methods are then
-available on descendants of these classes, including:
+    这些方法是根据 :class:`_sql.Operators` 和 :class:`_sql.ColumnOperators` 基类呈现的。这些方法可以在这些类的派生类中使用，包括：
 
-* :class:`_schema.Column` objects
+    * :class:`_schema.Column` 对象
 
-* :class:`_sql.ColumnElement` objects more generally, which are the root
-  of all Core SQL Expression language column-level expressions
+    * 更广泛地说，:class:`_sql.ColumnElement` 对象，它们是所有核心 SQL 表达式语言列级表达式的根
 
-* :class:`_orm.InstrumentedAttribute` objects, which are ORM
-  level mapped attributes.
+    * :class:`_orm.InstrumentedAttribute` 对象，它们是 ORM 级别的映射属性。
 
-The operators are first introduced in the tutorial sections, including:
+    这些运算符首先在教程部分进行介绍，包括：
 
-* :doc:`/tutorial/index` - unified tutorial in :term:`2.0 style`
+    * :doc:`/tutorial/index` - :term:`2.0 风格` 的统一教程
 
-* :doc:`/orm/tutorial` - ORM tutorial in :term:`1.x style`
+    * :doc:`/orm/tutorial` - :term:`1.x 风格` 的 ORM 教程
 
-* :doc:`/core/tutorial` - Core tutorial in :term:`1.x style`
+    * :doc:`/core/tutorial` - :term:`1.x 风格` 的 Core 教程
+
+.. tab:: 英文
+
+    This section details usage of the operators that are available
+    to construct SQL expressions.
+
+    These methods are presented in terms of the :class:`_sql.Operators`
+    and :class:`_sql.ColumnOperators` base classes.   The methods are then
+    available on descendants of these classes, including:
+
+    * :class:`_schema.Column` objects
+
+    * :class:`_sql.ColumnElement` objects more generally, which are the root
+      of all Core SQL Expression language column-level expressions
+
+    * :class:`_orm.InstrumentedAttribute` objects, which are ORM
+      level mapped attributes.
+
+    The operators are first introduced in the tutorial sections, including:
+
+    * :doc:`/tutorial/index` - unified tutorial in :term:`2.0 style`
+
+    * :doc:`/orm/tutorial` - ORM tutorial in :term:`1.x style`
+
+    * :doc:`/core/tutorial` - Core tutorial in :term:`1.x style`
+
+比较运算符
+^^^^^^^^^^^^^^^^^^^^
 
 Comparison Operators
-^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Basic comparisons which apply to many datatypes, including numerics,
 strings, dates, and many others:
@@ -169,8 +198,14 @@ strings, dates, and many others:
 
   ..
 
-IN Comparisons
+IN 比较
 ^^^^^^^^^^^^^^
+
+IN Comparisons
+
+.. tab:: 中文
+
+.. tab:: 英文
 The SQL IN operator is a subject all its own in SQLAlchemy.   As the IN
 operator is usually used against a list of fixed values, SQLAlchemy's
 feature of bound parameter coercion makes use of a special form of SQL
@@ -178,8 +213,14 @@ compilation that renders an interim SQL string for compilation that's formed
 into the final list of bound parameters in a second step.   In other words,
 "it just works".
 
-IN against a list of values
+IN 与值列表
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+IN against a list of values
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 IN is available most typically by passing a list of
 values to the :meth:`_sql.ColumnOperators.in_` method::
@@ -197,8 +238,14 @@ at execution time, illustrated below::
     WHERE user_account.id IN (?, ?, ?)
     [...] (1, 2, 3){stop}
 
-Empty IN Expressions
+空 IN 表达式
 ~~~~~~~~~~~~~~~~~~~~
+
+Empty IN Expressions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy produces a mathematically valid result for an empty IN expression
 by rendering a backend-specific subquery that returns no rows.   Again
@@ -218,6 +265,12 @@ in terms of the IN operator which remains in place.
 NOT IN
 ~~~~~~~
 
+NOT IN
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 "NOT IN" is available via the :meth:`_sql.ColumnOperators.not_in` operator::
 
     >>> print(column("x").not_in([1, 2, 3]))
@@ -228,8 +281,14 @@ This is typically more easily available by negating with the ``~`` operator::
     >>> print(~column("x").in_([1, 2, 3]))
     {printsql}(x NOT IN (__[POSTCOMPILE_x_1]))
 
-Tuple IN Expressions
+元组 IN 表达式
 ~~~~~~~~~~~~~~~~~~~~
+
+Tuple IN Expressions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Comparison of tuples to tuples is common with IN, as among other use cases
 accommodates for the case when matching rows to a set of potential composite
@@ -254,8 +313,14 @@ To illustrate the parameters rendered::
     [...] (1, 1, 2, 2){stop}
     [('spongebob',), ('sandy',)]
 
-Subquery IN
+子查询 IN
 ~~~~~~~~~~~
+
+Subquery IN
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Finally, the :meth:`_sql.ColumnOperators.in_` and :meth:`_sql.ColumnOperators.not_in`
 operators work with subqueries.   The form provides that a :class:`_sql.Select`
@@ -276,8 +341,14 @@ Tuples work as expected::
     {printsql}(x, y) IN (SELECT user_account.id, address.id
     FROM user_account JOIN address ON user_account.id = address.user_id)
 
-Identity Comparisons
+身份比较
 ^^^^^^^^^^^^^^^^^^^^
+
+Identity Comparisons
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 These operators involve testing for special SQL values such as
 ``NULL``, boolean constants such as ``true`` or ``false`` which some
@@ -339,8 +410,14 @@ databases support:
     >>> print(column("x").isnot_distinct_from("some value"))
     {printsql}x IS NOT DISTINCT FROM :x_1
 
-String Comparisons
+字符串比较
 ^^^^^^^^^^^^^^^^^^
+
+String Comparisons
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 * :meth:`_sql.ColumnOperators.like`::
 
@@ -374,8 +451,14 @@ String Comparisons
 
   ..
 
-String Containment
+字符串包含
 ^^^^^^^^^^^^^^^^^^^
+
+String Containment
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 String containment operators are basically built as a combination of
 LIKE and the string concatenation operator, which is ``||`` on most
@@ -402,8 +485,14 @@ backends or sometimes a function like ``concat()``:
 
   ..
 
-String matching
+字符串匹配
 ^^^^^^^^^^^^^^^^
+
+String matching
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Matching operators are always backend-specific and may provide different
 behaviors and results on different databases:
@@ -438,8 +527,14 @@ behaviors and results on different databases:
 
 .. _queryguide_operators_concat_op:
 
-String Alteration
+字符串更改
 ^^^^^^^^^^^^^^^^^
+
+String Alteration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 * :meth:`_sql.ColumnOperators.concat`:
 
@@ -499,8 +594,14 @@ String Alteration
 
   ..
 
-Arithmetic Operators
+算术运算符
 ^^^^^^^^^^^^^^^^^^^^
+
+Arithmetic Operators
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 * :meth:`_sql.ColumnOperators.__add__`, :meth:`_sql.ColumnOperators.__radd__` (Python "``+``" operator)::
 
@@ -585,8 +686,14 @@ Arithmetic Operators
 
 .. _operators_bitwise:
 
-Bitwise Operators
+按位运算符
 ^^^^^^^^^^^^^^^^^
+
+Bitwise Operators
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Bitwise operator functions provide uniform access to bitwise operators across
 different backends, which are expected to operate on compatible
@@ -651,8 +758,14 @@ boolean operators.
   ..
 
 
-Using Conjunctions and Negations
+使用连接和否定
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using Conjunctions and Negations
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The most common conjunction, "AND", is automatically applied if we make repeated use of the :meth:`_sql.Select.where` method, as well as similar methods such as
 :meth:`_sql.Update.where` and :meth:`_sql.Delete.where`::
@@ -709,8 +822,14 @@ It also may apply a keyword such as ``NOT`` when appropriate::
     {printsql}NOT x
 
 
-Conjunction Operators
+连接运算符
 ^^^^^^^^^^^^^^^^^^^^^^
+
+Conjunction Operators
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The above conjunction functions :func:`_sql.and_`, :func:`_sql.or_`,
 :func:`_sql.not_` are also available as overloaded Python operators:

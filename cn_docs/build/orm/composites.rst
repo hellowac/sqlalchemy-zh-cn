@@ -2,8 +2,14 @@
 
 .. _mapper_composite:
 
-Composite Column Types
+复合列类型
 ======================
+
+Composite Column Types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Sets of columns can be associated with a single user-defined datatype,
 which in modern use is normally a Python dataclass_. The ORM
@@ -85,8 +91,14 @@ The above mapping would correspond to a CREATE TABLE statement as:
     )
 
 
-Working with Mapped Composite Column Types
+使用映射复合列类型
 -------------------------------------------
+
+Working with Mapped Composite Column Types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 With a mapping as illustrated in the top section, we can work with the
 ``Vertex`` class, where the ``.start`` and ``.end`` attributes will
@@ -182,8 +194,14 @@ well as with instances of the ``Vertex`` class, where the ``.start`` and
 
 .. _orm_composite_other_forms:
 
-Other mapping forms for composites
+复合的其他映射形式
 ----------------------------------
+
+Other mapping forms for composites
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_orm.composite` construct may be passed the relevant columns
 using a :func:`_orm.mapped_column` construct, a :class:`_schema.Column`,
@@ -216,8 +234,14 @@ where we also pass the ``Point`` class as the first argument to
 
 .. _composite_with_typing:
 
-Map columns directly, pass attribute names to composite
+直接映射列，将属性名称传递给复合
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Map columns directly, pass attribute names to composite
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 We can write the same example above using more annotated forms where we have
 the option to pass attribute names to :func:`_orm.composite` instead of
@@ -238,8 +262,14 @@ full column constructs::
         start: Mapped[Point] = composite("x1", "y1")
         end: Mapped[Point] = composite("x2", "y2")
 
-Imperative mapping and imperative table
+命令式映射和命令式表
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Imperative mapping and imperative table
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using :ref:`imperative table <orm_imperative_table_configuration>` or
 fully :ref:`imperative <orm_imperative_mapping>` mappings, we have access
@@ -257,8 +287,14 @@ to :class:`_schema.Column` objects directly.  These may be passed to
 
 .. _composite_legacy_no_dataclass:
 
-Using Legacy Non-Dataclasses
+使用旧式非数据类
 ----------------------------
+
+Using Legacy Non-Dataclasses
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 
 If not using a dataclass, the requirements for the custom datatype class are
@@ -294,8 +330,14 @@ associated with the ``Point`` class must also be declared with explicit
 types, using one of the forms at :ref:`orm_composite_other_forms`.
 
 
-Tracking In-Place Mutations on Composites
+跟踪复合上的就地突变
 -----------------------------------------
+
+Tracking In-Place Mutations on Composites
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In-place changes to an existing composite value are
 not tracked automatically.  Instead, the composite class needs to provide
@@ -306,8 +348,14 @@ Please see the example in :ref:`mutable_composites`.
 
 .. _composite_operations:
 
-Redefining Comparison Operations for Composites
+重新定义复合的比较操作
 -----------------------------------------------
+
+Redefining Comparison Operations for Composites
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "equals" comparison operation by default produces an AND of all
 corresponding columns equated to one another. This can be changed using
@@ -375,8 +423,14 @@ The custom comparator then returns the appropriate SQL expression:
   {printsql}vertices.x1 > :x1_1 AND vertices.y1 > :y1_1
 
 
-Nesting Composites
+嵌套复合
 -------------------
+
+Nesting Composites
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Composite objects can be defined to work in simple nested schemes, by
 redefining behaviors within the composite class to work as desired, then
@@ -473,8 +527,14 @@ The above mapping can then be used in terms of ``HasVertex``, ``Vertex``, and
 
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html
 
-Composite API
+复合 API
 -------------
+
+Composite API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: composite
 

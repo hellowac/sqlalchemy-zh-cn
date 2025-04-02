@@ -1,60 +1,87 @@
 ==============
-Session Basics
+会话基础知识
 ==============
 
+Session Basics
 
-What does the Session do ?
+会话有什么用？
 --------------------------
 
-In the most general sense, the :class:`~.Session` establishes all conversations
-with the database and represents a "holding zone" for all the objects which
-you've loaded or associated with it during its lifespan. It provides the
-interface where SELECT and other queries are made that will return and modify
-ORM-mapped objects.  The ORM objects themselves are maintained inside the
-:class:`.Session`, inside a structure called the :term:`identity map` - a data
-structure that maintains unique copies of each object, where "unique" means
-"only one object with a particular primary key".
+What does the Session do ?
 
-The :class:`.Session` in its most common pattern of use begins in a mostly
-stateless form. Once queries are issued or other objects are persisted with it,
-it requests a connection resource from an :class:`_engine.Engine` that is
-associated with the :class:`.Session`, and then establishes a transaction on
-that connection. This transaction remains in effect until the :class:`.Session`
-is instructed to commit or roll back the transaction.   When the transaction
-ends, the connection resource associated with the :class:`_engine.Engine`
-is :term:`released` to the connection pool managed by the engine.   A new
-transaction then starts with a new connection checkout.
+.. tab:: 中文
 
-The ORM objects maintained by a :class:`_orm.Session` are :term:`instrumented`
-such that whenever an attribute or a collection is modified in the Python
-program, a change event is generated which is recorded by the
-:class:`_orm.Session`.  Whenever the database is about to be queried, or when
-the transaction is about to be committed, the :class:`_orm.Session` first
-**flushes** all pending changes stored in memory to the database. This is
-known as the :term:`unit of work` pattern.
+    从最一般的意义上说，:class:`~.Session` 建立了与数据库的所有对话，并且代表了在其生命周期内加载或关联的所有对象的“保持区”。它提供了进行 SELECT 和其他查询的接口，这些查询将返回和修改 ORM 映射对象。ORM 对象本身保存在 :class:`.Session` 中，位于称为 :term:`identity map` 的结构中——一个维护每个对象唯一副本的数据结构，其中“唯一”意味着“具有特定主键的唯一对象”。
 
-When using a :class:`.Session`, it's useful to consider the ORM mapped objects
-that it maintains as **proxy objects** to database rows, which are local to the
-transaction being held by the :class:`.Session`.    In order to maintain the
-state on the objects as matching what's actually in the database, there are a
-variety of events that will cause objects to re-access the database in order to
-keep synchronized.   It is possible to "detach" objects from a
-:class:`.Session`, and to continue using them, though this practice has its
-caveats.  It's intended that usually, you'd re-associate detached objects with
-another :class:`.Session` when you want to work with them again, so that they
-can resume their normal task of representing database state.
+    在其最常见的使用模式中，:class:`.Session` 以一种大多无状态的形式开始。一旦发出查询或其他对象与其持久化，它将从与 :class:`.Session` 关联的 :class:`_engine.Engine` 请求连接资源，然后在该连接上建立事务。该事务将持续有效，直到 :class:`.Session` 被指示提交或回滚事务。当事务结束时，与 :class:`_engine.Engine` 关联的连接资源将释放(:term:`released`) 到由引擎管理的连接池中。然后，一个新的事务将以新的连接签出开始。
+
+    由 :class:`_orm.Session` 维护的 ORM 对象是 :term:`instrumented` 的，这样每当在 Python 程序中修改属性或集合时，都会生成一个变更事件，该事件由 :class:`_orm.Session` 记录。每当即将查询数据库或即将提交事务时，:class:`_orm.Session` 会首先将内存中存储的所有待处理更改 **刷新** 到数据库。这称为 :term:`unit of work` 模式。
+
+    使用 :class:`.Session` 时，考虑它维护的 ORM 映射对象作为 **代理对象** 到数据库行是有用的，这些对象是本地于 :class:`.Session` 持有的事务的。为了保持对象状态与数据库中的实际内容匹配，有多种事件会导致对象重新访问数据库以保持同步。可以将对象从 :class:`.Session` 中“分离”并继续使用它们，尽管这种做法有其警告。通常情况下，当你想再次使用它们时，你会将分离的对象重新关联到另一个 :class:`.Session`，以便它们可以恢复表示数据库状态的正常任务。
+
+.. tab:: 英文
+
+    In the most general sense, the :class:`~.Session` establishes all conversations
+    with the database and represents a "holding zone" for all the objects which
+    you've loaded or associated with it during its lifespan. It provides the
+    interface where SELECT and other queries are made that will return and modify
+    ORM-mapped objects.  The ORM objects themselves are maintained inside the
+    :class:`.Session`, inside a structure called the :term:`identity map` - a data
+    structure that maintains unique copies of each object, where "unique" means
+    "only one object with a particular primary key".
+
+    The :class:`.Session` in its most common pattern of use begins in a mostly
+    stateless form. Once queries are issued or other objects are persisted with it,
+    it requests a connection resource from an :class:`_engine.Engine` that is
+    associated with the :class:`.Session`, and then establishes a transaction on
+    that connection. This transaction remains in effect until the :class:`.Session`
+    is instructed to commit or roll back the transaction.   When the transaction
+    ends, the connection resource associated with the :class:`_engine.Engine`
+    is :term:`released` to the connection pool managed by the engine.   A new
+    transaction then starts with a new connection checkout.
+
+    The ORM objects maintained by a :class:`_orm.Session` are :term:`instrumented`
+    such that whenever an attribute or a collection is modified in the Python
+    program, a change event is generated which is recorded by the
+    :class:`_orm.Session`.  Whenever the database is about to be queried, or when
+    the transaction is about to be committed, the :class:`_orm.Session` first
+    **flushes** all pending changes stored in memory to the database. This is
+    known as the :term:`unit of work` pattern.
+
+    When using a :class:`.Session`, it's useful to consider the ORM mapped objects
+    that it maintains as **proxy objects** to database rows, which are local to the
+    transaction being held by the :class:`.Session`.    In order to maintain the
+    state on the objects as matching what's actually in the database, there are a
+    variety of events that will cause objects to re-access the database in order to
+    keep synchronized.   It is possible to "detach" objects from a
+    :class:`.Session`, and to continue using them, though this practice has its
+    caveats.  It's intended that usually, you'd re-associate detached objects with
+    another :class:`.Session` when you want to work with them again, so that they
+    can resume their normal task of representing database state.
 
 .. _session_basics:
 
-Basics of Using a Session
+使用会话的基础知识
 -------------------------
+
+Basics of Using a Session
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The most basic :class:`.Session` use patterns are presented here.
 
 .. _session_getting:
 
-Opening and Closing a Session
+打开和关闭会话
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Opening and Closing a Session
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_orm.Session` may be constructed on its own or by using the
 :class:`_orm.sessionmaker` class.    It typically is passed a single
@@ -100,8 +127,14 @@ be unnecessary.
 
 .. _session_begin_commit_rollback_block:
 
-Framing out a begin / commit / rollback block
+构建开始/提交/回滚块
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Framing out a begin / commit / rollback block
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 We may also enclose the :meth:`_orm.Session.commit` call and the overall
 "framing" of the transaction within a context manager for those cases where
@@ -147,8 +180,14 @@ More succinctly, the two contexts may be combined::
     # inner context calls session.commit(), if there were no exceptions
     # outer context calls session.close()
 
-Using a sessionmaker
+使用 sessionmaker
 ~~~~~~~~~~~~~~~~~~~~
+
+Using a sessionmaker
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The purpose of :class:`_orm.sessionmaker` is to provide a factory for
 :class:`_orm.Session` objects with a fixed configuration.   As it is typical
@@ -218,8 +257,14 @@ simultaneously.
 
 .. _session_querying_20:
 
-Querying
+查询
 ~~~~~~~~
+
+Querying
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The primary means of querying is to make use of the :func:`_sql.select`
 construct to create a :class:`_sql.Select` object, which is then executed to
@@ -259,8 +304,14 @@ A complete guide to SQLAlchemy ORM querying can be found at
 .. _session_adding:
 
 
-Adding New or Existing Items
+添加新项目或现有项目
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Adding New or Existing Items
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :meth:`~.Session.add` is used to place instances in the
 session. For :term:`transient` (i.e. brand new) instances, this will have the effect
@@ -288,8 +339,14 @@ the ``save-update`` cascade. For more details see the section
 
 .. _session_deleting:
 
-Deleting
+删除
 ~~~~~~~~
+
+Deleting
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :meth:`~.Session.delete` method places an instance
 into the Session's list of objects to be marked as deleted::
@@ -368,8 +425,14 @@ the rules are:
 
 .. _session_flushing:
 
-Flushing
+刷新
 ~~~~~~~~
+
+Flushing
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When the :class:`~sqlalchemy.orm.session.Session` is used with its default
 configuration, the flush step is nearly always done transparently.
@@ -451,8 +514,14 @@ behavior.
 
 .. _session_get:
 
-Get by Primary Key
+通过主键获取
 ~~~~~~~~~~~~~~~~~~
+
+Get by Primary Key
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As the :class:`_orm.Session` makes use of an :term:`identity map` which refers
 to current in-memory objects by primary key, the :meth:`_orm.Session.get`
@@ -474,8 +543,14 @@ See :meth:`_orm.Session.get` for the complete parameter list.
 
 .. _session_expiring:
 
-Expiring / Refreshing
+过期/刷新
 ~~~~~~~~~~~~~~~~~~~~~
+
+Expiring / Refreshing
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 An important consideration that will often come up when using the
 :class:`_orm.Session` is that of dealing with the state that is present on
@@ -548,8 +623,14 @@ Further discussion on the refresh / expire concept can be found at
 
 
 
-UPDATE and DELETE with arbitrary WHERE clause
+使用任意 WHERE 子句进行更新和删除
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+UPDATE and DELETE with arbitrary WHERE clause
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy 2.0 includes enhanced capabilities for emitting several varieties
 of ORM-enabled INSERT, UPDATE and DELETE statements.  See the
@@ -564,8 +645,14 @@ document at :doc:`queryguide/dml` for documentation.
 
 .. _session_autobegin:
 
-Auto Begin
+自动开始
 ~~~~~~~~~~
+
+Auto Begin
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_orm.Session` object features a behavior known as **autobegin**.
 This indicates that the :class:`_orm.Session` will internally consider itself
@@ -596,8 +683,14 @@ manager as described at :ref:`session_begin_commit_rollback_block`.
 
 .. _session_autobegin_disable:
 
-Disabling Autobegin to Prevent Implicit Transactions
+禁用自动开始以防止隐式事务
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Disabling Autobegin to Prevent Implicit Transactions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "autobegin" behavior may be disabled using the
 :paramref:`_orm.Session.autobegin` parameter set to ``False``. By using this
@@ -624,8 +717,14 @@ first calling :meth:`_orm.Session.begin`::
 
 .. _session_committing:
 
-Committing
+提交
 ~~~~~~~~~~
+
+Committing
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :meth:`~.Session.commit` is used to commit the current
 transaction.   At its core this indicates that it emits ``COMMIT`` on
@@ -680,8 +779,14 @@ set to ``False`` when this behavior is undesirable.
 
 .. _session_rollback:
 
-Rolling Back
+回滚
 ~~~~~~~~~~~~
+
+Rolling Back
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :meth:`~.Session.rollback` rolls back the current transaction, if any.
 When there is no transaction in place, the method passes silently.
@@ -751,8 +856,14 @@ further discussion.
 
 .. _session_closing:
 
-Closing
+关闭
 ~~~~~~~
+
+Closing
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :meth:`~.Session.close` method issues a :meth:`~.Session.expunge_all` which
 removes all ORM-mapped objects from the session, and :term:`releases` any
@@ -797,15 +908,27 @@ that :meth:`_orm.Session.close` is called::
 
 .. _session_faq:
 
-Session Frequently Asked Questions
+会话常见问题
 ----------------------------------
+
+Session Frequently Asked Questions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 By this point, many users already have questions about sessions.
 This section presents a mini-FAQ (note that we have also a :doc:`real FAQ </faq/index>`)
 of the most basic issues one is presented with when using a :class:`.Session`.
 
-When do I make a :class:`.sessionmaker`?
+我什么时候创建 :class:`.sessionmaker`？
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When do I make a :class:`.sessionmaker`?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Just one time, somewhere in your application's global scope. It should be
 looked upon as part of your application's configuration. If your
@@ -830,8 +953,14 @@ conversations begin.
 
 .. _session_faq_whentocreate:
 
-When do I construct a :class:`.Session`, when do I commit it, and when do I close it?
+我什么时候构造 :class:`.Session`，什么时候提交它，什么时候关闭它？
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When do I construct a :class:`.Session`, when do I commit it, and when do I close it?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. topic:: tl;dr;
 
@@ -954,8 +1083,14 @@ transaction automatically::
 .. versionchanged:: 1.4 The :class:`_orm.Session` may be used as a context
    manager without the use of external helper functions.
 
-Is the Session a cache?
+会话是缓存吗？
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+Is the Session a cache?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Yeee...no. It's somewhat used as a cache, in that it implements the
 :term:`identity map` pattern, and stores objects keyed to their primary key.
@@ -977,8 +1112,14 @@ That's more the job of a **second level cache**.   SQLAlchemy provides
 a pattern for implementing second level caching using `dogpile.cache <https://dogpilecache.readthedocs.io/>`_,
 via the :ref:`examples_caching` example.
 
-How can I get the :class:`~sqlalchemy.orm.session.Session` for a certain object?
+如何获取某个对象的 :class:`~sqlalchemy.orm.session.Session`？
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+How can I get the :class:`~sqlalchemy.orm.session.Session` for a certain object?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Use the :meth:`~.Session.object_session` classmethod
 available on :class:`~sqlalchemy.orm.session.Session`::
@@ -993,8 +1134,14 @@ The newer :ref:`core_inspection_toplevel` system can also be used::
 
 .. _session_faq_threadsafe:
 
-Is the Session thread-safe?  Is AsyncSession safe to share in concurrent tasks?
+会话是线程安全的吗？AsyncSession 在并发任务中共享是否安全？
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Is the Session thread-safe?  Is AsyncSession safe to share in concurrent tasks?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.Session` is a **mutable, stateful** object that represents a **single
 database transaction**.   An instance of :class:`.Session` therefore **cannot

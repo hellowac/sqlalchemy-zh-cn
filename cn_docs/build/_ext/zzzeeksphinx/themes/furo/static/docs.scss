@@ -884,17 +884,17 @@ div .version-warning {
 
 div.note,
 div.warning {
-    >.admonition-title {
-        margin-left: -140px;
-    }
+    // >.admonition-title {
+    //     margin-left: -140px;
+    // }
 
     background-image: url("dragons.png");
     background-color: $notebox-background-color;
     background-position: 1em top;
     background-repeat: no-repeat;
     clear: right;
-    min-height: 140px;
-    padding-left: 140px;
+    // min-height: 140px;
+    // padding-left: 140px;
 }
 
 div.warning {

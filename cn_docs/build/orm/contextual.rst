@@ -1,103 +1,164 @@
 .. _unitofwork_contextual:
 
-Contextual/Thread-local Sessions
+上下文/线程本地会话
 ================================
 
-Recall from the section :ref:`session_faq_whentocreate`, the concept of
-"session scopes" was introduced, with an emphasis on web applications
-and the practice of linking the scope of a :class:`.Session` with that
-of a web request.   Most modern web frameworks include integration tools
-so that the scope of the :class:`.Session` can be managed automatically,
-and these tools should be used as they are available.
+Contextual/Thread-local Sessions
 
-SQLAlchemy includes its own helper object, which helps with the establishment
-of user-defined :class:`.Session` scopes.  It is also used by third-party
-integration systems to help construct their integration schemes.
+.. tab:: 中文
 
-The object is the :class:`.scoped_session` object, and it represents a
-**registry** of :class:`.Session` objects.  If you're not familiar with the
-registry pattern, a good introduction can be found in `Patterns of Enterprise
-Architecture <https://martinfowler.com/eaaCatalog/registry.html>`_.
+    回顾 :ref:`session_faq_whentocreate` 部分，介绍了“会话范围”的概念，重点是 Web 应用程序和将 :class:`.Session` 的范围链接到 Web 请求的做法。大多数现代 Web 框架都包含集成工具，以便可以自动管理 :class:`.Session` 的范围，应在可用时使用这些工具。
 
-.. warning::
+    SQLAlchemy 包括自己的帮助对象，它有助于建立用户定义的 :class:`.Session` 范围。第三方集成系统也使用它来帮助构建其集成方案。
 
-    The :class:`.scoped_session` registry by default uses a Python
-    ``threading.local()``
-    in order to track :class:`_orm.Session` instances.   **This is not
-    necessarily compatible with all application servers**, particularly those
-    which make use of greenlets or other alternative forms of concurrency
-    control, which may lead to race conditions (e.g. randomly occurring
-    failures) when used in moderate to high concurrency scenarios.
-    Please read :ref:`unitofwork_contextual_threadlocal` and
-    :ref:`session_lifespan` below to more fully understand the implications
-    of using ``threading.local()`` to track :class:`_orm.Session` objects
-    and consider more explicit means of scoping when using application servers
-    which are not based on traditional threads.
+    该对象是 :class:`.scoped_session` 对象，代表 :class:`.Session` 对象的 **注册表** 。如果你不熟悉注册表模式，可以在 `企业架构模式 <https://martinfowler.com/eaaCatalog/registry.html>`_ 中找到一个很好的介绍。
 
-.. note::
+    .. warning::
 
-   The :class:`.scoped_session` object is a very popular and useful object
-   used by many SQLAlchemy applications.  However, it is important to note
-   that it presents **only one approach** to the issue of :class:`.Session`
-   management.  If you're new to SQLAlchemy, and especially if the
-   term "thread-local variable" seems strange to you, we recommend that
-   if possible you familiarize first with an off-the-shelf integration
-   system such as `Flask-SQLAlchemy <https://pypi.org/project/Flask-SQLAlchemy/>`_
-   or `zope.sqlalchemy <https://pypi.org/project/zope.sqlalchemy>`_.
+        :class:`.scoped_session` 注册表默认使用 Python 的 ``threading.local()``
+        来跟踪 :class:`_orm.Session` 实例。 **这不一定与所有应用服务器兼容** ，特别是那些使用 greenlets 或其他替代形式的并发控制的应用服务器，在中高并发场景中使用时可能会导致竞争条件（例如随机发生的失败）。
+        请阅读 :ref:`unitofwork_contextual_threadlocal` 和
+        :ref:`session_lifespan` 以更全面地了解使用 ``threading.local()`` 跟踪 :class:`_orm.Session` 对象的影响，并在使用基于非传统线程的应用服务器时考虑更明确的范围划分方法。
 
-A :class:`.scoped_session` is constructed by calling it, passing it a
-**factory** which can create new :class:`.Session` objects.   A factory
-is just something that produces a new object when called, and in the
-case of :class:`.Session`, the most common factory is the :class:`.sessionmaker`,
-introduced earlier in this section.  Below we illustrate this usage::
+    .. note::
 
-    >>> from sqlalchemy.orm import scoped_session
-    >>> from sqlalchemy.orm import sessionmaker
+        :class:`.scoped_session` 对象是许多 SQLAlchemy 应用程序使用的非常流行和有用的对象。然而，重要的是要注意，它仅仅是 :class:`.Session` 管理问题的一种方法。如果你是 SQLAlchemy 的新手，特别是如果“线程本地变量”这个术语对你来说很陌生，我们建议你首先熟悉一个现成的集成系统，例如 `Flask-SQLAlchemy <https://pypi.org/project/Flask-SQLAlchemy/>`_ 或 `zope.sqlalchemy <https://pypi.org/project/zope.sqlalchemy>`_。
 
-    >>> session_factory = sessionmaker(bind=some_engine)
-    >>> Session = scoped_session(session_factory)
+    通过调用 :class:`.scoped_session` 并传递一个可以创建新的 :class:`.Session` 对象的 **工厂** 来构建 :class:`.scoped_session`。工厂只是某个被调用时会生成新对象的东西，对于 :class:`.Session`，最常见的工厂是本节前面介绍的 :class:`.sessionmaker`。下面我们展示这种用法::
 
-The :class:`.scoped_session` object we've created will now call upon the
-:class:`.sessionmaker` when we "call" the registry::
+        >>> from sqlalchemy.orm import scoped_session
+        >>> from sqlalchemy.orm import sessionmaker
 
-    >>> some_session = Session()
+        >>> session_factory = sessionmaker(bind=some_engine)
+        >>> Session = scoped_session(session_factory)
 
-Above, ``some_session`` is an instance of :class:`.Session`, which we
-can now use to talk to the database.   This same :class:`.Session` is also
-present within the :class:`.scoped_session` registry we've created.   If
-we call upon the registry a second time, we get back the **same** :class:`.Session`::
+    我们创建的 :class:`.scoped_session` 对象现在将调用 :class:`.sessionmaker` 当我们“调用”注册表时::
 
-    >>> some_other_session = Session()
-    >>> some_session is some_other_session
-    True
+        >>> some_session = Session()
 
-This pattern allows disparate sections of the application to call upon a global
-:class:`.scoped_session`, so that all those areas may share the same session
-without the need to pass it explicitly.   The :class:`.Session` we've established
-in our registry will remain, until we explicitly tell our registry to dispose of it,
-by calling :meth:`.scoped_session.remove`::
+    上面的 ``some_session`` 是 :class:`.Session` 的一个实例，我们现在可以用它来与数据库对话。同样的 :class:`.Session` 也存在于我们创建的 :class:`.scoped_session` 注册表中。如果我们第二次调用注册表，我们会得到 **相同** 的 :class:`.Session`::
 
-    >>> Session.remove()
+        >>> some_other_session = Session()
+        >>> some_session is some_other_session
+        True
 
-The :meth:`.scoped_session.remove` method first calls :meth:`.Session.close` on
-the current :class:`.Session`, which has the effect of releasing any connection/transactional
-resources owned by the :class:`.Session` first, then discarding the :class:`.Session`
-itself.  "Releasing" here means that connections are returned to their connection pool and any transactional state is rolled back, ultimately using the ``rollback()`` method of the underlying DBAPI connection.
+    这种模式允许应用程序的不同部分调用全局 :class:`.scoped_session`，以便所有这些区域可以共享同一个会话，而不需要显式传递它。我们在注册表中建立的 :class:`.Session` 将保持存在，直到我们显式告诉注册表处理它，通过调用 :meth:`.scoped_session.remove`::
 
-At this point, the :class:`.scoped_session` object is "empty", and will create
-a **new** :class:`.Session` when called again.  As illustrated below, this
-is not the same :class:`.Session` we had before::
+        >>> Session.remove()
 
-    >>> new_session = Session()
-    >>> new_session is some_session
-    False
+    :meth:`.scoped_session.remove` 方法首先调用当前 :class:`.Session` 上的 :meth:`.Session.close`，其效果是首先释放 :class:`.Session` 拥有的任何连接/事务性资源，然后丢弃 :class:`.Session` 本身。“释放”在这里意味着连接返回到其连接池，任何事务状态都回滚，最终使用底层 DBAPI 连接的 ``rollback()`` 方法。
 
-The above series of steps illustrates the idea of the "registry" pattern in a
-nutshell.  With that basic idea in hand, we can discuss some of the details
-of how this pattern proceeds.
+    此时，:class:`.scoped_session` 对象是“空”的，并将在再次调用时创建一个 **新的** :class:`.Session`。如下所示，这不是我们之前拥有的同一个 :class:`.Session`::
+
+        >>> new_session = Session()
+        >>> new_session is some_session
+        False
+
+    上面的步骤系列简要说明了“注册表”模式的概念。掌握这一基本概念后，我们可以讨论此模式的一些细节。
+
+.. tab:: 英文
+
+    Recall from the section :ref:`session_faq_whentocreate`, the concept of
+    "session scopes" was introduced, with an emphasis on web applications
+    and the practice of linking the scope of a :class:`.Session` with that
+    of a web request.   Most modern web frameworks include integration tools
+    so that the scope of the :class:`.Session` can be managed automatically,
+    and these tools should be used as they are available.
+
+    SQLAlchemy includes its own helper object, which helps with the establishment
+    of user-defined :class:`.Session` scopes.  It is also used by third-party
+    integration systems to help construct their integration schemes.
+
+    The object is the :class:`.scoped_session` object, and it represents a
+    **registry** of :class:`.Session` objects.  If you're not familiar with the
+    registry pattern, a good introduction can be found in `Patterns of Enterprise
+    Architecture <https://martinfowler.com/eaaCatalog/registry.html>`_.
+
+    .. warning::
+
+        The :class:`.scoped_session` registry by default uses a Python
+        ``threading.local()``
+        in order to track :class:`_orm.Session` instances.   **This is not
+        necessarily compatible with all application servers**, particularly those
+        which make use of greenlets or other alternative forms of concurrency
+        control, which may lead to race conditions (e.g. randomly occurring
+        failures) when used in moderate to high concurrency scenarios.
+        Please read :ref:`unitofwork_contextual_threadlocal` and
+        :ref:`session_lifespan` below to more fully understand the implications
+        of using ``threading.local()`` to track :class:`_orm.Session` objects
+        and consider more explicit means of scoping when using application servers
+        which are not based on traditional threads.
+
+    .. note::
+
+        The :class:`.scoped_session` object is a very popular and useful object
+        used by many SQLAlchemy applications.  However, it is important to note
+        that it presents **only one approach** to the issue of :class:`.Session`
+        management.  If you're new to SQLAlchemy, and especially if the
+        term "thread-local variable" seems strange to you, we recommend that
+        if possible you familiarize first with an off-the-shelf integration
+        system such as `Flask-SQLAlchemy <https://pypi.org/project/Flask-SQLAlchemy/>`_
+        or `zope.sqlalchemy <https://pypi.org/project/zope.sqlalchemy>`_.
+
+    A :class:`.scoped_session` is constructed by calling it, passing it a
+    **factory** which can create new :class:`.Session` objects.   A factory
+    is just something that produces a new object when called, and in the
+    case of :class:`.Session`, the most common factory is the :class:`.sessionmaker`,
+    introduced earlier in this section.  Below we illustrate this usage::
+
+        >>> from sqlalchemy.orm import scoped_session
+        >>> from sqlalchemy.orm import sessionmaker
+
+        >>> session_factory = sessionmaker(bind=some_engine)
+        >>> Session = scoped_session(session_factory)
+
+    The :class:`.scoped_session` object we've created will now call upon the
+    :class:`.sessionmaker` when we "call" the registry::
+
+        >>> some_session = Session()
+
+    Above, ``some_session`` is an instance of :class:`.Session`, which we
+    can now use to talk to the database.   This same :class:`.Session` is also
+    present within the :class:`.scoped_session` registry we've created.   If
+    we call upon the registry a second time, we get back the **same** :class:`.Session`::
+
+        >>> some_other_session = Session()
+        >>> some_session is some_other_session
+        True
+
+    This pattern allows disparate sections of the application to call upon a global
+    :class:`.scoped_session`, so that all those areas may share the same session
+    without the need to pass it explicitly.   The :class:`.Session` we've established
+    in our registry will remain, until we explicitly tell our registry to dispose of it,
+    by calling :meth:`.scoped_session.remove`::
+
+        >>> Session.remove()
+
+    The :meth:`.scoped_session.remove` method first calls :meth:`.Session.close` on
+    the current :class:`.Session`, which has the effect of releasing any connection/transactional
+    resources owned by the :class:`.Session` first, then discarding the :class:`.Session`
+    itself.  "Releasing" here means that connections are returned to their connection pool and any transactional state is rolled back, ultimately using the ``rollback()`` method of the underlying DBAPI connection.
+
+    At this point, the :class:`.scoped_session` object is "empty", and will create
+    a **new** :class:`.Session` when called again.  As illustrated below, this
+    is not the same :class:`.Session` we had before::
+
+        >>> new_session = Session()
+        >>> new_session is some_session
+        False
+
+    The above series of steps illustrates the idea of the "registry" pattern in a
+    nutshell.  With that basic idea in hand, we can discuss some of the details
+    of how this pattern proceeds.
+
+隐式方法访问
+----------------------
 
 Implicit Method Access
-----------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The job of the :class:`.scoped_session` is simple; hold onto a :class:`.Session`
 for all who ask for it.  As a means of producing more transparent access to this
@@ -120,8 +181,14 @@ The above code accomplishes the same task as that of acquiring the current
 
 .. _unitofwork_contextual_threadlocal:
 
-Thread-Local Scope
+线程本地范围
 ------------------
+
+Thread-Local Scope
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Users who are familiar with multithreaded programming will note that representing
 anything as a global variable is usually a bad idea, as it implies that the
@@ -159,8 +226,14 @@ lifespan of a thread to the lifespan of a transaction.
 
 .. _session_lifespan:
 
-Using Thread-Local Scope with Web Applications
+在 Web 应用程序中使用线程本地范围
 ----------------------------------------------
+
+Using Thread-Local Scope with Web Applications
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As discussed in the section :ref:`session_faq_whentocreate`, a web application
 is architected around the concept of a **web request**, and integrating
@@ -235,8 +308,14 @@ the current thread.   The next section on custom scopes details a more advanced 
 which can combine the usage of :class:`.scoped_session` with direct request based scope, or
 any kind of scope.
 
-Using Custom Created Scopes
+使用自定义创建的范围
 ---------------------------
+
+Using Custom Created Scopes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.scoped_session` object's default behavior of "thread local" scope is only
 one of many options on how to "scope" a :class:`.Session`.   A custom scope can be defined
@@ -268,8 +347,14 @@ that we ensure a reliable "remove" system is implemented, as this dictionary is 
 otherwise self-managed.
 
 
-Contextual Session API
+上下文会话 API
 ----------------------
+
+Contextual Session API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autoclass:: sqlalchemy.orm.scoped_session
     :members:

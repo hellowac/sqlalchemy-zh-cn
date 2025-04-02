@@ -9,46 +9,72 @@
 
 .. currentmodule:: sqlalchemy.orm
 
-Relationship Loading Techniques
+关系加载技术
 ===============================
 
-.. admonition:: About this Document
+Relationship Loading Techniques
 
-    This section presents an in-depth view of how to load related
-    objects.   Readers should be familiar with
-    :ref:`relationship_config_toplevel` and basic use.
+.. tab:: 中文
 
-    Most examples here assume the "User/Address" mapping setup similar
-    to the one illustrated at :doc:`setup for selects <_plain_setup>`.
+    .. admonition:: 关于本文档
 
-A big part of SQLAlchemy is providing a wide range of control over how related
-objects get loaded when querying.   By "related objects" we refer to collections
-or scalar associations configured on a mapper using :func:`_orm.relationship`.
-This behavior can be configured at mapper construction time using the
-:paramref:`_orm.relationship.lazy` parameter to the :func:`_orm.relationship`
-function, as well as by using **ORM loader options** with
-the :class:`_sql.Select` construct.
+        本节深入介绍了如何加载相关对象。读者应熟悉 :ref:`relationship_config_toplevel` 和基本用法。
 
-The loading of relationships falls into three categories; **lazy** loading,
-**eager** loading, and **no** loading. Lazy loading refers to objects that are returned
-from a query without the related
-objects loaded at first.  When the given collection or reference is
-first accessed on a particular object, an additional SELECT statement
-is emitted such that the requested collection is loaded.
+        大多数示例假定类似于 :doc:`选择的设置 <_plain_setup>` 中说明的 "用户/地址" 映射设置。
 
-Eager loading refers to objects returned from a query with the related
-collection or scalar reference already loaded up front.  The ORM
-achieves this either by augmenting the SELECT statement it would normally
-emit with a JOIN to load in related rows simultaneously, or by emitting
-additional SELECT statements after the primary one to load collections
-or scalar references at once.
+    SQLAlchemy 的一个重要部分是提供广泛的控制，以在查询时加载相关对象。所谓“相关对象”是指使用 :func:`_orm.relationship` 在映射器上配置的集合或标量关联。这种行为可以在映射器构造时使用 :func:`_orm.relationship` 函数的 :paramref:`_orm.relationship.lazy` 参数进行配置，也可以通过使用 **ORM 加载选项** 与 :class:`_sql.Select` 构造一起配置。
 
-"No" loading refers to the disabling of loading on a given relationship, either
-that the attribute is empty and is just never loaded, or that it raises
-an error when it is accessed, in order to guard against unwanted lazy loads.
+    关系的加载分为三类： **延迟(lazy)** 加载、 **急切(eager)** 加载和 **不(no)** 加载。延迟加载是指从查询返回的对象最初没有加载相关对象。当在特定对象上首次访问给定集合或引用时，将发出一个额外的 SELECT 语句，以便加载请求的集合。
+
+    急切加载是指从查询返回的对象已经预先加载了相关的集合或标量引用。ORM 要么通过增强通常会发出的 SELECT 语句与 JOIN 一起加载相关行，要么通过在主语句之后发出额外的 SELECT 语句一次性加载集合或标量引用来实现这一点。
+
+    “不”加载是指禁用给定关系的加载，即属性为空并且从不加载，或者在访问时引发错误，以防止不必要的延迟加载。
+
+.. tab:: 英文
+
+    .. admonition:: About this Document
+
+        This section presents an in-depth view of how to load related
+        objects.   Readers should be familiar with
+        :ref:`relationship_config_toplevel` and basic use.
+
+        Most examples here assume the "User/Address" mapping setup similar
+        to the one illustrated at :doc:`setup for selects <_plain_setup>`.
+
+    A big part of SQLAlchemy is providing a wide range of control over how related
+    objects get loaded when querying.   By "related objects" we refer to collections
+    or scalar associations configured on a mapper using :func:`_orm.relationship`.
+    This behavior can be configured at mapper construction time using the
+    :paramref:`_orm.relationship.lazy` parameter to the :func:`_orm.relationship`
+    function, as well as by using **ORM loader options** with
+    the :class:`_sql.Select` construct.
+
+    The loading of relationships falls into three categories; **lazy** loading,
+    **eager** loading, and **no** loading. Lazy loading refers to objects that are returned
+    from a query without the related
+    objects loaded at first.  When the given collection or reference is
+    first accessed on a particular object, an additional SELECT statement
+    is emitted such that the requested collection is loaded.
+
+    Eager loading refers to objects returned from a query with the related
+    collection or scalar reference already loaded up front.  The ORM
+    achieves this either by augmenting the SELECT statement it would normally
+    emit with a JOIN to load in related rows simultaneously, or by emitting
+    additional SELECT statements after the primary one to load collections
+    or scalar references at once.
+
+    "No" loading refers to the disabling of loading on a given relationship, either
+    that the attribute is empty and is just never loaded, or that it raises
+    an error when it is accessed, in order to guard against unwanted lazy loads.
+
+关系加载样式摘要
+--------------------------------------
 
 Summary of Relationship Loading Styles
---------------------------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The primary forms of relationship loading are:
 
@@ -109,8 +135,14 @@ The primary forms of relationship loading are:
 
 .. _relationship_lazy_option:
 
-Configuring Loader Strategies at Mapping Time
+在映射时配置加载器策略
 ---------------------------------------------
+
+Configuring Loader Strategies at Mapping Time
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The loader strategy for a particular relationship can be configured
 at mapping time to take place in all cases where an object of the mapped
@@ -159,8 +191,14 @@ The default value of the :paramref:`_orm.relationship.lazy` argument is
 
 .. _relationship_loader_options:
 
-Relationship Loading with Loader Options
+使用加载器选项进行关系加载
 ----------------------------------------
+
+Relationship Loading with Loader Options
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The other, and possibly more common way to configure loading strategies
 is to set them up on a per-query basis against specific attributes using the
@@ -210,8 +248,14 @@ collection on each member of ``children``.
 
 .. _loader_option_criteria:
 
-Adding Criteria to loader options
+向加载器选项添加条件
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Adding Criteria to loader options
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The relationship attributes used to indicate loader options include the
 ability to add additional filtering criteria to the ON clause of the join
@@ -246,8 +290,14 @@ process, see the :func:`_orm.with_loader_criteria` function.
 
 .. _orm_queryguide_relationship_sub_options:
 
-Specifying Sub-Options with Load.options()
+使用 Load.options() 指定子选项
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Specifying Sub-Options with Load.options()
+
+.. tab:: 中文
+
+.. tab:: 英文
 Using method chaining, the loader style of each link in the path is explicitly
 stated.  To navigate along a path without changing the existing loader style
 of a particular attribute, the :func:`.defaultload` method/function may be used::
@@ -311,8 +361,14 @@ the :meth:`_orm.Load.options` method::
 
 .. _lazy_loading:
 
-Lazy Loading
+延迟加载
 ------------
+
+Lazy Loading
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 By default, all inter-object relationships are **lazy loading**. The scalar or
 collection attribute associated with a :func:`_orm.relationship`
@@ -356,8 +412,14 @@ configured in some other way using the :func:`.lazyload` loader option::
 
 .. _prevent_lazy_with_raiseload:
 
-Preventing unwanted lazy loads using raiseload
+使用 raiseload 防止不必要的延迟加载
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Preventing unwanted lazy loads using raiseload
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`.lazyload` strategy produces an effect that is one of the most
 common issues referred to in object relational mapping; the
@@ -424,8 +486,14 @@ column-oriented attributes, the :func:`.defer` option supports the
 
 .. _joined_eager_loading:
 
-Joined Eager Loading
+连接预加载
 --------------------
+
+Joined Eager Loading
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Joined eager loading is the oldest style of eager loading included with
 the SQLAlchemy ORM.  It works by connecting a JOIN (by default
@@ -540,8 +608,14 @@ an OUTER JOIN:
 
 .. _zen_of_eager_loading:
 
-The Zen of Joined Eager Loading
+连接预加载的禅宗
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Zen of Joined Eager Loading
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Since joined eager loading seems to have many resemblances to the use of
 :meth:`_sql.Select.join`, it often produces confusion as to when and how it should
@@ -741,8 +815,14 @@ no matter what the format of the query is.
 
 .. _selectin_eager_loading:
 
-Select IN loading
+选择 IN 加载
 -----------------
+
+Select IN loading
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In most cases, selectin loading is the most simple and
 efficient way to eagerly load collections of objects.  The only scenario in
@@ -847,8 +927,14 @@ Things to know about this kind of loading include:
 
 .. _subquery_eager_loading:
 
-Subquery Eager Loading
+子查询预加载
 ----------------------
+
+Subquery Eager Loading
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. legacy:: The :func:`_orm.subqueryload` eager loader is mostly legacy
    at this point, superseded by the :func:`_orm.selectinload` strategy
@@ -962,8 +1048,14 @@ For the above reasons, the "selectin" strategy should be preferred over
 
 .. _what_kind_of_loading:
 
-What Kind of Loading to Use ?
+使用哪种加载？
 -----------------------------
+
+What Kind of Loading to Use ?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Which type of loading to use typically comes down to optimizing the tradeoff
 between number of SQL executions, complexity of SQL emitted, and amount of
@@ -987,8 +1079,14 @@ without emitting any SQL if the related object is already present.
 
 
 
-Polymorphic Eager Loading
+多态预加载
 -------------------------
+
+Polymorphic Eager Loading
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Specification of polymorphic options on a per-eager-load basis is supported.
 See the section :ref:`eagerloading_polymorphic_subtypes` for examples
@@ -997,8 +1095,14 @@ of the :meth:`.PropComparator.of_type` method in conjunction with the
 
 .. _wildcard_loader_strategies:
 
-Wildcard Loading Strategies
+通配符加载策略
 ---------------------------
+
+Wildcard Loading Strategies
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Each of :func:`_orm.joinedload`, :func:`.subqueryload`, :func:`.lazyload`,
 :func:`.selectinload`, and :func:`.raiseload` can be used to set the default
@@ -1042,8 +1146,14 @@ will take effect.
 
 .. _orm_queryguide_relationship_per_entity_wildcard:
 
-Per-Entity Wildcard Loading Strategies
+每个实体通配符加载策略
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Per-Entity Wildcard Loading Strategies
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A variant of the wildcard loader strategy is the ability to set the strategy
 on a per-entity basis.  For example, if querying for ``User`` and ``Address``,
@@ -1063,8 +1173,14 @@ Above, all relationships on ``Address`` will be set to a lazy load.
 
 .. _contains_eager:
 
-Routing Explicit Joins/Statements into Eagerly Loaded Collections
+将显式连接/语句路由到预加载的集合
 -----------------------------------------------------------------
+
+Routing Explicit Joins/Statements into Eagerly Loaded Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The behavior of :func:`_orm.joinedload()` is such that joins are
 created automatically, using anonymous aliases as targets, the results of which
@@ -1122,8 +1238,14 @@ to be a full path from the starting entity. For example if we were loading
 
     stmt = select(User).options(contains_eager(User.orders).contains_eager(Order.items))
 
-Using contains_eager() to load a custom-filtered collection result
+使用 contains_eager() 加载自定义过滤的集合结果
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using contains_eager() to load a custom-filtered collection result
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When we use :func:`.contains_eager`, *we* are constructing ourselves the
 SQL that will be used to populate collections.  From this, it naturally follows
@@ -1189,8 +1311,14 @@ in fact associated with the collection.
     within any relationship loader option
 
 
-Relationship Loader API
+关系加载器 API
 -----------------------
+
+Relationship Loader API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: contains_eager
 

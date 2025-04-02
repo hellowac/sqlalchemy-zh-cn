@@ -1,17 +1,28 @@
 .. _relationship_configure_joins:
 
-Configuring how Relationship Joins
+配置关系连接方式
 ----------------------------------
 
-:func:`_orm.relationship` will normally create a join between two tables
-by examining the foreign key relationship between the two tables
-to determine which columns should be compared.  There are a variety
-of situations where this behavior needs to be customized.
+Configuring how Relationship Joins
+
+.. tab:: 中文
+
+    :func:`_orm.relationship` 通常会通过检查两个表之间的外键关系来确定应比较哪些列来创建两个表之间的连接。在各种情况下，此行为都需要定制。
+
+.. tab:: 英文
+
+    :func:`_orm.relationship` will normally create a join between two tables by examining the foreign key relationship between the two tables to determine which columns should be compared.  There are a variety of situations where this behavior needs to be customized.
 
 .. _relationship_foreign_keys:
 
-Handling Multiple Join Paths
+处理多个连接路径
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Handling Multiple Join Paths
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 One of the most common situations to deal with is when
 there are more than one foreign key path between two tables.
@@ -111,8 +122,14 @@ one :class:`_schema.Column` we need::
 
 .. _relationship_primaryjoin:
 
-Specifying Alternate Join Conditions
+指定备用连接条件
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Specifying Alternate Join Conditions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The default behavior of :func:`_orm.relationship` when constructing a join
 is that it equates the value of primary key columns
@@ -192,8 +209,14 @@ primary key values into referencing foreign key values.
 
 .. _relationship_custom_foreign:
 
-Creating Custom Foreign Conditions
+创建自定义外部条件
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creating Custom Foreign Conditions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Another element of the primary join condition is how those columns
 considered "foreign" are determined.  Usually, some subset
@@ -275,8 +298,14 @@ SQL expressions::
 
 .. _relationship_custom_operator:
 
-Using custom operators in join conditions
+在连接条件中使用自定义运算符
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using custom operators in join conditions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Another use case for relationships is the use of custom operators, such
 as PostgreSQL's "is contained within" ``<<`` operator when joining with
@@ -321,8 +350,14 @@ Will render as:
 
 .. _relationship_custom_operator_sql_function:
 
+基于 SQL 函数的自定义运算符
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Custom operators based on SQL functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+    
+.. tab:: 英文~~
 
 A variant to the use case for :paramref:`~.Operators.op.is_comparison` is
 when we aren't using an operator, but a SQL function.   The typical example
@@ -362,8 +397,14 @@ which column takes on the "foreign key" role in this particular relationship.
 
 .. _relationship_overlapping_foreignkeys:
 
-Overlapping Foreign Keys
+重叠外键
 ~~~~~~~~~~~~~~~~~~~~~~~~
+
+Overlapping Foreign Keys
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A rare scenario can arise when composite foreign keys are used, such that
 a single column may be the subject of more than one column
@@ -481,8 +522,14 @@ annotating with :func:`_orm.foreign`::
             "Writer.magazine_id == Article.magazine_id)",
         )
 
-Non-relational Comparisons / Materialized Path
+非关系比较/物化路径
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Non-relational Comparisons / Materialized Path
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. warning::  this section details an experimental feature.
 
@@ -522,8 +569,14 @@ we seek for a load of ``Element.descendants`` to look like:
 
 .. _self_referential_many_to_many:
 
-Self-Referential Many-to-Many Relationship
+自引用多对多关系
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Self-Referential Many-to-Many Relationship
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. seealso::
 
@@ -670,8 +723,14 @@ direction, it's smart enough to reverse the
 
 .. _composite_secondary_join:
 
-Composite "Secondary" Joins
+复合“次要”连接
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Composite "Secondary" Joins
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. note::
 
@@ -765,8 +824,14 @@ complexity is kept within the middle.
 
 .. _relationship_aliased_class:
 
+与别名类的关系
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Relationship to Aliased Class
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+    
+.. tab:: 英文~~~~~
 
 In the previous section, we illustrated a technique where we used
 :paramref:`_orm.relationship.secondary` in order to place additional
@@ -844,8 +909,14 @@ With the above mapping, a simple join looks like:
     {execsql}SELECT a.id AS a_id, a.b_id AS a_b_id
     FROM a JOIN (b JOIN d ON d.b_id = b.id JOIN c ON c.id = d.c_id) ON a.b_id = b.id
 
-Integrating AliasedClass Mappings with Typing and Avoiding Early Mapper Configuration
+将 AliasedClass 映射与类型集成并避免早期映射器配置
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Integrating AliasedClass Mappings with Typing and Avoiding Early Mapper Configuration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The creation of the :func:`_orm.aliased` construct against a mapped class
 forces the :func:`_orm.configure_mappers` step to proceed, which will resolve
@@ -919,8 +990,14 @@ in the relationship inline::
         b_viacd_join = join(B, D, D.b_id == B.id).join(C, C.id == D.c_id)
         B_viacd = aliased(B, b_viacd_join, flat=True)
 
-Using the AliasedClass target in Queries
+在查询中使用 AliasedClass 目标
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using the AliasedClass target in Queries
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In the previous example, the ``A.b`` relationship refers to the ``B_viacd``
 entity as the target, and **not** the ``B`` class directly. To add additional
@@ -965,8 +1042,14 @@ so in terms of ``B_viacd_subquery`` rather than ``B`` directly:
 
 .. _relationship_to_window_function:
 
-Row-Limited Relationships with Window Functions
+使用窗口函数的行限制关系
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Row-Limited Relationships with Window Functions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Another interesting use case for relationships to :class:`.AliasedClass`
 objects are situations where
@@ -1030,8 +1113,14 @@ set of "B" objects per "A" is desired.
 
 .. _query_enabled_properties:
 
-Building Query-Enabled Properties
+构建启用查询的属性
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Building Query-Enabled Properties
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Very ambitious custom join conditions may fail to be directly persistable, and
 in some cases may not even load correctly. To remove the persistence part of
@@ -1061,8 +1150,14 @@ of special Python attributes.
 
 .. _relationship_viewonly_notes:
 
-Notes on using the viewonly relationship parameter
+使用 viewonly 关系参数的注意事项
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Notes on using the viewonly relationship parameter
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :paramref:`_orm.relationship.viewonly` parameter when applied to a
 :func:`_orm.relationship` construct indicates that this :func:`_orm.relationship`
@@ -1123,8 +1218,14 @@ To explore this scenario consider this mapping::
 
 The following sections will note different aspects of this configuration.
 
-In-Python mutations including backrefs are not appropriate with viewonly=True
+在 Python 中，包括 backref 的突变不适用于 viewonly=True
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In-Python mutations including backrefs are not appropriate with viewonly=True
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The above mapping targets the ``User.current_week_tasks`` viewonly relationship
 as the :term:`backref` target of the ``Task.user`` attribute.  This is not
@@ -1197,8 +1298,14 @@ at all::
     [<__main__.Task object at 0x7f3d699523c0>]
 
 
-viewonly=True collections / attributes do not get re-queried until expired
+viewonly=True 集合/属性在过期之前不会被重新查询
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+viewonly=True collections / attributes do not get re-queried until expired
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Continuing with the original viewonly attribute, if we do in fact make changes
 to the ``User.all_tasks`` collection on a :term:`persistent` object, the

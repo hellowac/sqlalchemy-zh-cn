@@ -1,25 +1,40 @@
 .. _associationproxy_toplevel:
 
-Association Proxy
+关联代理
 =================
+
+Association Proxy
 
 .. module:: sqlalchemy.ext.associationproxy
 
-``associationproxy`` is used to create a read/write view of a
-target attribute across a relationship.  It essentially conceals
-the usage of a "middle" attribute between two endpoints, and
-can be used to cherry-pick fields from both a collection of
-related objects or scalar relationship. or to reduce the verbosity
-of using the association object pattern.
-Applied creatively, the association proxy allows
-the construction of sophisticated collections and dictionary
-views of virtually any geometry, persisted to the database using
-standard, transparently configured relational patterns.
+.. tab:: 中文
+
+    ``associationproxy`` 用于创建跨关系的目标属性的读/写视图。它本质上隐藏了两个端点之间的“中间”属性的使用，可以用于从一组相关对象或标量关系中挑选字段，或减少使用关联对象模式的冗长。
+    通过创造性地应用，association proxy 允许构建几乎任何几何形状的复杂集合和字典视图，使用标准的、透明配置的关系模式持久化到数据库中。
+
+.. tab:: 英文
+
+    ``associationproxy`` is used to create a read/write view of a
+    target attribute across a relationship.  It essentially conceals
+    the usage of a "middle" attribute between two endpoints, and
+    can be used to cherry-pick fields from both a collection of
+    related objects or scalar relationship. or to reduce the verbosity
+    of using the association object pattern.
+    Applied creatively, the association proxy allows
+    the construction of sophisticated collections and dictionary
+    views of virtually any geometry, persisted to the database using
+    standard, transparently configured relational patterns.
 
 .. _associationproxy_scalar_collections:
 
-Simplifying Scalar Collections
+简化标量集合
 ------------------------------
+
+Simplifying Scalar Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Consider a many-to-many mapping between two classes, ``User`` and ``Keyword``.
 Each ``User`` can have any number of ``Keyword`` objects, and vice-versa
@@ -125,8 +140,14 @@ the underlying collection or attribute does.
 
 .. _associationproxy_creator:
 
-Creation of New Values
+创建新值
 ^^^^^^^^^^^^^^^^^^^^^^
+
+Creation of New Values
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When a list ``append()`` event (or set ``add()``, dictionary ``__setitem__()``,
 or scalar assignment event) is intercepted by the association proxy, it
@@ -161,8 +182,14 @@ or set- based collection, or a scalar attribute.  In the case of a dictionary-ba
 collection, it accepts two arguments, "key" and "value".   An example
 of this is below in :ref:`proxying_dictionaries`.
 
-Simplifying Association Objects
+简化关联对象
 -------------------------------
+
+Simplifying Association Objects
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "association object" pattern is an extended form of a many-to-many
 relationship, and is described at :ref:`association_pattern`. Association
@@ -296,8 +323,14 @@ by all these operations::
 
 .. _proxying_dictionaries:
 
-Proxying to Dictionary Based Collections
+代理到基于字典的集合
 ----------------------------------------
+
+Proxying to Dictionary Based Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The association proxy can proxy to dictionary based collections as well.   SQLAlchemy
 mappings usually use the :func:`.attribute_keyed_dict` collection type to
@@ -396,8 +429,14 @@ We illustrate the ``.keywords`` collection as a dictionary, mapping the
 
 .. _composite_association_proxy:
 
-Composite Association Proxies
+复合关联代理
 -----------------------------
+
+Composite Association Proxies
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Given our previous examples of proxying from relationship to scalar
 attribute, proxying across an association object, and proxying dictionaries,
@@ -503,8 +542,14 @@ recommended, which will apply a "lookup first, then create" strategy to the cons
 of the ``Keyword`` class, so that an already existing ``Keyword`` is returned if the
 given name is already present.
 
-Querying with Association Proxies
+使用关联代理进行查询
 ---------------------------------
+
+Querying with Association Proxies
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.AssociationProxy` features simple SQL construction capabilities
 which work at the class level in a similar way as other ORM-mapped attributes,
@@ -621,8 +666,14 @@ when chaining association proxies together.
 
 .. _cascade_scalar_deletes:
 
-Cascading Scalar Deletes
+级联标量删除
 ------------------------
+
+Cascading Scalar Deletes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Given a mapping as::
 
@@ -683,8 +734,14 @@ deleted depends on the relationship cascade setting.
 
     :ref:`unitofwork_cascades`
 
-Scalar Relationships
+标量关系
 --------------------
+
+Scalar Relationships
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The example below illustrates the use of the association proxy on the many
 side of of a one-to-many relationship, accessing attributes of a scalar
@@ -749,8 +806,14 @@ A summary of the steps of ``my_snack`` can be printed using::
     Step 2 of 'afternoon snack': spread peanut butted
     Step 3 of 'afternoon snack': eat sandwich
 
-API Documentation
+API 文档
 -----------------
+
+API Documentation
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: association_proxy
 

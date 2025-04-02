@@ -2,14 +2,26 @@
 
 .. _mapper_sql_expressions:
 
-SQL Expressions as Mapped Attributes
+SQL 表达式作为映射属性
 ====================================
+
+SQL Expressions as Mapped Attributes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Attributes on a mapped class can be linked to SQL expressions, which can
 be used in queries.
 
-Using a Hybrid
+使用混合
 --------------
+
+Using a Hybrid
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The easiest and most flexible way to link relatively simple SQL expressions to a class is to use a so-called
 "hybrid attribute",
@@ -77,8 +89,14 @@ needs to be present inside the hybrid, using the ``if`` statement in Python and 
 
 .. _mapper_column_property_sql_expressions:
 
-Using column_property
+使用 column_property
 ---------------------
+
+Using column_property
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_orm.column_property` function can be used to map a SQL
 expression in a manner similar to a regularly mapped :class:`_schema.Column`.
@@ -189,8 +207,14 @@ association table to both tables in a relationship::
             .scalar_subquery()
         )
 
-Adding column_property() to an existing Declarative mapped class
+将 column_property() 添加到现有的声明式映射类
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Adding column_property() to an existing Declarative mapped class
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 If import issues prevent the :func:`.column_property` from being defined
 inline with the class, it can be assigned to the class after both
@@ -242,8 +266,14 @@ which can be obtained using :func:`_sa.inspect`::
 
 .. _mapper_column_property_sql_expressions_composed:
 
-Composing from Column Properties at Mapping Time
+在映射时从列属性组合
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Composing from Column Properties at Mapping Time
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 It is possible to create mappings that combine multiple
 :class:`.ColumnProperty` objects together.  The :class:`.ColumnProperty` will
@@ -275,8 +305,14 @@ the :class:`.ColumnProperty` directly within the mapping definition::
 
     stmt = select(File.path).where(File.filename == "foo.txt")
 
-Using Column Deferral with ``column_property()``
+使用带有 ``column_property()`` 的列延迟
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using Column Deferral with ``column_property()``
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The column deferral feature introduced in the :ref:`queryguide_toplevel`
 at :ref:`orm_queryguide_column_deferral` may be applied at mapping time
@@ -300,8 +336,14 @@ to a SQL expression mapped by :func:`_orm.column_property` by using the
 
 
 
-Using a plain descriptor
+使用普通描述符
 ------------------------
+
+Using a plain descriptor
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In cases where a SQL query more elaborate than what :func:`_orm.column_property`
 or :class:`.hybrid_property` can provide must be emitted, a regular Python
@@ -334,8 +376,14 @@ it needs to emit a SQL query upon each access.
 
 .. _mapper_querytime_expression:
 
-Query-time SQL expressions as mapped attributes
+查询时 SQL 表达式作为映射属性
 -----------------------------------------------
+
+Query-time SQL expressions as mapped attributes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In addition to being able to configure fixed SQL expressions on mapped classes,
 the SQLAlchemy ORM also includes a feature wherein objects may be loaded

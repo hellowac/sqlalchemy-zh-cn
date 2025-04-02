@@ -1,11 +1,19 @@
 ======================================
-Transactions and Connection Management
+事务和连接管理
 ======================================
+
+Transactions and Connection Management
 
 .. _unitofwork_transaction:
 
-Managing Transactions
+管理事务
 =====================
+
+Managing Transactions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionchanged:: 1.4 Session transaction management has been revised
    to be clearer and easier to use.  In particular, it now features
@@ -124,8 +132,14 @@ method to allow both operations to take place at once::
 
 .. _session_begin_nested:
 
-Using SAVEPOINT
+使用 SAVEPOINT
 ---------------
+
+Using SAVEPOINT
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SAVEPOINT transactions, if supported by the underlying engine, may be
 delineated using the :meth:`~.Session.begin_nested`
@@ -218,8 +232,14 @@ without the need for refreshing it from the database.
 
 .. _orm_session_vs_engine:
 
-Session-level vs. Engine level transaction control
+会话级与引擎级事务控制
 --------------------------------------------------
+
+Session-level vs. Engine level transaction control
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_engine.Connection` in Core and
 :class:`_session.Session` in ORM feature equivalent transactional
@@ -240,8 +260,14 @@ these scenarios based on the following scheme:
     with some_sessionmaker.begin() as session:    with some_engine.begin() as conn:
     with some_session.begin_nested() as sp:       with some_connection.begin_nested() as sp:
 
-Commit as you go
+随时提交
 ~~~~~~~~~~~~~~~~
+
+Commit as you go
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Both :class:`_orm.Session` and :class:`_engine.Connection` feature
 :meth:`_engine.Connection.commit` and :meth:`_engine.Connection.rollback`
@@ -281,8 +307,14 @@ value of ``True``.
         )
         session.commit()
 
-Begin Once
+开始一次
 ~~~~~~~~~~
+
+Begin Once
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Both :class:`_orm.sessionmaker` and :class:`_engine.Engine` feature a
 :meth:`_engine.Engine.begin` method that will both procure a new object
@@ -319,8 +351,14 @@ Session::
         )
     # commits and closes automatically
 
-Nested Transaction
+嵌套事务
 ~~~~~~~~~~~~~~~~~~~~
+
+Nested Transaction
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using a SAVEPOINT via the :meth:`_orm.Session.begin_nested` or
 :meth:`_engine.Connection.begin_nested` methods, the transaction object
@@ -365,8 +403,14 @@ Session::
 
 .. _session_explicit_begin:
 
-Explicit Begin
+显式开始
 ---------------
+
+Explicit Begin
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_orm.Session` features "autobegin" behavior, meaning that as soon
 as operations begin to take place, it ensures a :class:`_orm.SessionTransaction`
@@ -412,8 +456,14 @@ own transactional processes with that of the ORM :class:`_orm.Session`.
 
 .. _session_twophase:
 
-Enabling Two-Phase Commit
+启用两阶段提交
 -------------------------
+
+Enabling Two-Phase Commit
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For backends which support two-phase operation (currently MySQL and
 PostgreSQL), the session can be instructed to use two-phase commit semantics.
@@ -441,8 +491,14 @@ transactions set the flag ``twophase=True`` on the session::
 
 .. _session_transaction_isolation:
 
-Setting Transaction Isolation Levels / DBAPI AUTOCOMMIT
+设置事务隔离级别/DBAPI AUTOCOMMIT
 -------------------------------------------------------
+
+Setting Transaction Isolation Levels / DBAPI AUTOCOMMIT
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Most DBAPIs support the concept of configurable transaction :term:`isolation` levels.
 These are traditionally the four levels "READ UNCOMMITTED", "READ COMMITTED",
@@ -476,8 +532,14 @@ order to affect transaction isolation level, we need to act upon the
 
 .. _session_transaction_isolation_enginewide:
 
-Setting Isolation For A Sessionmaker / Engine Wide
+为 Sessionmaker/引擎范围设置隔离
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Setting Isolation For A Sessionmaker / Engine Wide
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 To set up a :class:`.Session` or :class:`.sessionmaker` with a specific
 isolation level globally, the first technique is that an
@@ -534,8 +596,14 @@ used in a read-only fashion**, that is::
 
     # closes connection
 
-Setting Isolation for Individual Sessions
+为单个会话设置隔离
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Setting Isolation for Individual Sessions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When we make a new :class:`.Session`, either using the constructor directly
 or when we call upon the callable produced by a :class:`.sessionmaker`,
@@ -564,8 +632,14 @@ methods::
     with Session() as session:
         session.bind_mapper(User, autocommit_engine)
 
-Setting Isolation for Individual Transactions
+为单个事务设置隔离
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Setting Isolation for Individual Transactions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A key caveat regarding isolation level is that the setting cannot be
 safely modified on a :class:`_engine.Connection` where a transaction has already
@@ -625,16 +699,28 @@ the per-connection-transaction isolation level::
     # outside the block, the transaction has been committed.  the connection is
     # released and reverted to its previous isolation level.
 
-Tracking Transaction State with Events
+使用事件跟踪事务状态
 --------------------------------------
+
+Tracking Transaction State with Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 See the section :ref:`session_transaction_events` for an overview
 of the available event hooks for session transaction state changes.
 
 .. _session_external_transaction:
 
-Joining a Session into an External Transaction (such as for test suites)
+将会话加入外部事务（例如测试套件）
 ========================================================================
+
+Joining a Session into an External Transaction (such as for test suites)
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 If a :class:`_engine.Connection` is being used which is already in a transactional
 state (i.e. has a :class:`.Transaction` established), a :class:`.Session` can

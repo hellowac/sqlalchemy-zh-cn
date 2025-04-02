@@ -1,7 +1,13 @@
 .. _unitofwork_cascades:
 
-Cascades
+级联
 ========
+
+Cascades
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Mappers support the concept of configurable :term:`cascade` behavior on
 :func:`~sqlalchemy.orm.relationship` constructs.  This refers
@@ -69,8 +75,14 @@ the :paramref:`_orm.relationship.cascade` parameter are described in the followi
 
 .. _cascade_save_update:
 
-save-update
+保存-更新
 -----------
+
+save-update
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ``save-update`` cascade indicates that when an object is placed into a
 :class:`.Session` via :meth:`.Session.add`, all the objects associated
@@ -126,8 +138,14 @@ is usually not a need to do so.
 
 .. _backref_cascade:
 
-Behavior of save-update cascade with bi-directional relationships
+具有双向关系的保存-更新级联的行为
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Behavior of save-update cascade with bi-directional relationships
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ``save-update`` cascade takes place **uni-directionally** in the context of
 a bi-directional relationship, i.e. when using
@@ -232,8 +250,14 @@ curve of the ORM as well as to the documentation and user support burden.
 
 .. _cascade_delete:
 
-delete
+删除
 ------
+
+delete
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ``delete`` cascade indicates that when a "parent" object
 is marked for deletion, its related "child" objects should also be marked
@@ -319,8 +343,14 @@ directives described at :ref:`passive_deletes` should be used.
 
 .. _cascade_delete_many_to_many:
 
-Using delete cascade with many-to-many relationships
+使用具有多对多关系的删除级联
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using delete cascade with many-to-many relationships
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ``cascade="all, delete"`` option works equally well with a many-to-many
 relationship, one that uses :paramref:`_orm.relationship.secondary` to
@@ -385,8 +415,14 @@ rules it will also delete all related ``Child`` rows.
 
 .. _passive_deletes:
 
-Using foreign key ON DELETE cascade with ORM relationships
+使用具有 ORM 关系的外键 ON DELETE 级联
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using foreign key ON DELETE cascade with ORM relationships
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The behavior of SQLAlchemy's "delete" cascade overlaps with the
 ``ON DELETE`` feature of a database ``FOREIGN KEY`` constraint.
@@ -541,8 +577,14 @@ is as follows:
 
 .. _passive_deletes_many_to_many:
 
-Using foreign key ON DELETE with many-to-many relationships
+使用具有多对多关系的外键 ON DELETE
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using foreign key ON DELETE with many-to-many relationships
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As described at :ref:`cascade_delete_many_to_many`, "delete" cascade works
 for many-to-many relationships as well.  To make use of ``ON DELETE CASCADE``
@@ -622,8 +664,14 @@ as follows:
 
 .. _cascade_delete_orphan:
 
-delete-orphan
+删除-孤立
 -------------
+
+delete-orphan
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ``delete-orphan`` cascade adds behavior to the ``delete`` cascade,
 such that a child object will be marked for deletion when it is
@@ -651,8 +699,14 @@ desired.
 
 .. _cascade_merge:
 
-merge
+合并
 -----
+
+merge
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ``merge`` cascade indicates that the :meth:`.Session.merge`
 operation should be propagated from a parent that's the subject
@@ -661,8 +715,14 @@ This cascade is also on by default.
 
 .. _cascade_refresh_expire:
 
-refresh-expire
+刷新-过期
 --------------
+
+refresh-expire
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ``refresh-expire`` is an uncommon option, indicating that the
 :meth:`.Session.expire` operation should be propagated from a parent
@@ -671,8 +731,14 @@ the referred objects are expired only, but not actually refreshed.
 
 .. _cascade_expunge:
 
-expunge
+删除
 -------
+
+expunge
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ``expunge`` cascade indicates that when the parent object is removed
 from the :class:`.Session` using :meth:`.Session.expunge`, the
@@ -681,8 +747,14 @@ operation should be propagated down to referred objects.
 
 .. _session_deleting_from_collections:
 
-Notes on Delete - Deleting Objects Referenced from Collections and Scalar Relationships
+删除注意事项 - 删除从集合和标量关系中引用的对象
 ----------------------------------------------------------------------------------------
+
+Notes on Delete - Deleting Objects Referenced from Collections and Scalar Relationships
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ORM in general never modifies the contents of a collection or scalar
 relationship during the flush process.  This means, if your class has a

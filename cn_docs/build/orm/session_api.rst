@@ -1,10 +1,14 @@
 .. currentmodule:: sqlalchemy.orm
 
-Session API
+会话 API
 ===========
 
-Session and sessionmaker()
+Session API
+
+Session 和 sessionmaker()
 --------------------------
+
+Session and sessionmaker()
 
 .. autoclass:: sessionmaker
     :members:
@@ -23,8 +27,15 @@ Session and sessionmaker()
 .. autoclass:: SessionTransactionOrigin
    :members:
 
-Session Utilities
+会话实用程序
 -----------------
+
+Session Utilities
+
+.. tab:: 中文
+
+
+.. tab:: 英文
 
 .. autofunction:: close_all_sessions
 
@@ -36,14 +47,22 @@ Session Utilities
 
 .. autofunction:: sqlalchemy.orm.util.was_deleted
 
-Attribute and State Management Utilities
+属性和状态管理实用程序
 ----------------------------------------
 
-These functions are provided by the SQLAlchemy attribute
-instrumentation API to provide a detailed interface for dealing
-with instances, attribute values, and history.  Some of them
-are useful when constructing event listener functions, such as
-those described in :doc:`/orm/events`.
+Attribute and State Management Utilities
+
+.. tab:: 中文
+
+    这些函数由 SQLAlchemy 属性检测 API 提供，以提供处理实例、属性值和历史记录的详细接口。在构建事件监听器函数时，其中一些非常有用，例如 :doc:`/orm/events` 中描述的那些。
+
+.. tab:: 英文
+
+    These functions are provided by the SQLAlchemy attribute
+    instrumentation API to provide a detailed interface for dealing
+    with instances, attribute values, and history.  Some of them
+    are useful when constructing event listener functions, such as
+    those described in :doc:`/orm/events`.
 
 .. currentmodule:: sqlalchemy.orm.util
 

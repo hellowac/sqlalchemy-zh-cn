@@ -1,7 +1,9 @@
 .. currentmodule:: sqlalchemy.orm
 
-Relationships API
+关系 API
 -----------------
+
+Relationships API
 
 .. autofunction:: relationship
 

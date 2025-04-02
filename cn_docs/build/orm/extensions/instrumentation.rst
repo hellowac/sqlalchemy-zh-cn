@@ -1,12 +1,16 @@
 .. _instrumentation_toplevel:
 
-Alternate Class Instrumentation
+替代类检测
 ===============================
+
+Alternate Class Instrumentation
 
 .. automodule:: sqlalchemy.ext.instrumentation
 
-API Reference
+API 参考
 -------------
+
+API Reference
 
 .. autodata:: INSTRUMENTATION_MANAGER
 

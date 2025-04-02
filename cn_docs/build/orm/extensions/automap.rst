@@ -1,12 +1,16 @@
 .. _automap_toplevel:
 
-Automap
+自动映射
 =======
+
+Automap
 
 .. automodule:: sqlalchemy.ext.automap
 
-API Reference
+API 参考
 -------------
+
+API Reference
 
 .. autofunction:: automap_base
 

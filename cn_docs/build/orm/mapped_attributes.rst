@@ -2,8 +2,14 @@
 
 .. currentmodule:: sqlalchemy.orm
 
-Changing Attribute Behavior
+更改属性行为
 ===========================
+
+Changing Attribute Behavior
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This section will discuss features and techniques used to modify the
 behavior of ORM mapped attributes, including those mapped with
@@ -11,8 +17,14 @@ behavior of ORM mapped attributes, including those mapped with
 
 .. _simple_validators:
 
-Simple Validators
+简单验证器
 -----------------
+
+Simple Validators
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A quick way to add a "validation" routine to an attribute is to use the
 :func:`~sqlalchemy.orm.validates` decorator. An attribute validator can raise
@@ -107,8 +119,14 @@ described at :class:`~.AttributeEvents`.
 
 .. autofunction:: validates
 
+在核心级别使用自定义数据类型
+----------------------------------------
+
 Using Custom Datatypes at the Core Level
------------------------------------------
+
+.. tab:: 中文
+    
+.. tab:: 英文-
 
 A non-ORM means of affecting the value of a column in a way that suits
 converting data between how it is represented in Python, vs. how it is
@@ -121,8 +139,14 @@ at :ref:`types_typedecorator`.
 
 .. _mapper_hybrids:
 
-Using Descriptors and Hybrids
+使用描述符和混合
 -----------------------------
+
+Using Descriptors and Hybrids
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A more comprehensive way to produce modified behavior for an attribute is to
 use :term:`descriptors`.  These are commonly used in Python using the ``property()``
@@ -256,8 +280,14 @@ Read more about Hybrids at :ref:`hybrids_toplevel`.
 
 .. _synonyms:
 
-Synonyms
+同义词
 --------
+
+Synonyms
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Synonyms are a mapper-level construct that allow any attribute on a class
 to "mirror" another attribute that is mapped.
@@ -347,8 +377,14 @@ to use in more complex situations.
 
 .. _custom_comparators:
 
-Operator Customization
+运算符自定义
 ----------------------
+
+Operator Customization
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "operators" used by the SQLAlchemy ORM and Core expression language
 are fully customizable.  For example, the comparison expression

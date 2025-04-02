@@ -1,51 +1,99 @@
 .. _asyncio_toplevel:
 
-Asynchronous I/O (asyncio)
+异步 I/O (asyncio)
 ==========================
 
-Support for Python asyncio.    Support for Core and ORM usage is
-included, using asyncio-compatible dialects.
+Asynchronous I/O (asyncio)
 
-.. versionadded:: 1.4
+.. tab:: 中文
 
-.. warning:: Please read :ref:`asyncio_install` for important platform
-   installation notes on **all** platforms.
+    对 Python asyncio 的支持。支持 Core 和 ORM 使用，使用 asyncio 兼容的方言。
 
-.. seealso::
+    .. versionadded:: 1.4
 
-    :ref:`change_3414` - initial feature announcement
+    .. warning:: 
+        
+        请阅读 :ref:`asyncio_install` 以获取有关 **所有** 平台的重要安装说明。
 
-    :ref:`examples_asyncio` - example scripts illustrating working examples
-    of Core and ORM use within the asyncio extension.
+    .. seealso::
+
+        :ref:`change_3414` - 初始功能公告
+
+        :ref:`examples_asyncio` - 示例脚本，展示在 asyncio 扩展中使用 Core 和 ORM 的工作示例。
+
+.. tab:: 英文
+
+    Support for Python asyncio.    Support for Core and ORM usage is
+    included, using asyncio-compatible dialects.
+
+    .. versionadded:: 1.4
+
+    .. warning:: 
+        
+        Please read :ref:`asyncio_install` for important platform installation notes on **all** platforms.
+
+    .. seealso::
+
+        :ref:`change_3414` - initial feature announcement
+
+        :ref:`examples_asyncio` - example scripts illustrating working examples
+        of Core and ORM use within the asyncio extension.
 
 .. _asyncio_install:
 
-Asyncio Platform Installation Notes
+Asyncio 平台安装说明
 -----------------------------------
 
-The asyncio extension depends
-upon the `greenlet <https://pypi.org/project/greenlet/>`_ library. This
-dependency is **not installed by default**.
+Asyncio Platform Installation Notes
 
-To install SQLAlchemy while ensuring the ``greenlet`` dependency is present, the
-``[asyncio]`` `setuptools extra <https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-setuptools-extras>`_
-may be installed
-as follows, which will include also instruct ``pip`` to install ``greenlet``:
+.. tab:: 中文
 
-.. sourcecode:: text
+    asyncio 扩展依赖于 `greenlet <https://pypi.org/project/greenlet/>`_ 库。这个依赖 **默认未安装**。
 
-  pip install sqlalchemy[asyncio]
+    要安装 SQLAlchemy 并确保存在 ``greenlet`` 依赖项，可以安装 ``[asyncio]`` `setuptools extra <https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-setuptools-extras>`_，如下所示，这还将包括指示 ``pip`` 安装 ``greenlet``：
 
-Note that installation of ``greenlet`` on platforms that do not have a pre-built
-wheel file means that ``greenlet`` will be built from source, which requires
-that Python's development libraries also be present.
+    .. sourcecode:: text
 
-.. versionchanged:: 2.1  ``greenlet`` is no longer installed by default; to
-   use the asyncio extension, the ``sqlalchemy[asyncio]`` target must be used.
+        pip install sqlalchemy[asyncio]
 
+    注意，在没有预构建 wheel 文件的平台上安装 ``greenlet`` 意味着 ``greenlet`` 将从源代码构建，这要求 Python 的开发库也必须存在。
+
+    .. versionchanged:: 2.1  
+        
+        ``greenlet`` 不再默认安装；要使用 asyncio 扩展，必须使用 ``sqlalchemy[asyncio]`` 目标。
+
+.. tab:: 英文
+
+    The asyncio extension depends
+    upon the `greenlet <https://pypi.org/project/greenlet/>`_ library. This
+    dependency is **not installed by default**.
+
+    To install SQLAlchemy while ensuring the ``greenlet`` dependency is present, the
+    ``[asyncio]`` `setuptools extra <https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-setuptools-extras>`_
+    may be installed
+    as follows, which will include also instruct ``pip`` to install ``greenlet``:
+
+    .. sourcecode:: text
+
+        pip install sqlalchemy[asyncio]
+
+    Note that installation of ``greenlet`` on platforms that do not have a pre-built
+    wheel file means that ``greenlet`` will be built from source, which requires
+    that Python's development libraries also be present.
+
+    .. versionchanged:: 2.1  
+        
+        ``greenlet`` is no longer installed by default; to use the asyncio extension, the ``sqlalchemy[asyncio]`` target must be used.
+
+
+概要 - Core
+---------------
 
 Synopsis - Core
----------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For Core use, the :func:`_asyncio.create_async_engine` function creates an
 instance of :class:`_asyncio.AsyncEngine` which then offers an async version of
@@ -145,8 +193,14 @@ cursor and provides an async/await API, such as an async iterator::
 .. _asyncio_orm:
 
 
-Synopsis - ORM
+概要 - ORM
 ---------------
+
+Synopsis - ORM
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Using :term:`2.0 style` querying, the :class:`_asyncio.AsyncSession` class
 provides full ORM functionality.
@@ -336,23 +390,39 @@ the end of the block; this is equivalent to calling the
 
 .. _asyncio_concurrency:
 
-Using AsyncSession with Concurrent Tasks
+将 AsyncSession 与并发任务结合使用
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :class:`_asyncio.AsyncSession` object is a **mutable, stateful object**
-which represents a **single, stateful database transaction in progress**. Using
-concurrent tasks with asyncio, with APIs such as ``asyncio.gather()`` for
-example, should use a **separate** :class:`_asyncio.AsyncSession` **per individual
-task**.
+Using AsyncSession with Concurrent Tasks
 
-See the section :ref:`session_faq_threadsafe` for a general description of
-the :class:`_orm.Session` and :class:`_asyncio.AsyncSession` with regards to
-how they should be used with concurrent workloads.
+.. tab:: 中文
+
+    :class:`_asyncio.AsyncSession` 对象是一个 **可变的、有状态的对象** ，表示 **单个有状态的数据库事务正在进行** 。使用 asyncio 的并发任务时，例如使用 ``asyncio.gather()`` 之类的 API，每个单独任务应该使用一个 **单独的**  :class:`_asyncio.AsyncSession`。
+
+    有关 :class:`_orm.Session` 和 :class:`_asyncio.AsyncSession` 在并发工作负载中的使用方式的一般说明，请参阅 :ref:`session_faq_threadsafe` 部分。
+
+.. tab:: 英文
+
+    The :class:`_asyncio.AsyncSession` object is a **mutable, stateful object**
+    which represents a **single, stateful database transaction in progress**. Using
+    concurrent tasks with asyncio, with APIs such as ``asyncio.gather()`` for
+    example, should use a **separate** :class:`_asyncio.AsyncSession` **per individual
+    task**.
+
+    See the section :ref:`session_faq_threadsafe` for a general description of
+    the :class:`_orm.Session` and :class:`_asyncio.AsyncSession` with regards to
+    how they should be used with concurrent workloads.
 
 .. _asyncio_orm_avoid_lazyloads:
 
-Preventing Implicit IO when Using AsyncSession
+使用 AsyncSession 时防止隐式 IO
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Preventing Implicit IO when Using AsyncSession
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Using traditional asyncio, the application needs to avoid any points at which
 IO-on-attribute access may occur.   Techniques that can be used to help
@@ -553,8 +623,14 @@ Other guidelines include:
 
 .. _session_run_sync:
 
-Running Synchronous Methods and Functions under asyncio
+在 asyncio 下运行同步方法和函数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Running Synchronous Methods and Functions under asyncio
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. deepalchemy::  This approach is essentially exposing publicly the
    mechanism by which SQLAlchemy is able to provide the asyncio interface
@@ -666,8 +742,14 @@ differences are as follows:
 
 .. _asyncio_events:
 
-Using events with the asyncio extension
+使用 asyncio 扩展的事件
 ---------------------------------------
+
+Using events with the asyncio extension
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The SQLAlchemy :ref:`event system <event_toplevel>` is not directly exposed
 by the asyncio extension, meaning there is not yet an "async" version of a
@@ -717,8 +799,14 @@ are passed a DBAPI level connection, such as :meth:`_events.PoolEvents.connect`,
 the object is a :term:`pep-249` compliant "connection" object which will adapt
 sync-style calls into the asyncio driver.
 
-Examples of Event Listeners with Async Engines / Sessions / Sessionmakers
+异步引擎/会话/会话生成器的事件监听器示例
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Examples of Event Listeners with Async Engines / Sessions / Sessionmakers
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Some examples of sync style event handlers associated with async-facing API
 constructs are illustrated below:
@@ -917,8 +1005,14 @@ constructs are illustrated below:
 
 .. _asyncio_events_run_async:
 
-Using awaitable-only driver methods in connection pool and other events
+在连接池和其他事件中使用仅可等待的驱动程序方法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using awaitable-only driver methods in connection pool and other events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As discussed in the above section, event handlers such as those oriented
 around the :class:`.PoolEvents` event handlers receive a sync-style "DBAPI" connection,
@@ -970,8 +1064,14 @@ acted upon.
 .. versionadded:: 1.4.30
 
 
-Using multiple asyncio event loops
+使用多个 asyncio 事件循环
 ----------------------------------
+
+Using multiple asyncio event loops
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 An application that makes use of multiple event loops, for example in the
 uncommon case of combining asyncio with multithreading, should not share the
@@ -998,8 +1098,14 @@ from using any connection more than once::
 
 .. _asyncio_scoped_session:
 
-Using asyncio scoped session
+使用 asyncio 作用域会话
 ----------------------------
+
+Using asyncio scoped session
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "scoped session" pattern used in threaded SQLAlchemy with the
 :class:`.scoped_session` object is also available in asyncio, using
@@ -1071,37 +1177,69 @@ the usual ``await`` keywords are necessary, including for the
 
 .. _asyncio_inspector:
 
-Using the Inspector to inspect schema objects
+使用检查器检查架构对象
 ---------------------------------------------------
 
-SQLAlchemy does not yet offer an asyncio version of the
-:class:`_reflection.Inspector` (introduced at :ref:`metadata_reflection_inspector`),
-however the existing interface may be used in an asyncio context by
-leveraging the :meth:`_asyncio.AsyncConnection.run_sync` method of
-:class:`_asyncio.AsyncConnection`::
+Using the Inspector to inspect schema objects
 
-    import asyncio
+.. tab:: 中文
 
-    from sqlalchemy import inspect
-    from sqlalchemy.ext.asyncio import create_async_engine
+    SQLAlchemy 还没有提供 :class:`_reflection.Inspector`（在 :ref:`metadata_reflection_inspector` 中介绍）的 asyncio 版本，
+    但是可以通过利用 :class:`_asyncio.AsyncConnection` 的 :meth:`_asyncio.AsyncConnection.run_sync` 方法在 asyncio 上下文中使用现有接口::
 
-    engine = create_async_engine("postgresql+asyncpg://scott:tiger@localhost/test")
+        import asyncio
 
+        from sqlalchemy import inspect
+        from sqlalchemy.ext.asyncio import create_async_engine
 
-    def use_inspector(conn):
-        inspector = inspect(conn)
-        # use the inspector
-        print(inspector.get_view_names())
-        # return any value to the caller
-        return inspector.get_table_names()
+        engine = create_async_engine("postgresql+asyncpg://scott:tiger@localhost/test")
 
 
-    async def async_main():
-        async with engine.connect() as conn:
-            tables = await conn.run_sync(use_inspector)
+        def use_inspector(conn):
+            inspector = inspect(conn)
+            # use the inspector
+            print(inspector.get_view_names())
+            # return any value to the caller
+            return inspector.get_table_names()
 
 
-    asyncio.run(async_main())
+        async def async_main():
+            async with engine.connect() as conn:
+                tables = await conn.run_sync(use_inspector)
+
+
+        asyncio.run(async_main())
+
+.. tab:: 英文
+
+    SQLAlchemy does not yet offer an asyncio version of the
+    :class:`_reflection.Inspector` (introduced at :ref:`metadata_reflection_inspector`),
+    however the existing interface may be used in an asyncio context by
+    leveraging the :meth:`_asyncio.AsyncConnection.run_sync` method of
+    :class:`_asyncio.AsyncConnection`::
+
+        import asyncio
+
+        from sqlalchemy import inspect
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine("postgresql+asyncpg://scott:tiger@localhost/test")
+
+
+        def use_inspector(conn):
+            inspector = inspect(conn)
+            # use the inspector
+            print(inspector.get_view_names())
+            # return any value to the caller
+            return inspector.get_table_names()
+
+
+        async def async_main():
+            async with engine.connect() as conn:
+                tables = await conn.run_sync(use_inspector)
+
+
+        asyncio.run(async_main())
 
 .. seealso::
 
@@ -1109,8 +1247,10 @@ leveraging the :meth:`_asyncio.AsyncConnection.run_sync` method of
 
     :ref:`inspection_toplevel`
 
-Engine API Documentation
+引擎 API 文档
 -------------------------
+
+Engine API Documentation
 
 .. autofunction:: create_async_engine
 
@@ -1127,8 +1267,14 @@ Engine API Documentation
 .. autoclass:: AsyncTransaction
    :members:
 
-Result Set API Documentation
+结果集 API 文档
 ----------------------------------
+
+Result Set API Documentation
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_asyncio.AsyncResult` object is an async-adapted version of the
 :class:`_result.Result` object.  It is only returned when using the
@@ -1150,8 +1296,10 @@ cursor.
 
 .. autoclass:: AsyncTupleResult
 
-ORM Session API Documentation
+ORM 会话 API 文档
 -----------------------------
+
+ORM Session API Documentation
 
 .. autofunction:: async_object_session
 

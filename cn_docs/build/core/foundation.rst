@@ -1,11 +1,18 @@
 .. _core_foundation_toplevel:
 
 =================================================
-SQL Expression Language Foundational Constructs
+SQL 表达式语言基础构造
 =================================================
 
-Base classes and mixins that are used to compose SQL Expression Language
-elements.
+SQL Expression Language Foundational Constructs
+
+.. tab:: 中文
+
+   用于组成 SQL 表达式语言元素的基类和混合类。
+
+.. tab:: 英文
+
+   Base classes and mixins that are used to compose SQL Expression Language elements.
 
 .. currentmodule:: sqlalchemy.sql.expression
 

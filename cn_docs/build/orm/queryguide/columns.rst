@@ -13,24 +13,42 @@
 .. _loading_columns:
 
 ======================
-Column Loading Options
+列加载选项
 ======================
 
-.. admonition:: About this Document
+Column Loading Options
 
-    This section presents additional options regarding the loading of
-    columns.  The mappings used include columns that would store
-    large string values for which we may want to limit when they
-    are loaded.
+.. tab:: 中文
 
-    :doc:`View the ORM setup for this page <_deferred_setup>`.  Some
-    of the examples below will redefine the ``Book`` mapper to modify
-    some of the column definitions.
+    .. admonition:: 关于本文档
+
+        本节介绍了有关加载列的其他选项。使用的映射包括存储大字符串值的列，我们可能希望限制它们的加载时间。
+
+        :doc:`查看本页的 ORM 设置 <_deferred_setup>`。下面的一些示例将重新定义 ``Book`` 映射器以修改一些列定义。
+
+.. tab:: 英文
+
+    .. admonition:: About this Document
+
+        This section presents additional options regarding the loading of
+        columns.  The mappings used include columns that would store
+        large string values for which we may want to limit when they
+        are loaded.
+
+        :doc:`View the ORM setup for this page <_deferred_setup>`.  Some
+        of the examples below will redefine the ``Book`` mapper to modify
+        some of the column definitions.
 
 .. _orm_queryguide_column_deferral:
 
-Limiting which Columns Load with Column Deferral
+使用列延迟限制加载哪些列
 ------------------------------------------------
+
+Limiting which Columns Load with Column Deferral
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 **Column deferral** refers to ORM mapped columns that are omitted from a SELECT
 statement when objects of that type are queried. The general rationale here is
@@ -46,8 +64,14 @@ when the object is compiled into a SQL string.
 
 .. _orm_queryguide_load_only:
 
-Using ``load_only()`` to reduce loaded columns
+使用 ``load_only()`` 减少加载的列
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using ``load_only()`` to reduce loaded columns
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_orm.load_only` loader option is the most expedient option to use
 when loading objects where it is known that only a small handful of columns will
@@ -106,8 +130,14 @@ background and examples.
 .. tip::  as noted elsewhere, lazy loading is not available when using
    :ref:`asyncio_toplevel`.
 
-Using ``load_only()`` with multiple entities
+使用 ``load_only()`` 处理多个实体
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using ``load_only()`` with multiple entities
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :func:`_orm.load_only` limits itself to the single entity that is referred
 towards in its list of attributes (passing a list of attributes that span more
@@ -137,8 +167,14 @@ If we wanted to apply :func:`_orm.load_only` options to both ``User`` and
 
 .. _orm_queryguide_load_only_related:
 
-Using ``load_only()`` on related objects and collections
+使用 ``load_only()`` 处理相关对象和集合
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using ``load_only()`` on related objects and collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using :ref:`relationship loaders <loading_toplevel>` to control the
 loading of related objects, the
@@ -197,8 +233,14 @@ the SELECT statement emitted for each ``User.books`` collection::
 
 .. _orm_queryguide_defer:
 
-Using ``defer()`` to omit specific columns
+使用 ``defer()`` 忽略特定列
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using ``defer()`` to omit specific columns
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_orm.defer` loader option is a more fine grained alternative to
 :func:`_orm.load_only`, which allows a single specific column to be marked as
@@ -238,8 +280,14 @@ access rather than lazy loading.  This is illustrated in the section
 
 .. _orm_queryguide_deferred_raiseload:
 
-Using raiseload to prevent deferred column loads
+使用 raiseload 防止延迟列加载
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using raiseload to prevent deferred column loads
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. comment
 
@@ -313,8 +361,14 @@ to all deferred attributes::
 
 .. _orm_queryguide_deferred_declarative:
 
-Configuring Column Deferral on Mappings
+在映射上配置列延迟
 ---------------------------------------
+
+Configuring Column Deferral on Mappings
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. comment
 
@@ -370,8 +424,14 @@ configure and use this behavior.
 
 .. _orm_queryguide_deferred_imperative:
 
-Using ``deferred()`` for imperative mappers, mapped SQL expressions
+对命令式映射器、映射 SQL 表达式使用 ``deferred()``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using ``deferred()`` for imperative mappers, mapped SQL expressions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_orm.deferred` function is the earlier, more general purpose
 "deferred column" mapping directive that precedes the introduction of the
@@ -443,8 +503,14 @@ when mapped SQL expressions should be loaded on a deferred basis:
     :ref:`orm_imperative_table_column_options` - in the section
     :ref:`orm_declarative_table_config_toplevel`
 
-Using ``undefer()`` to "eagerly" load deferred columns
+使用 ``undefer()`` “急切地” 加载延迟列
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using ``undefer()`` to "eagerly" load deferred columns
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 With columns configured on mappings to defer by default, the
 :func:`_orm.undefer` option will cause any column that is normally deferred
@@ -468,8 +534,14 @@ additional SQL being emitted::
 
 .. _orm_queryguide_deferred_group:
 
-Loading deferred columns in groups
+按组加载延迟列
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Loading deferred columns in groups
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. comment
 
@@ -516,8 +588,14 @@ will load both columns at once using just one SELECT statement::
     [...] (2,)
 
 
-Undeferring by group with ``undefer_group()``
+使用 ``undefer_group()`` 按组取消延迟
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Undeferring by group with ``undefer_group()``
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 If deferred columns are configured with :paramref:`_orm.mapped_column.deferred_group`
 as introduced in the preceding section, the
@@ -537,8 +615,14 @@ Both ``summary`` and ``cover_photo`` are available without additional loads::
 
     >>> img_data, summary = book.cover_photo, book.summary
 
-Undeferring on wildcards
+对通配符取消延迟
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+Undeferring on wildcards
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Most ORM loader options accept a wildcard expression, indicated by
 ``"*"``, which indicates that the option should be applied to all relevant
@@ -554,8 +638,14 @@ a wildcard::
 
 .. _orm_queryguide_mapper_deferred_raiseload:
 
-Configuring mapper-level "raiseload" behavior
+配置映射器级“raiseload”行为
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Configuring mapper-level "raiseload" behavior
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. comment
 
@@ -618,8 +708,14 @@ Only by overriding their behavior at query time, typically using
 
 .. _orm_queryguide_with_expression:
 
-Loading Arbitrary SQL Expressions onto Objects
+将任意 SQL 表达式加载到对象上
 -----------------------------------------------
+
+Loading Arbitrary SQL Expressions onto Objects
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. comment
 
@@ -827,8 +923,14 @@ The :func:`.query_expression` mapping has these caveats:
 
 .. _orm_queryguide_with_expression_unions:
 
-Using ``with_expression()`` with UNIONs, other subqueries
+使用 ``with_expression()`` 处理 UNION 和其他子查询
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using ``with_expression()`` with UNIONs, other subqueries
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. comment
 
@@ -886,8 +988,14 @@ onto newly loaded instances of ``A``::
 
 
 
-Column Loading API
+列加载 API
 -------------------
+
+Column Loading API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: defer
 

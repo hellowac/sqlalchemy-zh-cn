@@ -1,8 +1,10 @@
 .. _orm_declarative_mapper_config_toplevel:
 
 =============================================
-Mapper Configuration with Declarative
+使用声明式映射器配置
 =============================================
+
+Mapper Configuration with Declarative
 
 The section :ref:`orm_mapper_configuration_overview` discusses the general
 configurational elements of a :class:`_orm.Mapper` construct, which is the
@@ -13,8 +15,10 @@ the :class:`_orm.Mapper`.
 
 .. _orm_declarative_properties:
 
-Defining Mapped Properties with Declarative
+使用声明式定义映射属性
 --------------------------------------------
+
+Defining Mapped Properties with Declarative
 
 The examples given at :ref:`orm_declarative_table_config_toplevel`
 illustrate mappings against table-bound columns, using the :func:`_orm.mapped_column`
@@ -159,8 +163,10 @@ Things to note above:
 
 .. _orm_declarative_mapper_options:
 
-Mapper Configuration Options with Declarative
+使用声明式映射器配置选项
 ----------------------------------------------
+
+Mapper Configuration Options with Declarative
 
 With all mapping forms, the mapping of the class is configured through
 parameters that become part of the :class:`_orm.Mapper` object.
@@ -249,8 +255,10 @@ configuring a single-table inheritance mapping::
     :ref:`single_inheritance` - background on the ORM single table inheritance
     mapping feature.
 
-Constructing mapper arguments dynamically
+动态构造映射器参数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Constructing mapper arguments dynamically
 
 The ``__mapper_args__`` dictionary may be generated from a class-bound
 descriptor method rather than from a fixed dictionary by making use of the
@@ -309,8 +317,10 @@ these columns for any SQL operations.
     :ref:`orm_mixins_toplevel`
 
 
-Other Declarative Mapping Directives
+其他声明式映射指令
 --------------------------------------
+
+Other Declarative Mapping Directives
 
 ``__declare_last__()``
 ~~~~~~~~~~~~~~~~~~~~~~

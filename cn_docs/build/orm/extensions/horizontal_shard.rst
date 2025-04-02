@@ -1,12 +1,16 @@
 .. _horizontal_sharding_toplevel:
 
-Horizontal Sharding
+水平分片
 ===================
+
+Horizontal Sharding
 
 .. automodule:: sqlalchemy.ext.horizontal_shard
 
-API Documentation
+API 文档
 -----------------
+
+API Documentation
 
 .. autoclass:: ShardedSession
    :members:

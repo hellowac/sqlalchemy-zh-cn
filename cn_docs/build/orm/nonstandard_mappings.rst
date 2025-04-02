@@ -1,13 +1,21 @@
 ========================
-Non-Traditional Mappings
+非传统映射
 ========================
+
+Non-Traditional Mappings
 
 .. _orm_mapping_joins:
 
 .. _maptojoin:
 
-Mapping a Class against Multiple Tables
+将一个类映射到多个表
 =======================================
+
+Mapping a Class against Multiple Tables
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Mappers can be constructed against arbitrary relational units (called
 *selectables*) in addition to plain tables. For example, the :func:`_expression.join`
@@ -121,8 +129,14 @@ may be used::
 
 .. _orm_mapping_arbitrary_subqueries:
 
-Mapping a Class against Arbitrary Subqueries
+将一个类映射到任意子查询
 ============================================
+
+Mapping a Class against Arbitrary Subqueries
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Similar to mapping against a join, a plain :func:`_expression.select` object
 can be used with a mapper as well.  The example fragment below illustrates
@@ -177,8 +191,14 @@ key.
     virtually any SELECT statement, including complex composites, and should
     be favored over the "map-to-selectable" approach.
 
-Multiple Mappers for One Class
+一个类的多个映射器
 ==============================
+
+Multiple Mappers for One Class
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In modern SQLAlchemy, a particular class is mapped by only one so-called
 **primary** mapper at a time.   This mapper is involved in three main areas of

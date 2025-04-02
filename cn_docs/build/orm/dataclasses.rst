@@ -1,8 +1,14 @@
 .. _orm_dataclasses_toplevel:
 
 ======================================
-Integration with dataclasses and attrs
+与数据类和属性的集成
 ======================================
+
+Integration with dataclasses and attrs
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy as of version 2.0 features "native dataclass" integration where
 an :ref:`Annotated Declarative Table <orm_declarative_mapped_column>`
@@ -17,8 +23,14 @@ attrs_ third party integration library.
 
 .. _orm_declarative_native_dataclasses:
 
-Declarative Dataclass Mapping
+声明式数据类映射
 -----------------------------
+
+Declarative Dataclass Mapping
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy :ref:`Annotated Declarative Table <orm_declarative_mapped_column>`
 mappings may be augmented with an additional
@@ -113,8 +125,14 @@ decorator is supported::
         id: Mapped[int] = mapped_column(init=False, primary_key=True)
         name: Mapped[str]
 
-Class level feature configuration
+类级功能配置
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Class level feature configuration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Support for dataclasses features is partial.  Currently **supported** are
 the ``init``, ``repr``, ``eq``, ``order`` and ``unsafe_hash`` features,
@@ -165,8 +183,14 @@ class configuration arguments are passed to the decorator directly::
 For background on dataclass class options, see the dataclasses_ documentation
 at `@dataclasses.dataclass <https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass>`_.
 
-Attribute Configuration
+属性配置
 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Attribute Configuration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy native dataclasses differ from normal dataclasses in that
 attributes to be mapped are described using the :class:`_orm.Mapped`
@@ -226,8 +250,14 @@ database-generated, is not part of the constructor at all::
     # 'fullname' is optional keyword argument
     u1 = User("name")
 
-Column Defaults
+列默认值
 ~~~~~~~~~~~~~~~
+
+Column Defaults
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In order to accommodate the name overlap of the ``default`` argument with
 the existing :paramref:`_schema.Column.default` parameter of the  :class:`_schema.Column`
@@ -275,8 +305,14 @@ parameter for ``created_at`` were passed proceeds as:
 
 
 
-Integration with Annotated
+与带注释的集成
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Integration with Annotated
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The approach introduced at :ref:`orm_declarative_mapped_column_pep593`
 illustrates how to use :pep:`593` ``Annotated`` objects to package whole
@@ -345,8 +381,14 @@ the other arguments can remain within the ``Annotated`` construct::
 
 .. _orm_declarative_dc_mixins:
 
-Using mixins and abstract superclasses
+使用混合和抽象超类
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using mixins and abstract superclasses
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Any mixins or base classes that are used in a :class:`_orm.MappedAsDataclass`
 mapped class which include :class:`_orm.Mapped` attributes must themselves be
@@ -389,8 +431,14 @@ attributes from non-dataclass mixins to be part of the dataclass.
 
 
 
-Relationship Configuration
+关系配置
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Relationship Configuration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_orm.Mapped` annotation in combination with
 :func:`_orm.relationship` is used in the same way as described at
@@ -442,8 +490,14 @@ to be required or optional when rendered into the ``__init__()`` method.
 
 .. _orm_declarative_native_dataclasses_non_mapped_fields:
 
-Using Non-Mapped Dataclass Fields
+使用非映射数据类字段
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using Non-Mapped Dataclass Fields
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using Declarative dataclasses, non-mapped fields may be used on the
 class as well, which will be part of the dataclass construction process but
@@ -532,8 +586,14 @@ variable may be generated::
 
 .. _dataclasses_pydantic:
 
-Integrating with Alternate Dataclass Providers such as Pydantic
+与 Pydantic 等备用数据类提供程序集成
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Integrating with Alternate Dataclass Providers such as Pydantic
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. warning::
 
@@ -591,8 +651,14 @@ both for mapped classes as well as mixins that extend from
 
 .. _orm_declarative_dataclasses:
 
-Applying ORM Mappings to an existing dataclass (legacy dataclass use)
+将 ORM 映射应用于现有数据类（旧式数据类使用）
 ---------------------------------------------------------------------
+
+Applying ORM Mappings to an existing dataclass (legacy dataclass use)
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. legacy::
 
@@ -636,8 +702,14 @@ for all the other methods that dataclasses generates such as
 
 .. _orm_declarative_dataclasses_imperative_table:
 
-Mapping pre-existing dataclasses using Declarative With Imperative Table
+使用声明式和命令式表映射预先存在的数据类
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mapping pre-existing dataclasses using Declarative With Imperative Table
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 An example of a mapping using ``@dataclass`` using
 :ref:`orm_imperative_table_configuration` is below. A complete
@@ -723,8 +795,14 @@ approach is in the next example.
 
 .. _orm_declarative_dataclasses_declarative_table:
 
-Mapping pre-existing dataclasses using Declarative-style fields
+使用声明式样式字段映射预先存在的数据类
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mapping pre-existing dataclasses using Declarative-style fields
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. legacy:: This approach to Declarative mapping with
    dataclasses should be considered as legacy.  It will remain supported
@@ -783,8 +861,14 @@ association::
 
 .. _orm_declarative_dataclasses_mixin:
 
-Using Declarative Mixins with pre-existing dataclasses
+将声明式混合与预先存在的数据类结合使用
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using Declarative Mixins with pre-existing dataclasses
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In the section :ref:`orm_mixins_toplevel`, Declarative Mixin classes
 are introduced.  One requirement of declarative mixins is that certain
@@ -849,8 +933,14 @@ came from a mixin that is itself a dataclass, the form would be::
 
 .. _orm_imperative_dataclasses:
 
-Mapping pre-existing dataclasses using Imperative Mapping
+使用命令式映射映射预先存在的数据类
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mapping pre-existing dataclasses using Imperative Mapping
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As described previously, a class which is set up as a dataclass using the
 ``@dataclass`` decorator can then be further decorated using the
@@ -930,8 +1020,14 @@ applies when using this mapping style.
 
 .. _orm_declarative_attrs_imperative_table:
 
-Applying ORM mappings to an existing attrs class
+将 ORM 映射应用于现有属性类
 -------------------------------------------------
+
+Applying ORM mappings to an existing attrs class
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. warning:: The ``attrs`` library is not part of SQLAlchemy's continuous
    integration testing, and compatibility with this library may change without

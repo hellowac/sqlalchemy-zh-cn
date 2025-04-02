@@ -1,42 +1,68 @@
 .. _baked_toplevel:
 
-Baked Queries
+烘焙查询
 =============
+
+Baked Queries
 
 .. module:: sqlalchemy.ext.baked
 
-``baked`` provides an alternative creational pattern for
-:class:`~.query.Query` objects, which allows for caching of the object's
-construction and string-compilation steps.  This means that for a
-particular :class:`~.query.Query` building scenario that is used more than
-once, all of the Python function invocation involved in building the query
-from its initial construction up through generating a SQL string will only
-occur **once**, rather than for each time that query is built up and executed.
+.. tab:: 中文
 
-The rationale for this system is to greatly reduce Python interpreter
-overhead for everything that occurs **before the SQL is emitted**.
-The caching of the "baked" system does **not** in any way reduce SQL calls or
-cache the **return results** from the database.  A technique that demonstrates
-the caching of the SQL calls and result sets themselves is available in
-:ref:`examples_caching`.
+    ``baked`` 提供了一种替代的创建模式，用于 :class:`~.query.Query` 对象，允许缓存对象的构建和字符串编译步骤。这意味着对于一个特定的 :class:`~.query.Query` 构建场景，如果使用多次，从初始构建到生成 SQL 字符串的所有 Python 函数调用只会发生 **一次** ，而不是每次构建和执行该查询时。
 
-.. deprecated:: 1.4  SQLAlchemy 1.4 and 2.0 feature an all-new direct query
-   caching system that removes the need for the :class:`.BakedQuery` system.
-   Caching is now transparently active for all Core and ORM queries with no
-   action taken by the user, using the system described at :ref:`sql_caching`.
+    该系统的基本原理是大大减少在 **发出 SQL 之前** 发生的所有操作的 Python 解释器开销。“baked”系统的缓存 **不会** 以任何方式减少 SQL 调用或缓存从数据库返回的 **结果** 。演示 SQL 调用和结果集本身缓存的技术可以在 :ref:`examples_caching` 中找到。
+
+    .. deprecated:: 1.4  
+        
+        SQLAlchemy 1.4 和 2.0 引入了全新的直接查询缓存系统，消除了对 :class:`.BakedQuery` 系统的需求。缓存现在对所有 Core 和 ORM 查询透明激活，用户无需采取任何操作，使用的系统描述在 :ref:`sql_caching`。
+
+    .. deepalchemy::
+
+        :mod:`sqlalchemy.ext.baked` 扩展 **不适合初学者** 。正确使用它需要对 SQLAlchemy、数据库驱动程序和后端数据库如何相互作用有很好的高级别理解。此扩展提供了一种非常特定的优化，通常不需要。如上所述，它 **不缓存查询**，仅缓存 SQL 本身的字符串公式。
+
+.. tab:: 英文
+
+    ``baked`` provides an alternative creational pattern for
+    :class:`~.query.Query` objects, which allows for caching of the object's
+    construction and string-compilation steps.  This means that for a
+    particular :class:`~.query.Query` building scenario that is used more than
+    once, all of the Python function invocation involved in building the query
+    from its initial construction up through generating a SQL string will only
+    occur **once**, rather than for each time that query is built up and executed.
+
+    The rationale for this system is to greatly reduce Python interpreter
+    overhead for everything that occurs **before the SQL is emitted**.
+    The caching of the "baked" system does **not** in any way reduce SQL calls or
+    cache the **return results** from the database.  A technique that demonstrates
+    the caching of the SQL calls and result sets themselves is available in
+    :ref:`examples_caching`.
+
+    .. deprecated:: 1.4  
+
+        SQLAlchemy 1.4 and 2.0 feature an all-new direct query
+        caching system that removes the need for the :class:`.BakedQuery` system.
+        Caching is now transparently active for all Core and ORM queries with no
+        action taken by the user, using the system described at :ref:`sql_caching`.
 
 
-.. deepalchemy::
+    .. deepalchemy::
 
-    The :mod:`sqlalchemy.ext.baked` extension is **not for beginners**.  Using
-    it correctly requires a good high level understanding of how SQLAlchemy, the
-    database driver, and the backend database interact with each other.  This
-    extension presents a very specific kind of optimization that is not ordinarily
-    needed.  As noted above, it **does not cache queries**, only the string
-    formulation of the SQL itself.
+        The :mod:`sqlalchemy.ext.baked` extension is **not for beginners**.  Using
+        it correctly requires a good high level understanding of how SQLAlchemy, the
+        database driver, and the backend database interact with each other.  This
+        extension presents a very specific kind of optimization that is not ordinarily
+        needed.  As noted above, it **does not cache queries**, only the string
+        formulation of the SQL itself.
+
+概要
+--------
 
 Synopsis
---------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Usage of the baked system starts by producing a so-called "bakery", which
 represents storage for a particular series of query objects::
@@ -109,8 +135,14 @@ Following are some observations about the above code:
    where we apply their actual values later using :meth:`_baked.Result.params`.
 
 
-Performance
+性能
 -----------
+
+Performance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The baked query probably looks a little odd, a little bit awkward and
 a little bit verbose.   However, the savings in
@@ -170,8 +202,14 @@ as being impacted by this particular form of overhead.
     measurement techniques are used when attempting to improve the performance
     of an application.
 
-Rationale
+原理
 ---------
+
+Rationale
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "lambda" approach above is a superset of what would be a more
 traditional "parameterized" approach.   Suppose we wished to build
@@ -346,15 +384,27 @@ to arrive at the current "baked" approach.   Starting from the
 management,  removal of all redundant Python execution, and queries built up
 with conditionals needed to be addressed, leading to the final approach.
 
-Special Query Techniques
+特殊查询技术
 ------------------------
+
+Special Query Techniques
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This section will describe some techniques for specific query situations.
 
 .. _baked_in:
 
-Using IN expressions
+使用 IN 表达式
 ^^^^^^^^^^^^^^^^^^^^
+
+Using IN expressions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :meth:`.ColumnOperators.in_` method in SQLAlchemy historically renders
 a variable set of bound parameters based on the list of items that's passed
@@ -378,8 +428,14 @@ statement compilation time::
 
   :meth:`.ColumnOperators.in_`
 
-Using Subqueries
+使用子查询
 ^^^^^^^^^^^^^^^^
+
+Using Subqueries
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using :class:`_query.Query` objects, it is often needed that one :class:`_query.Query`
 object is used to generate a subquery within another.   In the case where the
@@ -405,8 +461,14 @@ of the baked query::
 
 .. _baked_with_before_compile:
 
-Using the before_compile event
+使用 before_compile 事件
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using the before_compile event
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As of SQLAlchemy 1.3.11, the use of the :meth:`.QueryEvents.before_compile`
 event against a particular :class:`_query.Query` will disallow the baked query
@@ -431,8 +493,14 @@ The above strategy is appropriate for an event that will modify a
 given :class:`_query.Query` in exactly the same way every time, not dependent
 on specific parameters or external state that changes.
 
-Disabling Baked Queries Session-wide
+在会话范围内禁用烘焙查询
 ------------------------------------
+
+Disabling Baked Queries Session-wide
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The flag :paramref:`.Session.enable_baked_queries` may be set to False,
 causing all baked queries to not use the cache when used against that
@@ -448,16 +516,28 @@ which is seeing issues potentially due to cache key conflicts from user-defined
 baked queries or other baked query issues can turn the behavior off, in
 order to identify or eliminate baked queries as the cause of an issue.
 
-Lazy Loading Integration
+延迟加载集成
 ------------------------
+
+Lazy Loading Integration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionchanged:: 1.4 As of SQLAlchemy 1.4, the "baked query" system is no
    longer part of the relationship loading system.
    The :ref:`native caching <sql_caching>` system is used instead.
 
 
-API Documentation
+API 文档
 -----------------
+
+API Documentation
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: bakery
 

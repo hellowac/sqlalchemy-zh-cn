@@ -1,21 +1,35 @@
 .. _session_events_toplevel:
 
-Tracking queries, object and Session Changes with Events
+使用事件跟踪查询、对象和会话更改
 =========================================================
 
-SQLAlchemy features an extensive :ref:`Event Listening <event_toplevel>`
-system used throughout the Core and ORM.   Within the ORM, there are a
-wide variety of event listener hooks, which are documented at an API
-level at :ref:`orm_event_toplevel`.   This collection of events has
-grown over the years to include lots of very useful new events as well
-as some older events that aren't as relevant as they once were.  This
-section will attempt to introduce the major event hooks and when they
-might be used.
+Tracking queries, object and Session Changes with Events
+
+.. tab:: 中文
+
+    SQLAlchemy 具有一个广泛的 :ref:`事件监听 <event_toplevel>` 系统，贯穿于 Core 和 ORM。在 ORM 内，有多种事件监听器钩子，在 API 层面上记录在 :ref:`orm_event_toplevel` 。多年来，这些事件集合不断增长，包括许多非常有用的新事件以及一些不再那么相关的旧事件。本节将尝试介绍主要的事件钩子及其可能的使用场景。
+
+.. tab:: 英文
+
+    SQLAlchemy features an extensive :ref:`Event Listening <event_toplevel>`
+    system used throughout the Core and ORM.   Within the ORM, there are a
+    wide variety of event listener hooks, which are documented at an API
+    level at :ref:`orm_event_toplevel`.   This collection of events has
+    grown over the years to include lots of very useful new events as well
+    as some older events that aren't as relevant as they once were.  This
+    section will attempt to introduce the major event hooks and when they
+    might be used.
 
 .. _session_execute_events:
 
-Execute Events
+执行事件
 ---------------
+
+Execute Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionadded:: 1.4  The :class:`_orm.Session` now features a single
    comprehensive hook designed to intercept all SELECT statements made
@@ -33,8 +47,14 @@ be intercepted and modified.   The system makes use of the
 :class:`_orm.ORMExecuteState` object to represent the event state.
 
 
-Basic Query Interception
+基本查询拦截
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Basic Query Interception
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :meth:`_orm.SessionEvents.do_orm_execute` is firstly useful for any kind of
 interception of a query, which includes those emitted by
@@ -73,8 +93,14 @@ use with :class:`_orm.Query` and not with :term:`2.0 style` use of
 
 .. _do_orm_execute_global_criteria:
 
-Adding global WHERE / ON criteria
+添加全局 WHERE / ON 条件
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Adding global WHERE / ON criteria
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 One of the most requested query-extension features is the ability to add WHERE
 criteria to all occurrences of an entity in all queries.   This is achievable
@@ -164,8 +190,14 @@ to intercept all objects that extend from ``HasTimestamp`` and filter their
 
 .. _do_orm_execute_re_executing:
 
-Re-Executing Statements
+重新执行语句
 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Re-Executing Statements
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. deepalchemy:: the statement re-execution feature involves a slightly
    intricate recursive sequence, and is intended to solve the fairly hard
@@ -266,8 +298,14 @@ familiarize.
 
 .. _session_persistence_events:
 
-Persistence Events
+持久性事件
 ------------------
+
+Persistence Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Probably the most widely used series of events are the "persistence" events,
 which correspond to the :ref:`flush process<session_flushing>`.
@@ -277,6 +315,10 @@ UPDATE, and DELETE statements.
 
 ``before_flush()``
 ^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :meth:`.SessionEvents.before_flush` hook is by far the most generally
 useful event to use when an application wants to ensure that
@@ -301,6 +343,10 @@ examples such as :ref:`examples_versioned_history` and
 ``after_flush()``
 ^^^^^^^^^^^^^^^^^
 
+.. tab:: 中文
+
+.. tab:: 英文
+
 The :meth:`.SessionEvents.after_flush` hook is called after the SQL has been
 emitted for a flush process, but **before** the state of the objects that
 were flushed has been altered.  That is, you can still inspect
@@ -313,6 +359,10 @@ to the database based on what's observed to have changed.
 
 ``after_flush_postexec()``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :meth:`.SessionEvents.after_flush_postexec` is called soon after
 :meth:`.SessionEvents.after_flush`, but is invoked **after** the state of
@@ -334,8 +384,14 @@ hook continually adds new state to be flushed each time it is called.
 
 .. _session_persistence_mapper:
 
-Mapper-level Flush Events
+映射器级刷新事件
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mapper-level Flush Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In addition to the flush-level hooks, there is also a suite of hooks that are
 more fine-grained, in that they are called on a per-object basis and are broken
@@ -403,8 +459,14 @@ the correct state before it ever gets to the flush step.
 
 .. _session_lifecycle_events:
 
-Object Lifecycle Events
+对象生命周期事件
 -----------------------
+
+Object Lifecycle Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Another use case for events is to track the lifecycle of objects.  This
 refers to the states first introduced at :ref:`session_object_states`.
@@ -450,8 +512,14 @@ entering the persistent state::
         def detect_all_persistent(session, instance):
             print("object is now persistent: %s" % instance)
 
-Transient
+瞬态
 ^^^^^^^^^
+
+Transient
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 All mapped objects when first constructed start out as :term:`transient`.
 In this state, the object exists alone and doesn't have an association with
@@ -474,8 +542,14 @@ intercept all new objects for a particular declarative base::
     def intercept_init(instance, args, kwargs):
         print("new transient: %s" % instance)
 
-Transient to Pending
+瞬态到待处理
 ^^^^^^^^^^^^^^^^^^^^
+
+Transient to Pending
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The transient object becomes :term:`pending` when it is first associated
 with a :class:`.Session` via the :meth:`.Session.add` or :meth:`.Session.add_all`
@@ -488,8 +562,14 @@ the :meth:`.SessionEvents.transient_to_pending` event::
     def intercept_transient_to_pending(session, object_):
         print("transient to pending: %s" % object_)
 
-Pending to Persistent
+待处理到持久
 ^^^^^^^^^^^^^^^^^^^^^
+
+Pending to Persistent
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :term:`pending` object becomes :term:`persistent` when a flush
 proceeds and an INSERT statement takes place for the instance.  The object
@@ -500,8 +580,14 @@ now has an identity key.   Track pending to persistent with the
     def intercept_pending_to_persistent(session, object_):
         print("pending to persistent: %s" % object_)
 
-Pending to Transient
+待处理到瞬态
 ^^^^^^^^^^^^^^^^^^^^
+
+Pending to Transient
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :term:`pending` object can revert back to :term:`transient` if the
 :meth:`.Session.rollback` method is called before the pending object
@@ -513,8 +599,14 @@ for the object before it is flushed.  Track pending to transient with the
     def intercept_pending_to_transient(session, object_):
         print("transient to pending: %s" % object_)
 
-Loaded as Persistent
+加载为持久
 ^^^^^^^^^^^^^^^^^^^^
+
+Loaded as Persistent
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Objects can appear in the :class:`.Session` directly in the :term:`persistent`
 state when they are loaded from the database.   Tracking this state transition
@@ -528,8 +620,14 @@ state via this particular avenue::
     def intercept_loaded_as_persistent(session, object_):
         print("object loaded into persistent state: %s" % object_)
 
-Persistent to Transient
+持久到瞬态
 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Persistent to Transient
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The persistent object can revert to the transient state if the
 :meth:`.Session.rollback` method is called for a transaction where the
@@ -544,8 +642,14 @@ event hook::
     def intercept_persistent_to_transient(session, object_):
         print("persistent to transient: %s" % object_)
 
-Persistent to Deleted
+持久到已删除
 ^^^^^^^^^^^^^^^^^^^^^
+
+Persistent to Deleted
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The persistent object enters the :term:`deleted` state when an object
 marked for deletion is deleted from the database within the flush
@@ -571,8 +675,14 @@ Track the persistent to deleted transition with
     def intercept_persistent_to_deleted(session, object_):
         print("object was DELETEd, is now in deleted state: %s" % object_)
 
-Deleted to Detached
+已删除到分离
 ^^^^^^^^^^^^^^^^^^^
+
+Deleted to Detached
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The deleted object becomes :term:`detached` when the session's transaction
 is committed.  After the :meth:`.Session.commit` method is called, the
@@ -594,8 +704,14 @@ the deleted to detached transition using :meth:`.SessionEvents.deleted_to_detach
     accessor.
 
 
-Persistent to Detached
+持久到分离
 ^^^^^^^^^^^^^^^^^^^^^^
+
+Persistent to Detached
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The persistent object becomes :term:`detached` when the object is de-associated
 with the :class:`.Session`, via the :meth:`.Session.expunge`,
@@ -614,8 +730,14 @@ Track objects as they move from persistent to detached using the
     def intercept_persistent_to_detached(session, object_):
         print("object became detached: %s" % object_)
 
-Detached to Persistent
+分离到持久
 ^^^^^^^^^^^^^^^^^^^^^^
+
+Detached to Persistent
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The detached object becomes persistent when it is re-associated with a
 session using the :meth:`.Session.add` or equivalent method.  Track
@@ -626,8 +748,14 @@ objects moving back to persistent from detached using the
     def intercept_detached_to_persistent(session, object_):
         print("object became persistent again: %s" % object_)
 
-Deleted to Persistent
+已删除到持久
 ^^^^^^^^^^^^^^^^^^^^^
+
+Deleted to Persistent
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :term:`deleted` object can be reverted to the :term:`persistent`
 state when the transaction in which it was DELETEd was rolled back
@@ -641,8 +769,14 @@ moving back to the persistent state using the
 
 .. _session_transaction_events:
 
-Transaction Events
+事务事件
 ------------------
+
+Transaction Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Transaction events allow an application to be notified when transaction
 boundaries occur at the :class:`.Session` level as well as when the
@@ -672,8 +806,14 @@ objects.
   The rollback and commit events then refer to when the DBAPI connections
   themselves have received rollback or commit instructions directly.
 
-Attribute Change Events
+属性更改事件
 -----------------------
+
+Attribute Change Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The attribute change events allow interception of when specific attributes
 on an object are modified.  These events include :meth:`.AttributeEvents.set`,

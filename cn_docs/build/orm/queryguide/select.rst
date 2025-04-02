@@ -4,46 +4,80 @@
 
 .. include:: queryguide_nav_include.rst
 
-Writing SELECT statements for ORM Mapped Classes
+为 ORM 映射类编写 SELECT 语句
 ================================================
 
-.. admonition:: About this Document
+Writing SELECT statements for ORM Mapped Classes
 
-    This section makes use of ORM mappings first illustrated in the
-    :ref:`unified_tutorial`, shown in the section
-    :ref:`tutorial_declaring_mapped_classes`.
+.. tab:: 中文
 
-    :doc:`View the ORM setup for this page <_plain_setup>`.
+    .. admonition:: 关于本文档
+
+        本节使用了在 :ref:`unified_tutorial` 中首次介绍的 ORM 映射，展示在 :ref:`tutorial_declaring_mapped_classes` 部分。
+
+        :doc:`查看本页的 ORM 设置 <_plain_setup>`。
+
+    SELECT 语句由 :func:`_sql.select` 函数生成，该函数返回一个 :class:`_sql.Select` 对象。要返回的实体和/或 SQL 表达式（即“列”子句）以位置参数传递给函数。从那里，使用其他方法生成完整的语句，例如下面示例中的 :meth:`_sql.Select.where` 方法::
+
+        >>> from sqlalchemy import select
+        >>> stmt = select(User).where(User.name == "spongebob")
+
+    给定一个完整的 :class:`_sql.Select` 对象，为了在 ORM 中执行它以返回行，该对象被传递给 :meth:`_orm.Session.execute`，然后返回一个 :class:`.Result` 对象::
+
+        >>> result = session.execute(stmt)
+        {execsql}SELECT user_account.id, user_account.name, user_account.fullname
+        FROM user_account
+        WHERE user_account.name = ?
+        [...] ('spongebob',){stop}
+        >>> for user_obj in result.scalars():
+        ...     print(f"{user_obj.name} {user_obj.fullname}")
+        spongebob Spongebob Squarepants
+
+.. tab:: 英文
+
+    .. admonition:: About this Document
+
+        This section makes use of ORM mappings first illustrated in the
+        :ref:`unified_tutorial`, shown in the section
+        :ref:`tutorial_declaring_mapped_classes`.
+
+        :doc:`View the ORM setup for this page <_plain_setup>`.
 
 
-SELECT statements are produced by the :func:`_sql.select` function which
-returns a :class:`_sql.Select` object.  The entities and/or SQL expressions
-to return (i.e. the "columns" clause) are passed positionally to the
-function.  From there, additional methods are used to generate the complete
-statement, such as the :meth:`_sql.Select.where` method illustrated below::
+    SELECT statements are produced by the :func:`_sql.select` function which
+    returns a :class:`_sql.Select` object.  The entities and/or SQL expressions
+    to return (i.e. the "columns" clause) are passed positionally to the
+    function.  From there, additional methods are used to generate the complete
+    statement, such as the :meth:`_sql.Select.where` method illustrated below::
 
-    >>> from sqlalchemy import select
-    >>> stmt = select(User).where(User.name == "spongebob")
+        >>> from sqlalchemy import select
+        >>> stmt = select(User).where(User.name == "spongebob")
 
-Given a completed :class:`_sql.Select` object, in order to execute it within
-the ORM to get rows back, the object is passed to
-:meth:`_orm.Session.execute`, where a :class:`.Result` object is then
-returned::
+    Given a completed :class:`_sql.Select` object, in order to execute it within
+    the ORM to get rows back, the object is passed to
+    :meth:`_orm.Session.execute`, where a :class:`.Result` object is then
+    returned::
 
-    >>> result = session.execute(stmt)
-    {execsql}SELECT user_account.id, user_account.name, user_account.fullname
-    FROM user_account
-    WHERE user_account.name = ?
-    [...] ('spongebob',){stop}
-    >>> for user_obj in result.scalars():
-    ...     print(f"{user_obj.name} {user_obj.fullname}")
-    spongebob Spongebob Squarepants
+        >>> result = session.execute(stmt)
+        {execsql}SELECT user_account.id, user_account.name, user_account.fullname
+        FROM user_account
+        WHERE user_account.name = ?
+        [...] ('spongebob',){stop}
+        >>> for user_obj in result.scalars():
+        ...     print(f"{user_obj.name} {user_obj.fullname}")
+        spongebob Spongebob Squarepants
 
 
 .. _orm_queryguide_select_columns:
 
+选择 ORM 实体和属性
+-------------------------------------
+
 Selecting ORM Entities and Attributes
---------------------------------------
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 The :func:`_sql.select` construct accepts ORM entities, including mapped
 classes as well as class-level attributes representing mapped columns, which
@@ -59,8 +93,14 @@ column-level data.
 
 .. _orm_queryguide_select_orm_entities:
 
-Selecting ORM Entities
+选择 ORM 实体
 ^^^^^^^^^^^^^^^^^^^^^^
+
+Selecting ORM Entities
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Below we select from the ``User`` entity, producing a :class:`_sql.Select`
 that selects from the mapped :class:`_schema.Table` to which ``User`` is mapped::
@@ -109,8 +149,14 @@ then calling upon :meth:`_engine.Result.scalars` to receive a
 
 .. _orm_queryguide_select_multiple_entities:
 
-Selecting Multiple ORM Entities Simultaneously
+同时选择多个 ORM 实体
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Selecting Multiple ORM Entities Simultaneously
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_sql.select` function accepts any number of ORM classes and/or
 column expressions at once, including that multiple ORM classes may be
@@ -172,8 +218,14 @@ above using this form as well::
     ORDER BY user_account.id, address.id
 
 
+选择单个属性
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Selecting Individual Attributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 The attributes on a mapped class, such as ``User.name`` and
 ``Address.email_address``, can be used just like :class:`_schema.Column` or
@@ -205,8 +257,14 @@ The above statement returns :class:`.Row` objects with ``name`` and
 
 .. _bundles:
 
+使用捆绑包对选定属性进行分组
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Grouping Selected Attributes with Bundles
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 The :class:`_orm.Bundle` construct is an extensible ORM-only construct that
 allows sets of column expressions to be grouped in result rows::
@@ -241,8 +299,14 @@ order to return alternate data structures; see
 
 .. _orm_queryguide_orm_aliases:
 
-Selecting ORM Aliases
+选择 ORM 别名
 ^^^^^^^^^^^^^^^^^^^^^
+
+Selecting ORM Aliases
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As discussed in the tutorial at :ref:`tutorial_using_aliases`, to create a
 SQL alias of an ORM entity is achieved using the :func:`_orm.aliased`
@@ -285,8 +349,14 @@ passed as well::
 
 .. _orm_queryguide_selecting_text:
 
-Getting ORM Results from Textual Statements
+从文本语句获取 ORM 结果
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Getting ORM Results from Textual Statements
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 The ORM supports loading of entities from SELECT statements that come from
 other sources. The typical use case is that of a textual SELECT statement,
@@ -356,8 +426,14 @@ perspective.
 
 .. _orm_queryguide_subqueries:
 
+从子查询中选择实体
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Selecting Entities from Subqueries
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 The :func:`_orm.aliased` construct discussed in the previous section
 can be used with any :class:`_sql.Subquery` construct that comes from a
@@ -392,8 +468,14 @@ derived from those entities, such as in the example below::
 
 .. _orm_queryguide_unions:
 
+从 UNION 和其他集合操作中选择实体
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Selecting Entities from UNIONs and other set operations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 The :func:`_sql.union` and :func:`_sql.union_all` functions are the most
 common set operations, which along with other set operations such as
@@ -456,8 +538,14 @@ and order by criteria based on its exported columns::
 
 .. _orm_queryguide_joins:
 
-Joins
+连接
 -----
+
+Joins
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :meth:`_sql.Select.join` and :meth:`_sql.Select.join_from` methods
 are used to construct SQL JOINs against a SELECT statement.
@@ -472,8 +560,14 @@ queries is mostly equivalent, minus legacy use cases, to the usage of the
 
 .. _orm_queryguide_simple_relationship_join:
 
+简单关系连接
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Simple Relationship Joins
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 Consider a mapping between two classes ``User`` and ``Address``,
 with a relationship ``User.addresses`` representing a collection
@@ -509,8 +603,14 @@ how the "ON" portion of the JOIN should be constructed.
    :ref:`orm_queryguide_select_multiple_entities` for examples of both
    of these forms.
 
+链接多个连接
+^^^^^^^^^^^^^^^^^^^^^^^
+
 Chaining Multiple Joins
-^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 To construct a chain of joins, multiple :meth:`_sql.Select.join` calls may be
 used.  The relationship-bound attribute implies both the left and right side of
@@ -557,8 +657,14 @@ on the ``User.addresses`` relationship to our chain of joins::
     JOIN address ON user_account.id = address.user_id
 
 
-Joins to a Target Entity
+连接到目标实体
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+Joins to a Target Entity
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A second form of :meth:`_sql.Select.join` allows any mapped entity or core
 selectable construct as a target.   In this usage, :meth:`_sql.Select.join`
@@ -586,8 +692,14 @@ appropriate constraint to use is ambiguous.
 
 .. _queryguide_join_onclause:
 
-Joins to a Target with an ON Clause
+使用 ON 子句连接到目标
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Joins to a Target with an ON Clause
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The third calling form allows both the target entity as well
 as the ON clause to be passed explicitly.    A example that includes
@@ -616,8 +728,14 @@ when joining to aliased entities; see the section
 
 .. _orm_queryguide_join_on_augmented:
 
-Combining Relationship with Custom ON Criteria
+将关系与自定义 ON 条件相结合
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Combining Relationship with Custom ON Criteria
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ON clause generated by the :func:`_orm.relationship` construct may
 be augmented with additional criteria.  This is useful both for
@@ -652,8 +770,14 @@ email addresses:
 
 .. _orm_queryguide_joining_relationships_aliased:
 
+使用关系在别名目标之间进行连接
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Using Relationship to join between aliased targets
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 When constructing joins using :func:`_orm.relationship`-bound attributes to indicate
 the ON clause, the two-argument syntax illustrated in
@@ -717,8 +841,14 @@ construct directly::
 
 .. _orm_queryguide_join_subqueries:
 
-Joining to Subqueries
+连接到子查询
 ^^^^^^^^^^^^^^^^^^^^^
+
+Joining to Subqueries
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The target of a join may be any "selectable" entity which includes
 subqueries.   When using the ORM, it is typical
@@ -763,8 +893,14 @@ so that we can refer to it by name in the result row::
     [...] ('pat999@aol.com',){stop}
     User(id=3, name='patrick', fullname='Patrick Star') Address(id=4, email_address='pat999@aol.com')
 
-Joining to Subqueries along Relationship paths
+沿关系路径连接到子查询
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Joining to Subqueries along Relationship paths
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The subquery form illustrated in the previous section
 may be expressed with more specificity using a
@@ -790,8 +926,14 @@ of the join::
     [...] ('pat999@aol.com',){stop}
     User(id=3, name='patrick', fullname='Patrick Star') Address(id=4, email_address='pat999@aol.com')
 
-Subqueries that Refer to Multiple Entities
+引用多个实体的子查询
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Subqueries that Refer to Multiple Entities
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A subquery that contains columns spanning more than one ORM entity may be
 applied to more than one :func:`_orm.aliased` construct at once, and
@@ -836,8 +978,14 @@ subquery once, but in a result-row context can return objects of both
 
 .. _orm_queryguide_select_from:
 
+设置连接中最左边的 FROM 子句
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Setting the leftmost FROM clause in a join
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 In cases where the left side of the current state of
 :class:`_sql.Select` is not in line with what we want to join from,
@@ -916,8 +1064,14 @@ be used::
 .. _orm_queryguide_relationship_operators:
 
 
-Relationship WHERE Operators
+关系 WHERE 运算符
 ----------------------------
+
+Relationship WHERE Operators
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 
 Besides the use of :func:`_orm.relationship` constructs within the
@@ -931,8 +1085,14 @@ the :meth:`.Select.where` method.
 
 .. _tutorial_relationship_exists:
 
-EXISTS forms: has() / any()
+EXISTS 形式：has() / any()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+EXISTS forms: has() / any()
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_sql.Exists` construct was first introduced in the
 :ref:`unified_tutorial` in the section :ref:`tutorial_exists`.  This object
@@ -996,8 +1156,14 @@ which belonged to "sandy":
 
 .. _orm_queryguide_relationship_common_operators:
 
-Relationship Instance Comparison Operators
+关系实例比较运算符
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Relationship Instance Comparison Operators
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. comment
 

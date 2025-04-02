@@ -1,50 +1,78 @@
-State Management
+状态管理
 ================
+
+State Management
 
 .. _session_object_states:
 
-Quickie Intro to Object States
+对象状态简介
 ------------------------------
 
-It's helpful to know the states which an instance can have within a session:
+Quickie Intro to Object States
 
-* **Transient** - an instance that's not in a session, and is not saved to the
-  database; i.e. it has no database identity. The only relationship such an
-  object has to the ORM is that its class has a :class:`_orm.Mapper` associated
-  with it.
+.. tab:: 中文
 
-* **Pending** - when you :meth:`~.Session.add` a transient
-  instance, it becomes pending. It still wasn't actually flushed to the
-  database yet, but it will be when the next flush occurs.
+    了解实例在会话中的可能状态是很有帮助的：
 
-* **Persistent** - An instance which is present in the session and has a record
-  in the database. You get persistent instances by either flushing so that the
-  pending instances become persistent, or by querying the database for
-  existing instances (or moving persistent instances from other sessions into
-  your local session).
+    * **Transient（临时状态）** - 一个不在会话中且未保存到数据库的实例；即它没有数据库身份。此类对象与 ORM 的唯一关系是其类关联了一个 :class:`_orm.Mapper`。
 
-* **Deleted** - An instance which has been deleted within a flush, but
-  the transaction has not yet completed.  Objects in this state are essentially
-  in the opposite of "pending" state; when the session's transaction is committed,
-  the object will move to the detached state.  Alternatively, when
-  the session's transaction is rolled back, a deleted object moves
-  *back* to the persistent state.
+    * **Pending（待处理状态）** - 当你使用 :meth:`~.Session.add` 添加一个临时实例时，它变为待处理状态。它尚未真正刷新到数据库，但会在下次刷新时进行。
 
-* **Detached** - an instance which corresponds, or previously corresponded,
-  to a record in the database, but is not currently in any session.
-  The detached object will contain a database identity marker, however
-  because it is not associated with a session, it is unknown whether or not
-  this database identity actually exists in a target database.  Detached
-  objects are safe to use normally, except that they have no ability to
-  load unloaded attributes or attributes that were previously marked
-  as "expired".
+    * **Persistent（持久状态）** - 一个存在于会话中且在数据库中有记录的实例。你可以通过刷新使待处理实例变为持久实例，或通过查询数据库获取现有实例（或将其他会话中的持久实例移动到你的本地会话中）来获得持久实例。
 
-For a deeper dive into all possible state transitions, see the
-section :ref:`session_lifecycle_events` which describes each transition
-as well as how to programmatically track each one.
+    * **Deleted（删除状态）** - 一个在刷新内被删除的实例，但事务尚未完成。处于此状态的对象本质上处于“待处理”状态的相反状态；当会话的事务提交时，该对象将移动到分离状态。或者，当会话的事务回滚时，已删除的对象将 *返回* 到持久状态。
+
+    * **Detached（分离状态）** - 一个对应或先前对应于数据库记录但当前不在任何会话中的实例。分离对象将包含一个数据库身份标记，但由于它不关联任何会话，因此无法确定此数据库身份是否实际存在于目标数据库中。分离对象通常是安全的，但它们无法加载未加载的属性或先前标记为“已过期”的属性。
+
+    有关所有可能状态转换的深入了解，请参阅 :ref:`session_lifecycle_events` 部分，该部分描述了每个转换以及如何以编程方式跟踪每个转换。
+
+.. tab:: 英文
+
+    It's helpful to know the states which an instance can have within a session:
+
+    * **Transient** - an instance that's not in a session, and is not saved to the
+      database; i.e. it has no database identity. The only relationship such an
+      object has to the ORM is that its class has a :class:`_orm.Mapper` associated
+      with it.
+
+    * **Pending** - when you :meth:`~.Session.add` a transient
+      instance, it becomes pending. It still wasn't actually flushed to the
+      database yet, but it will be when the next flush occurs.
+
+    * **Persistent** - An instance which is present in the session and has a record
+      in the database. You get persistent instances by either flushing so that the
+      pending instances become persistent, or by querying the database for
+      existing instances (or moving persistent instances from other sessions into
+      your local session).
+
+    * **Deleted** - An instance which has been deleted within a flush, but
+      the transaction has not yet completed.  Objects in this state are essentially
+      in the opposite of "pending" state; when the session's transaction is committed,
+      the object will move to the detached state.  Alternatively, when
+      the session's transaction is rolled back, a deleted object moves
+      *back* to the persistent state.
+
+    * **Detached** - an instance which corresponds, or previously corresponded,
+      to a record in the database, but is not currently in any session.
+      The detached object will contain a database identity marker, however
+      because it is not associated with a session, it is unknown whether or not
+      this database identity actually exists in a target database.  Detached
+      objects are safe to use normally, except that they have no ability to
+      load unloaded attributes or attributes that were previously marked
+      as "expired".
+
+    For a deeper dive into all possible state transitions, see the
+    section :ref:`session_lifecycle_events` which describes each transition
+    as well as how to programmatically track each one.
+
+获取对象的当前状态
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Getting the Current State of an Object
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The actual state of any mapped object can be viewed at any time using
 the :func:`_sa.inspect` function on a mapped instance; this function will
@@ -73,8 +101,14 @@ E.g.::
 
 .. _session_attributes:
 
-Session Attributes
+会话属性
 ------------------
+
+Session Attributes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`~sqlalchemy.orm.session.Session` itself acts somewhat like a
 set-like collection. All items present may be accessed using the iterator
@@ -112,8 +146,14 @@ all objects which have had changes since they were last loaded or saved (i.e.
 
 .. _session_referencing_behavior:
 
-Session Referencing Behavior
+会话引用行为
 ----------------------------
+
+Session Referencing Behavior
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Objects within the session are *weakly referenced*. This
 means that when they are dereferenced in the outside application, they fall
@@ -185,8 +225,14 @@ It may also be called for any :class:`.sessionmaker`::
 
 .. _unitofwork_merging:
 
-Merging
+合并
 -------
+
+Merging
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :meth:`~.Session.merge` transfers state from an
 outside object into a new or already existing instance within a session.   It
@@ -273,8 +319,14 @@ new session. Here's some examples:
   may want to use the ``load=False`` flag as well to avoid overhead and
   redundant SQL queries as the data is transferred.
 
-Merge Tips
+合并提示
 ~~~~~~~~~~
+
+Merge Tips
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :meth:`~.Session.merge` is an extremely useful method for many purposes.  However,
 it deals with the intricate border between objects that are transient/detached and
@@ -389,8 +441,14 @@ is a quick way to check::
     >>> # success
     >>> session.commit()
 
-Expunging
+清除
 ---------
+
+Expunging
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Expunge removes an object from the Session, sending persistent instances to
 the detached state, and pending instances to the transient state:
@@ -404,8 +462,14 @@ To remove all items, call :meth:`~.Session.expunge_all`
 
 .. _session_expire:
 
-Refreshing / Expiring
+刷新/过期
 ---------------------
+
+Refreshing / Expiring
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :term:`Expiring` means that the database-persisted data held inside a series
 of object attributes is erased, in such a way that when those attributes
@@ -539,8 +603,14 @@ be that of a column-mapped attribute::
     See :ref:`orm_queryguide_populate_existing` for further detail.
 
 
-What Actually Loads
+实际加载的内容
 ~~~~~~~~~~~~~~~~~~~
+
+What Actually Loads
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The SELECT statement that's emitted when an object marked with :meth:`~.Session.expire`
 or loaded with :meth:`~.Session.refresh` varies based on several factors, including:
@@ -587,8 +657,14 @@ or loaded with :meth:`~.Session.refresh` varies based on several factors, includ
   are set up as part of the mapping.
 
 
-When to Expire or Refresh
+何时过期或刷新
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When to Expire or Refresh
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.Session` uses the expiration feature automatically whenever
 the transaction referred to by the session ends.  Meaning, whenever :meth:`.Session.commit`

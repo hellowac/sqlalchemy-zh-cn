@@ -1,10 +1,17 @@
 .. _orm_internal_toplevel:
 
-ORM Internals
+ORM 内部
 =============
 
-Key ORM constructs, not otherwise covered in other
-sections, are listed here.
+ORM Internals
+
+.. tab:: 中文
+
+    其他章节未涉及的关键 ORM 构造在此列出。
+
+.. tab:: 英文
+
+    Key ORM constructs, not otherwise covered in other sections, are listed here.
 
 .. currentmodule:: sqlalchemy.orm
 

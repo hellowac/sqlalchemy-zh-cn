@@ -1,12 +1,16 @@
 .. _hybrids_toplevel:
 
-Hybrid Attributes
+混合属性
 =================
+
+Hybrid Attributes
 
 .. automodule:: sqlalchemy.ext.hybrid
 
-API Reference
+API 参考
 -------------
+
+API Reference
 
 .. autoclass:: hybrid_method
     :members:

@@ -1,13 +1,19 @@
 =================================
-Additional Persistence Techniques
+附加持久性技术
 =================================
 
-
+Additional Persistence Techniques
 
 .. _flush_embedded_sql_expressions:
 
-Embedding SQL Insert/Update Expressions into a Flush
+将 SQL 插入/更新表达式嵌入到刷新中
 ====================================================
+
+Embedding SQL Insert/Update Expressions into a Flush
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This feature allows the value of a database column to be set to a SQL
 expression instead of a literal value. It's especially useful for atomic
@@ -69,8 +75,14 @@ On PostgreSQL, the above :class:`.Session` will emit the following INSERT:
 
 .. _session_sql_expressions:
 
-Using SQL Expressions with Sessions
+将 SQL 表达式与会话结合使用
 ===================================
+
+Using SQL Expressions with Sessions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQL expressions and strings can be executed via the
 :class:`~sqlalchemy.orm.session.Session` within its transactional context.
@@ -131,8 +143,14 @@ proper context for the desired engine::
 
 .. _session_forcing_null:
 
-Forcing NULL on a column with a default
+在具有默认值的列上强制为 NULL
 =======================================
+
+Forcing NULL on a column with a default
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ORM considers any attribute that was never set on an object as a
 "default" case; the attribute will be omitted from the INSERT statement::
@@ -239,8 +257,14 @@ value and pass it through, rather than omitting it as a "missing" value::
 
 .. _orm_server_defaults:
 
-Fetching Server-Generated Defaults
+获取服务器生成的默认值
 ===================================
+
+Fetching Server-Generated Defaults
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As introduced in the sections :ref:`server_defaults` and :ref:`triggered_columns`,
 the Core supports the notion of database columns for which the database
@@ -270,8 +294,14 @@ are SQL phrases which return a server-generated value at the same time as the
 INSERT or UPDATE statement is invoked.   RETURNING is currently supported
 by PostgreSQL, Oracle Database, MariaDB 10.5, SQLite 3.35, and SQL Server.
 
-Case 1: non primary key, RETURNING or equivalent is supported
+情况 1：支持非主键、RETURNING 或等效项
 -------------------------------------------------------------
+
+Case 1: non primary key, RETURNING or equivalent is supported
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In this case, columns should be marked as :class:`.FetchedValue` or with an
 explicit :paramref:`_schema.Column.server_default`.   The ORM will
@@ -321,8 +351,14 @@ above table will look like:
    for UPDATE, so UPDATE RETURNING will require that UPDATE statements are
    emitted individually for each row being UPDATEd.
 
-Case 2: Table includes trigger-generated values which are not compatible with RETURNING
+情况 2：表包含与 RETURNING 不兼容的触发器生成的值
 ----------------------------------------------------------------------------------------
+
+Case 2: Table includes trigger-generated values which are not compatible with RETURNING
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ``"auto"`` setting of :paramref:`_orm.Mapper.eager_defaults` means that
 a backend that supports RETURNING will usually make use of RETURNING with
@@ -372,8 +408,14 @@ to retrieve the newly generated primary key value:
     :ref:`mssql_insert_behavior` - background on the SQL Server dialect's
     methods of fetching newly generated primary key values
 
-Case 3: non primary key, RETURNING or equivalent is not supported or not needed
+情况 3：不支持或不需要非主键、RETURNING 或等效项
 --------------------------------------------------------------------------------
+
+Case 3: non primary key, RETURNING or equivalent is not supported or not needed
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This case is the same as case 1 above, except we typically don't want to
 use :paramref:`.orm.Mapper.eager_defaults`, as its current implementation
@@ -418,8 +460,14 @@ A future release of SQLAlchemy may seek to improve the efficiency of
 eager defaults in the abcense of RETURNING to batch many rows within a
 single SELECT statement.
 
-Case 4: primary key, RETURNING or equivalent is supported
+情况 4：支持主键、RETURNING 或等效项
 ----------------------------------------------------------
+
+Case 4: primary key, RETURNING or equivalent is supported
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A primary key column with a server-generated value must be fetched immediately
 upon INSERT; the ORM can only access rows for which it has a primary key value,
@@ -497,8 +545,14 @@ An INSERT for the above table on SQL Server looks like:
 
     INSERT INTO my_table (data) OUTPUT inserted.timestamp VALUES (?)
 
-Case 5: primary key, RETURNING or equivalent is not supported
+情况 5：不支持主键、RETURNING 或等效项
 --------------------------------------------------------------
+
+Case 5: primary key, RETURNING or equivalent is not supported
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In this area we are generating rows for a database such as MySQL
 where some means of generating a default is occurring on the server, but is
@@ -514,8 +568,14 @@ explicit SQL expression.
    the primary key other than the usual single-column autoincrementing integer
    value.
 
-MySQL with DateTime primary key
+带有 DateTime 主键的 MySQL
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+MySQL with DateTime primary key
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Using the example of a :class:`.DateTime` column for MySQL, we add an explicit
 pre-execute-supported default using the "NOW()" SQL function::
@@ -534,8 +594,14 @@ to the column.  The SQL generated by the above is:
     INSERT INTO my_table (timestamp) VALUES (%s)
     ('2018-08-09 13:08:46',)
 
-MySQL with TIMESTAMP primary key
+带有 TIMESTAMP 主键的 MySQL
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+MySQL with TIMESTAMP primary key
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using the :class:`_types.TIMESTAMP` datatype with MySQL, MySQL ordinarily
 associates a server-side default with this datatype automatically.  However
@@ -570,8 +636,14 @@ INSERT looks like:
 
     :ref:`metadata_defaults_toplevel`
 
-Notes on eagerly fetching client invoked SQL expressions used for INSERT or UPDATE
+关于急切获取用于 INSERT 或 UPDATE 的客户端调用 SQL 表达式的说明
 -----------------------------------------------------------------------------------
+
+Notes on eagerly fetching client invoked SQL expressions used for INSERT or UPDATE
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The preceding examples indicate the use of :paramref:`_schema.Column.server_default`
 to create tables that include default-generation functions within their
@@ -635,27 +707,51 @@ clause:
 .. _orm_dml_returning_objects:
 
 
-Using INSERT, UPDATE and ON CONFLICT (i.e. upsert) to return ORM Objects
+使用 INSERT、UPDATE 和 ON CONFLICT（即 upsert）返回 ORM 对象
 ==========================================================================
+
+Using INSERT, UPDATE and ON CONFLICT (i.e. upsert) to return ORM Objects
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy 2.0 includes enhanced capabilities for emitting several varieties
 of ORM-enabled INSERT, UPDATE, and upsert statements.  See the
 document at :doc:`queryguide/dml` for documentation.  For upsert, see
 :ref:`orm_queryguide_upsert`.
 
-Using PostgreSQL ON CONFLICT with RETURNING to return upserted ORM objects
+使用 PostgreSQL ON CONFLICT 和 RETURNING 返回更新的 ORM对象
 ---------------------------------------------------------------------------
+
+Using PostgreSQL ON CONFLICT with RETURNING to return upserted ORM objects
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This section has moved to :ref:`orm_queryguide_upsert`.
 
 
 .. _session_partitioning:
 
-Partitioning Strategies (e.g. multiple database backends per Session)
+分区策略（例如每个会话有多个数据库后端）
 =====================================================================
 
-Simple Vertical Partitioning
+Partitioning Strategies (e.g. multiple database backends per Session)
+
+.. tab:: 中文
+
+.. tab:: 英文
+
+简单垂直分区
 ----------------------------
+
+Simple Vertical Partitioning
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Vertical partitioning places different classes, class hierarchies,
 or mapped tables, across multiple databases, by configuring the
@@ -736,8 +832,14 @@ class' hierarchy will be chosen to represent which engine should be used.
     :paramref:`.Session.binds`
 
 
-Coordination of Transactions for a multiple-engine Session
+多引擎会话的事务协调
 ----------------------------------------------------------
+
+Coordination of Transactions for a multiple-engine Session
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 One caveat to using multiple bound engines is in the case where a commit
 operation may fail on one backend after the commit has succeeded on another.
@@ -757,8 +859,14 @@ phase transaction feature when the backend supports it, by setting the
 
 .. _session_custom_partitioning:
 
-Custom Vertical Partitioning
+自定义垂直分区
 ----------------------------
+
+Custom Vertical Partitioning
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 More comprehensive rule-based class-level partitioning can be built by
 overriding the :meth:`.Session.get_bind` method.   Below we illustrate
@@ -827,8 +935,14 @@ keyword, described at :ref:`declarative_abstract`.
 
     `Django-style Database Routers in SQLAlchemy <https://techspot.zzzeek.org/2012/01/11/django-style-database-routers-in-sqlalchemy/>`_  - blog post on a more comprehensive example of :meth:`.Session.get_bind`
 
-Horizontal Partitioning
+水平分区
 -----------------------
+
+Horizontal Partitioning
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Horizontal partitioning partitions the rows of a single table (or a set of
 tables) across multiple databases.    The SQLAlchemy :class:`.Session`
@@ -839,8 +953,14 @@ ORM extension.   An example of use is at: :ref:`examples_sharding`.
 
 .. _bulk_operations:
 
-Bulk Operations
+批量操作
 ===============
+
+Bulk Operations
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. legacy::
 

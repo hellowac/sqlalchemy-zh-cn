@@ -1,98 +1,173 @@
 .. _self_referential:
 
-Adjacency List Relationships
+邻接表关系
 ----------------------------
 
-The **adjacency list** pattern is a common relational pattern whereby a table
-contains a foreign key reference to itself, in other words is a
-**self referential relationship**. This is the most common
-way to represent hierarchical data in flat tables.  Other methods
-include **nested sets**, sometimes called "modified preorder",
-as well as **materialized path**.  Despite the appeal that modified preorder
-has when evaluated for its fluency within SQL queries, the adjacency list model is
-probably the most appropriate pattern for the large majority of hierarchical
-storage needs, for reasons of concurrency, reduced complexity, and that
-modified preorder has little advantage over an application which can fully
-load subtrees into the application space.
+Adjacency List Relationships
 
-.. seealso::
+.. tab:: 中文
 
-    This section details the single-table version of a self-referential
-    relationship. For a self-referential relationship that uses a second table
-    as an association table, see the section
-    :ref:`self_referential_many_to_many`.
+    **邻接列表** 模式是一种常见的关系模式，其中一个表包含对自身的外键引用，换句话说就是一个 **自引用关系** 。这是在平面表中表示层次数据的最常见方法。其他方法包括 **嵌套集合** ，有时称为“修改的先序”，以及 **物化路径** 。尽管修改的先序在SQL查询中的流畅性上具有吸引力，但由于并发性、降低复杂性以及修改的先序对于能够完全加载子树到应用空间的应用程序没有太大优势的原因，邻接列表模型可能是大多数层次存储需求中最合适的模式。
 
-In this example, we'll work with a single mapped
-class called ``Node``, representing a tree structure::
+    .. seealso::
 
-    class Node(Base):
-        __tablename__ = "node"
-        id = mapped_column(Integer, primary_key=True)
-        parent_id = mapped_column(Integer, ForeignKey("node.id"))
-        data = mapped_column(String(50))
-        children = relationship("Node")
+        本节详细介绍了单表版本的自引用关系。有关使用第二个表作为关联表的自引用关系，请参阅
+        :ref:`self_referential_many_to_many` 部分。
 
-With this structure, a graph such as the following:
+    在本例中，我们将使用一个名为 ``Node`` 的映射类来表示树结构::
 
-.. sourcecode:: text
+        class Node(Base):
+            __tablename__ = "node"
+            id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer, ForeignKey("node.id"))
+            data = mapped_column(String(50))
+            children = relationship("Node")
 
-    root --+---> child1
-           +---> child2 --+--> subchild1
-           |              +--> subchild2
-           +---> child3
+    使用这种结构，一个如下的图：
 
-Would be represented with data such as:
+    .. sourcecode:: text
 
-.. sourcecode:: text
+        root --+---> child1
+               +---> child2 --+--> subchild1
+               |              +--> subchild2
+               +---> child3
 
-    id       parent_id     data
-    ---      -------       ----
-    1        NULL          root
-    2        1             child1
-    3        1             child2
-    4        3             subchild1
-    5        3             subchild2
-    6        1             child3
+    将表示为如下数据：
 
-The :func:`_orm.relationship` configuration here works in the
-same way as a "normal" one-to-many relationship, with the
-exception that the "direction", i.e. whether the relationship
-is one-to-many or many-to-one, is assumed by default to
-be one-to-many.   To establish the relationship as many-to-one,
-an extra directive is added known as :paramref:`_orm.relationship.remote_side`, which
-is a :class:`_schema.Column` or collection of :class:`_schema.Column` objects
-that indicate those which should be considered to be "remote"::
+    .. sourcecode:: text
 
-    class Node(Base):
-        __tablename__ = "node"
-        id = mapped_column(Integer, primary_key=True)
-        parent_id = mapped_column(Integer, ForeignKey("node.id"))
-        data = mapped_column(String(50))
-        parent = relationship("Node", remote_side=[id])
+        id       parent_id     data
+        ---      -------       ----
+        1        NULL          root
+        2        1             child1
+        3        1             child2
+        4        3             subchild1
+        5        3             subchild2
+        6        1             child3
 
-Where above, the ``id`` column is applied as the :paramref:`_orm.relationship.remote_side`
-of the ``parent`` :func:`_orm.relationship`, thus establishing
-``parent_id`` as the "local" side, and the relationship
-then behaves as a many-to-one.
+    这里的 :func:`_orm.relationship` 配置与“普通”一对多关系的工作方式相同，唯一的例外是“方向”，即关系是一对多还是多对一，默认情况下假定为一对多。要建立多对一关系，需要添加一个额外的指令，称为 :paramref:`_orm.relationship.remote_side`，它是一个 :class:`_schema.Column` 或一组 :class:`_schema.Column` 对象，指示那些应被视为“远程”的列::
 
-As always, both directions can be combined into a bidirectional
-relationship using two :func:`_orm.relationship` constructs linked by
-:paramref:`_orm.relationship.back_populates`::
+        class Node(Base):
+            __tablename__ = "node"
+            id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer, ForeignKey("node.id"))
+            data = mapped_column(String(50))
+            parent = relationship("Node", remote_side=[id])
 
-    class Node(Base):
-        __tablename__ = "node"
-        id = mapped_column(Integer, primary_key=True)
-        parent_id = mapped_column(Integer, ForeignKey("node.id"))
-        data = mapped_column(String(50))
-        children = relationship("Node", back_populates="parent")
-        parent = relationship("Node", back_populates="children", remote_side=[id])
+    在上面的代码中， ``id`` 列被应用为 ``parent`` :func:`_orm.relationship` 的 :paramref:`_orm.relationship.remote_side`，从而将 ``parent_id`` 确立为“本地”端，关系然后表现为多对一。
 
-.. seealso::
+    一如既往，可以使用两个由 :paramref:`_orm.relationship.back_populates` 连接的 :func:`_orm.relationship` 构造将两个方向组合成双向关系::
 
-    :ref:`examples_adjacencylist` - working example, updated for SQLAlchemy 2.0
+        class Node(Base):
+            __tablename__ = "node"
+            id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer, ForeignKey("node.id"))
+            data = mapped_column(String(50))
+            children = relationship("Node", back_populates="parent")
+            parent = relationship("Node", back_populates="children", remote_side=[id])
+
+    .. seealso::
+
+        :ref:`examples_adjacencylist` - 更新后的 SQLAlchemy 2.0 实例
+
+.. tab:: 英文
+
+    The **adjacency list** pattern is a common relational pattern whereby a table
+    contains a foreign key reference to itself, in other words is a
+    **self referential relationship**. This is the most common
+    way to represent hierarchical data in flat tables.  Other methods
+    include **nested sets**, sometimes called "modified preorder",
+    as well as **materialized path**.  Despite the appeal that modified preorder
+    has when evaluated for its fluency within SQL queries, the adjacency list model is
+    probably the most appropriate pattern for the large majority of hierarchical
+    storage needs, for reasons of concurrency, reduced complexity, and that
+    modified preorder has little advantage over an application which can fully
+    load subtrees into the application space.
+
+    .. seealso::
+
+        This section details the single-table version of a self-referential
+        relationship. For a self-referential relationship that uses a second table
+        as an association table, see the section
+        :ref:`self_referential_many_to_many`.
+
+    In this example, we'll work with a single mapped
+    class called ``Node``, representing a tree structure::
+
+        class Node(Base):
+            __tablename__ = "node"
+            id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer, ForeignKey("node.id"))
+            data = mapped_column(String(50))
+            children = relationship("Node")
+
+    With this structure, a graph such as the following:
+
+    .. sourcecode:: text
+
+        root --+---> child1
+            +---> child2 --+--> subchild1
+            |              +--> subchild2
+            +---> child3
+
+    Would be represented with data such as:
+
+    .. sourcecode:: text
+
+        id       parent_id     data
+        ---      -------       ----
+        1        NULL          root
+        2        1             child1
+        3        1             child2
+        4        3             subchild1
+        5        3             subchild2
+        6        1             child3
+
+    The :func:`_orm.relationship` configuration here works in the
+    same way as a "normal" one-to-many relationship, with the
+    exception that the "direction", i.e. whether the relationship
+    is one-to-many or many-to-one, is assumed by default to
+    be one-to-many.   To establish the relationship as many-to-one,
+    an extra directive is added known as :paramref:`_orm.relationship.remote_side`, which
+    is a :class:`_schema.Column` or collection of :class:`_schema.Column` objects
+    that indicate those which should be considered to be "remote"::
+
+        class Node(Base):
+            __tablename__ = "node"
+            id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer, ForeignKey("node.id"))
+            data = mapped_column(String(50))
+            parent = relationship("Node", remote_side=[id])
+
+    Where above, the ``id`` column is applied as the :paramref:`_orm.relationship.remote_side`
+    of the ``parent`` :func:`_orm.relationship`, thus establishing
+    ``parent_id`` as the "local" side, and the relationship
+    then behaves as a many-to-one.
+
+    As always, both directions can be combined into a bidirectional
+    relationship using two :func:`_orm.relationship` constructs linked by
+    :paramref:`_orm.relationship.back_populates`::
+
+        class Node(Base):
+            __tablename__ = "node"
+            id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer, ForeignKey("node.id"))
+            data = mapped_column(String(50))
+            children = relationship("Node", back_populates="parent")
+            parent = relationship("Node", back_populates="children", remote_side=[id])
+
+    .. seealso::
+
+        :ref:`examples_adjacencylist` - working example, updated for SQLAlchemy 2.0
+
+复合邻接表
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Composite Adjacency Lists
-~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A sub-category of the adjacency list relationship is the rare
 case where a particular column is present on both the "local" and
@@ -129,8 +204,14 @@ the "remote" side.
 
 .. _self_referential_query:
 
-Self-Referential Query Strategies
+自引用查询策略
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Self-Referential Query Strategies
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Querying of self-referential structures works like any other query::
 
@@ -170,8 +251,14 @@ looks like:
 
 .. _self_referential_eager_loading:
 
-Configuring Self-Referential Eager Loading
+配置自引用预加载
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Configuring Self-Referential Eager Loading
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Eager loading of relationships occurs using joins or outerjoins from parent to
 child table during a normal query operation, such that the parent and its

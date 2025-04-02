@@ -5,31 +5,49 @@
 
 .. _largecollections:
 
-Working with Large Collections
+使用大型集合
 ==============================
 
-The default behavior of :func:`_orm.relationship` is to fully load
-the contents of collections into memory, based on a configured
-:ref:`loader strategy <orm_queryguide_relationship_loaders>` that controls
-when and how these contents are loaded from the database.  Related collections
-may be loaded into memory not just when they are accessed, or eagerly loaded,
-but in most cases will require population when the collection
-itself is mutated, as well as in cases where the owning object is to be
-deleted by the unit of work system.
+Working with Large Collections
 
-When a related collection is potentially very large, it may not be feasible
-for such a collection to be populated into memory under any circumstances,
-as the operation may be overly consuming of time, network and memory
-resources.
+.. tab:: 中文
 
-This section includes API features intended to allow :func:`_orm.relationship`
-to be used with large collections while maintaining adequate performance.
+    :func:`_orm.relationship` 的默认行为是根据配置的 :ref:`加载策略 <orm_queryguide_relationship_loaders>` 将集合的内容完全加载到内存中，该策略控制何时以及如何从数据库加载这些内容。相关集合不仅可以在访问时加载到内存中，或提前加载，但在大多数情况下，当集合本身发生变化时，以及在工作单元系统要删除所属对象时，也需要填充。
+
+    当相关集合可能非常大时，在任何情况下都可能不适合将这样的集合填充到内存中，因为该操作可能会过度消耗时间、网络和内存资源。
+
+    本节包括旨在允许 :func:`_orm.relationship` 与大型集合一起使用的 API 功能，同时保持足够的性能。
+
+.. tab:: 英文
+
+    The default behavior of :func:`_orm.relationship` is to fully load
+    the contents of collections into memory, based on a configured
+    :ref:`loader strategy <orm_queryguide_relationship_loaders>` that controls
+    when and how these contents are loaded from the database.  Related collections
+    may be loaded into memory not just when they are accessed, or eagerly loaded,
+    but in most cases will require population when the collection
+    itself is mutated, as well as in cases where the owning object is to be
+    deleted by the unit of work system.
+
+    When a related collection is potentially very large, it may not be feasible
+    for such a collection to be populated into memory under any circumstances,
+    as the operation may be overly consuming of time, network and memory
+    resources.
+
+    This section includes API features intended to allow :func:`_orm.relationship`
+    to be used with large collections while maintaining adequate performance.
 
 
 .. _write_only_relationship:
 
-Write Only Relationships
+只写关系
 ------------------------
+
+Write Only Relationships
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The **write only** loader strategy is the primary means of configuring a
 :func:`_orm.relationship` that will remain writeable, but will not load
@@ -129,8 +147,14 @@ are deleted, as well as when ``AccountTransaction`` objects are removed from the
 .. versionadded:: 2.0  Added "Write only" relationship loaders.
 
 
-Creating and Persisting New Write Only Collections
+创建和保存新的只写集合
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creating and Persisting New Write Only Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The write-only collection allows for direct assignment of the collection
 as a whole **only** for :term:`transient` or :term:`pending` objects.
@@ -181,8 +205,14 @@ loaded into memory in order to reconcile the old entries with the new ones::
     sqlalchemy.exc.InvalidRequestError: Collection "Account.account_transactions" does not
     support implicit iteration; collection replacement operations can't be used
 
-Adding New Items to an Existing Collection
+向现有集合添加新项目
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Adding New Items to an Existing Collection
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For write-only collections of persistent objects,
 modifications to the collection using :term:`unit of work` processes may proceed
@@ -219,8 +249,14 @@ The items added above are held in a pending queue within the
 :class:`_orm.Session` until the next flush, at which point they are INSERTed
 into the database, assuming the added objects were previously :term:`transient`.
 
-Querying Items
+查询项目
 ~~~~~~~~~~~~~~
+
+Querying Items
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_orm.WriteOnlyCollection` does not at any point store a reference
 to the current contents of the collection, nor does it have any behavior where
@@ -273,8 +309,14 @@ rows::
     [AccountTransaction(amount=-29.50, timestamp='...'), AccountTransaction(amount=-800.00, timestamp='...')]
 
 
-Removing Items
+删除项目
 ~~~~~~~~~~~~~~
+
+Removing Items
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Individual items that are loaded in the :term:`persistent`
 state against the current :class:`_orm.Session` may be marked for removal
@@ -304,8 +346,14 @@ deleting the corresponding association row for a
 
 
 
-Bulk INSERT of New Items
+批量插入新项目
 ~~~~~~~~~~~~~~~~~~~~~~~~
+
+Bulk INSERT of New Items
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.WriteOnlyCollection` can generate DML constructs such as
 :class:`_dml.Insert` objects, which may be used in an ORM context to
@@ -345,8 +393,14 @@ related collection::
     :ref:`relationship_patterns_o2m` - at :ref:`relationship_patterns`
 
 
-Many to Many Collections
+多对多集合
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+Many to Many Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For a **many to many collection**, the relationship between two classes
 involves a third table that is configured using the
@@ -424,8 +478,14 @@ at once with a new ``BankAudit`` object::
     :ref:`relationships_many_to_many` - at :ref:`relationship_patterns`
 
 
-Bulk UPDATE and DELETE of Items
+批量更新和删除项目
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Bulk UPDATE and DELETE of Items
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In a similar way in which :class:`.WriteOnlyCollection` can generate
 :class:`.Select` constructs with WHERE criteria pre-established, it can
@@ -433,8 +493,14 @@ also generate :class:`.Update` and :class:`.Delete` constructs with that
 same WHERE criteria, to allow criteria-oriented UPDATE and DELETE statements
 against the elements in a large collection.
 
-One To Many Collections
+一对多集合
 ^^^^^^^^^^^^^^^^^^^^^^^
+
+One To Many Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As is the case with INSERT, this feature is most straightforward with **one
 to many collections**.
@@ -469,8 +535,14 @@ DELETE statement that is invoked in the same way::
   <...>
   {stop}
 
-Many to Many Collections
+多对多集合
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+Many to Many Collections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. tip::
 
@@ -528,8 +600,14 @@ produce a :term:`scalar subquery`::
     [...] (' (audited)', 1)
     <...>
 
-Write Only Collections - API Documentation
+只写集合 - API 文档
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Write Only Collections - API Documentation
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 
 .. autoclass:: sqlalchemy.orm.WriteOnlyCollection
@@ -544,8 +622,14 @@ Write Only Collections - API Documentation
 
 .. _dynamic_relationship:
 
-Dynamic Relationship Loaders
+动态关系加载器
 ----------------------------
+
+Dynamic Relationship Loaders
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. legacy::  The "dynamic" lazy loader strategy is the legacy form of what is
    now the "write_only" strategy described in the section
@@ -618,8 +702,14 @@ automatically each time the collection is about to emit a
 query.
 
 
-Dynamic Relationship Loaders - API
+动态关系加载器 - API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Dynamic Relationship Loaders - API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autoclass:: sqlalchemy.orm.AppenderQuery
     :members:
@@ -630,8 +720,14 @@ Dynamic Relationship Loaders - API
 
 .. _collections_raiseload:
 
-Setting RaiseLoad
+设置 RaiseLoad
 -----------------
+
+Setting RaiseLoad
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A "raise"-loaded relationship will raise an
 :exc:`~sqlalchemy.exc.InvalidRequestError` where the attribute would normally
@@ -659,8 +755,14 @@ loader option.
 
     :ref:`prevent_lazy_with_raiseload`
 
-Using Passive Deletes
+使用被动删除
 ---------------------
+
+Using Passive Deletes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 An important aspect of collection management in SQLAlchemy is that when an
 object that refers to a collection is deleted, SQLAlchemy needs to consider the

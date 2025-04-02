@@ -7,11 +7,23 @@
 
 
 =============================
-ORM API Features for Querying
+用于查询的 ORM API 功能
 =============================
 
+ORM API Features for Querying
+
+.. tab:: 中文
+
+.. tab:: 英文
+
+ORM 加载器选项
+------------------
+
 ORM Loader Options
--------------------
+
+.. tab:: 中文
+    
+.. tab:: 英文
 
 Loader options are objects which, when passed to the
 :meth:`_sql.Select.options` method of a :class:`.Select` object or similar SQL
@@ -30,8 +42,15 @@ sections below.
 
 .. _orm_queryguide_execution_options:
 
-ORM Execution Options
+
+ORM 执行选项
 ---------------------
+
+ORM Execution Options
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ORM-level execution options are keyword options that may be associated with a
 statement execution using either the
@@ -56,8 +75,14 @@ style will be illustrated for examples.
 
 .. _orm_queryguide_populate_existing:
 
+填充现有
+^^^^^^^^^^^^^^^^^
+
 Populate Existing
-^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文^
 
 The ``populate_existing`` execution option ensures that, for all rows
 loaded, the corresponding instances in the :class:`_orm.Session` will
@@ -125,8 +150,14 @@ The ``populate_existing`` execution option is equvialent to the
 
 .. _orm_queryguide_autoflush:
 
-Autoflush
+自动刷新
 ^^^^^^^^^
+
+Autoflush
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This option, when passed as ``False``, will cause the :class:`_orm.Session`
 to not invoke the "autoflush" step.  It is equivalent to using the
@@ -150,8 +181,14 @@ The ``autoflush`` execution option is equvialent to the
 
 .. _orm_queryguide_yield_per:
 
+使用 Yield Per 获取大量结果集
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Fetching Large Result Sets with Yield Per
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文^
 
 The ``yield_per`` execution option is an integer value which will cause the
 :class:`_engine.Result` to buffer only a limited number of rows and/or ORM
@@ -284,8 +321,14 @@ will have the same result as that of the ``yield_per`` execution option.
 
 .. _queryguide_identity_token:
 
-Identity Token
+身份令牌
 ^^^^^^^^^^^^^^
+
+Identity Token
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. doctest-disable:
 
@@ -417,8 +460,14 @@ The above logic takes place automatically when using the
 
 .. _queryguide_inspection:
 
-Inspecting entities and columns from ORM-enabled SELECT and DML statements
+检查启用 ORM 的 SELECT 和 DML 语句中的实体和列
 ==========================================================================
+
+Inspecting entities and columns from ORM-enabled SELECT and DML statements
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_sql.select` construct, as well as the :func:`_sql.insert`, :func:`_sql.update`
 and :func:`_sql.delete` constructs (for the latter DML constructs, as of SQLAlchemy
@@ -515,8 +564,14 @@ in a manner roughly similar to that of :attr:`.Select.column_descriptions`::
 
 .. _queryguide_additional:
 
-Additional ORM API Constructs
+其他 ORM API 构造
 =============================
+
+Additional ORM API Constructs
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 
 .. autofunction:: sqlalchemy.orm.aliased

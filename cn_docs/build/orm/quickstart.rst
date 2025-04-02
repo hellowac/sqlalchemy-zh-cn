@@ -1,8 +1,10 @@
 .. _orm_quickstart:
 
 
-ORM Quick Start
+ORM 快速入门
 ===============
+
+ORM Quick Start
 
 For new users who want to quickly see what basic ORM use looks like, here's an
 abbreviated form of the mappings and examples used in the
@@ -18,8 +20,10 @@ description of each of the concepts being illustrated here.
     :func:`_orm.mapped_column`.   See the section
     :ref:`whatsnew_20_orm_declarative_typing` for migration information.
 
-Declare Models
+声明模型
 ---------------
+
+Declare Models
 
 Here, we define module-level constructs that will form the structures
 which we will be querying from the database.  This structure, known as a
@@ -124,8 +128,10 @@ methods such as ``__repr__()`` generated automatically, using dataclasses. More
 on dataclass mapping at :ref:`orm_declarative_native_dataclasses`.
 
 
-Create an Engine
+创建引擎
 ------------------
+
+Create an Engine
 
 
 The :class:`_engine.Engine` is a **factory** that can create new
@@ -144,8 +150,10 @@ for convenience::
 
 A full intro to the :class:`_engine.Engine` starts at :ref:`tutorial_engine`.
 
-Emit CREATE TABLE DDL
+发出 CREATE TABLE DDL
 ----------------------
+
+Emit CREATE TABLE DDL
 
 
 Using our table metadata and our engine, we can generate our schema at once
@@ -180,8 +188,10 @@ A lot just happened from that bit of Python code we wrote.  For a complete
 overview of what's going on on with Table metadata, proceed in the
 Tutorial at :ref:`tutorial_working_with_metadata`.
 
-Create Objects and Persist
+创建对象并持久化
 ---------------------------
+
+Create Objects and Persist
 
 We are now ready to insert data in the database.  We accomplish this by
 creating instances of ``User`` and ``Address`` classes, which have
@@ -250,8 +260,10 @@ Basics on creating a :class:`_orm.Session` are at
 Then, some varieties of basic persistence operations are introduced
 at :ref:`tutorial_inserting_orm`.
 
-Simple SELECT
+简单 SELECT
 --------------
+
+Simple SELECT
 
 With some rows in the database, here's the simplest form of emitting a SELECT
 statement to load some objects. To create SELECT statements, we use the
@@ -288,8 +300,10 @@ SQL IN operator.
 More detail on how to select objects and individual columns is at
 :ref:`tutorial_selecting_orm_entities`.
 
-SELECT with JOIN
+使用 JOIN 进行 SELECT
 -----------------
+
+SELECT with JOIN
 
 It's very common to query amongst multiple tables at once, and in SQL
 the JOIN keyword is the primary way this happens.   The :class:`_sql.Select`
@@ -320,8 +334,10 @@ method :meth:`_sql.ColumnOperators.__eq__` to produce a SQL criteria object.
 Some more background on the concepts above are at
 :ref:`tutorial_select_where_clause` and :ref:`tutorial_select_join`.
 
-Make Changes
+进行更改
 ------------
+
+Make Changes
 
 The :class:`_orm.Session` object, in conjunction with our ORM-mapped classes
 ``User`` and ``Address``, automatically track changes to the objects as they
@@ -363,8 +379,10 @@ items using more or less SQL is introduced at :ref:`tutorial_orm_loader_strategi
 A detailed walkthrough on ORM data manipulation starts at
 :ref:`tutorial_orm_data_manipulation`.
 
-Some Deletes
+进行一些删除
 ------------
+
+Some Deletes
 
 All things must come to an end, as is the case for some of our database
 rows - here's a quick demonstration of two different forms of deletion, both
@@ -449,8 +467,10 @@ The Tutorial discusses ORM deletion at :ref:`tutorial_orm_deleting`.
 Background on object expiration is at :ref:`session_expiring`; cascades
 are discussed in depth at :ref:`unitofwork_cascades`.
 
-Learn the above concepts in depth
+深入了解上述概念
 ---------------------------------
+
+Learn the above concepts in depth
 
 For a new user, the above sections were likely a whirlwind tour.   There's a
 lot of important concepts in each step above that weren't covered.   With a

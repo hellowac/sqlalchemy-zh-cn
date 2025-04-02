@@ -13,21 +13,39 @@
 
 .. _loading_joined_inheritance:
 
-Writing SELECT statements for Inheritance Mappings
+为继承映射编写 SELECT 语句
 ==================================================
 
-.. admonition:: About this Document
+Writing SELECT statements for Inheritance Mappings
 
-    This section makes use of ORM mappings configured using
-    the :ref:`ORM Inheritance <inheritance_toplevel>` feature,
-    described at :ref:`inheritance_toplevel`.  The emphasis will be on
-    :ref:`joined_inheritance` as this is the most intricate ORM querying
-    case.
+.. tab:: 中文
 
-    :doc:`View the ORM setup for this page <_inheritance_setup>`.
+    .. admonition:: 关于本文档
+
+        本节使用了配置为 :ref:`ORM 继承 <inheritance_toplevel>` 功能的 ORM 映射，详述在 :ref:`inheritance_toplevel`。重点将放在 :ref:`joined_inheritance` 上，因为这是最复杂的 ORM 查询案例。
+
+        :doc:`查看本页的 ORM 设置 <_inheritance_setup>`。
+
+.. tab:: 英文
+
+    .. admonition:: About this Document
+
+        This section makes use of ORM mappings configured using
+        the :ref:`ORM Inheritance <inheritance_toplevel>` feature,
+        described at :ref:`inheritance_toplevel`.  The emphasis will be on
+        :ref:`joined_inheritance` as this is the most intricate ORM querying
+        case.
+
+        :doc:`View the ORM setup for this page <_inheritance_setup>`.
+
+从基类与特定子类中进行选择
+------------------------------------------------------
 
 SELECTing from the base class vs. specific sub-classes
-------------------------------------------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A SELECT statement constructed against a class in a joined inheritance
 hierarchy will query against the table to which the class is mapped, as well as
@@ -111,8 +129,14 @@ constructs that provide solutions to these two issues in different ways, the
 
 .. _polymorphic_selectin:
 
-Using selectin_polymorphic()
+使用 selectin_polymorphic()
 ----------------------------
+
+Using selectin_polymorphic()
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -179,8 +203,14 @@ objects that were loaded without any additional SQL statements being emitted::
 
 .. _polymorphic_selectin_as_loader_option_target:
 
-Applying selectin_polymorphic() to an existing eager load
+将 selectin_polymorphic() 应用于现有的即时加载
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Applying selectin_polymorphic() to an existing eager load
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -239,8 +269,14 @@ we only indicate the additional target subclasses we wish to load::
 
 .. _polymorphic_selectin_w_loader_options:
 
-Applying loader options to the subclasses loaded by selectin_polymorphic
+将加载器选项应用于 selectin_polymorphic 加载的子类
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Applying loader options to the subclasses loaded by selectin_polymorphic
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The SELECT statements emitted by :func:`_orm.selectin_polymorphic` are themselves
 ORM statements, so we may also add other loader options (such as those
@@ -288,8 +324,14 @@ this collection on all ``Manager`` objects, where the sub-attributes of
 
 .. _polymorphic_selectin_as_loader_option_target_plus_opts:
 
-Applying loader options when selectin_polymorphic is itself a sub-option
+当 selectin_polymorphic 本身是子选项时应用加载器选项
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Applying loader options when selectin_polymorphic is itself a sub-option
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -347,8 +389,14 @@ examples to load ``Company.employees``, also loading the attributes for the
     manager: Mr. Krabs paperwork: [Paperwork('Secret Recipes'), Paperwork('Krabby Patty Orders')]
 
 
-Configuring selectin_polymorphic() on mappers
+在映射器上配置 selectin_polymorphic()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Configuring selectin_polymorphic() on mappers
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The behavior of :func:`_orm.selectin_polymorphic` may be configured on specific
 mappers so that it takes place by default, by using the
@@ -395,8 +443,14 @@ emitted.
 
 .. _with_polymorphic:
 
-Using with_polymorphic()
+使用 with_polymorphic()
 ------------------------
+
+Using with_polymorphic()
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -458,8 +512,14 @@ with simple SELECT statements using only JOINs emitted on a per-table basis.
 
 .. _with_polymorphic_subclass_attributes:
 
-Filtering Subclass Attributes with with_polymorphic()
+使用 with_polymorphic() 过滤子类属性
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Filtering Subclass Attributes with with_polymorphic()
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_orm.with_polymorphic` construct makes available the attributes
 on the included subclass mappers, by including namespaces that allow
@@ -496,8 +556,14 @@ construct to create criteria against both classes at once::
 
 .. _with_polymorphic_aliasing:
 
-Using aliasing with with_polymorphic
+使用 with_polymorphic 进行别名
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using aliasing with with_polymorphic
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_orm.with_polymorphic` construct, as a special case of
 :func:`_orm.aliased`, also provides the basic feature that :func:`_orm.aliased`
@@ -614,8 +680,14 @@ using alternative polymorphic selectables in general.
 
 .. _with_polymorphic_mapper_config:
 
-Configuring with_polymorphic() on mappers
+在映射器上配置 with_polymorphic()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Configuring with_polymorphic() on mappers
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As is the case with :func:`_orm.selectin_polymorphic`, the
 :func:`_orm.with_polymorphic` construct also supports a mapper-configured
@@ -760,8 +832,14 @@ basis only as needed.
 
 .. _inheritance_of_type:
 
-Joining to specific sub-types or with_polymorphic() entities
+连接到特定子类型或 with_polymorphic() 实体
 ------------------------------------------------------------
+
+Joining to specific sub-types or with_polymorphic() entities
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As a :func:`_orm.with_polymorphic` entity is a special case of :func:`_orm.aliased`,
 in order to treat a polymorphic entity as the target of a join, specifically
@@ -827,8 +905,14 @@ point of view.
 
 .. _eagerloading_polymorphic_subtypes:
 
-Eager Loading of Polymorphic Subtypes
+即时加载多态子类型
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Eager Loading of Polymorphic Subtypes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The use of :meth:`_orm.PropComparator.of_type` illustrated with the
 :meth:`.Select.join` method in the previous section may also be applied
@@ -871,8 +955,14 @@ section :ref:`polymorphic_selectin_as_loader_option_target`.
 
 .. _loading_single_inheritance:
 
-SELECT Statements for Single Inheritance Mappings
+单一继承映射的 SELECT 语句
 -------------------------------------------------
+
+SELECT Statements for Single Inheritance Mappings
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -931,8 +1021,14 @@ the ``Engineer`` entity is performed::
 
 
 
-Optimizing Attribute Loads for Single Inheritance
+优化单一继承的属性加载
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Optimizing Attribute Loads for Single Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ..  Setup code, not for display
 
@@ -1034,8 +1130,14 @@ entity automatically::
     employee.manager_name, employee.engineer_info
     FROM employee
 
-Inheritance Loading API
+继承加载 API
 -----------------------
+
+Inheritance Loading API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: sqlalchemy.orm.with_polymorphic
 

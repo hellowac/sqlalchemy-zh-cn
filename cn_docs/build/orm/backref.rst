@@ -1,7 +1,14 @@
 .. _relationships_backref:
 
+使用旧版“backref”关系参数
+-------------------------------------------------
+
 Using the legacy 'backref' relationship parameter
---------------------------------------------------
+
+.. tab:: 中文
+
+
+.. tab:: 英文
 
 .. note:: The :paramref:`_orm.relationship.backref` keyword should be considered
    legacy, and use of :paramref:`_orm.relationship.back_populates` with explicit
@@ -97,9 +104,15 @@ and discussion of this behavior is in the :ref:`unified_tutorial`
 at :ref:`tutorial_orm_related_objects`.
 
 
-Backref Default Arguments
+Backref 默认参数
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Backref Default Arguments
+
+.. tab:: 中文
+
+
+.. tab:: 英文
 Since :paramref:`_orm.relationship.backref` generates a whole new
 :func:`_orm.relationship`, the generation process by default
 will attempt to include corresponding arguments in the new
@@ -154,9 +167,15 @@ many-to-many association table, as well as the "join" arguments
 that these two arguments should also be "reversed" when generating
 the opposite side.
 
-Specifying Backref Arguments
+指定 Backref 参数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Specifying Backref Arguments
+
+.. tab:: 中文
+
+
+.. tab:: 英文
 Lots of other arguments for a "backref" are not implicit, and
 include arguments like
 :paramref:`_orm.relationship.lazy`,

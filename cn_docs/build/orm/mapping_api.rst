@@ -1,8 +1,10 @@
 
 .. currentmodule:: sqlalchemy.orm
 
-Class Mapping API
+类映射 API
 =================
+
+Class Mapping API
 
 .. autoclass:: registry
     :members:

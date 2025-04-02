@@ -1,30 +1,60 @@
 .. _relationship_patterns:
 
-Basic Relationship Patterns
+基本关系模式
 ---------------------------
 
-A quick walkthrough of the basic relational patterns, which in this section are illustrated
-using :ref:`Declarative <orm_explicit_declarative_base>` style mappings
-based on the use of the :class:`_orm.Mapped` annotation type.
+Basic Relationship Patterns
 
-The setup for each of the following sections is as follows::
+.. tab:: 中文
 
-    from __future__ import annotations
-    from typing import List
+    快速演练基础关系模式，在本节中使用基于 :class:`_orm.Mapped` 注解类型的 :ref:`声明式 <orm_explicit_declarative_base>` 风格映射进行说明。
 
-    from sqlalchemy import ForeignKey
-    from sqlalchemy import Integer
-    from sqlalchemy.orm import Mapped
-    from sqlalchemy.orm import mapped_column
-    from sqlalchemy.orm import DeclarativeBase
-    from sqlalchemy.orm import relationship
+    以下各节的设置如下::
+
+        from __future__ import annotations
+        from typing import List
+
+        from sqlalchemy import ForeignKey
+        from sqlalchemy import Integer
+        from sqlalchemy.orm import Mapped
+        from sqlalchemy.orm import mapped_column
+        from sqlalchemy.orm import DeclarativeBase
+        from sqlalchemy.orm import relationship
 
 
-    class Base(DeclarativeBase):
-        pass
+        class Base(DeclarativeBase):
+            pass
+
+.. tab:: 英文
+
+    A quick walkthrough of the basic relational patterns, which in this section are illustrated
+    using :ref:`Declarative <orm_explicit_declarative_base>` style mappings
+    based on the use of the :class:`_orm.Mapped` annotation type.
+
+    The setup for each of the following sections is as follows::
+
+        from __future__ import annotations
+        from typing import List
+
+        from sqlalchemy import ForeignKey
+        from sqlalchemy import Integer
+        from sqlalchemy.orm import Mapped
+        from sqlalchemy.orm import mapped_column
+        from sqlalchemy.orm import DeclarativeBase
+        from sqlalchemy.orm import relationship
+
+
+        class Base(DeclarativeBase):
+            pass
+
+声明式与命令式形式
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Declarative vs. Imperative Forms
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As SQLAlchemy has evolved, different ORM configurational styles have emerged.
 For examples in this section and others that use annotated
@@ -104,8 +134,14 @@ styles will be noted as needed.
 
 .. _relationship_patterns_o2m:
 
-One To Many
+一对多
 ~~~~~~~~~~~
+
+One To Many
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A one to many relationship places a foreign key on the child table referencing
 the parent.  :func:`_orm.relationship` is then specified on the parent, as referencing
@@ -149,8 +185,14 @@ as the value for :paramref:`_orm.relationship.back_populates` on the other::
 
 .. _relationship_patterns_o2m_collection:
 
-Using Sets, Lists, or other Collection Types for One To Many
+使用集合、列表或其他集合类型实现一对多
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using Sets, Lists, or other Collection Types for One To Many
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Using annotated Declarative mappings, the type of collection used for the
 :func:`_orm.relationship` is derived from the collection type passed to the
@@ -175,8 +217,14 @@ class to use as a collection may be passed using the
     to dictionaries.
 
 
-Configuring Delete Behavior for One to Many
+配置一对多的删除行为
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Configuring Delete Behavior for One to Many
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 It is often the case that all ``Child`` objects should be deleted
 when their owning ``Parent`` is deleted.  To configure this behavior,
@@ -196,8 +244,14 @@ it is deassociated from its parent.  This behavior is described at
 
 .. _relationship_patterns_m2o:
 
-Many To One
+多对一
 ~~~~~~~~~~~
+
+Many To One
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Many to one places a foreign key in the parent table referencing the child.
 :func:`_orm.relationship` is declared on the parent, where a new scalar-holding
@@ -241,8 +295,14 @@ as the value for :paramref:`_orm.relationship.back_populates` on the other::
 
 .. _relationship_patterns_nullable_m2o:
 
-Nullable Many-to-One
+可空多对一
 ^^^^^^^^^^^^^^^^^^^^
+
+Nullable Many-to-One
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In the preceding example, the ``Parent.child`` relationship is not typed as
 allowing ``None``; this follows from the ``Parent.child_id`` column itself
@@ -302,8 +362,14 @@ for background on this behavior.
 
 .. _relationships_one_to_one:
 
-One To One
+一对一
 ~~~~~~~~~~
+
+One To One
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 One To One is essentially a :ref:`relationship_patterns_o2m`
 relationship from a foreign key perspective, but indicates that there will
@@ -383,8 +449,14 @@ are specific :ref:`cascade <unitofwork_cascades>` behaviors set up.
    the effective value of the :paramref:`_orm.relationship.uselist`
    parameter from a given :class:`_orm.Mapped` annotation.
 
-Setting uselist=False for non-annotated configurations
+为非注释配置设置 uselist=False
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Setting uselist=False for non-annotated configurations
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using :func:`_orm.relationship` without the benefit of :class:`_orm.Mapped`
 annotations, the one-to-one pattern can be enabled using the
@@ -409,8 +481,14 @@ Declarative configuration below::
 
 .. _relationships_many_to_many:
 
-Many To Many
+多对多
 ~~~~~~~~~~~~
+
+Many To Many
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Many to Many adds an association table between two classes. The association
 table is nearly always given as a Core :class:`_schema.Table` object or
@@ -478,8 +556,14 @@ with which to link::
             Column("right_id", ForeignKey("right_table.id"), primary_key=True),
         )
 
+设置双向多对多
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Setting Bi-Directional Many-to-many
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文^
 
 For a bidirectional relationship, both sides of the relationship contain a
 collection.  Specify using :paramref:`_orm.relationship.back_populates`, and
@@ -526,8 +610,14 @@ for each :func:`_orm.relationship` specify the common association table::
             secondary=association_table, back_populates="children"
         )
 
-Using a late-evaluated form for the "secondary" argument
+使用后期评估形式作为“次要”参数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using a late-evaluated form for the "secondary" argument
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :paramref:`_orm.relationship.secondary` parameter of
 :func:`_orm.relationship` also accepts two different "late evaluated" forms,
@@ -536,8 +626,14 @@ including string table name as well as lambda callable.   See the section
 examples.
 
 
-Using Sets, Lists, or other Collection Types for Many To Many
+使用集合、列表或其他集合类型实现多对多
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using Sets, Lists, or other Collection Types for Many To Many
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Configuration of collections for a Many to Many relationship is identical
 to that of :ref:`relationship_patterns_o2m`, as described at
@@ -565,8 +661,14 @@ class to use as a collection may be passed using the
 
 .. _relationships_many_to_many_deletion:
 
-Deleting Rows from the Many to Many Table
+从多对多表中删除行
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Deleting Rows from the Many to Many Table
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A behavior which is unique to the :paramref:`_orm.relationship.secondary`
 argument to :func:`_orm.relationship` is that the :class:`_schema.Table` which
@@ -624,8 +726,14 @@ deleted - see :ref:`unitofwork_cascades` for information on this feature.
 
 .. _association_pattern:
 
-Association Object
+关联对象
 ~~~~~~~~~~~~~~~~~~
+
+Association Object
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The association object pattern is a variant on many-to-many: it's used when an
 association table contains additional columns beyond those which are foreign
@@ -765,8 +873,14 @@ associated object, and a second to a target attribute.
 
 .. _association_pattern_w_m2m:
 
+将关联对象与多对多访问模式相结合
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Combining Association Object with Many-to-Many Access Patterns
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tab:: 中文
+    
+.. tab:: 英文^
 
 As mentioned in the previous section, the association object pattern does not
 automatically integrate with usage of the many-to-many pattern against the same
@@ -935,8 +1049,14 @@ view.  This extension is known as the :ref:`Association Proxy <associationproxy_
 
 .. _orm_declarative_relationship_eval:
 
-Late-Evaluation of Relationship Arguments
+关系参数的后期评估
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Late-Evaluation of Relationship Arguments
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Most of the examples in the preceding sections illustrate mappings
 where the various :func:`_orm.relationship` constructs refer to their target
@@ -1104,8 +1224,14 @@ that will be passed to ``eval()`` are:
 
 .. _orm_declarative_table_adding_relationship:
 
-Adding Relationships to Mapped Classes After Declaration
+在声明后向映射类添加关系
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Adding Relationships to Mapped Classes After Declaration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 It should also be noted that in a similar way as described at
 :ref:`orm_declarative_table_adding_columns`, any :class:`_orm.MapperProperty`
@@ -1156,8 +1282,14 @@ the target class.
 
 .. _orm_declarative_relationship_secondary_eval:
 
-Using a late-evaluated form for the "secondary" argument of many-to-many
+使用后期评估形式作为多对多的“次要”参数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using a late-evaluated form for the "secondary" argument of many-to-many
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Many-to-many relationships make use of the
 :paramref:`_orm.relationship.secondary` parameter, which ordinarily

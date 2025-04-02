@@ -1,10 +1,22 @@
-Special Relationship Persistence Patterns
+特殊关系持久性模式
 =========================================
+
+Special Relationship Persistence Patterns
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. _post_update:
 
-Rows that point to themselves / Mutually Dependent Rows
+指向自身的行/相互依赖的行
 -------------------------------------------------------
+
+Rows that point to themselves / Mutually Dependent Rows
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This is a very specific case where relationship() must perform an INSERT and a
 second UPDATE in order to properly populate a row (and vice versa an UPDATE
@@ -183,8 +195,14 @@ the foreign key for the purposes of joining and cross-population.
 
 .. _passive_updates:
 
-Mutable Primary Keys / Update Cascades
+可变主键/更新级联
 --------------------------------------
+
+Mutable Primary Keys / Update Cascades
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When the primary key of an entity changes, related items
 which reference the primary key must also be updated as
@@ -233,8 +251,14 @@ should be enabled, using the configuration described at
     :paramref:`.orm.mapper.passive_updates` - similar feature on :class:`_orm.Mapper`
 
 
-Simulating limited ON UPDATE CASCADE without foreign key support
+模拟有限的 ON UPDATE CASCADE 而不支持外键
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Simulating limited ON UPDATE CASCADE without foreign key support
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In those cases when a database that does not support referential integrity
 is used, and natural primary keys with mutable values are in play,

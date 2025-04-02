@@ -1,7 +1,13 @@
 .. _inheritance_toplevel:
 
-Mapping Class Inheritance Hierarchies
+映射类继承层次结构
 =====================================
+
+Mapping Class Inheritance Hierarchies
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy supports three forms of inheritance:
 
@@ -27,8 +33,14 @@ return objects of multiple types.
 
 .. _joined_inheritance:
 
-Joined Table Inheritance
+连接表继承
 ------------------------
+
+Joined Table Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In joined table inheritance, each class along a hierarchy of classes
 is represented by a distinct table.  Querying for a particular subclass
@@ -168,8 +180,14 @@ automatically populate the ``employee.type`` column with the correct
 "discriminator" value in this case ``"engineer"``,
 ``"manager"``, or ``"employee"``, as appropriate.
 
-Relationships with Joined Inheritance
+具有连接继承的关系
 +++++++++++++++++++++++++++++++++++++
+
+Relationships with Joined Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Relationships are fully supported with joined table inheritance.   The
 relationship involving a joined-inheritance class should target the class
@@ -253,8 +271,14 @@ Above, the ``Manager`` class will have a ``Manager.company`` attribute;
 ``Company`` will have a ``Company.managers`` attribute that always
 loads against a join of the ``employee`` and ``manager`` tables together.
 
-Loading Joined Inheritance Mappings
+加载连接继承映射
 +++++++++++++++++++++++++++++++++++
+
+Loading Joined Inheritance Mappings
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 See the section :ref:`inheritance_loading_toplevel` for background
 on inheritance loading techniques, including configuration of tables
@@ -262,8 +286,14 @@ to be queried both at mapper configuration time as well as query time.
 
 .. _single_inheritance:
 
-Single Table Inheritance
+单表继承
 ------------------------
+
+Single Table Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Single table inheritance represents all attributes of all subclasses
 within a single table.  A particular subclass that has attributes unique
@@ -327,8 +357,14 @@ be populated for those rows that correspond to that particular subclass.
 
 .. _orm_inheritance_column_conflicts:
 
-Resolving Column Conflicts with ``use_existing_column``
+使用 ``use_existing_column`` 解决列冲突
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Resolving Column Conflicts with ``use_existing_column``
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Note in the previous section that the ``manager_name`` and ``engineer_info`` columns
 are "moved up" to be applied to ``Employee.__table__``, as a result of their
@@ -466,8 +502,14 @@ from a reusable mixin class::
             "polymorphic_identity": "manager",
         }
 
-Relationships with Single Table Inheritance
+具有单表继承的关系
 +++++++++++++++++++++++++++++++++++++++++++
+
+Relationships with Single Table Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Relationships are fully supported with single table inheritance.   Configuration
 is done in the same manner as that of joined inheritance; a foreign key
@@ -559,8 +601,14 @@ limits rows to those with ``type = 'manager'``.
 
 .. _orm_inheritance_abstract_poly:
 
-Building Deeper Hierarchies with ``polymorphic_abstract``
+使用 ``polymorphic_abstract`` 构建更深层次的层次结构
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Building Deeper Hierarchies with ``polymorphic_abstract``
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionadded:: 2.0
 
@@ -724,8 +772,14 @@ across ``Company.technologists`` and ``Company.executives`` individually:
     still extending from a mapped superclass.
 
 
-Loading Single Inheritance Mappings
+加载单继承映射
 +++++++++++++++++++++++++++++++++++
+
+Loading Single Inheritance Mappings
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The loading techniques for single-table inheritance are mostly identical to
 those used for joined-table inheritance, and a high degree of abstraction is
@@ -739,8 +793,14 @@ configuration time as well as query time.
 
 .. _concrete_inheritance:
 
-Concrete Table Inheritance
+具体表继承
 --------------------------
+
+Concrete Table Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Concrete inheritance maps each subclass to its own distinct table, each
 of which contains all columns necessary to produce an instance of that class.
@@ -818,8 +878,14 @@ Two critical points should be noted:
 
 .. _concrete_polymorphic:
 
-Concrete Polymorphic Loading Configuration
+具体多态加载配置
 ++++++++++++++++++++++++++++++++++++++++++
+
+Concrete Polymorphic Loading Configuration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Polymorphic loading with concrete inheritance requires that a specialized
 SELECT is configured against each base class that should have polymorphic
@@ -944,8 +1010,14 @@ particular subclass.
 
 .. _abstract_concrete_base:
 
-Abstract Concrete Classes
+抽象具体类
 +++++++++++++++++++++++++
+
+Abstract Concrete Classes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The concrete mappings illustrated thus far show both the subclasses as well
 as the base class mapped to individual tables.   In the concrete inheritance
@@ -1097,8 +1169,14 @@ attributes.
     :class:`.AbstractConcreteBase`
 
 
-Classical and Semi-Classical Concrete Polymorphic Configuration
+经典和半经典具体多态配置
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Classical and Semi-Classical Concrete Polymorphic Configuration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The Declarative configurations illustrated with :class:`.ConcreteBase`
 and :class:`.AbstractConcreteBase` are equivalent to two other forms
@@ -1269,8 +1347,14 @@ that we omit the ``employee`` table.
 
 
 
-Relationships with Concrete Inheritance
+具有具体继承的关系
 +++++++++++++++++++++++++++++++++++++++
+
+Relationships with Concrete Inheritance
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In a concrete inheritance scenario, mapping relationships is challenging
 since the distinct classes do not share a table.    If the relationships
@@ -1399,8 +1483,14 @@ The above limitation is related to the current implementation, including
 that concrete inheriting classes do not share any of the attributes of
 the superclass and therefore need distinct relationships to be set up.
 
-Loading Concrete Inheritance Mappings
+加载具体继承映射
 +++++++++++++++++++++++++++++++++++++
+
+Loading Concrete Inheritance Mappings
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The options for loading with concrete inheritance are limited; generally,
 if polymorphic loading is configured on the mapper using one of the

@@ -1,9 +1,16 @@
 .. _mapping_columns_toplevel:
 
-Mapping Table Columns
+映射表格列
 =====================
 
-This section has been integrated into the
-:ref:`orm_declarative_table_config_toplevel` section.
+Mapping Table Columns
+
+.. tab:: 中文
+
+    本节已集成到 :ref:`orm_declarative_table_config_toplevel` 部分。
+
+.. tab:: 英文
+
+    This section has been integrated into the :ref:`orm_declarative_table_config_toplevel` section.
 
 

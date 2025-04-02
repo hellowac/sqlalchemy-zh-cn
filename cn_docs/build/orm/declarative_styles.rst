@@ -1,8 +1,10 @@
 .. _orm_declarative_styles_toplevel:
 
 ==========================
-Declarative Mapping Styles
+声明式映射样式
 ==========================
+
+Declarative Mapping Styles
 
 As introduced at :ref:`orm_declarative_mapping`, the **Declarative Mapping** is
 the typical way that mappings are constructed in modern SQLAlchemy.   This
@@ -14,8 +16,10 @@ mapper configuration.
 
 .. _orm_declarative_generated_base_class:
 
-Using a Declarative Base Class
+使用声明性基类
 -------------------------------
+
+Using a Declarative Base Class
 
 The most common approach is to generate a "Declarative Base" class by
 subclassing the :class:`_orm.DeclarativeBase` superclass::
@@ -113,8 +117,10 @@ mapping.
 
 .. _orm_declarative_decorator:
 
-Declarative Mapping using a Decorator (no declarative base)
+使用装饰器进行声明性映射（无声明性基类）
 ------------------------------------------------------------
+
+Declarative Mapping using a Decorator (no declarative base)
 
 As an alternative to using the "declarative base" class is to apply
 declarative mapping to a class explicitly, using either an imperative technique
