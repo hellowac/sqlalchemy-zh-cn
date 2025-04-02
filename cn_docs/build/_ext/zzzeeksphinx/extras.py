@@ -1,9 +1,12 @@
 # mypy: ignore-errors
 
+from sphinx.application import Sphinx
+
 from docutils import nodes
 from docutils.nodes import Admonition
 from docutils.nodes import Element
 from docutils.nodes import topic
+from docutils.nodes import Node
 from docutils.parsers.rst.directives.admonitions import BaseAdmonition
 from docutils.parsers.rst.directives.body import Topic
 from sphinx.locale import _

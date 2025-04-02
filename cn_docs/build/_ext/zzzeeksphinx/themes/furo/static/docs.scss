@@ -120,7 +120,7 @@ form {
     display: inline;
 }
 
-label > input {
+label>input {
     margin: 10px 0px;
 }
 
@@ -131,6 +131,7 @@ a:visited,
 a:active {
     color: $hyperlink-color;
 }
+
 a:hover {
     color: $hyperlink-hover-color;
     text-decoration: underline;
@@ -150,7 +151,7 @@ a.headerlink {
     visibility: hidden;
 }
 
-*:hover > a.headerlink {
+*:hover>a.headerlink {
     visibility: visible;
 }
 
@@ -241,10 +242,12 @@ a.headerlink:hover {
     position: absolute;
     right: 20px;
     bottom: 14px;
+
     ul {
         padding: 0;
         margin: 0;
     }
+
     li {
         font-size: 0.9em;
         list-style-type: none;
@@ -294,8 +297,7 @@ a.headerlink:hover {
     left: 10px;
 }
 
-#sidebar-topnav {
-}
+#sidebar-topnav {}
 
 #sidebar-search {
     margin: 10px 0px 10px 0px;
@@ -348,6 +350,7 @@ a.headerlink:hover {
 }
 
 #docs-version-header {
+
     #sidebar-prerelease,
     #sidebar-legacy,
     #sidebar-current {
@@ -358,7 +361,7 @@ a.headerlink:hover {
 
 #docs-sidebar-inner {
     padding-left: 10px;
-    margin-right:40px;
+    margin-right: 40px;
     /*width:212px;*/
 
     font-family: $sidebar-font-family;
@@ -368,7 +371,7 @@ a.headerlink:hover {
     border: $outer-border-style;
     background-color: $sidebar-color;
 
-    > ul {
+    >ul {
         font-size: 0.85em;
     }
 
@@ -380,7 +383,7 @@ a.headerlink:hover {
         padding-bottom: 3px;
     }
 
-    li.current > span.link-container {
+    li.current>span.link-container {
         background-color: $highlighted-nav-link-background-color;
     }
 
@@ -409,6 +412,7 @@ a.headerlink:hover {
         margin: 10px 0px 10px 0px;
         padding: 0;
         list-style: none outside none;
+
         ul {
             margin-bottom: 0;
             margin-top: 0;
@@ -503,6 +507,7 @@ a.headerlink:hover {
     #fixed-sidebar {
         display: none;
     }
+
     #narrow-index-nav {
         display: block;
         padding: 1rem;
@@ -512,6 +517,7 @@ a.headerlink:hover {
     #docs-body.withsidebar {
         margin-left: 0;
     }
+
     #docs-bottom-navigation.withsidebar {
         margin-left: 0;
     }
@@ -519,6 +525,7 @@ a.headerlink:hover {
     #docs-narrow-top-navigation {
         display: block;
     }
+
     #docs-top-navigation-container h1 {
         position: absolute;
         top: 10px;
@@ -530,6 +537,7 @@ a.headerlink:hover {
     #docs-header {
         height: 124px;
     }
+
     #docs-version-header {
         position: absolute;
         left: 8px;
@@ -548,6 +556,7 @@ a.headerlink:hover {
         margin: 16px 4px 7px 5px;
         font-size: 1.6em;
     }
+
     p {
         margin: 0;
     }
@@ -585,6 +594,7 @@ a.headerlink:hover {
         border-top: none;
         padding-top: 0;
     }
+
     h3 {
         font-size: 1.4rem;
     }
@@ -600,9 +610,9 @@ a.headerlink:hover {
 
 /* SQL popup, code styles */
 
-.highlight {
-    background: none;
-}
+// .highlight {
+//     background: none;
+// }
 
 #docs-container {
     pre {
@@ -623,17 +633,20 @@ a.headerlink:hover {
     }
 
     /* python annotation key */
-    div.code-annotations-key, div.code-non-annotations-key {
-        position:absolute;
-        right:1.2em;
-        bottom:.05em;
+    div.code-annotations-key,
+    div.code-non-annotations-key {
+        position: absolute;
+        right: 1.2em;
+        bottom: .05em;
         width: 180px;
         background-size: 180px;
         height: 30px;
     }
+
     div.code-annotations-key {
         background-image: url("annotated.png");
     }
+
     div.code-non-annotations-key {
         background-image: url("nonannotated.png");
     }
@@ -680,10 +693,12 @@ a.headerlink:hover {
     margin: 10px -5px 10px -5px;
     border: 1px dashed;
 }
+
 .popup_sql,
 .show_sql {
     background-color: $popout-color;
 }
+
 /* SQL popups are always on at the moment, disable the button */
 .sql_link {
     display: none;
@@ -696,9 +711,9 @@ a.headerlink:hover {
     overflow: auto;
 }
 
-.section > table.docutils,
-.sliding-table > table.docutils,
-section > table.docutils {
+.section>table.docutils,
+.sliding-table>table.docutils,
+section>table.docutils {
     border: none;
     border-collapse: collapse;
 
@@ -743,6 +758,7 @@ th.field-name {
 
 td.field-body {
     padding-top: 1em;
+
     ul.first {
         padding-left: 17px;
         padding-top: 1em;
@@ -763,6 +779,7 @@ div.faq ul {
 .footnote-reference {
     vertical-align: super;
 }
+
 dl.footnote {
     font-size: 0.95em;
     border: $border-style;
@@ -776,10 +793,11 @@ dl.footnote {
         margin: -10px 0 0 -20px;
         padding: 0 10px 0 10px;
     }
+
     dd {
         margin-right: 40px;
 
-        p {
+        div.deepalchemy>.admonition-title p {
             margin-top: 0;
         }
     }
@@ -801,6 +819,7 @@ div.warning .admonition-title {
 }
 
 div {
+
     .admonition,
     .sidebar,
     .topic,
@@ -812,7 +831,7 @@ div {
         .sidebar-title,
         .topic-title {
             background-color: $box-header-color;
-            padding: $box-title-padding;
+            // padding: $box-title-padding;
 
             margin: 0 -20px 20px -20px;
 
@@ -822,13 +841,14 @@ div {
             border-bottom: $border-style;
         }
 
-        > p {
+        >p {
             font-size: 0.9em;
         }
 
-        padding: 0 20px 0 20px;
+        // padding: 0 20px 0 20px;
+        padding: 0 20px 20px 20px;
         background-color: $box-background-color;
-        border: $border-style;
+        // border: $border-style;
 
         margin: $box-margin;
     }
@@ -863,9 +883,10 @@ div .version-warning {
 
 div.note,
 div.warning {
-    > .admonition-title {
+    >.admonition-title {
         margin-left: -140px;
     }
+
     background-image: url("dragons.png");
     background-color: $notebox-background-color;
     background-position: 1em top;
@@ -880,9 +901,10 @@ div.warning {
 }
 
 div.deepalchemy {
-    > .admonition-title {
-        margin-left: -140px;
-    }
+    // >.admonition-title {
+    //     margin-left: -140px;
+    // }
+
     background-image: url("deepalchemy.png");
     background-size: auto 100px;
     background-position: 6px 9px;
@@ -890,7 +912,7 @@ div.deepalchemy {
     background-color: $deepalchemy-background-color;
     clear: right;
     min-height: 120px;
-    padding-left: 140px;
+    // padding-left: 140px;
 }
 
 div.legacy {
@@ -898,20 +920,24 @@ div.legacy {
 }
 
 @media only screen and (max-width: $narrow-max-screen-width) {
+
     div.note,
     div.warning {
-        > .admonition-title {
+        >.admonition-title {
             margin-left: -14px;
             padding-left: 10px;
         }
+
         background-image: none;
         padding-left: 14px;
     }
+
     div.deepalchemy {
-        > .admonition-title {
+        >.admonition-title {
             margin-left: -14px;
             padding-left: 10px;
         }
+
         background-image: none;
         padding-left: 14px;
     }
@@ -922,14 +948,15 @@ div.legacy {
 .versionadded .versionmodified,
 .versionchanged .versionmodified,
 .deprecated .versionmodified,
-.versionadded > p:first-child > span:first-child,
-.versionchanged > p:first-child > span:first-child,
-.deprecated > p:first-child > span:first-child {
+.versionadded>p:first-child>span:first-child,
+.versionchanged>p:first-child>span:first-child,
+.deprecated>p:first-child>span:first-child {
     color: #990000;
     font-weight: bold;
 }
 
-div.class-bases, div.class-members {
+div.class-bases,
+div.class-members {
     border: $border-style;
     padding: 5px 5px;
 
@@ -938,9 +965,11 @@ div.class-bases, div.class-members {
     font-size: 0.9em;
     margin: $box-margin;
 }
+
 div.class-bases {
     background-color: #eefbfb;
 }
+
 div.class-members {
     background-color: #ebedfa;
 }
@@ -961,12 +990,12 @@ div.inherited-member {
     float: right;
 }
 
-dl.function > dt,
-dl.attribute > dt,
-dl.classmethod > dt,
-dl.method > dt,
-dl.class > dt,
-dl.exception > dt {
+dl.function>dt,
+dl.attribute>dt,
+dl.classmethod>dt,
+dl.method>dt,
+dl.class>dt,
+dl.exception>dt {
     border: $border-style;
     background-color: $code-sig-background-color;
     margin: 25px -10px 10px 10px;
@@ -980,12 +1009,12 @@ dl.field-list {
     border-bottom: $border-style;
     margin: $box-top-margin 10px 0 0;
 
-    li > p {
+    li>p {
         margin: 0.5em 0 0.5em 0;
     }
 }
 
-dl.field-list > dt {
+dl.field-list>dt {
     border-top: $border-style;
     border-bottom: $border-style;
     font-weight: bold;
@@ -993,7 +1022,7 @@ dl.field-list > dt {
     padding: $box-title-padding;
 }
 
-dl.glossary > dt {
+dl.glossary>dt {
     font-weight: bold;
     font-size: 1.1em;
     padding-top: 10px;
@@ -1041,8 +1070,7 @@ tt {
     font-weight: 400;
     font-size: 95%;
 
-    > .pre {
-    }
+    >.pre {}
 }
 
 span.descname,
@@ -1060,12 +1088,14 @@ tt.descclassname {
 }
 
 a {
+
     code,
     tt {
-        > .pre {
+        >.pre {
             color: $hyperlink-color;
         }
     }
+
     span.sig-name,
     code.sig-name {
         color: $hyperlink-color;
@@ -1077,9 +1107,11 @@ a {
 .kn {
     color: #0908ce;
 }
+
 .o {
     color: #bf0005;
 }
+
 .go {
     color: #804049;
 }
@@ -1091,15 +1123,18 @@ a {
 div#sqlalchemy-documentation {
     font-size: 0.95em;
 }
+
 div#sqlalchemy-documentation em {
     font-style: normal;
 }
+
 div#sqlalchemy-documentation .rubric {
     font-size: 14px;
     background-color: #eeffef;
     padding: 5px;
     border: 1px solid #bfbfbf;
 }
+
 div#sqlalchemy-documentation a,
 div#sqlalchemy-documentation li {
     padding: 5px 0px;
@@ -1131,7 +1166,7 @@ div.left-right-container {
     .container {
         border-bottom: $index-divider-line-style;
         //margin: 0 20px 0 20px;
-        padding-right:10px;
+        padding-right: 10px;
 
     }
 
@@ -1140,10 +1175,12 @@ div.left-right-container {
             border-bottom: none;
         }
     }
+
     .orm {
         background-color: $orm-background-color;
         margin-right: 0;
     }
+
     .core {
         background-color: $core-background-color;
         margin-left: 0;
@@ -1163,15 +1200,18 @@ div.left-right-container {
         padding-left: 10px;
     }
 }
+
 @media only screen and (max-width: $narrow-max-screen-width) {
     div#docs-header {
         padding-bottom: 1rem;
 
     }
+
     div.left-right-container {
         display: block;
         margin: 0;
         max-width: none;
+
         .leftmost {
             width: auto;
             max-width: none;
@@ -1184,7 +1224,8 @@ div.left-right-container {
             margin: 0;
         }
 
-        .orm, .core {
+        .orm,
+        .core {
             padding-bottom: 1rem;
         }
 
@@ -1200,8 +1241,8 @@ div#sqlalchemy-documentation {
     }
 }
 
-div#sqlalchemy-documentation > .section,
-div#sqlalchemy-documentation > section {
+div#sqlalchemy-documentation>.section,
+div#sqlalchemy-documentation>section {
     padding-left: 10px;
 }
 
@@ -1211,6 +1252,7 @@ div#sqlalchemy-documentation div#sqlalchemy-orm {
     min-height: 400px;
     padding-left: 10px;
     border-right: $index-divider-line-style;
+
     h2 {
         margin: 0;
     }
@@ -1246,7 +1288,10 @@ div#dialect-documentation {
 }
 
 #docs-body {
-    div.orm-core, section.orm-core {
+
+    div.orm-core,
+    section.orm-core {
+
         h2,
         h3,
         h4,
@@ -1255,7 +1300,8 @@ div#dialect-documentation {
         }
     }
 
-    div.orm-header, section.orm-header {
+    div.orm-header,
+    section.orm-header {
         @include card-line-style();
         border-left: 2.2em solid $orm-background-color;
 
@@ -1263,14 +1309,15 @@ div#dialect-documentation {
         padding-right: 1em;
         margin-bottom: 2em;
 
-        > h2,
-        > h3 {
+        >h2,
+        >h3 {
             border: none;
             padding-top: 0;
         }
     }
 
-    div.core-header, section.core-header {
+    div.core-header,
+    section.core-header {
         @include card-line-style();
         border-right: 2.2em solid $core-background-color;
 
@@ -1278,18 +1325,20 @@ div#dialect-documentation {
         padding-right: 1em;
         margin-bottom: 2em;
 
-        > h2,
-        > h3 {
+        >h2,
+        >h3 {
             border: none;
             padding-top: 0;
         }
     }
 
-    div.orm-dependency, section.orm-dependency {
+    div.orm-dependency,
+    section.orm-dependency {
         border-left: .6em solid $orm-background-color;
     }
 
-    div.orm-addin, section.orm-addin {
+    div.orm-addin,
+    section.orm-addin {
         @include card-line-style();
         border-left: .6em solid $orm-background-color;
 
