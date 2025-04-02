@@ -7,8 +7,10 @@
 
 .. _tutorial_orm_data_manipulation:
 
-Data Manipulation with the ORM
+使用 ORM 进行数据操作
 ==============================
+
+Data Manipulation with the ORM
 
 The previous section :ref:`tutorial_working_with_data` remained focused on
 the SQL Expression Language from a Core perspective, in order to provide

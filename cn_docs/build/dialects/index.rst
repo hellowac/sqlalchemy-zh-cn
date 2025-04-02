@@ -3,16 +3,27 @@
 Dialects
 ========
 
-The **dialect** is the system SQLAlchemy uses to communicate with various types of :term:`DBAPI` implementations and databases.
-The sections that follow contain reference documentation and notes specific to the usage of each backend, as well as notes
-for the various DBAPIs.
+.. tab:: 中文
 
-All dialects require that an appropriate DBAPI driver is installed.
+    **dialect** 是 SQLAlchemy 用于与各种类型的 :term:`DBAPI` 实现和数据库通信的系统。
+    接下来的部分包含每个后端使用的参考文档和特定说明，以及各种 DBAPI 的说明。
+
+    所有 dialect 都需要安装适当的 DBAPI 驱动程序。
+
+.. tab:: 英文
+
+    The **dialect** is the system SQLAlchemy uses to communicate with various types of :term:`DBAPI` implementations and databases.
+    The sections that follow contain reference documentation and notes specific to the usage of each backend, as well as notes
+    for the various DBAPIs.
+
+    All dialects require that an appropriate DBAPI driver is installed.
 
 .. _included_dialects:
 
-Included Dialects
+已包含的 dialect
 -----------------
+
+Included Dialects
 
 .. toctree::
     :maxdepth: 1
@@ -24,40 +35,69 @@ Included Dialects
     oracle
     mssql
 
-Supported versions for Included Dialects
+已包含的 dialect 支持的版本
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following table summarizes the support level for each included dialect.
+Supported versions for Included Dialects
+
+.. tab:: 中文
+
+    下表总结了每种方言的支持级别。
+
+.. tab:: 英文
+
+    The following table summarizes the support level for each included dialect.
 
 .. dialect-table:: **Supported database versions for included dialects**
   :header-rows: 1
 
-Support Definitions
+支持定义
 ^^^^^^^^^^^^^^^^^^^
+
+Support Definitions
+
+.. tab:: 中文
+
+    .. glossary::
+
+        Supported version
+            **支持的版本(Supported version)** 表示大多数 SQLAlchemy 功能应适用于所提及的数据库版本。由于并非所有数据库版本都可在 ci 中测试，因此可能存在一些无法正常工作的极端情况。
+
+        Best effort
+            **尽力而为(Best effort)** 表示 SQLAlchemy 会尽力支持这些版本的基本功能，但很可能会出现不支持的功能或某些用例中的错误。可能会接受带有相关问题的拉取请求以继续支持旧版本，这些请求将根据具体情况进行审核。
+
+.. tab:: 英文
 
     .. Fully tested in CI
     ..     **Fully tested in CI** indicates a version that is tested in the sqlalchemy
     ..     CI system and passes all the tests in the test suite.
 
-.. glossary::
+    .. glossary::
+        :no-index:
 
-    Supported version
-        **Supported version** indicates that most SQLAlchemy features should work
-        for the mentioned database version. Since not all database versions may be
-        tested in the ci there may be some not working edge cases.
+        Supported version
+            **Supported version** indicates that most SQLAlchemy features should work
+            for the mentioned database version. Since not all database versions may be
+            tested in the ci there may be some not working edge cases.
 
-    Best effort
-        **Best effort** indicates that SQLAlchemy tries to support basic features on these
-        versions, but most likely there will be unsupported features or errors in some use cases.
-        Pull requests with associated issues may be accepted to continue supporting
-        older versions, which are reviewed on a case-by-case basis.
+        Best effort
+            **Best effort** indicates that SQLAlchemy tries to support basic features on these
+            versions, but most likely there will be unsupported features or errors in some use cases.
+            Pull requests with associated issues may be accepted to continue supporting
+            older versions, which are reviewed on a case-by-case basis.
 
 .. _external_toplevel:
 
 External Dialects
 -----------------
 
-Currently maintained external dialect projects for SQLAlchemy include:
+.. tab:: 中文
+
+    目前维护的 SQLAlchemy 外部方言项目包括：
+
+.. tab:: 英文
+
+    Currently maintained external dialect projects for SQLAlchemy include:
 
 +------------------------------------------------+---------------------------------------+
 | Database                                       | Dialect                               |

@@ -9,8 +9,10 @@
 
 .. _tutorial_core_insert:
 
-Using INSERT Statements
+使用 INSERT 语句
 -----------------------
+
+Using INSERT Statements
 
 When using Core as well as when using the ORM for bulk operations, a SQL INSERT
 statement is generated directly using the :func:`_sql.insert` function - this

@@ -10,8 +10,10 @@
 
 .. _tutorial_core_update_delete:
 
-Using UPDATE and DELETE Statements
+使用 UPDATE 和 DELETE 语句
 -------------------------------------
+
+Using UPDATE and DELETE Statements
 
 So far we've covered :class:`_sql.Insert`, so that we can get some data into
 our database, and then spent a lot of time on :class:`_sql.Select` which

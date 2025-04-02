@@ -3,44 +3,64 @@
 .. _errors:
 
 ==============
-Error Messages
+错误消息
 ==============
 
-This section lists descriptions and background for common error messages
-and warnings raised or emitted by SQLAlchemy.
+Error Messages
 
-SQLAlchemy normally raises errors within the context of a SQLAlchemy-specific
-exception class.  For details on these classes, see
-:ref:`core_exceptions_toplevel` and :ref:`orm_exceptions_toplevel`.
+.. tab:: 中文
 
-SQLAlchemy errors can roughly be separated into two categories, the
-**programming-time error** and the **runtime error**.     Programming-time
-errors are raised as a result of functions or methods being called with
-incorrect arguments, or from other configuration-oriented methods such  as
-mapper configurations that can't be resolved.   The programming-time error is
-typically immediate and deterministic.    The runtime error on the other hand
-represents a failure that occurs as a program runs in response to some
-condition that occurs arbitrarily, such as database connections being
-exhausted or some data-related issue occurring.   Runtime errors are more
-likely to be seen in the logs of a running application as the program
-encounters these states in response to load and data being encountered.
+    本节列出了 SQLAlchemy 抛出或发出的常见错误消息和警告的描述和背景。
 
-Since runtime errors are not as easy to reproduce and often occur in response
-to some arbitrary condition as the program runs, they are more difficult to
-debug and also affect programs that have already been put into production.
+    SQLAlchemy 通常在 SQLAlchemy 特定的异常类的上下文中引发错误。有关这些类的详细信息，请参阅 :ref:`core_exceptions_toplevel` 和 :ref:`orm_exceptions_toplevel`。
 
-Within this section, the goal is to try to provide background on some of the
-most common runtime errors as well as programming time errors.
+    SQLAlchemy 错误大致可以分为两类： **编程时错误(programming-time error)** 和 **运行时错误(runtime error)**。编程时错误是由于函数或方法被调用时传递了不正确的参数，或者其他配置方法（如无法解析的映射器配置）导致的错误。编程时错误通常是即时的和确定的。另一方面，运行时错误表示程序运行时响应某些任意条件（例如数据库连接耗尽或某些数据相关问题发生）而发生的失败。运行时错误更有可能出现在运行中的应用程序日志中，因为程序在响应负载和数据时遇到了这些状态。
+
+    由于运行时错误不容易重现，通常发生在程序运行时响应某些任意条件，因此它们更难调试，也会影响已经投入生产的程序。
+
+    在本节中，目标是尝试提供一些最常见的运行时错误以及编程时错误的背景信息。
+
+.. tab:: 英文
+
+    This section lists descriptions and background for common error messages
+    and warnings raised or emitted by SQLAlchemy.
+
+    SQLAlchemy normally raises errors within the context of a SQLAlchemy-specific
+    exception class.  For details on these classes, see
+    :ref:`core_exceptions_toplevel` and :ref:`orm_exceptions_toplevel`.
+
+    SQLAlchemy errors can roughly be separated into two categories, the
+    **programming-time error** and the **runtime error**.     Programming-time
+    errors are raised as a result of functions or methods being called with
+    incorrect arguments, or from other configuration-oriented methods such  as
+    mapper configurations that can't be resolved.   The programming-time error is
+    typically immediate and deterministic.    The runtime error on the other hand
+    represents a failure that occurs as a program runs in response to some
+    condition that occurs arbitrarily, such as database connections being
+    exhausted or some data-related issue occurring.   Runtime errors are more
+    likely to be seen in the logs of a running application as the program
+    encounters these states in response to load and data being encountered.
+
+    Since runtime errors are not as easy to reproduce and often occur in response
+    to some arbitrary condition as the program runs, they are more difficult to
+    debug and also affect programs that have already been put into production.
+
+    Within this section, the goal is to try to provide background on some of the
+    most common runtime errors as well as programming time errors.
 
 
+
+连接和会话
+----------------------------
 
 Connections and Transactions
-----------------------------
 
 .. _error_3o7r:
 
-QueuePool limit of size <x> overflow <y> reached, connection timed out, timeout <z>
+QueuePool 大小限制 <x> 已达到溢出 <y>，连接超时，超时 <z>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+QueuePool limit of size <x> overflow <y> reached, connection timed out, timeout <z>
 
 This is possibly the most common runtime error experienced, as it directly
 involves the work load of the application surpassing a configured limit, one
@@ -190,8 +210,10 @@ sooner.
 
 .. _error_pcls:
 
-Pool class cannot be used with asyncio engine (or vice versa)
+Pool类不能与 asyncio 引擎一起使用（反之亦然）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pool class cannot be used with asyncio engine (or vice versa)
 
 The :class:`_pool.QueuePool` pool class uses a ``thread.Lock`` object internally
 and is not compatible with asyncio.  If using the :func:`_asyncio.create_async_engine`
@@ -213,8 +235,10 @@ the :func:`_sa.create_engine` function.
 
 .. _error_8s2b:
 
-Can't reconnect until invalid transaction is rolled back.  Please rollback() fully before proceeding
+无效事务回滚前无法重新连接。要继续前请先完全回滚(rollback)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Can't reconnect until invalid transaction is rolled back.  Please rollback() fully before proceeding
 
 This error condition refers to the case where a :class:`_engine.Connection` was
 invalidated, either due to a database disconnect detection or due to an
@@ -227,8 +251,10 @@ back in order to remove it from the :class:`_engine.Connection`.
 
 .. _error_dbapi:
 
-DBAPI Errors
+DBAPI 错误
 ------------
+
+DBAPI Errors
 
 The Python database API, or DBAPI, is a specification for database drivers
 which can be located at `Pep-249 <https://www.python.org/dev/peps/pep-0249/>`_.
@@ -242,8 +268,10 @@ exception :class:`.DBAPIError`, however the messaging within the exception is
 
 .. _error_rvf5:
 
-InterfaceError
+接口错误
 ~~~~~~~~~~~~~~
+
+InterfaceError
 
 Exception raised for errors that are related to the database interface rather
 than the database itself.
@@ -258,8 +286,10 @@ to the database.   For tips on how to deal with this, see the section
 
 .. _error_4xp6:
 
-DatabaseError
+数据库错误
 ~~~~~~~~~~~~~
+
+DatabaseError
 
 Exception raised for errors that are related to the database itself, and not
 the interface or data being passed.
@@ -269,8 +299,10 @@ the database driver (DBAPI), not SQLAlchemy itself.
 
 .. _error_9h9h:
 
-DataError
+数据错误
 ~~~~~~~~~
+
+DataError
 
 Exception raised for errors that are due to problems with the processed data
 like division by zero, numeric value out of range, etc.
@@ -280,8 +312,10 @@ the database driver (DBAPI), not SQLAlchemy itself.
 
 .. _error_e3q8:
 
-OperationalError
+操作错误
 ~~~~~~~~~~~~~~~~
+
+OperationalError
 
 Exception raised for errors that are related to the database's operation and
 not necessarily under the control of the programmer, e.g. an unexpected
@@ -298,8 +332,10 @@ the section :ref:`pool_disconnects`.
 
 .. _error_gkpj:
 
-IntegrityError
+完整性错误
 ~~~~~~~~~~~~~~
+
+IntegrityError
 
 Exception raised when the relational integrity of the database is affected,
 e.g. a foreign key check fails.
@@ -309,8 +345,10 @@ the database driver (DBAPI), not SQLAlchemy itself.
 
 .. _error_2j85:
 
-InternalError
+内部错误
 ~~~~~~~~~~~~~
+
+InternalError
 
 Exception raised when the database encounters an internal error, e.g. the
 cursor is not valid anymore, the transaction is out of sync, etc.
@@ -325,8 +363,10 @@ to the database.   For tips on how to deal with this, see the section
 
 .. _error_f405:
 
-ProgrammingError
+编程错误
 ~~~~~~~~~~~~~~~~
+
+ProgrammingError
 
 Exception raised for programming errors, e.g. table not found or already
 exists, syntax error in the SQL statement, wrong number of parameters
@@ -342,8 +382,10 @@ to the database.   For tips on how to deal with this, see the section
 
 .. _error_tw8g:
 
-NotSupportedError
+不支持错误
 ~~~~~~~~~~~~~~~~~
+
+NotSupportedError
 
 Exception raised in case a method or database API was used which is not
 supported by the database, e.g. requesting a .rollback() on a connection that
@@ -357,8 +399,10 @@ SQL Expression Language
 .. _error_cprf:
 .. _caching_caveats:
 
-Object will not produce a cache key, Performance Implications
+对象不会产生缓存键，性能影响
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Object will not produce a cache key, Performance Implications
 
 SQLAlchemy as of version 1.4 includes a
 :ref:`SQL compilation caching facility <sql_caching>` which will allow
@@ -380,8 +424,10 @@ application, this will negatively impact performance and can in some cases
 effectively produce a **performance degradation** compared to prior SQLAlchemy
 versions. The FAQ at :ref:`faq_new_caching` covers this in additional detail.
 
-Caching disables itself if there's any doubt
+如果有任何疑问，缓存会自行禁用
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Caching disables itself if there's any doubt
 
 Caching relies on being able to generate a cache key that accurately represents
 the **complete structure** of a statement in a **consistent** fashion. If a particular
@@ -404,8 +450,10 @@ allow it to generate a proper cache key, then caching cannot be safely enabled:
 For the above two reasons, SQLAlchemy's caching system is **extremely
 conservative** about deciding to cache the SQL corresponding to an object.
 
-Assertion attributes for caching
+缓存的断言属性
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Assertion attributes for caching
 
 The warning is emitted based on the criteria below.  For further detail on
 each, see the section :ref:`faq_new_caching`.
@@ -446,8 +494,10 @@ each, see the section :ref:`faq_new_caching`.
 
 .. _error_l7de:
 
-Compiler StrSQLCompiler can't render element of type <element type>
+编译器 StrSQLCompiler 无法呈现类型为 <element type> 的元素
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Compiler StrSQLCompiler can't render element of type <element type>
 
 This error usually occurs when attempting to stringify a SQL expression
 construct that includes elements which are not part of the default compilation;
@@ -517,8 +567,10 @@ compilation of SQL elements.
   :ref:`faq_sql_expression_string`
 
 
-TypeError: <operator> not supported between instances of 'ColumnProperty' and <something>
+TypeError：'ColumnProperty' 和 <something> 的实例之间不支持 <operator>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TypeError: <operator> not supported between instances of 'ColumnProperty' and <something>
 
 This often occurs when attempting to use a :func:`.column_property` or
 :func:`.deferred` object in the context of a SQL expression, usually within
@@ -558,8 +610,10 @@ The solution is to access the :class:`_schema.Column` directly using the
 
 .. _error_cd3x:
 
-A value is required for bind parameter <x> (in parameter group <y>)
+绑定参数 <x> 需要一个值（在参数组 <y> 中）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A value is required for bind parameter <x> (in parameter group <y>)
 
 This error occurs when a statement makes use of :func:`.bindparam` either
 implicitly or explicitly and does not provide a value when the statement
@@ -624,8 +678,10 @@ Since "b" is required, pass it as ``None`` so that the INSERT may proceed::
 
 .. _error_89ve:
 
-Expected FROM clause, got Select.  To create a FROM clause, use the .subquery() method
+预期为 FROM 子句，得到 Select。要创建 FROM 子句，请使用 .subquery() 方法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Expected FROM clause, got Select.  To create a FROM clause, use the .subquery() method
 
 This refers to a change made as of SQLAlchemy 1.4 where a SELECT statement as generated
 by a function such as :func:`_expression.select`, but also including things like unions and textual
@@ -675,8 +731,10 @@ therefore requires that :meth:`_expression.SelectBase.subquery` is used::
 
 .. _error_xaj1:
 
-An alias is being generated automatically for raw clauseelement
+正在为原始子句元素自动生成别名
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An alias is being generated automatically for raw clauseelement
 
 .. versionadded:: 1.4.26
 
@@ -743,8 +801,10 @@ Join to an alias::
 
 .. _error_xaj2:
 
-An alias is being generated automatically due to overlapping tables
+由于表格重叠，正在自动生成别名
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An alias is being generated automatically due to overlapping tables
 
 .. versionadded:: 1.4.26
 
@@ -854,13 +914,17 @@ in a very nested context.  Therefore it's best not to rely on this feature
 and instead keep the SQL construction as explicit as possible.
 
 
-Object Relational Mapping
+对象关系映射
 -------------------------
+
+Object Relational Mapping
 
 .. _error_isce:
 
-IllegalStateChangeError and concurrency exceptions
+IllegalStateChangeError 和并发异常
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+IllegalStateChangeError and concurrency exceptions
 
 SQLAlchemy 2.0 introduced a new system described at :ref:`change_7433`, which
 proactively detects concurrent methods being invoked on an individual instance of
@@ -895,8 +959,10 @@ For more background on concurrency see the section
 
 .. _error_bhk3:
 
-Parent instance <x> is not bound to a Session; (lazy load/deferred load/refresh/etc.) operation cannot proceed
+父实例 <x> 未绑定到会话；（延迟加载/延迟加载/刷新/等）操作无法继续
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Parent instance <x> is not bound to a Session; (lazy load/deferred load/refresh/etc.) operation cannot proceed
 
 This is likely the most common error message when dealing with the ORM, and it
 occurs as a result of the nature of a technique the ORM makes wide use of known
@@ -970,8 +1036,10 @@ Mitigation of this error is via these techniques:
 
 .. _error_7s2a:
 
-This Session's transaction has been rolled back due to a previous exception during flush
+由于刷新期间发生先前的异常，此会话的事务已被回滚
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This Session's transaction has been rolled back due to a previous exception during flush
 
 The flush process of the :class:`.Session`, described at
 :ref:`session_flushing`, will roll back the database transaction if an error is
@@ -987,8 +1055,10 @@ application that doesn't yet have correct "framing" around its
 
 .. _error_bbf0:
 
-For relationship <relationship>, delete-orphan cascade is normally configured only on the "one" side of a one-to-many relationship, and not on the "many" side of a many-to-one or many-to-many relationship.
+对于关系 <relationship>，delete-orphan 级联通常仅配置在一对多关系的“一”侧，而不是多对一或多对多关系的“多”侧。
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For relationship <relationship>, delete-orphan cascade is normally configured only on the "one" side of a one-to-many relationship, and not on the "many" side of a many-to-one or many-to-many relationship.
 
 
 This error arises when the "delete-orphan" :ref:`cascade <unitofwork_cascades>`
@@ -1154,8 +1224,10 @@ in the "many" side, and not the other way around.
 
 .. _error_bbf1:
 
-Instance <instance> is already associated with an instance of <instance> via its <attribute> attribute, and is only allowed a single parent.
+实例 <instance> 已通过其 <attribute> 属性与 <instance> 的一个实例关联，并且只允许有一个父级。
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Instance <instance> is already associated with an instance of <instance> via its <attribute> attribute, and is only allowed a single parent.
 
 
 This error is emitted when the :paramref:`_orm.relationship.single_parent` flag
@@ -1207,8 +1279,10 @@ message for details.
 
 .. _error_qzyx:
 
-relationship X will copy column Q to column P, which conflicts with relationship(s): 'Y'
+关系 X 将把 Q 列复制到 P 列，这与关系“Y”相冲突
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+relationship X will copy column Q to column P, which conflicts with relationship(s): 'Y'
 
 This warning refers to the case when two or more relationships will write data
 to the same columns on flush, but the ORM does not have any means of
@@ -1293,8 +1367,10 @@ Above, the ORM will know that the overlap between ``Parent.c1``,
 
 .. _error_lkrp:
 
-Object cannot be converted to 'persistent' state, as this identity map is no longer valid.
+对象无法转换为“持久”状态，因为此身份映射不再有效。
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Object cannot be converted to 'persistent' state, as this identity map is no longer valid.
 
 .. versionadded:: 1.4.26
 
@@ -1369,8 +1445,10 @@ the :term:`detached` state.
 
 .. _error_zlpr:
 
-Type annotation can't be interpreted for Annotated Declarative Table form
+无法将类型注释解释为带注释的声明表形式
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Type annotation can't be interpreted for Annotated Declarative Table form
 
 SQLAlchemy 2.0 introduces a new
 :ref:`Annotated Declarative Table <orm_declarative_mapped_column>` declarative
@@ -1394,8 +1472,10 @@ notes at :ref:`migration_20_step_six` for an example.
 
 .. _error_dcmx:
 
-When transforming <cls> to a dataclass, attribute(s) originate from superclass <cls> which is not a dataclass.
+将 <cls> 转换为数据类时，属性源自非数据类的超类 <cls>。
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When transforming <cls> to a dataclass, attribute(s) originate from superclass <cls> which is not a dataclass.
 
 This warning occurs when using the SQLAlchemy ORM Mapped Dataclasses feature
 described at :ref:`orm_declarative_native_dataclasses` in conjunction with
@@ -1494,8 +1574,10 @@ hierarchy have to themselves be dataclasses.
 
 .. _error_dcte:
 
-Python dataclasses error encountered when creating dataclass for <classname>
+为 <classname> 创建数据类时遇到 Python 数据类错误
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Python dataclasses error encountered when creating dataclass for <classname>
 
 When using the :class:`_orm.MappedAsDataclass` mixin class or
 :meth:`_orm.registry.mapped_as_dataclass` decorator, SQLAlchemy makes use
@@ -1526,8 +1608,10 @@ attention to the rules applied to `inheritance <dc_superclass_>`_.
 
 .. _error_bupq:
 
-per-row ORM Bulk Update by Primary Key requires that records contain primary key values
+每行 ORM 按主键批量更新要求记录包含主键值
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+per-row ORM Bulk Update by Primary Key requires that records contain primary key values
 
 This error occurs when making use of the :ref:`orm_queryguide_bulk_update`
 feature without supplying primary key values in the given records, such as::
@@ -1576,13 +1660,17 @@ then invoke with that::
 
 
 
-AsyncIO Exceptions
+AsyncIO 异常
 ------------------
+
+AsyncIO Exceptions
 
 .. _error_xd1r:
 
 AwaitRequired
 ~~~~~~~~~~~~~
+
+AwaitRequired
 
 The SQLAlchemy async mode requires an async driver to be used to connect to the db.
 This error is usually raised when trying to use the async version of SQLAlchemy
@@ -1596,6 +1684,8 @@ with a non compatible :term:`DBAPI`.
 
 MissingGreenlet
 ~~~~~~~~~~~~~~~
+
+MissingGreenlet
 
 A call to the async :term:`DBAPI` was initiated outside the greenlet spawn
 context usually setup by the SQLAlchemy AsyncIO proxy classes. Usually this
@@ -1613,8 +1703,10 @@ and/or alternate loader patterns in order to use successfully.
 
 .. _error_xd3s:
 
-No Inspection Available
+无可用检查
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+No Inspection Available
 
 Using the :func:`_sa.inspect` function directly on an
 :class:`_asyncio.AsyncConnection` or :class:`_asyncio.AsyncEngine` object is
@@ -1640,29 +1732,37 @@ that performs the desired operations::
     with the asyncio extension.
 
 
-Core Exception Classes
+核心异常类
 ----------------------
+
+Core Exception Classes
 
 See :ref:`core_exceptions_toplevel` for Core exception classes.
 
 
-ORM Exception Classes
+ORM 异常类
 ---------------------
+
+ORM Exception Classes
 
 See :ref:`orm_exceptions_toplevel` for ORM exception classes.
 
 
 
-Legacy Exceptions
+旧式异常
 -----------------
+
+Legacy Exceptions
 
 Exceptions in this section are not generated by current SQLAlchemy
 versions, however are provided here to suit exception message hyperlinks.
 
 .. _error_b8d9:
 
-The <some function> in SQLAlchemy 2.0 will no longer <something>
+SQLAlchemy 2.0 中的 <some function> 将不再是 <something>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The <some function> in SQLAlchemy 2.0 will no longer <something>
 
 SQLAlchemy 2.0 represents a major shift for a wide variety of key
 SQLAlchemy usage patterns in both the Core and ORM components.   The goal
@@ -1694,8 +1794,10 @@ this warning is at :ref:`deprecation_20_mode`.
 
 .. _error_s9r1:
 
-Object is being merged into a Session along the backref cascade
+对象正沿着 backref 级联合并到会话中
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Object is being merged into a Session along the backref cascade
 
 This message refers to the "backref cascade" behavior of SQLAlchemy,
 removed in version 2.0.  This refers to the action of
@@ -1725,8 +1827,10 @@ by passing ``True`` for the :paramref:`_orm.Session.future` parameter.
 
 .. _error_c9ae:
 
-select() construct created in "legacy" mode; keyword arguments, etc.
+select() 构造在“旧版”模式下创建；关键字参数等。
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select() construct created in "legacy" mode; keyword arguments, etc.
 
 The :func:`_expression.select` construct has been updated as of SQLAlchemy
 1.4 to support the newer calling style that is standard in
@@ -1773,8 +1877,10 @@ of :ref:`2.0 Migration <migration_20_toplevel>`.
 
 .. _error_c9bf:
 
-A bind was located via legacy bound metadata, but since future=True is set on this Session, this bind is ignored.
+通过旧式绑定元数据定位了一个绑定，但由于此会话上设置了 future=True，因此此绑定被忽略。
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A bind was located via legacy bound metadata, but since future=True is set on this Session, this bind is ignored.
 
 The concept of "bound metadata" is present up until SQLAlchemy 1.4; as
 of SQLAlchemy 2.0 it's been removed.
@@ -1826,8 +1932,10 @@ or :class:`_orm.Session`.
 
 .. _error_2afi:
 
-This Compiled object is not bound to any Engine or Connection
+此编译对象未绑定到任何引擎或连接
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This Compiled object is not bound to any Engine or Connection
 
 This error refers to the concept of "bound metadata", which is a legacy
 SQLAlchemy pattern present only in 1.x versions. The issue occurs when one invokes
@@ -1867,8 +1975,10 @@ When using the ORM, a similar facility is available via the :class:`.Session`::
 
 .. _error_8s2a:
 
-This connection is on an inactive transaction.  Please rollback() fully before proceeding
+此连接处于非活动事务中。请完全回滚(rollback)后再继续
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This connection is on an inactive transaction.  Please rollback() fully before proceeding
 
 This error condition was added to SQLAlchemy as of version 1.4, and does not
 apply to SQLAlchemy 2.0.    The error

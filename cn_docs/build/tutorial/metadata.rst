@@ -5,8 +5,10 @@
 
 .. _tutorial_working_with_metadata:
 
-Working with Database Metadata
+使用数据库元数据
 ==============================
+
+Working with Database Metadata
 
 With engines and SQL execution down, we are ready to begin some Alchemy.
 The central element of both SQLAlchemy Core and ORM is the SQL Expression

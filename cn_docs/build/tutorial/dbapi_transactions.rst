@@ -6,9 +6,10 @@
 
 .. _tutorial_working_with_transactions:
 
-Working with Transactions and the DBAPI
+使用事务和DBAPI
 ========================================
 
+Working with Transactions and the DBAPI
 
 
 With the :class:`_engine.Engine` object ready to go, we can
