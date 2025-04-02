@@ -866,7 +866,8 @@ div.deprecated,
 div.versionadded,
 div.versionchanged,
 div.versionmodified {
-    padding: $box-padding;
+    // padding: $box-padding;
+    padding: .5em 1em .5em 1rem;
 
     margin: $box-margin;
 }
@@ -1345,4 +1346,11 @@ div#dialect-documentation {
         padding-left: 10px;
         margin: 10px 0 10px 0;
     }
+}
+
+// inline-tab 的内容来一个上内边距
+div.tab-content.container {
+
+    padding-top: 1em;
+
 }
