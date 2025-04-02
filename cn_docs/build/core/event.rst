@@ -1,13 +1,26 @@
 .. _event_toplevel:
 
-Events
+事件
 ======
 
-SQLAlchemy includes an event API which publishes a wide variety of hooks into
-the internals of both SQLAlchemy Core and ORM.
+Events
+
+.. tab:: 中文
+
+    SQLAlchemy 包含一个事件 API，它将各种各样的钩子发布到 SQLAlchemy Core 和 ORM 的内部。
+
+.. tab:: 英文
+
+    SQLAlchemy includes an event API which publishes a wide variety of hooks into the internals of both SQLAlchemy Core and ORM.
+
+事件注册
+------------------
 
 Event Registration
-------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Subscribing to an event occurs through a single API point, the :func:`.listen` function,
 or alternatively the :func:`.listens_for` decorator.   These functions accept a
@@ -44,8 +57,14 @@ To listen with the :func:`.listens_for` decorator looks like::
 
 .. _event_named_argument_styles:
 
-Named Argument Styles
+命名参数样式
 ---------------------
+
+Named Argument Styles
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 There are some varieties of argument styles which can be accepted by listener
 functions.  Taking the example of :meth:`_events.PoolEvents.connect`, this function
@@ -81,8 +100,14 @@ as long as the names match up::
 Above, the presence of ``**kw`` tells :func:`.listens_for` that
 arguments should be passed to the function by name, rather than positionally.
 
-Targets
+目标
 -------
+
+Targets
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`.listen` function is very flexible regarding targets.  It
 generally accepts classes, instances of those classes, and related
@@ -120,8 +145,14 @@ and objects::
 
 .. _event_modifiers:
 
-Modifiers
+修饰符
 ---------
+
+Modifiers
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Some listeners allow modifiers to be passed to :func:`.listen`.  These
 modifiers sometimes provide alternate calling signatures for
@@ -140,8 +171,14 @@ this value can be supported::
     # it to use the return value
     listen(UserContact.phone, "set", validate_phone, retval=True)
 
-Events and Multiprocessing
+事件和多处理
 --------------------------
+
+Events and Multiprocessing
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy's event hooks are implemented with Python functions and objects,
 so events propagate via Python function calls.
@@ -167,8 +204,14 @@ It is possible to implement event hooks
 that use Python inter-process messaging within them,
 however this would need to be implemented by the user.
 
-Event Reference
+事件参考
 ---------------
+
+Event Reference
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Both SQLAlchemy Core and SQLAlchemy ORM feature a wide variety of event hooks:
 
@@ -184,8 +227,14 @@ Both SQLAlchemy Core and SQLAlchemy ORM feature a wide variety of event hooks:
   commit hooks, mapper initialization, object/result population,
   and per-instance persistence hooks.
 
-API Reference
+API 参考
 -------------
+
+API Reference
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: sqlalchemy.event.listen
 

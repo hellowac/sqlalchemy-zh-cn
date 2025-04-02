@@ -4,58 +4,89 @@
 
 .. _metadata_defaults:
 
-Column INSERT/UPDATE Defaults
+列 INSERT/UPDATE 默认值
 =============================
 
-Column INSERT and UPDATE defaults refer to functions that create a **default
-value** for a particular column in a row as an INSERT or UPDATE statement is
-proceeding against that row, in the case where **no value was provided to the
-INSERT or UPDATE statement for that column**.  That is, if a table has a column
-called "timestamp", and an INSERT statement proceeds which does not include a
-value for this column, an INSERT default would create a new value, such as
-the current time, that is used as the value to be INSERTed into the "timestamp"
-column.  If the statement *does* include a value  for this column, then the
-default does *not* take place.
+Column INSERT/UPDATE Defaults
 
-Column defaults can be server-side functions or constant values which are
-defined in the database along with the schema in :term:`DDL`, or as SQL
-expressions which are rendered directly within an INSERT or UPDATE statement
-emitted by SQLAlchemy; they may also be client-side Python functions or
-constant values which are invoked by SQLAlchemy before data is passed to the
-database.
+.. tab:: 中文
 
-.. note::
+    列的INSERT和UPDATE默认值指的是在对某行执行INSERT或UPDATE语句时，如果 **没有为该列提供值** ，则为该行的特定列创建 **默认值** 的函数。也就是说，如果一个表有一个名为“timestamp”的列，并且一个INSERT语句没有包含该列的值，则INSERT默认值会创建一个新值，例如当前时间，该值将用作插入“timestamp”列的值。如果语句 *确实* 包含该列的值，那么默认值则 *不会* 生效。
 
-    A column default handler should not be confused with a construct that
-    intercepts and modifies incoming values for INSERT and UPDATE statements
-    which *are* provided to the statement as it is invoked.  This is known
-    as :term:`data marshalling`, where a column value is modified in some way
-    by the application before being sent to the database.  SQLAlchemy provides
-    a few means of achieving this which include using :ref:`custom datatypes
-    <types_typedecorator>`, :ref:`SQL execution events <core_sql_events>` and
-    in the ORM :ref:`custom  validators <simple_validators>` as well as
-    :ref:`attribute events <orm_attribute_events>`.    Column defaults are only
-    invoked when there is **no value present** for a column in a SQL
-    :term:`DML` statement.
+    列默认值可以是服务器端函数或常量值，这些值与模式一起在 :term:`DDL` 中定义，或者作为SQL表达式直接在由SQLAlchemy发出的INSERT或UPDATE语句中呈现；它们也可以是客户端Python函数或常量值，这些值在数据传递到数据库之前由SQLAlchemy调用。
+
+    .. note::
+
+        列默认值处理程序不应与拦截和修改INSERT和UPDATE语句的传入值的构造混淆，这些值 *确实* 在语句调用时提供。这被称为 *数据编组* (:term:`data marshalling`) ，即应用程序在将列值发送到数据库之前以某种方式修改列值。SQLAlchemy提供了一些实现此目的的方法，包括使用 :ref:`自定义数据类型 <types_typedecorator>` ， :ref:`SQL执行事件 <core_sql_events>` 以及在ORM中使用 :ref:`自定义验证器 <simple_validators>` 和 :ref:`属性事件 <orm_attribute_events>` 。列默认值仅在SQL :term:`DML` 语句中 **没有值存在** 时调用。
+
+    SQLAlchemy提供了一系列关于默认值生成函数的功能，这些函数在INSERT和UPDATE语句期间针对不存在的值执行。选项包括：
+
+    * 在INSERT和UPDATE操作期间使用的标量值作为默认值
+    * 在INSERT和UPDATE操作期间执行的Python函数
+    * 嵌入在INSERT语句中的SQL表达式（或在某些情况下提前执行）
+    * 嵌入在UPDATE语句中的SQL表达式
+    * 在INSERT期间使用的服务器端默认值
+    * 在UPDATE期间使用的服务器端触发器标记
+
+    所有插入/更新默认值的一般规则是，如果没有为特定列传递值作为 ``execute()`` 参数，则默认值生效；否则，使用给定的值。
+
+.. tab:: 英文
+
+    Column INSERT and UPDATE defaults refer to functions that create a **default
+    value** for a particular column in a row as an INSERT or UPDATE statement is
+    proceeding against that row, in the case where **no value was provided to the
+    INSERT or UPDATE statement for that column**.  That is, if a table has a column
+    called "timestamp", and an INSERT statement proceeds which does not include a
+    value for this column, an INSERT default would create a new value, such as
+    the current time, that is used as the value to be INSERTed into the "timestamp"
+    column.  If the statement *does* include a value  for this column, then the
+    default does *not* take place.
+
+    Column defaults can be server-side functions or constant values which are
+    defined in the database along with the schema in :term:`DDL`, or as SQL
+    expressions which are rendered directly within an INSERT or UPDATE statement
+    emitted by SQLAlchemy; they may also be client-side Python functions or
+    constant values which are invoked by SQLAlchemy before data is passed to the
+    database.
+
+    .. note::
+
+        A column default handler should not be confused with a construct that
+        intercepts and modifies incoming values for INSERT and UPDATE statements
+        which *are* provided to the statement as it is invoked.  This is known
+        as :term:`data marshalling`, where a column value is modified in some way
+        by the application before being sent to the database.  SQLAlchemy provides
+        a few means of achieving this which include using :ref:`custom datatypes
+        <types_typedecorator>`, :ref:`SQL execution events <core_sql_events>` and
+        in the ORM :ref:`custom  validators <simple_validators>` as well as
+        :ref:`attribute events <orm_attribute_events>`.    Column defaults are only
+        invoked when there is **no value present** for a column in a SQL
+        :term:`DML` statement.
 
 
-SQLAlchemy provides an array of features regarding default generation
-functions which take place for non-present values during INSERT and UPDATE
-statements. Options include:
+    SQLAlchemy provides an array of features regarding default generation
+    functions which take place for non-present values during INSERT and UPDATE
+    statements. Options include:
 
-* Scalar values used as defaults during INSERT and UPDATE operations
-* Python functions which execute upon INSERT and UPDATE operations
-* SQL expressions which are embedded in INSERT statements (or in some cases execute beforehand)
-* SQL expressions which are embedded in UPDATE statements
-* Server side default values used during INSERT
-* Markers for server-side triggers used during UPDATE
+    * Scalar values used as defaults during INSERT and UPDATE operations
+    * Python functions which execute upon INSERT and UPDATE operations
+    * SQL expressions which are embedded in INSERT statements (or in some cases execute beforehand)
+    * SQL expressions which are embedded in UPDATE statements
+    * Server side default values used during INSERT
+    * Markers for server-side triggers used during UPDATE
 
-The general rule for all insert/update defaults is that they only take effect
-if no value for a particular column is passed as an ``execute()`` parameter;
-otherwise, the given value is used.
+    The general rule for all insert/update defaults is that they only take effect
+    if no value for a particular column is passed as an ``execute()`` parameter;
+    otherwise, the given value is used.
+
+标量默认值
+---------------
 
 Scalar Defaults
----------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The simplest kind of default is a scalar value used as the default value of a column::
 
@@ -70,8 +101,14 @@ defaults)::
 
     Table("mytable", metadata_obj, Column("somecolumn", Integer, onupdate=25))
 
-Python-Executed Functions
+Python 执行函数
 -------------------------
+
+Python-Executed Functions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :paramref:`_schema.Column.default` and :paramref:`_schema.Column.onupdate` keyword arguments also accept Python
 functions. These functions are invoked at the time of insert or update if no
@@ -126,8 +163,14 @@ executes.
 
 .. _context_default_functions:
 
-Context-Sensitive Default Functions
+上下文敏感默认函数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Context-Sensitive Default Functions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The Python functions used by :paramref:`_schema.Column.default` and
 :paramref:`_schema.Column.onupdate` may also make use of the current statement's
@@ -173,8 +216,14 @@ and returned alone.
 
 .. _defaults_client_invoked_sql:
 
-Client-Invoked SQL Expressions
+客户端调用的 SQL 表达式
 ------------------------------
+
+Client-Invoked SQL Expressions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :paramref:`_schema.Column.default` and :paramref:`_schema.Column.onupdate` keywords may
 also be passed SQL expressions, which are in most cases rendered inline within the
@@ -248,8 +297,14 @@ composite-column primary keys are represented in the same format).
 
 .. _server_defaults:
 
-Server-invoked DDL-Explicit Default Expressions
+服务器调用的 DDL 显式默认表达式
 -----------------------------------------------
+
+Server-invoked DDL-Explicit Default Expressions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A variant on the SQL expression default is the :paramref:`_schema.Column.server_default`, which gets
 placed in the CREATE TABLE statement during a :meth:`_schema.Table.create` operation:
@@ -288,8 +343,14 @@ functions and expressions, and not the more complex cases like an embedded SELEC
 
 .. _triggered_columns:
 
-Marking Implicitly Generated Values, timestamps, and Triggered Columns
+标记隐式生成的值、时间戳和触发的列
 ----------------------------------------------------------------------
+
+Marking Implicitly Generated Values, timestamps, and Triggered Columns
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Columns which generate a new value on INSERT or UPDATE based on other
 server-side database mechanisms, such as database-specific auto-generating
@@ -334,8 +395,14 @@ For details on using :class:`.FetchedValue` with the ORM, see
 
 .. _defaults_sequences:
 
-Defining Sequences
+定义序列
 ------------------
+
+Defining Sequences
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy represents database sequences using the
 :class:`~sqlalchemy.schema.Sequence` object, which is considered to be a
@@ -428,8 +495,14 @@ to be used in more than one :class:`.Table` at a time and also allows the
 :paramref:`.MetaData.schema` parameter to be inherited.  See the section
 :ref:`sequence_metadata` for background.
 
-Associating a Sequence on a SERIAL column
+将序列与 SERIAL 列关联
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Associating a Sequence on a SERIAL column
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 PostgreSQL's SERIAL datatype is an auto-incrementing type that implies
 the implicit creation of a PostgreSQL sequence when CREATE TABLE is emitted.
@@ -468,8 +541,14 @@ sequence will be created explicitly.
     operation to simply use ``IDENTITY`` on all supported backends.
 
 
-Executing a Sequence Standalone
+独立执行序列
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Executing a Sequence Standalone
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A SEQUENCE is a first class schema object in SQL and can be used to generate
 values independently in the database.   If you have a :class:`.Sequence`
@@ -494,8 +573,14 @@ appropriate for the target backend:
 
 .. _sequence_metadata:
 
-Associating a Sequence with the MetaData
+将序列与元数据关联
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Associating a Sequence with the MetaData
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For a :class:`.Sequence` that is to be associated with arbitrary
 :class:`.Table` objects, the :class:`.Sequence` may be associated with
@@ -532,8 +617,14 @@ allows for the following behaviors:
   :class:`_schema.Table` / :class:`_schema.Column` that's a member of this
   :class:`_schema.MetaData`.
 
-Associating a Sequence as the Server Side Default
+将序列关联为服务器端默认值
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Associating a Sequence as the Server Side Default
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. note:: The following technique is known to work only with the PostgreSQL
    database.  It does not work with Oracle Database.
@@ -623,8 +714,14 @@ including the default schema, if any.
 
 .. _computed_ddl:
 
-Computed Columns (GENERATED ALWAYS AS)
+计算列 (GENERATED ALWAYS AS)
 --------------------------------------
+
+Computed Columns (GENERATED ALWAYS AS)
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.Computed` construct allows a :class:`_schema.Column` to be declared in
 DDL as a "GENERATED ALWAYS AS" column, that is, one which has a value that is
@@ -715,8 +812,14 @@ DDL is emitted to the database.
 
 .. _identity_ddl:
 
-Identity Columns (GENERATED { ALWAYS | BY DEFAULT } AS IDENTITY)
+标识列 (GENERATED { ALWAYS | BY DEFAULT } AS IDENTITY)
 -----------------------------------------------------------------
+
+Identity Columns (GENERATED { ALWAYS | BY DEFAULT } AS IDENTITY)
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionadded:: 1.4
 
@@ -801,8 +904,10 @@ to ``False``.
     :class:`.Identity`
 
 
-Default Objects API
+默认对象 API
 -------------------
+
+Default Objects API
 
 .. autoclass:: Computed
     :members:

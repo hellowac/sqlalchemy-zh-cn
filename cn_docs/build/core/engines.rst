@@ -1,52 +1,82 @@
 .. _engines_toplevel:
 
 ====================
-Engine Configuration
+Engine 配置
 ====================
 
-The :class:`_engine.Engine` is the starting point for any SQLAlchemy application. It's
-"home base" for the actual database and its :term:`DBAPI`, delivered to the SQLAlchemy
-application through a connection pool and a :class:`.Dialect`, which describes how
-to talk to a specific kind of database/DBAPI combination.
+Engine Configuration
 
-The general structure can be illustrated as follows:
+.. tab:: 中文
 
-.. image:: sqla_engine_arch.png
+    :class:`_engine.Engine` 是任何SQLAlchemy应用程序的起点。它是实际数据库及其 :term:`DBAPI` 的“基地”，通过连接池和描述如何与特定类型的数据库/DBAPI组合通信的 :class:`.Dialect` 提供给SQLAlchemy应用程序。
 
-Where above, an :class:`_engine.Engine` references both a
-:class:`.Dialect` and a :class:`_pool.Pool`,
-which together interpret the DBAPI's module functions as well as the behavior
-of the database.
+    一般结构可以如下图所示：
 
-Creating an engine is just a matter of issuing a single call,
-:func:`_sa.create_engine()`::
+    .. image:: sqla_engine_arch.png
 
-    from sqlalchemy import create_engine
+    在上图中，:class:`_engine.Engine` 引用 :class:`.Dialect` 和 :class:`_pool.Pool`，它们共同解释DBAPI的模块函数以及数据库的行为。
 
-    engine = create_engine("postgresql+psycopg2://scott:tiger@localhost:5432/mydatabase")
+    创建引擎只需发出一个简单的调用 :func:`_sa.create_engine()`::
 
-The above engine creates a :class:`.Dialect` object tailored towards
-PostgreSQL, as well as a :class:`_pool.Pool` object which will establish a
-DBAPI connection at ``localhost:5432`` when a connection request is first
-received. Note that the :class:`_engine.Engine` and its underlying
-:class:`_pool.Pool` do **not** establish the first actual DBAPI connection
-until the :meth:`_engine.Engine.connect` or :meth:`_engine.Engine.begin`
-methods are called.  Either of these methods may also be invoked by other
-SQLAlchemy :class:`_engine.Engine` dependent objects such as the ORM
-:class:`_orm.Session` object when they first require database connectivity.
-In this way, :class:`_engine.Engine` and :class:`_pool.Pool` can be said to
-have a *lazy initialization* behavior.
+        from sqlalchemy import create_engine
 
-The :class:`_engine.Engine`, once created, can either be used directly to interact with the database,
-or can be passed to a :class:`.Session` object to work with the ORM.   This section
-covers the details of configuring an :class:`_engine.Engine`.   The next section, :ref:`connections_toplevel`,
-will detail the usage API of the :class:`_engine.Engine` and similar, typically for non-ORM
-applications.
+        engine = create_engine("postgresql+psycopg2://scott:tiger@localhost:5432/mydatabase")
+
+    上述引擎创建了一个针对PostgreSQL定制的 :class:`.Dialect` 对象，以及一个在首次收到连接请求时将在 ``localhost:5432`` 建立DBAPI连接的 :class:`_pool.Pool` 对象。注意 :class:`_engine.Engine` 及其底层的 :class:`_pool.Pool` 在调用 :meth:`_engine.Engine.connect` 或 :meth:`_engine.Engine.begin` 方法之前不会建立第一个实际的DBAPI连接。这些方法中的任意一个也可能被其他首次需要数据库连接的SQLAlchemy :class:`_engine.Engine` 依赖对象（如ORM的 :class:`_orm.Session` 对象）调用。通过这种方式，可以说 :class:`_engine.Engine` 和 :class:`_pool.Pool` 具有 *延迟初始化* 行为。
+
+    创建后，可以直接使用 :class:`_engine.Engine` 与数据库交互，或将其传递给 :class:`.Session` 对象以使用ORM。本节介绍了配置 :class:`_engine.Engine` 的详细信息。下一节 :ref:`connections_toplevel` 将详细介绍 :class:`_engine.Engine` 及类似对象的使用API，通常用于非ORM应用程序。
+
+.. tab:: 英文
+
+    The :class:`_engine.Engine` is the starting point for any SQLAlchemy application. It's
+    "home base" for the actual database and its :term:`DBAPI`, delivered to the SQLAlchemy
+    application through a connection pool and a :class:`.Dialect`, which describes how
+    to talk to a specific kind of database/DBAPI combination.
+
+    The general structure can be illustrated as follows:
+
+    .. image:: sqla_engine_arch.png
+
+    Where above, an :class:`_engine.Engine` references both a
+    :class:`.Dialect` and a :class:`_pool.Pool`,
+    which together interpret the DBAPI's module functions as well as the behavior
+    of the database.
+
+    Creating an engine is just a matter of issuing a single call,
+    :func:`_sa.create_engine()`::
+
+        from sqlalchemy import create_engine
+
+        engine = create_engine("postgresql+psycopg2://scott:tiger@localhost:5432/mydatabase")
+
+    The above engine creates a :class:`.Dialect` object tailored towards
+    PostgreSQL, as well as a :class:`_pool.Pool` object which will establish a
+    DBAPI connection at ``localhost:5432`` when a connection request is first
+    received. Note that the :class:`_engine.Engine` and its underlying
+    :class:`_pool.Pool` do **not** establish the first actual DBAPI connection
+    until the :meth:`_engine.Engine.connect` or :meth:`_engine.Engine.begin`
+    methods are called.  Either of these methods may also be invoked by other
+    SQLAlchemy :class:`_engine.Engine` dependent objects such as the ORM
+    :class:`_orm.Session` object when they first require database connectivity.
+    In this way, :class:`_engine.Engine` and :class:`_pool.Pool` can be said to
+    have a *lazy initialization* behavior.
+
+    The :class:`_engine.Engine`, once created, can either be used directly to interact with the database,
+    or can be passed to a :class:`.Session` object to work with the ORM.   This section
+    covers the details of configuring an :class:`_engine.Engine`.   The next section, :ref:`connections_toplevel`,
+    will detail the usage API of the :class:`_engine.Engine` and similar, typically for non-ORM
+    applications.
 
 .. _supported_dbapis:
 
-Supported Databases
+支持的数据库
 ===================
+
+Supported Databases
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy includes many :class:`.Dialect` implementations for various
 backends.   Dialects for the most common databases are included with SQLAlchemy; a handful
@@ -56,8 +86,14 @@ See the section :ref:`dialect_toplevel` for information on the various backends 
 
 .. _database_urls:
 
-Database URLs
+数据库 URL
 =============
+
+Database URLs
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_sa.create_engine` function produces an :class:`_engine.Engine`
 object based on a URL. The format of the URL generally follows `RFC-1738
@@ -79,8 +115,14 @@ the database using all lowercase letters. If not specified, a "default" DBAPI
 will be imported if available - this default is typically the most widely
 known driver available for that backend.
 
-Escaping Special Characters such as @ signs in Passwords
+转义密码中的特殊字符，例如 @ 符号
 ----------------------------------------------------------
+
+Escaping Special Characters such as @ signs in Passwords
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When constructing a fully formed URL string to pass to
 :func:`_sa.create_engine`, **special characters such as those that may
@@ -121,8 +163,14 @@ section for an example.
     fixed.   As a side effect of this fix, ``@`` signs in passwords must be
     escaped.
 
-Creating URLs Programmatically
+以编程方式创建 URL
 -------------------------------
+
+Creating URLs Programmatically
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The value passed to :func:`_sa.create_engine` may be an instance of
 :class:`.URL`, instead of a plain string, which bypasses the need for string
@@ -156,8 +204,14 @@ The constructed :class:`.URL` object may then be passed directly to
 
     :meth:`.URL.create`
 
-Backend-Specific URLs
+后端特定的 URL
 ----------------------
+
+Backend-Specific URLs
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Examples for common connection styles follow below.  For a full index of
 detailed information on all included dialects as well as links to third-party
@@ -165,6 +219,12 @@ dialects, see :ref:`dialect_toplevel`.
 
 PostgreSQL
 ^^^^^^^^^^
+
+PostgreSQL
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The PostgreSQL dialect uses psycopg2 as the default DBAPI.  Other
 PostgreSQL DBAPIs include pg8000 and asyncpg::
@@ -183,6 +243,12 @@ More notes on connecting to PostgreSQL at :ref:`postgresql_toplevel`.
 MySQL
 ^^^^^^^^^^
 
+MySQL
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 The MySQL dialect uses mysqlclient as the default DBAPI.  There are other
 MySQL DBAPIs available, including PyMySQL::
 
@@ -199,6 +265,12 @@ More notes on connecting to MySQL at :ref:`mysql_toplevel`.
 
 Oracle
 ^^^^^^^^^^
+
+Oracle
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The preferred Oracle Database dialect uses the python-oracledb driver as the
 DBAPI::
@@ -221,6 +293,12 @@ More notes on connecting to Oracle Database at :ref:`oracle_toplevel`.
 Microsoft SQL Server
 ^^^^^^^^^^^^^^^^^^^^
 
+Microsoft SQL Server
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 The SQL Server dialect uses pyodbc as the default DBAPI.  pymssql is
 also available::
 
@@ -234,6 +312,12 @@ More notes on connecting to SQL Server at :ref:`mssql_toplevel`.
 
 SQLite
 ^^^^^^^
+
+SQLite
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLite connects to file-based databases, using the Python built-in
 module ``sqlite3`` by default.
@@ -263,16 +347,28 @@ To use a SQLite ``:memory:`` database, specify an empty URL::
 
 More notes on connecting to SQLite at :ref:`sqlite_toplevel`.
 
-Others
+其他
 ^^^^^^
+
+Others
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 See :ref:`dialect_toplevel`, the top-level page for all additional dialect
 documentation.
 
 .. _create_engine_args:
 
-Engine Creation API
+引擎创建 API
 ===================
+
+Engine Creation API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: sqlalchemy.create_engine
 
@@ -287,8 +383,14 @@ Engine Creation API
 .. autoclass:: sqlalchemy.engine.URL
     :members:
 
-Pooling
+池化
 =======
+
+Pooling
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_engine.Engine` will ask the connection pool for a
 connection when the ``connect()`` or ``execute()`` methods are called. The
@@ -311,16 +413,28 @@ For more information on connection pooling, see :ref:`pooling_toplevel`.
 
 .. _custom_dbapi_args:
 
-Custom DBAPI connect() arguments / on-connect routines
+自定义 DBAPI connect() 参数/连接例程
 =======================================================
+
+Custom DBAPI connect() arguments / on-connect routines
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For cases where special connection methods are needed, in the vast majority
 of cases, it is most appropriate to use one of several hooks at the
 :func:`_sa.create_engine` level in order to customize this process. These
 are described in the following sub-sections.
 
-Special Keyword Arguments Passed to dbapi.connect()
+传递给 dbapi.connect() 的特殊关键字参数
 ---------------------------------------------------
+
+Special Keyword Arguments Passed to dbapi.connect()
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 All Python DBAPIs accept additional arguments beyond the basics of connecting.
 Common parameters include those to specify character set encodings and timeout
@@ -328,8 +442,14 @@ values; more complex data includes special DBAPI constants and objects and SSL
 sub-parameters. There are two rudimentary means of passing these arguments
 without complexity.
 
-Add Parameters to the URL Query string
+将参数添加到 URL 查询字符串
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Add Parameters to the URL Query string
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Simple string values, as well as some numeric values and boolean flags, may be
 often specified in the query string of the URL directly. A common example of
@@ -365,8 +485,14 @@ supported at this level.
   The above ``args, kwargs`` pair is normally passed to the DBAPI as
   ``dbapi.connect(*args, **kwargs)``.
 
-Use the connect_args dictionary parameter
+使用 connect_args 字典参数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use the connect_args dictionary parameter
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A more general system of passing any parameter to the ``dbapi.connect()``
 function that is guaranteed to pass all parameters at all times is the
@@ -397,8 +523,14 @@ well as :paramref:`_sa.create_engine.connect_args` may be used at the same
 time; in the case of pyodbc, the "driver" keyword has special meaning
 within the URL.
 
-Controlling how parameters are passed to the DBAPI connect() function
+控制如何将参数传递给 DBAPI connect() 函数
 ---------------------------------------------------------------------
+
+Controlling how parameters are passed to the DBAPI connect() function
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Beyond manipulating the parameters passed to ``connect()``, we can further
 customize how the DBAPI ``connect()`` function itself is called using the
@@ -417,8 +549,14 @@ collections can then be modified in place to alter how they are used::
 
 .. _engines_dynamic_tokens:
 
-Generating dynamic authentication tokens
+生成动态身份验证令牌
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Generating dynamic authentication tokens
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :meth:`.DialectEvents.do_connect` is also an ideal way to dynamically
 insert an authentication token that might change over the lifespan of an
@@ -440,8 +578,14 @@ parameter, this could be implemented as::
     :ref:`mssql_pyodbc_access_tokens` - a more concrete example involving
     SQL Server
 
-Modifying the DBAPI connection after connect, or running commands after connect
+在连接后修改 DBAPI 连接，或在连接后运行命令
 -------------------------------------------------------------------------------
+
+Modifying the DBAPI connection after connect, or running commands after connect
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For a DBAPI connection that SQLAlchemy creates without issue, but where we
 would like to modify the completed connection before it's actually used, such
@@ -461,8 +605,14 @@ SQLAlchemy::
         cursor_obj.execute("SET some session variables")
         cursor_obj.close()
 
-Fully Replacing the DBAPI ``connect()`` function
+完全替换 DBAPI ``connect()`` 函数
 ------------------------------------------------
+
+Fully Replacing the DBAPI ``connect()`` function
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Finally, the :meth:`.DialectEvents.do_connect` event hook can also allow us to take
 over the connection process entirely by establishing the connection
@@ -487,8 +637,14 @@ function which is not the case with :paramref:`_sa.create_engine.creator`.
 
 .. _dbengine_logging:
 
-Configuring Logging
+配置日志记录
 ===================
+
+Configuring Logging
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Python's standard `logging
 <https://docs.python.org/library/logging.html>`_ module is used to
@@ -551,8 +707,14 @@ application that has logging enabled otherwise.
    :class:`~.orm.session.Session`, this is after the current transaction ends
    and a new one begins).
 
-More on the Echo Flag
+有关 Echo 标志的更多信息
 ---------------------
+
+More on the Echo Flag
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As mentioned previously, the :paramref:`_sa.create_engine.echo` and :paramref:`_sa.create_engine.echo_pool`
 parameters are a shortcut to immediate logging to ``sys.stdout``::
@@ -585,8 +747,14 @@ any existing logger configurations. Therefore, **when configuring logging
 explicitly, ensure all echo flags are set to False at all times**, to avoid
 getting duplicate log lines.
 
-Setting the Logging Name
+设置日志记录名称
 -------------------------
+
+Setting the Logging Name
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The logger name for :class:`~sqlalchemy.engine.Engine` or
 :class:`~sqlalchemy.pool.Pool` is set to be the module-qualified class name of the
@@ -641,8 +809,14 @@ that they may be distinguished in logging::
 
 .. _dbengine_logging_tokens:
 
-Setting Per-Connection / Sub-Engine Tokens
+设置每个连接/子引擎令牌
 ------------------------------------------
+
+Setting Per-Connection / Sub-Engine Tokens
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionadded:: 1.4.0b2
 
@@ -693,8 +867,14 @@ of an application without creating new engines::
     2021-02-03 11:52:05,520 DEBUG sqlalchemy.engine.Engine [track2] Row (1,)
 
 
-Hiding Parameters
+隐藏参数
 ------------------
+
+Hiding Parameters
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The logging emitted by :class:`_engine.Engine` also indicates an excerpt
 of the SQL parameters that are present for a particular statement.  To prevent

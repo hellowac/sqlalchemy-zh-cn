@@ -1,22 +1,36 @@
 .. _connections_toplevel:
 
 ====================================
-Working with Engines and Connections
+使用Engines和Connection
 ====================================
+
+Working with Engines and Connections
 
 .. module:: sqlalchemy.engine
 
-This section details direct usage of the :class:`_engine.Engine`,
-:class:`_engine.Connection`, and related objects. Its important to note that when
-using the SQLAlchemy ORM, these objects are not generally accessed; instead,
-the :class:`.Session` object is used as the interface to the database.
-However, for applications that are built around direct usage of textual SQL
-statements and/or SQL expression constructs without involvement by the ORM's
-higher level management services, the :class:`_engine.Engine` and
-:class:`_engine.Connection` are king (and queen?) - read on.
+.. tab:: 中文
+
+    本节详细介绍了 :class:`_engine.Engine` ，:class:`_engine.Connection` 及相关对象的直接使用。需要注意的是，当使用SQLAlchemy ORM时，通常不会直接访问这些对象；取而代之的是使用 :class:`.Session` 对象作为数据库接口。然而，对于围绕直接使用文本SQL语句和/或SQL表达式构造而构建的应用程序，不涉及ORM的高级管理服务， :class:`_engine.Engine` 和 :class:`_engine.Connection` 是关键对象 - 继续阅读。
+
+.. tab:: 英文
+
+    This section details direct usage of the :class:`_engine.Engine`,
+    :class:`_engine.Connection`, and related objects. Its important to note that when
+    using the SQLAlchemy ORM, these objects are not generally accessed; instead,
+    the :class:`.Session` object is used as the interface to the database.
+    However, for applications that are built around direct usage of textual SQL
+    statements and/or SQL expression constructs without involvement by the ORM's
+    higher level management services, the :class:`_engine.Engine` and
+    :class:`_engine.Connection` are king (and queen?) - read on.
+
+基本用法
+-----------
 
 Basic Usage
------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Recall from :doc:`/core/engines` that an :class:`_engine.Engine` is created via
 the :func:`_sa.create_engine` call::
@@ -81,8 +95,14 @@ course accommodate more than that; see :ref:`tutorial_working_with_data`
 in the :ref:`unified_tutorial` for a tutorial.
 
 
-Using Transactions
+使用事务
 ------------------
+
+Using Transactions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. note::
 
@@ -93,8 +113,14 @@ Using Transactions
   object internally. See :ref:`unitofwork_transaction` for further
   information.
 
-Commit As You Go
+随时提交
 ~~~~~~~~~~~~~~~~
+
+Commit As You Go
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`~sqlalchemy.engine.Connection` object always emits SQL statements
 within the context of a transaction block.   The first time the
@@ -155,8 +181,14 @@ emitted, a new transaction begins implicitly::
    SQLAlchemy 2.0.  It is also available in SQLAlchemy 1.4's "transitional"
    mode when using a "future" style engine.
 
-Begin Once
+开始一次
 ~~~~~~~~~~
+
+Begin Once
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_engine.Connection` object provides a more explicit transaction
 management style known as **begin once**. In contrast to "commit as
@@ -183,8 +215,14 @@ once" block::
 
         # transaction is committed
 
-Connect and Begin Once from the Engine
+从引擎连接并开始一次
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Connect and Begin Once from the Engine
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A convenient shorthand form for the above "begin once" block is to use
 the :meth:`_engine.Engine.begin` method at the level of the originating
@@ -225,8 +263,14 @@ returned by the :meth:`_engine.Connection.begin` method::
         context manager.  Please complete the context manager before emitting
         further commands.
 
-Mixing Styles
+混合样式
 ~~~~~~~~~~~~~
+
+Mixing Styles
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "commit as you go" and "begin once" styles can be freely mixed within
 a single :meth:`_engine.Engine.connect` block, provided that the call to
@@ -261,8 +305,14 @@ When developing code that uses "begin once", the library will raise
 
 .. _dbapi_autocommit:
 
-Setting Transaction Isolation Levels including DBAPI Autocommit
+设置事务隔离级别（包括 DBAPI 自动提交）
 ---------------------------------------------------------------
+
+Setting Transaction Isolation Levels including DBAPI Autocommit
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Most DBAPIs support the concept of configurable transaction :term:`isolation` levels.
 These are traditionally the four levels "READ UNCOMMITTED", "READ COMMITTED",
@@ -293,8 +343,14 @@ that loses not only "read committed" but also loses atomicity.
 SQLAlchemy dialects should support these isolation levels as well as autocommit
 to as great a degree as possible.
 
-Setting Isolation Level or DBAPI Autocommit for a Connection
+为连接设置隔离级别或 DBAPI 自动提交
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Setting Isolation Level or DBAPI Autocommit for a Connection
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For an individual :class:`_engine.Connection` object that's acquired from
 :meth:`.Engine.connect`, the isolation level can be set for the duration of
@@ -340,8 +396,14 @@ begin a transaction::
    set at this level. This because the option must be set on a DBAPI connection
    on a per-transaction basis.
 
-Setting Isolation Level or DBAPI Autocommit for an Engine
+为引擎设置隔离级别或 DBAPI 自动提交
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Setting Isolation Level or DBAPI Autocommit for an Engine
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :paramref:`_engine.Connection.execution_options.isolation_level` option may
 also be set engine wide, as is often preferable.  This may be
@@ -360,8 +422,14 @@ subsequent operations.
 
 .. _dbapi_autocommit_multiple:
 
-Maintaining Multiple Isolation Levels for a Single Engine
+为单个引擎维护多个隔离级别
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Maintaining Multiple Isolation Levels for a Single Engine
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The isolation level may also be set per engine, with a potentially greater
 level of flexibility, using either the
@@ -428,8 +496,14 @@ reverted when a connection is returned to the connection pool.
 
 .. _dbapi_autocommit_understanding:
 
-Understanding the DBAPI-Level Autocommit Isolation Level
+了解 DBAPI 级自动提交隔离级别
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Understanding the DBAPI-Level Autocommit Isolation Level
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In the parent section, we introduced the concept of the
 :paramref:`_engine.Connection.execution_options.isolation_level`
@@ -514,8 +588,14 @@ maintain a completely consistent usage pattern with the
 :class:`_engine.Connection` where DBAPI-autocommit mode can be changed
 independently without indicating any code changes elsewhere.
 
-Changing Between Isolation Levels
+在隔离级别之间切换
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Changing Between Isolation Levels
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. topic:: TL;DR;
 
@@ -585,8 +665,14 @@ To sum up:
 
 .. _engine_stream_results:
 
-Using Server Side Cursors (a.k.a. stream results)
+使用服务器端游标（又称流结果）
 -------------------------------------------------
+
+Using Server Side Cursors (a.k.a. stream results)
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Some backends feature explicit support for the concept of "server side cursors"
 versus "client side cursors".  A client side cursor here means that the
@@ -641,8 +727,14 @@ or per-statement basis.    Similar options exist when using an ORM
 :class:`_orm.Session` as well.
 
 
-Streaming with a fixed buffer via yield_per
+通过 Yield_per 使用固定缓冲区进行流式传输
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Streaming with a fixed buffer via yield_per
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As individual row-fetch operations with fully unbuffered server side cursors
 are typically more expensive than fetching batches of rows at once, The
@@ -720,8 +812,14 @@ for further background on using
 
 .. _engine_stream_results_sr:
 
-Streaming with a dynamically growing buffer using stream_results
+使用 stream_results 使用动态增长缓冲区进行流式传输
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Streaming with a dynamically growing buffer using stream_results
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 To enable server side cursors without a specific partition size, the
 :paramref:`_engine.Connection.execution_options.stream_results` option may be
@@ -762,8 +860,14 @@ up to use the :meth:`_engine.Result.partitions` method.
 
 .. _schema_translating:
 
-Translation of Schema Names
+模式名称的转换
 ---------------------------
+
+Translation of Schema Names
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 To support multi-tenancy applications that distribute common sets of tables
 into multiple schemas, the
@@ -855,8 +959,14 @@ as the schema name is passed to these methods explicitly.
 .. _sql_caching:
 
 
-SQL Compilation Caching
+SQL 编译缓存
 -----------------------
+
+SQL Compilation Caching
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionadded:: 1.4  SQLAlchemy now has a transparent query caching system
    that substantially lowers the Python computational overhead involved in
@@ -905,8 +1015,14 @@ special steps are needed in order to enable it. The following sections
 detail the configuration and advanced usage patterns for the cache.
 
 
-Configuration
+配置
 ~~~~~~~~~~~~~
+
+Configuration
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The cache itself is a dictionary-like object called an ``LRUCache``, which is
 an internal SQLAlchemy dictionary subclass that tracks the usage of particular
@@ -932,8 +1048,14 @@ cache's behavior, described in the next section.
 
 .. _sql_caching_logging:
 
-Estimating Cache Performance Using Logging
+使用日志记录估计缓存性能
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Estimating Cache Performance Using Logging
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The above cache size of 1200 is actually fairly large.   For small applications,
 a size of 100 is likely sufficient.  To estimate the optimal size of the cache,
@@ -1150,8 +1272,14 @@ being cached.   Which indicates a cache size of **four** would be sufficient.   
 obviously an extremely small size, and the default size of 500 is fine to be left
 at its default.
 
-How much memory does the cache use?
+缓存使用多少内存？
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+How much memory does the cache use?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The previous section detailed some techniques to check if the
 :paramref:`_sa.create_engine.query_cache_size` needs to be bigger.   How do we know
@@ -1172,8 +1300,14 @@ moderate Core statement takes up about 12K while a small ORM statement takes abo
 
 .. _engine_compiled_cache:
 
-Disabling or using an alternate dictionary to cache some (or all) statements
+禁用或使用备用字典来缓存部分（或全部）语句
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Disabling or using an alternate dictionary to cache some (or all) statements
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The internal cache used is known as ``LRUCache``, but this is mostly just
 a dictionary.  Any dictionary may be used as a cache for any series of
@@ -1202,8 +1336,14 @@ The cache can also be disabled with this argument by sending a value of
 
 .. _engine_thirdparty_caching:
 
-Caching for Third Party Dialects
+第三方方言缓存
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Caching for Third Party Dialects
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The caching feature requires that the dialect's compiler produces SQL
 strings that are safe to reuse for many statement invocations, given
@@ -1252,8 +1392,14 @@ The flag needs to be applied to all subclasses of the dialect as well::
 
 The typical case for dialect modification follows.
 
-Example: Rendering LIMIT / OFFSET with post compile parameters
+示例：使用后编译参数呈现 LIMIT / OFFSET
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Example: Rendering LIMIT / OFFSET with post compile parameters
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As an example, suppose a dialect overrides the :meth:`.SQLCompiler.limit_clause`
 method, which produces the "LIMIT / OFFSET" clause for a SQL statement,
@@ -1344,8 +1490,14 @@ SELECTs with LIMIT/OFFSET are correctly rendered and cached.
 
 .. _engine_lambda_caching:
 
-Using Lambdas to add significant speed gains to statement production
+使用 Lambda 显著提高语句生成速度
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using Lambdas to add significant speed gains to statement production
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. deepalchemy:: This technique is generally non-essential except in very performance
    intensive scenarios, and intended for experienced Python programmers.
@@ -1366,8 +1518,14 @@ The lambda SQL expression feature is available as a performance enhancing
 feature, and is also optionally used in the :func:`_orm.with_loader_criteria`
 ORM option in order to provide a generic SQL fragment.
 
-Synopsis
+概要
 ^^^^^^^^
+
+Synopsis
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Lambda statements are constructed using the :func:`_sql.lambda_stmt` function,
 which returns an instance of :class:`_sql.StatementLambdaElement`, which is
@@ -1412,8 +1570,14 @@ used as cache keys to retrieve the already-compiled SQL.
    cache key.
 
 
-Quick Guidelines for Lambdas
+Lambda 快速指南
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Quick Guidelines for Lambdas
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Above all, the emphasis within the lambda SQL system is ensuring that there
 is never a mismatch between the cache key generated for a lambda and the
@@ -1636,8 +1800,14 @@ Basic guidelines include:
   ..
 
 
-Cache Key Generation
+缓存键生成
 ^^^^^^^^^^^^^^^^^^^^
+
+Cache Key Generation
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In order to understand some of the options and behaviors which occur
 with lambda SQL constructs, an understanding of the caching system
@@ -1764,8 +1934,14 @@ performance example.
 
 .. _engine_insertmanyvalues:
 
-"Insert Many Values" Behavior for INSERT statements
+INSERT 语句的“插入多个值”行为
 ---------------------------------------------------
+
+"Insert Many Values" Behavior for INSERT statements
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionadded:: 2.0 see :ref:`change_6047` for background on the change
    including sample performance tests
@@ -1803,8 +1979,14 @@ from the
 feature of the ``psycopg2`` DBAPI, which SQLAlchemy incrementally added more
 and more support towards in recent release series.
 
-Current Support
+当前支持
 ~~~~~~~~~~~~~~~
+
+Current Support
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The feature is enabled for all backend included in SQLAlchemy that support
 RETURNING, with the exception of Oracle Database for which both the
@@ -1838,8 +2020,14 @@ as follows:
    .. [#] "insertmanyvalues" support for Microsoft SQL Server
       is restored, after being temporarily disabled in version 2.0.9.
 
-Disabling the feature
+禁用该功能
 ~~~~~~~~~~~~~~~~~~~~~
+
+Disabling the feature
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 To disable the "insertmanyvalues" feature for a given backend for an
 :class:`.Engine` overall, pass the
@@ -1866,8 +2054,14 @@ The reason one might want to disable RETURNING for a specific table is to
 work around backend-specific limitations.
 
 
-Batched Mode Operation
+批处理模式操作
 ~~~~~~~~~~~~~~~~~~~~~~
+
+Batched Mode Operation
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The feature has two modes of operation, which are selected transparently on a
 per-dialect, per-:class:`_schema.Table` basis. One is **batched mode**,
@@ -1904,8 +2098,14 @@ backends where it's supported.
 
 .. _engine_insertmanyvalues_returning_order:
 
-Correlating RETURNING rows to parameter sets
+将 RETURNING 行关联到参数集
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Correlating RETURNING rows to parameter sets
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionadded:: 2.0.10
 
@@ -2009,8 +2209,14 @@ of **non-batched** mode when guaranteed RETURNING ordering is requested.
 
 .. _engine_insertmanyvalues_non_batch:
 
-Non-Batched Mode Operation
+非批处理模式操作
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Non-Batched Mode Operation
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For :class:`_schema.Table` configurations that do not have client side primary
 key values, and offer server-generated primary key values (or no primary key)
@@ -2027,8 +2233,14 @@ set. Unlike previous SQLAlchemy versions, it does so in a tight loop that
 minimizes Python overhead. In some cases, such as on SQLite, "non-batched" mode
 performs exactly as well as "batched" mode.
 
-Statement Execution Model
+语句执行模型
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Statement Execution Model
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For both "batched" and "non-batched" modes, the feature will necessarily
 invoke **multiple INSERT statements** using the DBAPI ``cursor.execute()`` method,
@@ -2046,8 +2258,14 @@ below).
 
 .. _engine_insertmanyvalues_sentinel_columns:
 
-Configuring Sentinel Columns
+配置 Sentinel 列
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Configuring Sentinel Columns
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In typical cases, the "insertmanyvalues" feature in order to provide
 INSERT..RETURNING with deterministic row order will automatically determine a
@@ -2187,8 +2405,14 @@ feature to help optimize bulk inserts used by the ORM.
 
 .. _engine_insertmanyvalues_page_size:
 
-Controlling the Batch Size
+控制批处理大小
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Controlling the Batch Size
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A key characteristic of "insertmanyvalues" is that the size of the INSERT
 statement is limited on a fixed max number of "values" clauses as well as a
@@ -2254,8 +2478,14 @@ Or configured on the statement itself::
 
 .. _engine_insertmanyvalues_events:
 
-Logging and Events
+日志记录和事件
 ~~~~~~~~~~~~~~~~~~
+
+Logging and Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "insertmanyvalues" feature integrates fully with SQLAlchemy's :ref:`statement
 logging <dbengine_logging>` as well as cursor events such as :meth:`.ConnectionEvents.before_cursor_execute`.
@@ -2301,8 +2531,14 @@ will indicate this along with the insertmanyvalues message:
 
     :ref:`dbengine_logging`
 
-Upsert Support
+Upsert 支持
 ~~~~~~~~~~~~~~
+
+Upsert Support
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The PostgreSQL, SQLite, and MariaDB dialects offer backend-specific
 "upsert" constructs :func:`_postgresql.insert`, :func:`_sqlite.insert`
@@ -2315,8 +2551,14 @@ with RETURNING to take place.
 
 .. _engine_disposal:
 
-Engine Disposal
+引擎处置
 ---------------
+
+Engine Disposal
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_engine.Engine` refers to a connection pool, which means under normal
 circumstances, there are open database connections present while the
@@ -2392,8 +2634,14 @@ for guidelines on how to disable pooling.
 
 .. _dbapi_connections:
 
-Working with Driver SQL and Raw DBAPI Connections
+使用驱动程序 SQL 和原始 DBAPI 连接
 -------------------------------------------------
+
+Working with Driver SQL and Raw DBAPI Connections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The introduction on using :meth:`_engine.Connection.execute` made use of the
 :func:`_expression.text` construct in order to illustrate how textual SQL statements
@@ -2404,8 +2652,14 @@ and the ORM both abstract away the textual representation of SQL.  However, the
 SQL in that it normalizes how bound parameters are passed, as well as that
 it supports datatyping behavior for parameters and result set rows.
 
-Invoking SQL strings directly to the driver
+直接向驱动程序调用 SQL 字符串
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Invoking SQL strings directly to the driver
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For the use case where one wants to invoke textual SQL directly passed to the
 underlying driver (known as the :term:`DBAPI`) without any intervention
@@ -2419,8 +2673,14 @@ method may be used::
 
 .. _dbapi_connections_cursor:
 
-Working with the DBAPI cursor directly
+直接使用 DBAPI 游标
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Working with the DBAPI cursor directly
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 There are some cases where SQLAlchemy does not provide a genericized way
 at accessing some :term:`DBAPI` functions, such as calling stored procedures as well
@@ -2475,8 +2735,14 @@ Some recipes for DBAPI connection use follow.
 
 .. _stored_procedures:
 
-Calling Stored Procedures and User Defined Functions
+调用存储过程和用户​​定义函数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Calling Stored Procedures and User Defined Functions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy supports calling stored procedures and user defined functions
 several ways. Please note that all DBAPIs have different practices, so you must
@@ -2520,8 +2786,14 @@ You should consult your underlying DBAPI and database documentation in these
 situations to determine the correct syntax and patterns to use.
 
 
-Multiple Result Sets
+多个结果集
 ~~~~~~~~~~~~~~~~~~~~
+
+Multiple Result Sets
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Multiple result set support is available from a raw DBAPI cursor using the
 `nextset <https://legacy.python.org/dev/peps/pep-0249/#nextset>`_ method::
@@ -2537,8 +2809,14 @@ Multiple result set support is available from a raw DBAPI cursor using the
     finally:
         connection.close()
 
-Registering New Dialects
+注册新方言
 ------------------------
+
+Registering New Dialects
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_sa.create_engine` function call locates the given dialect
 using setuptools entrypoints.   These entry points can be established
@@ -2572,8 +2850,14 @@ were in fact a MySQL dialect, the entry point could be established like this:
 The above entrypoint would then be accessed as ``create_engine("mysql+foodialect://")``.
 
 
-Registering Dialects In-Process
+注册进程内方言
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Registering Dialects In-Process
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy also allows a dialect to be registered within the current process, bypassing
 the need for separate installation.   Use the ``register()`` function as follows::
@@ -2587,8 +2871,10 @@ The above will respond to ``create_engine("mysql+foodialect://")`` and load the
 ``MyMySQLDialect`` class from the ``myapp.dialect`` module.
 
 
-Connection / Engine API
+连接 / 引擎API
 -----------------------
+
+Connection / Engine API
 
 .. autoclass:: Connection
    :members:
@@ -2618,8 +2904,10 @@ Connection / Engine API
     :inherited-members:
 
 
-Result Set API
+结果集 API
 ---------------
+
+Result Set API
 
 .. autoclass:: ChunkedIteratorResult
     :members:

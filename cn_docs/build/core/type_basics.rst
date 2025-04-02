@@ -1,27 +1,47 @@
-The Type Hierarchy
+类型层次结构
 =====================
+
+The Type Hierarchy
 
 .. module:: sqlalchemy.types
 
-SQLAlchemy provides abstractions for most common database data types,
-as well as several techniques for customization of datatypes.
+.. tab:: 中文
 
-Database types are represented using Python classes, all of which ultimately
-extend from the base type class known as :class:`_types.TypeEngine`. There are
-two general categories of datatypes, each of which express themselves within
-the typing hierarchy in different ways. The category used by an individual
-datatype class can be identified based on the use of two different naming
-conventions, which are "CamelCase" and "UPPERCASE".
+    SQLAlchemy提供了大多数常见数据库数据类型的抽象，以及几种自定义数据类型的技术。
 
-.. seealso::
+    数据库类型使用Python类表示，所有这些类最终都从称为 :class:`_types.TypeEngine` 的基本类型类扩展而来。有两类通用的数据类型，每类在类型层次结构中的表达方式不同。可以根据两种不同的命名约定来识别单个数据类型类使用的类别，分别是“CamelCase”和“大写字母”。
 
-    :ref:`tutorial_core_metadata` - in the :ref:`unified_tutorial`.  Illustrates
-    the most rudimental use of :class:`_types.TypeEngine` type objects to
-    define :class:`_schema.Table` metadata and introduces the concept
-    of type objects in tutorial form.
+    .. seealso::
+
+        :ref:`tutorial_core_metadata` - 在 :ref:`unified_tutorial` 中。说明了使用 :class:`_types.TypeEngine` 类型对象定义 :class:`_schema.Table` 元数据的最基础用法，并以教程形式介绍了类型对象的概念。
+
+.. tab:: 英文
+
+    SQLAlchemy provides abstractions for most common database data types,
+    as well as several techniques for customization of datatypes.
+
+    Database types are represented using Python classes, all of which ultimately
+    extend from the base type class known as :class:`_types.TypeEngine`. There are
+    two general categories of datatypes, each of which express themselves within
+    the typing hierarchy in different ways. The category used by an individual
+    datatype class can be identified based on the use of two different naming
+    conventions, which are "CamelCase" and "UPPERCASE".
+
+    .. seealso::
+
+        :ref:`tutorial_core_metadata` - in the :ref:`unified_tutorial`.  Illustrates
+        the most rudimental use of :class:`_types.TypeEngine` type objects to
+        define :class:`_schema.Table` metadata and introduces the concept
+        of type objects in tutorial form.
+
+“驼峰式”数据类型
+-------------------------
 
 The "CamelCase" datatypes
--------------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The rudimental types have "CamelCase" names such as :class:`_types.String`,
 :class:`_types.Numeric`, :class:`_types.Integer`, and :class:`_types.DateTime`.
@@ -74,8 +94,14 @@ basic behavior and be automatically portable to all backends.
 Reference for the general set of "CamelCase" datatypes is below at
 :ref:`types_generic`.
 
-The "UPPERCASE" datatypes
+“大写”数据类型
 -------------------------
+
+The "UPPERCASE" datatypes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 In contrast to the "CamelCase" types are the "UPPERCASE" datatypes. These
 datatypes are always inherited from a particular "CamelCase" datatype, and
@@ -104,8 +130,14 @@ Reference for the general set of "UPPERCASE" datatypes is below at
 
 .. _types_vendor:
 
-Backend-specific "UPPERCASE" datatypes
+后端特定的“大写”数据类型
 --------------------------------------
+
+Backend-specific "UPPERCASE" datatypes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Most databases also have their own datatypes that
 are either fully specific to those databases, or add additional arguments
@@ -129,8 +161,14 @@ documentation, listed at :ref:`dialect_toplevel`.
 
 .. _types_with_variant:
 
-Using "UPPERCASE" and Backend-specific types for multiple backends
+对多个后端使用“大写”和后端特定的类型
 ------------------------------------------------------------------
+
+Using "UPPERCASE" and Backend-specific types for multiple backends
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Reviewing the presence of "UPPERCASE" and "CamelCase" types leads to the natural
 use case of how to make use of "UPPERCASE" datatypes for backend-specific
@@ -171,8 +209,14 @@ on MySQL and MariaDB (indicated by database URLs that start with ``mysql`` or
 
 .. _types_generic:
 
-Generic "CamelCase" Types
+通用“驼峰式”类型
 -------------------------
+
+Generic "CamelCase" Types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Generic types specify a column that can read, write and store a
 particular type of Python data.  SQLAlchemy will choose the best
@@ -250,8 +294,14 @@ type is emitted in ``CREATE TABLE``, such as ``VARCHAR`` see
 
 .. _types_sqlstandard:
 
-SQL Standard and Multiple Vendor "UPPERCASE" Types
+SQL 标准和多个供应商“大写”类型
 --------------------------------------------------
+
+SQL Standard and Multiple Vendor "UPPERCASE" Types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This category of types refers to types that are either part of the
 SQL standard, or are potentially found within a subset of database backends.

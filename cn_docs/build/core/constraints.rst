@@ -4,16 +4,29 @@
 .. currentmodule:: sqlalchemy.schema
 
 ================================
-Defining Constraints and Indexes
+定义约束和索引
 ================================
 
-This section will discuss SQL :term:`constraints` and indexes.  In SQLAlchemy
-the key classes include :class:`_schema.ForeignKeyConstraint` and :class:`.Index`.
+Defining Constraints and Indexes
+
+.. tab:: 中文
+
+    本节将讨论SQL *约束* (:term:`constraints`) 和索引。在SQLAlchemy中，关键类包括 :class:`_schema.ForeignKeyConstraint` 和 :class:`.Index`。
+
+.. tab:: 英文
+
+    This section will discuss SQL :term:`constraints` and indexes.  In SQLAlchemy the key classes include :class:`_schema.ForeignKeyConstraint` and :class:`.Index`.
 
 .. _metadata_foreignkeys:
 
-Defining Foreign Keys
+定义外键
 ---------------------
+
+Defining Foreign Keys
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A *foreign key* in SQL is a table-level construct that constrains one or more
 columns in that table to only allow values that are present in a different set
@@ -100,8 +113,14 @@ foreign key referencing two columns.
 
 .. _use_alter:
 
-Creating/Dropping Foreign Key Constraints via ALTER
+通过 ALTER 创建/删除外键约束
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creating/Dropping Foreign Key Constraints via ALTER
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The behavior we've seen in tutorials and elsewhere involving
 foreign keys with DDL illustrates that the constraints are typically
@@ -267,8 +286,14 @@ like the following is generated:
 
 .. _on_update_on_delete:
 
-ON UPDATE and ON DELETE
+ON UPDATE 和 ON DELETE
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+ON UPDATE and ON DELETE
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Most databases support *cascading* of foreign key values, that is the when a
 parent row is updated the new value is placed in child rows, or when the
@@ -332,8 +357,14 @@ Note that some backends have special requirements for cascades to function:
 
 .. _schema_unique_constraint:
 
-UNIQUE Constraint
+UNIQUE 约束
 -----------------
+
+UNIQUE Constraint
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Unique constraints can be created anonymously on a single column using the
 ``unique`` keyword on :class:`~sqlalchemy.schema.Column`. Explicitly named
@@ -356,8 +387,14 @@ unique constraints and/or those with multiple columns are created via the
         UniqueConstraint("col2", "col3", name="uix_1"),
     )
 
-CHECK Constraint
+CHECK 约束
 ----------------
+
+CHECK Constraint
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Check constraints can be named or unnamed and can be created at the Column or
 Table level, using the :class:`~sqlalchemy.schema.CheckConstraint` construct.
@@ -393,8 +430,14 @@ older versions of MySQL (prior to 8.0.16).
         CONSTRAINT check1  CHECK (col2 > col3 + 5)
     ){stop}
 
-PRIMARY KEY Constraint
+PRIMARY KEY 约束
 ----------------------
+
+PRIMARY KEY Constraint
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The primary key constraint of any :class:`_schema.Table` object is implicitly
 present, based on the :class:`_schema.Column` objects that are marked with the
@@ -417,8 +460,14 @@ option of being configured directly::
 
     :class:`.PrimaryKeyConstraint` - detailed API documentation.
 
-Setting up Constraints when using the Declarative ORM Extension
+使用声明性 ORM 扩展时设置约束
 ---------------------------------------------------------------
+
+Setting up Constraints when using the Declarative ORM Extension
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_schema.Table` is the SQLAlchemy Core construct that allows one to define
 table metadata, which among other things can be used by the SQLAlchemy ORM
@@ -432,8 +481,14 @@ described at :ref:`declarative_table_args`.
 
 .. _constraint_naming_conventions:
 
-Configuring Constraint Naming Conventions
+配置约束命名约定
 -----------------------------------------
+
+Configuring Constraint Naming Conventions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Relational databases typically assign explicit names to all constraints and
 indexes.  In the common case that a table is created using ``CREATE TABLE``
@@ -470,8 +525,14 @@ and :paramref:`_schema.Column.index` parameters.  As of SQLAlchemy 0.9.2 this
 event-based approach is included, and can be configured using the argument
 :paramref:`_schema.MetaData.naming_convention`.
 
-Configuring a Naming Convention for a MetaData Collection
+为元数据集合配置命名约定
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Configuring a Naming Convention for a MetaData Collection
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :paramref:`_schema.MetaData.naming_convention` refers to a dictionary which accepts
 the :class:`.Index` class or individual :class:`.Constraint` classes as keys,
@@ -544,8 +605,14 @@ conventions.
 
 .. _constraint_default_naming_convention:
 
-The Default Naming Convention
+默认命名约定
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Default Naming Convention
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The default value for :paramref:`_schema.MetaData.naming_convention` handles
 the long-standing SQLAlchemy behavior of assigning a name to a :class:`.Index`
@@ -555,8 +622,14 @@ object that is created using the :paramref:`_schema.Column.index` parameter::
     >>> DEFAULT_NAMING_CONVENTION
     immutabledict({'ix': 'ix_%(column_0_label)s'})
 
-Truncation of Long Names
+长名称截断
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Truncation of Long Names
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When a generated name, particularly those that use the multiple-column tokens,
 is too long for the identifier length limit of the target database
@@ -595,8 +668,14 @@ The above suffix ``a79e`` is based on the md5 hash of the long name and will
 generate the same value every time to produce consistent names for a given
 schema.
 
-Creating Custom Tokens for Naming Conventions
+为命名约定创建自定义标记
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creating Custom Tokens for Naming Conventions
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 New tokens can also be added, by specifying an additional token
 and a callable within the naming_convention dictionary.  For example, if we
@@ -657,8 +736,14 @@ name as follows::
 
 .. _naming_check_constraints:
 
-Naming CHECK Constraints
+命名 CHECK 约束
 ~~~~~~~~~~~~~~~~~~~~~~~~
+
+Naming CHECK Constraints
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.CheckConstraint` object is configured against an arbitrary
 SQL expression, which can have any number of columns present, and additionally
@@ -725,8 +810,14 @@ structure of the expression will determine which column is noted as
 
 .. _naming_schematypes:
 
-Configuring Naming for Boolean, Enum, and other schema types
+为布尔、枚举和其他架构类型配置命名
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Configuring Naming for Boolean, Enum, and other schema types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.SchemaType` class refers to type objects such as :class:`.Boolean`
 and :class:`.Enum` which generate a CHECK constraint accompanying the type.
@@ -780,8 +871,14 @@ The above schema will produce:
         CONSTRAINT ck_foo_flag CHECK (flag IN (0, 1))
     )
 
-Using Naming Conventions with ORM Declarative Mixins
+将命名约定与 ORM 声明性混合使用
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using Naming Conventions with ORM Declarative Mixins
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When using the naming convention feature with :ref:`ORM Declarative Mixins
 <orm_mixins_toplevel>`, individual constraint objects must exist for each
@@ -832,8 +929,14 @@ Constraints API
 
 .. _schema_indexes:
 
-Indexes
+索引
 -------
+
+Indexes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Indexes can be created anonymously (using an auto-generated name ``ix_<column
 label>``) for a single column using the inline ``index`` keyword on
@@ -913,8 +1016,14 @@ The :class:`~sqlalchemy.schema.Index` object also supports its own ``create()`` 
 
 .. _schema_indexes_functional:
 
-Functional Indexes
+功能索引
 ~~~~~~~~~~~~~~~~~~
+
+Functional Indexes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :class:`.Index` supports SQL and function expressions, as supported by the
 target backend.  To create an index against a column using a descending
@@ -931,8 +1040,14 @@ a "case insensitive" index can be created using the ``lower()`` function::
 
     Index("someindex", func.lower(mytable.c.somecol))
 
-Index API
+索引 API
 ---------
+
+Index API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autoclass:: Index
     :members:

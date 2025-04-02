@@ -1,28 +1,46 @@
 .. _pooling_toplevel:
 
-Connection Pooling
+连接池
 ==================
+
+Connection Pooling
 
 .. module:: sqlalchemy.pool
 
-A connection pool is a standard technique used to maintain
-long running connections in memory for efficient re-use,
-as well as to provide
-management for the total number of connections an application
-might use simultaneously.
+.. tab:: 中文
 
-Particularly for
-server-side web applications, a connection pool is the standard way to
-maintain a "pool" of active database connections in memory which are
-reused across requests.
+    连接池是一种标准技术，用于在内存中维护长时间运行的连接以实现高效重用，并管理应用程序可能同时使用的总连接数。
 
-SQLAlchemy includes several connection pool implementations
-which integrate with the :class:`_engine.Engine`.  They can also be used
-directly for applications that want to add pooling to an otherwise
-plain DBAPI approach.
+    特别是对于服务器端Web应用程序，连接池是维护内存中活动数据库连接“池(pool)”的标准方法，这些连接在请求之间重用。
+
+    SQLAlchemy包括几种连接池实现，它们与 :class:`_engine.Engine` 集成。它们也可以直接用于希望为普通DBAPI方法添加池化的应用程序。
+
+.. tab:: 英文
+
+    A connection pool is a standard technique used to maintain
+    long running connections in memory for efficient re-use,
+    as well as to provide
+    management for the total number of connections an application
+    might use simultaneously.
+
+    Particularly for
+    server-side web applications, a connection pool is the standard way to
+    maintain a "pool" of active database connections in memory which are
+    reused across requests.
+
+    SQLAlchemy includes several connection pool implementations
+    which integrate with the :class:`_engine.Engine`.  They can also be used
+    directly for applications that want to add pooling to an otherwise
+    plain DBAPI approach.
+
+连接池配置
+-----------------------------
 
 Connection Pool Configuration
------------------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_engine.Engine` returned by the
 :func:`~sqlalchemy.create_engine` function in most cases has a :class:`.QueuePool`
@@ -59,8 +77,14 @@ small pool is an entirely appropriate default behavior.
 
 .. _pool_switching:
 
-Switching Pool Implementations
+切换池实现
 ------------------------------
+
+Switching Pool Implementations
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The usual way to use a different kind of pool with :func:`_sa.create_engine`
 is to use the ``poolclass`` argument.   This argument accepts a class
@@ -75,16 +99,28 @@ the :class:`.NullPool` implementation::
         "postgresql+psycopg2://scott:tiger@localhost/test", poolclass=NullPool
     )
 
-Using a Custom Connection Function
+使用自定义连接函数
 ----------------------------------
+
+Using a Custom Connection Function
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 See the section :ref:`custom_dbapi_args` for a rundown of the various
 connection customization routines.
 
 
 
-Constructing a Pool
+构建池
 -------------------
+
+Constructing a Pool
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 To use a :class:`_pool.Pool` by itself, the ``creator`` function is
 the only argument that's required and is passed first, followed
@@ -127,8 +163,14 @@ however and in particular is not supported with asyncio DBAPI drivers.
 
 .. _pool_reset_on_return:
 
-Reset On Return
+返回时重置
 ---------------
+
+Reset On Return
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The pool includes "reset on return" behavior which will call the ``rollback()``
 method of the DBAPI connection when the connection is returned to the pool.
@@ -138,8 +180,14 @@ well. For most DBAPIs, the call to ``rollback()`` is inexpensive, and if the
 DBAPI has already completed a transaction, the method should be a no-op.
 
 
-Disabling Reset on Return for non-transactional connections
+禁用非事务性连接的返回时重置
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Disabling Reset on Return for non-transactional connections
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 For very specific cases where this ``rollback()`` is not useful, such as when
 using a connection that is configured for
@@ -165,8 +213,14 @@ to the pool; since AUTOCOMMIT is enabled, the driver will also not perform
 any BEGIN operation.
 
 
-Custom Reset-on-Return Schemes
+自定义返回时重置方案
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Custom Reset-on-Return Schemes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 "reset on return" consisting of a single ``rollback()`` may not be sufficient
 for some use cases; in particular, applications which make use of temporary
@@ -227,8 +281,14 @@ consistent with the state of the transaction::
 
 
 
-Logging reset-on-return events
+记录返回时重置事件
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Logging reset-on-return events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Logging for pool events including reset on return can be set
 ``logging.DEBUG``
@@ -249,8 +309,14 @@ The above pool will show verbose logging including reset on return::
     DEBUG sqlalchemy.pool.impl.QueuePool Connection <connection object ...> rollback-on-return
 
 
-Pool Events
+池事件
 -----------
+
+Pool Events
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Connection pools support an event interface that allows hooks to execute
 upon first connect, upon each new connection, and upon checkout and
@@ -258,8 +324,14 @@ checkin of connections.   See :class:`_events.PoolEvents` for details.
 
 .. _pool_disconnects:
 
-Dealing with Disconnects
+处理断开连接
 ------------------------
+
+Dealing with Disconnects
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The connection pool has the ability to refresh individual connections as well as
 its entire set of connections, setting the previously pooled connections as
@@ -269,8 +341,14 @@ are no longer functional.   There are two approaches to this.
 
 .. _pool_disconnects_pessimistic:
 
-Disconnect Handling - Pessimistic
+断开连接处理 - 悲观
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Disconnect Handling - Pessimistic
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The pessimistic approach refers to emitting a test statement on the SQL
 connection at the start of each connection pool checkout, to test
@@ -325,8 +403,14 @@ error messages using the :meth:`_events.DialectEvents.handle_error` hook.
 
 .. _pool_disconnects_pessimistic_custom:
 
-Custom / Legacy Pessimistic Ping
+自定义/旧式悲观 Ping
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Custom / Legacy Pessimistic Ping
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Before :paramref:`_sa.create_engine.pool_pre_ping` was added, the "pre-ping"
 approach historically has been performed manually using
@@ -378,8 +462,14 @@ occurs and allowing the current :class:`_engine.Connection` to re-validate onto
 a new DBAPI connection.
 
 
-Disconnect Handling - Optimistic
+断开连接处理 - 乐观
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Disconnect Handling - Optimistic
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When pessimistic handling is not employed, as well as when the database is
 shutdown and/or restarted in the middle of a connection's period of use within
@@ -429,8 +519,14 @@ database restarts are not anticipated.
 
 .. _pool_setting_recycle:
 
-Setting Pool Recycle
+设置池回收
 ~~~~~~~~~~~~~~~~~~~~
+
+Setting Pool Recycle
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 An additional setting that can augment the "optimistic" approach is to set the
 pool recycle parameter.   This parameter prevents the pool from using a particular
@@ -450,8 +546,14 @@ of the :class:`_pool.Pool` itself, independent of whether or not an :class:`_eng
 
 .. _pool_connection_invalidation:
 
-More on Invalidation
+更多关于失效的信息
 ^^^^^^^^^^^^^^^^^^^^
+
+More on Invalidation
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_pool.Pool` provides "connection invalidation" services which allow
 both explicit invalidation of a connection as well as automatic invalidation
@@ -492,8 +594,14 @@ event.
 
 .. _pool_new_disconnect_codes:
 
-Supporting new database error codes for disconnect scenarios
+支持断开连接场景的新数据库错误代码
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Supporting new database error codes for disconnect scenarios
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy dialects each include a routine called ``is_disconnect()`` that is
 invoked whenever a DBAPI exception is encountered. The DBAPI exception object
@@ -542,8 +650,14 @@ disconnect error handling (new in 2.0).
 
 .. _pool_use_lifo:
 
-Using FIFO vs. LIFO
+使用 FIFO 与 LIFO
 -------------------
+
+Using FIFO vs. LIFO
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.QueuePool` class features a flag called
 :paramref:`.QueuePool.use_lifo`, which can also be accessed from
@@ -573,8 +687,14 @@ Note that the flag only applies to :class:`.QueuePool` use.
 
 .. _pooling_multiprocessing:
 
-Using Connection Pools with Multiprocessing or os.fork()
+使用具有多处理或 os.fork() 的连接池
 --------------------------------------------------------
+
+Using Connection Pools with Multiprocessing or os.fork()
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 It's critical that when using a connection pool, and by extension when
 using an :class:`_engine.Engine` created via :func:`_sa.create_engine`, that
@@ -690,8 +810,14 @@ ORM :class:`_orm.Session` object that's begun a transaction and references
 active :class:`_orm.Connection` instances; again prefer to create new
 :class:`_orm.Session` objects in new processes.
 
-Using a pool instance directly
+直接使用池实例
 ------------------------------
+
+Using a pool instance directly
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A pool implementation can be used directly without an engine. This could be used
 in applications that just wish to use the pool behavior without all other
@@ -722,8 +848,14 @@ like in the following example::
 
 .. _pool_api:
 
-API Documentation - Available Pool Implementations
+API 文档 - 可用的池实现
 --------------------------------------------------
+
+API Documentation - Available Pool Implementations
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autoclass:: sqlalchemy.pool.Pool
     :members:

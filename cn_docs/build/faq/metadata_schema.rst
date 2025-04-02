@@ -1,6 +1,8 @@
 =================
-MetaData / Schema
+元数据 / Schema
 =================
+
+MetaData / Schema
 
 .. contents::
     :local:
@@ -9,8 +11,14 @@ MetaData / Schema
 
 
 
-My program is hanging when I say ``table.drop()`` / ``metadata.drop_all()``
+当我说 ``table.drop()`` / ``metadata.drop_all()`` 时，我的程序挂起了
 ===========================================================================
+
+My program is hanging when I say ``table.drop()`` / ``metadata.drop_all()``
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This usually corresponds to two conditions: 1. using PostgreSQL, which is really
 strict about table locks, and 2. you have a connection still open which
@@ -44,8 +52,14 @@ The solution is to close out all connections before emitting DROP TABLE::
     # now locks are removed
     mytable.drop(engine)
 
-Does SQLAlchemy support ALTER TABLE, CREATE VIEW, CREATE TRIGGER, Schema Upgrade Functionality?
+SQLAlchemy 是否支持 ALTER TABLE、CREATE VIEW、CREATE TRIGGER、Schema升级功能？
 ===============================================================================================
+
+Does SQLAlchemy support ALTER TABLE, CREATE VIEW, CREATE TRIGGER, Schema Upgrade Functionality?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 
 General ALTER support isn't present in SQLAlchemy directly.  For special DDL
@@ -55,8 +69,16 @@ See :ref:`metadata_ddl_toplevel` for a discussion on this subject.
 A more comprehensive option is to use schema migration tools, such as Alembic
 or SQLAlchemy-Migrate; see :ref:`schema_migrations` for discussion on this.
 
-How can I sort Table objects in order of their dependency?
+
+
+如何按依赖关系对 Table 对象进行排序？
 ==========================================================
+
+How can I sort Table objects in order of their dependency?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This is available via the :attr:`_schema.MetaData.sorted_tables` function::
 
@@ -68,8 +90,16 @@ This is available via the :attr:`_schema.MetaData.sorted_tables` function::
 
 .. _faq_ddl_as_string:
 
-How can I get the CREATE TABLE/ DROP TABLE output as a string?
+
+
+如何以字符串形式获取 CREATE TABLE/DROP TABLE 输出？
 ==============================================================
+
+How can I get the CREATE TABLE/ DROP TABLE output as a string?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Modern SQLAlchemy has clause constructs which represent DDL operations. These
 can be rendered to strings like any other SQL expression::
@@ -99,8 +129,14 @@ metadata creation sequence as a string, using this recipe::
 The `Alembic <https://alembic.sqlalchemy.org>`_ tool also supports
 an "offline" SQL generation mode that renders database migrations as SQL scripts.
 
-How can I subclass Table/Column to provide certain behaviors/configurations?
+如何对 Table/Column 进行子类化以提供某些行为/配置？
 ============================================================================
+
+How can I subclass Table/Column to provide certain behaviors/configurations?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 :class:`_schema.Table` and :class:`_schema.Column` are not good targets for direct subclassing.
 However, there are simple ways to get on-construction behaviors using creation

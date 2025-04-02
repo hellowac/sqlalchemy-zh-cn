@@ -5,30 +5,56 @@ SQLite
 
 .. automodule:: sqlalchemy.dialects.sqlite.base
 
-SQLite Data Types
+SQLite 数据类型
 -----------------
 
-As with all SQLAlchemy dialects, all UPPERCASE types that are known to be
-valid with SQLite are importable from the top level dialect, whether
-they originate from :mod:`sqlalchemy.types` or from the local dialect::
+SQLite Data Types
 
-    from sqlalchemy.dialects.sqlite import (
-        BLOB,
-        BOOLEAN,
-        CHAR,
-        DATE,
-        DATETIME,
-        DECIMAL,
-        FLOAT,
-        INTEGER,
-        NUMERIC,
-        JSON,
-        SMALLINT,
-        TEXT,
-        TIME,
-        TIMESTAMP,
-        VARCHAR,
-    )
+.. tab:: 中文
+
+  与所有SQLAlchemy方言一样，所有已知对SQLite有效的UPPERCASE类型都可以从顶级方言中导入，无论它们是来自 :mod:`sqlalchemy.types` 还是来自本地方言::
+
+      from sqlalchemy.dialects.sqlite import (
+          BLOB,
+          BOOLEAN,
+          CHAR,
+          DATE,
+          DATETIME,
+          DECIMAL,
+          FLOAT,
+          INTEGER,
+          NUMERIC,
+          JSON,
+          SMALLINT,
+          TEXT,
+          TIME,
+          TIMESTAMP,
+          VARCHAR,
+      )
+
+.. tab:: 英文
+
+    As with all SQLAlchemy dialects, all UPPERCASE types that are known to be
+    valid with SQLite are importable from the top level dialect, whether
+    they originate from :mod:`sqlalchemy.types` or from the local dialect::
+
+        from sqlalchemy.dialects.sqlite import (
+            BLOB,
+            BOOLEAN,
+            CHAR,
+            DATE,
+            DATETIME,
+            DECIMAL,
+            FLOAT,
+            INTEGER,
+            NUMERIC,
+            JSON,
+            SMALLINT,
+            TEXT,
+            TIME,
+            TIMESTAMP,
+            VARCHAR,
+        )
 
 .. module:: sqlalchemy.dialects.sqlite
 
@@ -40,8 +66,10 @@ they originate from :mod:`sqlalchemy.types` or from the local dialect::
 
 .. autoclass:: TIME
 
-SQLite DML Constructs
+SQLite DML 构造
 -------------------------
+
+SQLite DML Constructs
 
 .. autofunction:: sqlalchemy.dialects.sqlite.insert
 

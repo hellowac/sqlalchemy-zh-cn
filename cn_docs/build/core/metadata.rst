@@ -5,61 +5,106 @@
 .. _metadata_describing:
 
 ==================================
-Describing Databases with MetaData
+使用元数据描述数据库
 ==================================
+
+Describing Databases with MetaData
 
 .. module:: sqlalchemy.schema
 
-This section discusses the fundamental :class:`_schema.Table`, :class:`_schema.Column`
-and :class:`_schema.MetaData` objects.
+.. tab:: 中文
 
-.. seealso::
+    本节讨论了基本的 :class:`_schema.Table`， :class:`_schema.Column` 和 :class:`_schema.MetaData` 对象。
 
-    :ref:`tutorial_working_with_metadata` - tutorial introduction to
-    SQLAlchemy's database metadata concept in the :ref:`unified_tutorial`
+    .. seealso::
 
-A collection of metadata entities is stored in an object aptly named
-:class:`~sqlalchemy.schema.MetaData`::
+        :ref:`tutorial_working_with_metadata` - 在 :ref:`unified_tutorial` 中介绍SQLAlchemy数据库元数据概念的教程
 
-    from sqlalchemy import MetaData
+    元数据实体的集合存储在一个恰当地命名为:class:`~sqlalchemy.schema.MetaData`的对象中::
 
-    metadata_obj = MetaData()
+        from sqlalchemy import MetaData
 
-:class:`~sqlalchemy.schema.MetaData` is a container object that keeps together
-many different features of a database (or multiple databases) being described.
+        metadata_obj = MetaData()
 
-To represent a table, use the :class:`~sqlalchemy.schema.Table` class. Its two
-primary arguments are the table name, then the
-:class:`~sqlalchemy.schema.MetaData` object which it will be associated with.
-The remaining positional arguments are mostly
-:class:`~sqlalchemy.schema.Column` objects describing each column::
+    :class:`~sqlalchemy.schema.MetaData` 是一个容器对象，它将被描述的数据库（或多个数据库）的许多不同特性保存在一起。
 
-    from sqlalchemy import Table, Column, Integer, String
+    要表示一个表，使用 :class:`~sqlalchemy.schema.Table` 类。它的两个主要参数是表名，然后是它将关联的 :class:`~sqlalchemy.schema.MetaData` 对象。其余的参数主要是描述每个列的 :class:`~sqlalchemy.schema.Column` 对象::
 
-    user = Table(
-        "user",
-        metadata_obj,
-        Column("user_id", Integer, primary_key=True),
-        Column("user_name", String(16), nullable=False),
-        Column("email_address", String(60)),
-        Column("nickname", String(50), nullable=False),
-    )
+        from sqlalchemy import Table, Column, Integer, String
 
-Above, a table called ``user`` is described, which contains four columns. The
-primary key of the table consists of the ``user_id`` column. Multiple columns
-may be assigned the ``primary_key=True`` flag which denotes a multi-column
-primary key, known as a *composite* primary key.
+        user = Table(
+            "user",
+            metadata_obj,
+            Column("user_id", Integer, primary_key=True),
+            Column("user_name", String(16), nullable=False),
+            Column("email_address", String(60)),
+            Column("nickname", String(50), nullable=False),
+        )
 
-Note also that each column describes its datatype using objects corresponding
-to genericized types, such as :class:`~sqlalchemy.types.Integer` and
-:class:`~sqlalchemy.types.String`. SQLAlchemy features dozens of types of
-varying levels of specificity as well as the ability to create custom types.
-Documentation on the type system can be found at :ref:`types_toplevel`.
+    上面描述了一个名为 ``user`` 的表，其中包含四个列。表的主键由 ``user_id`` 列组成。多个列可以分配 ``primary_key=True`` 标志，这表示一个多列主键，称为 *复合* 主键。
+
+    另请注意，每列使用与通用类型相对应的对象来描述其数据类型，例如 :class:`~sqlalchemy.types.Integer` 和 :class:`~sqlalchemy.types.String`。SQLAlchemy具有几十种不同层次的类型，并且可以创建自定义类型。关于类型系统的文档可以在 :ref:`types_toplevel` 中找到。
+
+.. tab:: 英文
+
+    This section discusses the fundamental :class:`_schema.Table`, :class:`_schema.Column`
+    and :class:`_schema.MetaData` objects.
+
+    .. seealso::
+
+        :ref:`tutorial_working_with_metadata` - tutorial introduction to
+        SQLAlchemy's database metadata concept in the :ref:`unified_tutorial`
+
+    A collection of metadata entities is stored in an object aptly named
+    :class:`~sqlalchemy.schema.MetaData`::
+
+        from sqlalchemy import MetaData
+
+        metadata_obj = MetaData()
+
+    :class:`~sqlalchemy.schema.MetaData` is a container object that keeps together
+    many different features of a database (or multiple databases) being described.
+
+    To represent a table, use the :class:`~sqlalchemy.schema.Table` class. Its two
+    primary arguments are the table name, then the
+    :class:`~sqlalchemy.schema.MetaData` object which it will be associated with.
+    The remaining positional arguments are mostly
+    :class:`~sqlalchemy.schema.Column` objects describing each column::
+
+        from sqlalchemy import Table, Column, Integer, String
+
+        user = Table(
+            "user",
+            metadata_obj,
+            Column("user_id", Integer, primary_key=True),
+            Column("user_name", String(16), nullable=False),
+            Column("email_address", String(60)),
+            Column("nickname", String(50), nullable=False),
+        )
+
+    Above, a table called ``user`` is described, which contains four columns. The
+    primary key of the table consists of the ``user_id`` column. Multiple columns
+    may be assigned the ``primary_key=True`` flag which denotes a multi-column
+    primary key, known as a *composite* primary key.
+
+    Note also that each column describes its datatype using objects corresponding
+    to genericized types, such as :class:`~sqlalchemy.types.Integer` and
+    :class:`~sqlalchemy.types.String`. SQLAlchemy features dozens of types of
+    varying levels of specificity as well as the ability to create custom types.
+    Documentation on the type system can be found at :ref:`types_toplevel`.
 
 .. _metadata_tables_and_columns:
 
-Accessing Tables and Columns
+访问表和列
 ----------------------------
+
+Accessing Tables and Columns
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 The :class:`~sqlalchemy.schema.MetaData` object contains all of the schema
 constructs we've associated with it. It supports a few methods of accessing
@@ -154,8 +199,16 @@ table include::
   further information.
 
 
-Creating and Dropping Database Tables
+创建和删除数据库表
 -------------------------------------
+
+Creating and Dropping Database Tables
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 Once you've defined some :class:`~sqlalchemy.schema.Table` objects, assuming
 you're working with a brand new database one thing you might want to do is
@@ -264,8 +317,16 @@ To enable the "check first for the table existing" logic, add the
 
 .. _schema_migrations:
 
-Altering Database Objects through Migrations
+通过迁移更改数据库对象
 ---------------------------------------------
+
+Altering Database Objects through Migrations
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 While SQLAlchemy directly supports emitting CREATE and DROP statements for
 schema constructs, the ability to alter those constructs, usually via the ALTER
@@ -288,8 +349,16 @@ original migration tool for SQLAlchemy and is now  considered legacy.
 
 .. _schema_table_schema_name:
 
-Specifying the Schema Name
+指定架构名称
 --------------------------
+
+Specifying the Schema Name
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 Most databases support the concept of multiple "schemas" - namespaces that
 refer to alternate sets of tables and other constructs.  The server-side
@@ -410,8 +479,16 @@ at once, such as::
 
 .. _schema_metadata_schema_name:
 
-Specifying a Default Schema Name with MetaData
+使用元数据指定默认架构名称
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Specifying a Default Schema Name with MetaData
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 The :class:`_schema.MetaData` object may also set up an explicit default
 option for all :paramref:`_schema.Table.schema` parameters by passing the
@@ -484,8 +561,16 @@ to specify that it should not be schema qualified may use the special symbol
 
 .. _schema_dynamic_naming_convention:
 
-Applying Dynamic Schema Naming Conventions
+应用动态架构命名约定
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Applying Dynamic Schema Naming Conventions
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 The names used by the :paramref:`_schema.Table.schema` parameter may also be
 applied against a lookup that is dynamic on a per-connection or per-execution
@@ -500,8 +585,16 @@ The section :ref:`schema_translating` describes how this feature is used.
 
 .. _schema_set_default_connections:
 
-Setting a Default Schema for New Connections
+为新连接设置默认架构
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Setting a Default Schema for New Connections
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 The above approaches all refer to methods of including an explicit schema-name
 within SQL statements.  Database connections in fact feature the concept
@@ -551,16 +644,32 @@ for specific information regarding how default schemas are configured.
 
 
 
-Schemas and Reflection
+架构和反射
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Schemas and Reflection
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 The schema feature of SQLAlchemy interacts with the table reflection
 feature introduced at :ref:`metadata_reflection_toplevel`.  See the section
 :ref:`metadata_reflection_schemas` for additional details on how this works.
 
 
-Backend-Specific Options
+后端特定选项
 ------------------------
+
+Backend-Specific Options
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 :class:`~sqlalchemy.schema.Table` supports database-specific options. For
 example, MySQL has different table backend types, including "MyISAM" and
@@ -579,8 +688,16 @@ example, MySQL has different table backend types, including "MyISAM" and
 Other backends may support table-level options as well - these would be
 described in the individual documentation sections for each dialect.
 
-Column, Table, MetaData API
+列、表、元数据 API
 ---------------------------
+
+Column, Table, MetaData API
+
+
+.. tab:: 中文
+
+.. tab:: 英文
+
 
 .. attribute:: sqlalchemy.schema.BLANK_SCHEMA
     :noindex:

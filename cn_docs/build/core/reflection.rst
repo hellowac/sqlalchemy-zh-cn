@@ -4,58 +4,90 @@
 .. _metadata_reflection:
 
 
-Reflecting Database Objects
+反映数据库对象
 ===========================
 
-A :class:`~sqlalchemy.schema.Table` object can be instructed to load
-information about itself from the corresponding database schema object already
-existing within the database. This process is called *reflection*. In the
-most simple case you need only specify the table name, a :class:`~sqlalchemy.schema.MetaData`
-object, and the ``autoload_with`` argument::
+Reflecting Database Objects
 
-    >>> messages = Table("messages", metadata_obj, autoload_with=engine)
-    >>> [c.name for c in messages.columns]
-    ['message_id', 'message_name', 'date']
+.. tab:: 中文
 
-The above operation will use the given engine to query the database for
-information about the ``messages`` table, and will then generate
-:class:`~sqlalchemy.schema.Column`, :class:`~sqlalchemy.schema.ForeignKey`,
-and other objects corresponding to this information as though the
-:class:`~sqlalchemy.schema.Table` object were hand-constructed in Python.
+    可以指示 :class:`~sqlalchemy.schema.Table` 对象从数据库中已经存在的对应数据库模式对象中加载信息。这个过程称为 *反射(reflection)* 。在最简单的情况下，您只需要指定表名、一个 :class:`~sqlalchemy.schema.MetaData` 对象和 ``autoload_with`` 参数::
 
-When tables are reflected, if a given table references another one via foreign
-key, a second :class:`~sqlalchemy.schema.Table` object is created within the
-:class:`~sqlalchemy.schema.MetaData` object representing the connection.
-Below, assume the table ``shopping_cart_items`` references a table named
-``shopping_carts``. Reflecting the ``shopping_cart_items`` table has the
-effect such that the ``shopping_carts`` table will also be loaded::
+        >>> messages = Table("messages", metadata_obj, autoload_with=engine)
+        >>> [c.name for c in messages.columns]
+        ['message_id', 'message_name', 'date']
 
-    >>> shopping_cart_items = Table("shopping_cart_items", metadata_obj, autoload_with=engine)
-    >>> "shopping_carts" in metadata_obj.tables
-    True
+    上述操作将使用给定的引擎查询数据库中的 ``messages`` 表的信息，然后将生成与这些信息对应的 :class:`~sqlalchemy.schema.Column`、:class:`~sqlalchemy.schema.ForeignKey` 和其他对象，就像 :class:`~sqlalchemy.schema.Table` 对象是在Python中手工构造的一样。
 
-The :class:`~sqlalchemy.schema.MetaData` has an interesting "singleton-like"
-behavior such that if you requested both tables individually,
-:class:`~sqlalchemy.schema.MetaData` will ensure that exactly one
-:class:`~sqlalchemy.schema.Table` object is created for each distinct table
-name. The :class:`~sqlalchemy.schema.Table` constructor actually returns to
-you the already-existing :class:`~sqlalchemy.schema.Table` object if one
-already exists with the given name. Such as below, we can access the already
-generated ``shopping_carts`` table just by naming it::
+    当表被反射时，如果一个给定的表通过外键引用另一个表，一个代表连接的第二个 :class:`~sqlalchemy.schema.Table` 对象将在 :class:`~sqlalchemy.schema.MetaData` 对象中创建。下面，假设表 ``shopping_cart_items`` 引用了一个名为 ``shopping_carts`` 的表。反射 ``shopping_cart_items`` 表的效果是使 ``shopping_carts`` 表也会被加载::
 
-    shopping_carts = Table("shopping_carts", metadata_obj)
+        >>> shopping_cart_items = Table("shopping_cart_items", metadata_obj, autoload_with=engine)
+        >>> "shopping_carts" in metadata_obj.tables
+        True
 
-Of course, it's a good idea to use ``autoload_with=engine`` with the above table
-regardless. This is so that the table's attributes will be loaded if they have
-not been already. The autoload operation only occurs for the table if it
-hasn't already been loaded; once loaded, new calls to
-:class:`~sqlalchemy.schema.Table` with the same name will not re-issue any
-reflection queries.
+    :class:`~sqlalchemy.schema.MetaData` 具有有趣的“单例”行为，即如果您分别请求两个表，:class:`~sqlalchemy.schema.MetaData` 将确保每个不同的表名只创建一个 :class:`~sqlalchemy.schema.Table` 对象。如果一个给定名称的 :class:`~sqlalchemy.schema.Table` 对象已经存在，:class:`~sqlalchemy.schema.Table` 构造函数实际上会返回已经存在的 :class:`~sqlalchemy.schema.Table` 对象。例如，下面我们可以通过命名它来访问已经生成的 ``shopping_carts`` 表::
+
+        shopping_carts = Table("shopping_carts", metadata_obj)
+
+    当然，无论如何，使用 ``autoload_with=engine`` 是一个好主意。这是为了确保如果表的属性尚未加载，则将加载它们。反射操作仅在表尚未加载时发生；一旦加载，对具有相同名称的新调用将不会重新发出任何反射查询。
+
+.. tab:: 英文
+
+    A :class:`~sqlalchemy.schema.Table` object can be instructed to load
+    information about itself from the corresponding database schema object already
+    existing within the database. This process is called *reflection*. In the
+    most simple case you need only specify the table name, a :class:`~sqlalchemy.schema.MetaData`
+    object, and the ``autoload_with`` argument::
+
+        >>> messages = Table("messages", metadata_obj, autoload_with=engine)
+        >>> [c.name for c in messages.columns]
+        ['message_id', 'message_name', 'date']
+
+    The above operation will use the given engine to query the database for
+    information about the ``messages`` table, and will then generate
+    :class:`~sqlalchemy.schema.Column`, :class:`~sqlalchemy.schema.ForeignKey`,
+    and other objects corresponding to this information as though the
+    :class:`~sqlalchemy.schema.Table` object were hand-constructed in Python.
+
+    When tables are reflected, if a given table references another one via foreign
+    key, a second :class:`~sqlalchemy.schema.Table` object is created within the
+    :class:`~sqlalchemy.schema.MetaData` object representing the connection.
+    Below, assume the table ``shopping_cart_items`` references a table named
+    ``shopping_carts``. Reflecting the ``shopping_cart_items`` table has the
+    effect such that the ``shopping_carts`` table will also be loaded::
+
+        >>> shopping_cart_items = Table("shopping_cart_items", metadata_obj, autoload_with=engine)
+        >>> "shopping_carts" in metadata_obj.tables
+        True
+
+    The :class:`~sqlalchemy.schema.MetaData` has an interesting "singleton-like"
+    behavior such that if you requested both tables individually,
+    :class:`~sqlalchemy.schema.MetaData` will ensure that exactly one
+    :class:`~sqlalchemy.schema.Table` object is created for each distinct table
+    name. The :class:`~sqlalchemy.schema.Table` constructor actually returns to
+    you the already-existing :class:`~sqlalchemy.schema.Table` object if one
+    already exists with the given name. Such as below, we can access the already
+    generated ``shopping_carts`` table just by naming it::
+
+        shopping_carts = Table("shopping_carts", metadata_obj)
+
+    Of course, it's a good idea to use ``autoload_with=engine`` with the above table
+    regardless. This is so that the table's attributes will be loaded if they have
+    not been already. The autoload operation only occurs for the table if it
+    hasn't already been loaded; once loaded, new calls to
+    :class:`~sqlalchemy.schema.Table` with the same name will not re-issue any
+    reflection queries.
 
 .. _reflection_overriding_columns:
 
-Overriding Reflected Columns
+覆盖反映列
 ----------------------------
+
+Overriding Reflected Columns
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Individual columns can be overridden with explicit values when reflecting
 tables; this is handy for specifying custom datatypes, constraints such as
@@ -78,8 +110,14 @@ primary keys that may not be configured within the database, etc.::
     column override technique applies to the use of custom datatypes with
     table reflection.
 
-Reflecting Views
+反映视图
 ----------------
+
+Reflecting Views
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The reflection system can also reflect views. Basic usage is the same as that
 of a table::
@@ -105,8 +143,14 @@ which are part of the primary key or have foreign key constraints::
         autoload_with=engine,
     )
 
-Reflecting All Tables at Once
+一次反映所有表
 -----------------------------
+
+Reflecting All Tables at Once
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`~sqlalchemy.schema.MetaData` object can also get a listing of
 tables and reflect the full set. This is achieved by using the
@@ -129,8 +173,14 @@ object's dictionary of tables::
 
 .. _metadata_reflection_schemas:
 
-Reflecting Tables from Other Schemas
+反映来自其他架构的表
 ------------------------------------
+
+Reflecting Tables from Other Schemas
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The section :ref:`schema_table_schema_name` introduces the concept of table
 schemas, which are namespaces within a database that contain tables and other
@@ -188,8 +238,14 @@ populating the :class:`_schema.MetaData` object with more objects::
 
 .. _reflection_schema_qualified_interaction:
 
-Interaction of Schema-qualified Reflection with the Default Schema
+架构限定反射与默认架构的交互
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Interaction of Schema-qualified Reflection with the Default Schema
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. admonition:: Section Best Practices Summarized
 
@@ -348,8 +404,14 @@ add the following additional practice:
 
 .. _metadata_reflection_inspector:
 
-Fine Grained Reflection with Inspector
+使用检查器的细粒度反射
 --------------------------------------
+
+Fine Grained Reflection with Inspector
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A low level interface which provides a backend-agnostic system of loading
 lists of schema, table, column, and constraint descriptions from a given
@@ -405,8 +467,14 @@ database is also available. This is known as the "Inspector"::
 
 .. _metadata_reflection_dbagnostic_types:
 
-Reflecting with Database-Agnostic Types
+使用与数据库无关的类型进行反射
 ---------------------------------------
+
+Reflecting with Database-Agnostic Types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When the columns of a table are reflected, using either the
 :paramref:`_schema.Table.autoload_with` parameter of :class:`_schema.Table` or
@@ -520,8 +588,14 @@ in PostgreSQL most closely using the ``SERIAL`` auto-incrementing datatype.
    for convenience.
 
 
-Limitations of Reflection
+反射的局限性
 -------------------------
+
+Limitations of Reflection
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 It's important to note that the reflection process recreates :class:`_schema.Table`
 metadata using only information which is represented in the relational database.

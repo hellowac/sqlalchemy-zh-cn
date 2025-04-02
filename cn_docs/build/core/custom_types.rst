@@ -2,14 +2,27 @@
 
 .. _types_custom:
 
-Custom Types
+自定义类型
 ============
 
-A variety of methods exist to redefine the behavior of existing types
-as well as to provide new ones.
+Custom Types
+
+.. tab:: 中文
+
+    存在多种方法可以重新定义现有类型的行为以及提供新的类型的行为。
+
+.. tab:: 英文
+
+    A variety of methods exist to redefine the behavior of existing types as well as to provide new ones.
+
+重写类型编译
+---------------------------
 
 Overriding Type Compilation
----------------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A frequent need is to force the "string" version of a type, that is
 the one rendered in a CREATE TABLE statement or other SQL function
@@ -38,8 +51,14 @@ See the section :ref:`type_compilation_extension`, a subsection of
 
 .. _types_typedecorator:
 
-Augmenting Existing Types
+增强现有类型
 -------------------------
+
+Augmenting Existing Types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.TypeDecorator` allows the creation of custom types which
 add bind-parameter and result-processing behavior to an existing
@@ -70,15 +89,27 @@ to and/or from the database is required.
 
    .. autoattribute:: cache_ok
 
-TypeDecorator Recipes
+TypeDecorator 配方
 ---------------------
+
+TypeDecorator Recipes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A few key :class:`.TypeDecorator` recipes follow.
 
 .. _coerce_to_unicode:
 
-Coercing Encoded Strings to Unicode
+将编码字符串强制转换为 Unicode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Coercing Encoded Strings to Unicode
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A common source of confusion regarding the :class:`.Unicode` type
 is that it is intended to deal *only* with Python ``unicode`` objects
@@ -106,8 +137,14 @@ which coerces as needed::
                 value = value.decode("utf-8")
             return value
 
-Rounding Numerics
+四舍五入数字
 ^^^^^^^^^^^^^^^^^
+
+Rounding Numerics
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Some database connectors like those of SQL Server choke if a Decimal is passed with too
 many decimal places.   Here's a recipe that rounds them down::
@@ -131,8 +168,14 @@ many decimal places.   Here's a recipe that rounds them down::
                 value = value.quantize(self.quantize)
             return value
 
-Store Timezone Aware Timestamps as Timezone Naive UTC
+将时区感知时间戳存储为时区简单 UTC
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Store Timezone Aware Timestamps as Timezone Naive UTC
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Timestamps in databases should always be stored in a timezone-agnostic way. For
 most databases, this means ensuring a timestamp is first in the UTC timezone
@@ -168,8 +211,14 @@ denormalize::
 
 .. _custom_guid_type:
 
-Backend-agnostic GUID Type
+后端无关的 GUID 类型
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Backend-agnostic GUID Type
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. note:: Since version 2.0 the built-in :class:`_types.Uuid` type that
     behaves similarly should be preferred. This example is presented
@@ -239,8 +288,14 @@ string, using a CHAR(36) type::
         _default_type = CHAR(36)
         _uuid_as_str = str
 
-Linking Python ``uuid.UUID`` to the Custom Type for ORM mappings
+将 Python ``uuid.UUID`` 链接到自定义类型以进行 ORM 映射
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Linking Python ``uuid.UUID`` to the Custom Type for ORM mappings
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When declaring ORM mappings using :ref:`Annotated Declarative Table <orm_declarative_mapped_column>`
 mappings, the custom ``GUID`` type defined above may be associated with
@@ -270,8 +325,14 @@ of ``GUID`` automatically::
 
     :ref:`orm_declarative_mapped_column_type_map`
 
-Marshal JSON Strings
+编组 JSON 字符串
 ^^^^^^^^^^^^^^^^^^^^
+
+Marshal JSON Strings
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This type uses ``simplejson`` to marshal Python data structures
 to/from JSON.   Can be modified to use Python's builtin json encoder::
@@ -304,8 +365,14 @@ to/from JSON.   Can be modified to use Python's builtin json encoder::
                 value = json.loads(value)
             return value
 
-Adding Mutability
+添加可变性
 ~~~~~~~~~~~~~~~~~
+
+Adding Mutability
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ORM by default will not detect "mutability" on such a type as above -
 meaning, in-place changes to values will not be detected and will not be
@@ -334,8 +401,14 @@ dictionary-oriented JSON structure, we can apply this as::
 
     :ref:`mutable_toplevel`
 
-Dealing with Comparison Operations
+处理比较操作
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Dealing with Comparison Operations
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The default behavior of :class:`.TypeDecorator` is to coerce the "right hand side"
 of any expression into the same type.  For a type like JSON, this means that
@@ -392,8 +465,14 @@ coercing to text.
 
 .. _types_sql_value_processing:
 
-Applying SQL-level Bind/Result Processing
+应用 SQL 级绑定/结果处理
 -----------------------------------------
+
+Applying SQL-level Bind/Result Processing
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 As seen in the section :ref:`types_typedecorator`,
 SQLAlchemy allows Python functions to be invoked both when parameters are sent
@@ -553,8 +632,14 @@ to the INSERT and SELECT statements:
 
 .. _types_operators:
 
-Redefining and Creating New Operators
+重新定义和创建新运算符
 -------------------------------------
+
+Redefining and Creating New Operators
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy Core defines a fixed set of expression operators available to all column expressions.
 Some of these operations have the effect of overloading Python's built-in operators;
@@ -696,8 +781,14 @@ Using the above type:
 
 
 
-Creating New Types
+创建新类型
 ------------------
+
+Creating New Types
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`.UserDefinedType` class is provided as a simple base class
 for defining entirely new database types.   Use this to represent native
@@ -711,8 +802,14 @@ is needed, use :class:`.TypeDecorator` instead.
 
 .. _custom_and_decorated_types_reflection:
 
-Working with Custom Types and Reflection
+使用自定义类型和反射
 -----------------------------------------
+
+Working with Custom Types and Reflection
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 It is important to note that database types which are modified to have
 additional in-Python behaviors, including types based on

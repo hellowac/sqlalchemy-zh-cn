@@ -5,56 +5,102 @@ Microsoft SQL Server
 
 .. automodule:: sqlalchemy.dialects.mssql.base
 
-SQL Server SQL Constructs
+SQL Server SQL 构造
 -------------------------
+
+SQL Server SQL Constructs
 
 .. currentmodule:: sqlalchemy.dialects.mssql
 
 .. autofunction:: try_cast
 
-SQL Server Data Types
+SQL Server 数据类型
 ---------------------
 
-As with all SQLAlchemy dialects, all UPPERCASE types that are known to be
-valid with SQL server are importable from the top level dialect, whether
-they originate from :mod:`sqlalchemy.types` or from the local dialect::
+SQL Server Data Types
 
-    from sqlalchemy.dialects.mssql import (
-        BIGINT,
-        BINARY,
-        BIT,
-        CHAR,
-        DATE,
-        DATETIME,
-        DATETIME2,
-        DATETIMEOFFSET,
-        DECIMAL,
-        DOUBLE_PRECISION,
-        FLOAT,
-        IMAGE,
-        INTEGER,
-        JSON,
-        MONEY,
-        NCHAR,
-        NTEXT,
-        NUMERIC,
-        NVARCHAR,
-        REAL,
-        SMALLDATETIME,
-        SMALLINT,
-        SMALLMONEY,
-        SQL_VARIANT,
-        TEXT,
-        TIME,
-        TIMESTAMP,
-        TINYINT,
-        UNIQUEIDENTIFIER,
-        VARBINARY,
-        VARCHAR,
-    )
+.. tab:: 中文
 
-Types which are specific to SQL Server, or have SQL Server-specific
-construction arguments, are as follows:
+      与所有SQLAlchemy方言一样，所有已知对SQL Server有效的UPPERCASE类型都可以从顶级方言中导入，无论它们是来自 :mod:`sqlalchemy.types` 还是来自本地方言::
+
+         from sqlalchemy.dialects.mssql import (
+            BIGINT,
+            BINARY,
+            BIT,
+            CHAR,
+            DATE,
+            DATETIME,
+            DATETIME2,
+            DATETIMEOFFSET,
+            DECIMAL,
+            DOUBLE_PRECISION,
+            FLOAT,
+            IMAGE,
+            INTEGER,
+            JSON,
+            MONEY,
+            NCHAR,
+            NTEXT,
+            NUMERIC,
+            NVARCHAR,
+            REAL,
+            SMALLDATETIME,
+            SMALLINT,
+            SMALLMONEY,
+            SQL_VARIANT,
+            TEXT,
+            TIME,
+            TIMESTAMP,
+            TINYINT,
+            UNIQUEIDENTIFIER,
+            VARBINARY,
+            VARCHAR,
+         )
+
+      特定于SQL Server或具有SQL Server特定构造参数的类型如下：
+
+.. tab:: 英文
+
+      As with all SQLAlchemy dialects, all UPPERCASE types that are known to be
+      valid with SQL server are importable from the top level dialect, whether
+      they originate from :mod:`sqlalchemy.types` or from the local dialect::
+
+         from sqlalchemy.dialects.mssql import (
+            BIGINT,
+            BINARY,
+            BIT,
+            CHAR,
+            DATE,
+            DATETIME,
+            DATETIME2,
+            DATETIMEOFFSET,
+            DECIMAL,
+            DOUBLE_PRECISION,
+            FLOAT,
+            IMAGE,
+            INTEGER,
+            JSON,
+            MONEY,
+            NCHAR,
+            NTEXT,
+            NUMERIC,
+            NVARCHAR,
+            REAL,
+            SMALLDATETIME,
+            SMALLINT,
+            SMALLMONEY,
+            SQL_VARIANT,
+            TEXT,
+            TIME,
+            TIMESTAMP,
+            TINYINT,
+            UNIQUEIDENTIFIER,
+            VARBINARY,
+            VARCHAR,
+         )
+
+      Types which are specific to SQL Server, or have SQL Server-specific
+      construction arguments, are as follows:
 
 .. note: where :noindex: is used, indicates a type that is not redefined
    in the dialect module, just imported from sqltypes.  this avoids warnings

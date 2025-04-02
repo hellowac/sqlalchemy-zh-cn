@@ -1,7 +1,9 @@
 .. _faq_performance:
 
-Performance
+性能
 ===========
+
+Performance
 
 .. contents::
     :local:
@@ -10,8 +12,14 @@ Performance
 
 .. _faq_new_caching:
 
-Why is my application slow after upgrading to 1.4 and/or 2.x?
+为什么升级到 1.4 和/或 2.x 后我的应用程序运行缓慢？
 --------------------------------------------------------------
+
+Why is my application slow after upgrading to 1.4 and/or 2.x?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy as of version 1.4 includes a
 :ref:`SQL compilation caching facility <sql_caching>` which will allow
@@ -48,8 +56,14 @@ performance (measured in time for operations to complete) when switching to
     :ref:`caching_caveats` - additional information regarding the warnings
     generated for elements that don't enable caching.
 
-Step one - turn on SQL logging and confirm whether or not caching is working
+第一步 - 打开 SQL 日志并确认缓存是否正常工作
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Step one - turn on SQL logging and confirm whether or not caching is working
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Here, we want to use the technique described at
 :ref:`engine logging <sql_caching_logging>`, looking for statements with the
@@ -67,8 +81,14 @@ this can be the cause of significant performance degradation.
     :ref:`sql_caching_logging`
 
 
-Step two - identify what constructs are blocking caching from being enabled
+第二步 - 确定哪些结构阻止启用缓存
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Step two - identify what constructs are blocking caching from being enabled
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Assuming statements are not being cached, there should be warnings emitted
 early in the application's log (SQLAlchemy 1.4.28 and above only) indicating
@@ -116,8 +136,14 @@ class hierarchy, the warnings will look like:
     disable this warning.
 
 
-Step three - enable caching for the given objects and/or seek alternatives
+第三步 - 为给定对象启用缓存和/或寻找替代方案
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Step three - enable caching for the given objects and/or seek alternatives
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Steps to mitigate the lack of caching include:
 
@@ -176,8 +202,14 @@ Steps to mitigate the lack of caching include:
 
 .. _faq_how_to_profile:
 
-How can I profile a SQLAlchemy powered application?
+如何分析 SQLAlchemy 支持的应用程序？
 ---------------------------------------------------
+
+How can I profile a SQLAlchemy powered application?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Looking for performance issues typically involves two strategies.  One
 is query profiling, and the other is code profiling.
@@ -244,8 +276,14 @@ stack here for the occasional case where the cursor execute events may be nested
 
 .. _faq_code_profiling:
 
-Code Profiling
+代码分析
 ^^^^^^^^^^^^^^
+
+Code Profiling
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 If logging reveals that individual queries are taking too long, you'd
 need a breakdown of how much time was spent within the database
@@ -311,8 +349,14 @@ Above, we can see that the ``instances()`` SQLAlchemy function was called 222
 times (recursively, and 21 times from the outside), taking a total of .011
 seconds for all calls combined.
 
-Execution Slowness
+执行缓慢
 ^^^^^^^^^^^^^^^^^^
+
+Execution Slowness
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The specifics of these calls can tell us where the time is being spent.
 If for example, you see time being spent within ``cursor.execute()``,
@@ -328,8 +372,14 @@ or restructuring the query and/or underlying schema.  For that task,
 analysis of the query plan is warranted, using a system such as EXPLAIN,
 SHOW PLAN, etc. as is provided by the database backend.
 
-Result Fetching Slowness - Core
+结果获取缓慢 - 核心
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Result Fetching Slowness - Core
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 If on the other hand you see many thousands of calls related to fetching rows,
 or very long calls to ``fetchall()``, it may
@@ -404,8 +454,14 @@ for example, if time spent seems to focus on a call like ``socket.receive()``,
 that could indicate that everything is fast except for the actual network connection,
 and too much time is spent with data moving over the network.
 
-Result Fetching Slowness - ORM
+结果获取缓慢 - ORM
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Result Fetching Slowness - ORM
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 To detect slowness in ORM fetching of rows (which is the most common area
 of performance concern), calls like ``populate_state()`` and ``_instance()`` will
@@ -452,8 +508,14 @@ practice they are very easy to read.
     :ref:`examples_performance` - a suite of performance demonstrations
     with bundled profiling capabilities.
 
-I'm inserting 400,000 rows with the ORM and it's really slow!
+我正在使用 ORM 插入 400,000 行，它真的很慢！
 -------------------------------------------------------------
+
+I'm inserting 400,000 rows with the ORM and it's really slow!
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The nature of ORM inserts has changed, as most included drivers use RETURNING
 with :ref:`insertmanyvalues <engine_insertmanyvalues>` support as of SQLAlchemy

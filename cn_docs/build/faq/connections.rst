@@ -1,5 +1,7 @@
-Connections / Engines
+连接 / 引擎
 =====================
+
+Connections / Engines
 
 .. contents::
     :local:
@@ -7,23 +9,41 @@ Connections / Engines
     :backlinks: none
 
 
-How do I configure logging?
+如何配置日志记录？
 ---------------------------
+
+How do I configure logging?
 
 See :ref:`dbengine_logging`.
 
-How do I pool database connections?   Are my connections pooled?
+如何池化数据库连接？我的连接是否已池化？
 ----------------------------------------------------------------
 
-SQLAlchemy performs application-level connection pooling automatically
-in most cases.  For all included dialects (except SQLite when using a 
-"memory" database), a :class:`_engine.Engine` object refers to a 
-:class:`.QueuePool` as a source of connectivity.
+How do I pool database connections?   Are my connections pooled?
 
-For more detail, see :ref:`engines_toplevel` and :ref:`pooling_toplevel`.
+.. tab:: 中文
+
+    SQLAlchemy在大多数情况下自动执行应用程序级别的连接池。对于所有包含的方言（使用 "memory" 数据库的SQLite除外）， :class:`_engine.Engine` 对象指的是一个 :class:`.QueuePool` 作为连接源。
+
+    有关更多详细信息，请参见 :ref:`engines_toplevel` 和 :ref:`pooling_toplevel`。
+
+.. tab:: 英文
+
+    SQLAlchemy performs application-level connection pooling automatically
+    in most cases.  For all included dialects (except SQLite when using a 
+    "memory" database), a :class:`_engine.Engine` object refers to a 
+    :class:`.QueuePool` as a source of connectivity.
+
+    For more detail, see :ref:`engines_toplevel` and :ref:`pooling_toplevel`.
+
+如何将自定义连接参数传递给我的数据库 API？
+----------------------------------------------------------
 
 How do I pass custom connect arguments to my database API?
-----------------------------------------------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :func:`_sa.create_engine` call accepts additional arguments either
 directly via the ``connect_args`` keyword argument::
@@ -41,8 +61,14 @@ in the query string of the URL::
 
     :ref:`custom_dbapi_args`
 
-"MySQL Server has gone away"
+“MySQL 服务器已消失”
 ----------------------------
+
+"MySQL Server has gone away"
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The primary cause of this error is that the MySQL connection has timed out
 and has been closed by the server.   The MySQL server closes connections
@@ -66,8 +92,14 @@ the "pessimistic" approach.
 
 .. _mysql_sync_errors:
 
-"Commands out of sync; you can't run this command now" / "This result object does not return rows. It has been closed automatically"
+“命令不同步；您现在无法运行此命令”/“此结果对象不返回行。它已自动关闭”
 ------------------------------------------------------------------------------------------------------------------------------------
+
+"Commands out of sync; you can't run this command now" / "This result object does not return rows. It has been closed automatically"
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The MySQL drivers have a fairly wide class of failure modes whereby the state of
 the connection to the server is in an invalid state.  Typically, when the connection
@@ -151,8 +183,14 @@ which have been improved across SQLAlchemy versions but others which are unavoid
 
 .. _faq_execute_retry:
 
-How Do I "Retry" a Statement Execution Automatically?
+如何自动“重试”语句执行？
 -------------------------------------------------------
+
+How Do I "Retry" a Statement Execution Automatically?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The documentation section :ref:`pool_disconnects` discusses the strategies
 available for pooled connections that have been disconnected since the last
@@ -212,8 +250,14 @@ available, as the next section describes.
 
 .. _faq_execute_retry_autocommit:
 
-Using DBAPI Autocommit Allows for a Readonly Version of Transparent Reconnect
+使用 DBAPI 自动提交允许只读版本的透明重新连接
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using DBAPI Autocommit Allows for a Readonly Version of Transparent Reconnect
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 With the rationale for not having a transparent reconnection mechanism stated,
 the preceding section rests upon the assumption that the application is in
@@ -349,8 +393,14 @@ The above recipe is tested for SQLAlchemy 1.4.
 
 
 
-Why does SQLAlchemy issue so many ROLLBACKs?
+为什么 SQLAlchemy 发出如此多的 ROLLBACK？
 --------------------------------------------
+
+Why does SQLAlchemy issue so many ROLLBACKs?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy currently assumes DBAPI connections are in "non-autocommit" mode -
 this is the default behavior of the Python database API, meaning it
@@ -367,8 +417,14 @@ stale data, if that data was already queried on that connection within
 isolation. For background on why you might see stale data even on MySQL, see
 https://dev.mysql.com/doc/refman/5.1/en/innodb-transaction-model.html
 
-I'm on MyISAM - how do I turn it off?
+我在使用 MyISAM - 我如何关闭它？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I'm on MyISAM - how do I turn it off?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The behavior of the connection pool's connection return behavior can be
 configured using ``reset_on_return``::
@@ -381,8 +437,14 @@ configured using ``reset_on_return``::
         pool=QueuePool(reset_on_return=False),
     )
 
-I'm on SQL Server - how do I turn those ROLLBACKs into COMMITs?
+我在使用 SQL Server - 我如何将这些 ROLLBACK 转换为 COMMIT？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I'm on SQL Server - how do I turn those ROLLBACKs into COMMITs?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 ``reset_on_return`` accepts the values ``commit``, ``rollback`` in addition
 to ``True``, ``False``, and ``None``.   Setting to ``commit`` will cause
@@ -392,8 +454,14 @@ a COMMIT as any connection is returned to the pool::
         "mssql+pyodbc://scott:tiger@mydsn", pool=QueuePool(reset_on_return="commit")
     )
 
-I am using multiple connections with a SQLite database (typically to test transaction operation), and my test program is not working!
+我正在使用与 SQLite 数据库的多个连接（通常用于测试事务操作），并且我的测试程序无法正常工作！
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+I am using multiple connections with a SQLite database (typically to test transaction operation), and my test program is not working!
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 If using a SQLite ``:memory:`` database the default connection pool is the 
 :class:`.SingletonThreadPool`, which maintains exactly one SQLite connection
@@ -408,8 +476,14 @@ databases in current SQLAlchemy versions).
 
 .. _faq_dbapi_connection:
 
-How do I get at the raw DBAPI connection when using an Engine?
+使用引擎时如何获取原始 DBAPI 连接？
 --------------------------------------------------------------
+
+How do I get at the raw DBAPI connection when using an Engine?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 With a regular SA engine-level Connection, you can get at a pool-proxied
 version of the DBAPI connection via the :attr:`_engine.Connection.connection` attribute on
@@ -446,8 +520,14 @@ as all methods are proxied through::
    attribute is also added which will always refer to the real driver-level
    connection regardless of what API it presents.
 
-Accessing the underlying connection for an asyncio driver
+访问 asyncio 驱动程序的底层连接
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Accessing the underlying connection for an asyncio driver
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When an asyncio driver is in use, there are two changes to the above
 scheme.  The first is that when using an :class:`_asyncio.AsyncConnection`,
@@ -515,8 +595,14 @@ is called:
     conn.connection.<go nuts>
     conn.close()  # connection is closed for real, the pool replaces it with a new connection
 
-How do I use engines / connections / sessions with Python multiprocessing, or os.fork()?
+如何将引擎/连接/会话与 Python 多处理或 os.fork() 结合使用？
 ----------------------------------------------------------------------------------------
+
+How do I use engines / connections / sessions with Python multiprocessing, or os.fork()?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This is covered in the section :ref:`pooling_multiprocessing`.
 

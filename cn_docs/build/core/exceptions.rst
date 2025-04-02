@@ -1,7 +1,9 @@
 .. _core_exceptions_toplevel:
 
-Core Exceptions
+Core 异常
 ===============
+
+Core Exceptions
 
 .. automodule:: sqlalchemy.exc
     :members:

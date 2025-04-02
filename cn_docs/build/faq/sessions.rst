@@ -1,5 +1,7 @@
-Sessions / Queries
+会话 / 查询
 ==================
+
+Sessions / Queries
 
 .. contents::
     :local:
@@ -8,8 +10,14 @@ Sessions / Queries
 
 .. _faq_session_identity:
 
-I'm re-loading data with my Session but it isn't seeing changes that I committed elsewhere
+我正在使用 Session 重新加载数据，但它没有看到我在其他地方提交的更改
 ------------------------------------------------------------------------------------------
+
+I'm re-loading data with my Session but it isn't seeing changes that I committed elsewhere
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The main issue regarding this behavior is that the session acts as though
 the transaction is in the *serializable* isolation state, even if it's not
@@ -76,8 +84,14 @@ level is repeatable read or higher, unless we start a new transaction**.
 
 .. _faq_session_rollback:
 
-"This Session's transaction has been rolled back due to a previous exception during flush." (or similar)
+“由于刷新期间出现先前的异常，此 Session 的事务已被回滚。”（或类似）
 ---------------------------------------------------------------------------------------------------------
+
+"This Session's transaction has been rolled back due to a previous exception during flush." (or similar)
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This is an error that occurs when a :meth:`.Session.flush` raises an exception, rolls back
 the transaction, but further commands upon the :class:`.Session` are called without an
@@ -145,8 +159,14 @@ depends very much on the kind of application being written.
 For a detailed discussion on how to organize usage of the :class:`.Session`,
 please see :ref:`session_faq_whentocreate`.
 
-But why does flush() insist on issuing a ROLLBACK?
+但为什么 flush() 坚持发出 ROLLBACK？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+But why does flush() insist on issuing a ROLLBACK?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 It would be great if :meth:`.Session.flush` could partially complete and then
 not roll back, however this is beyond its current capabilities since its
@@ -180,8 +200,14 @@ What SQLAlchemy offers that solves both issues is support of SAVEPOINT, via
 potentially fail within a transaction, and then "roll back" to the point
 before its failure while maintaining the enclosing transaction.
 
-But why isn't the one automatic call to ROLLBACK enough?  Why must I ROLLBACK again?
+但为什么一次自动调用 ROLLBACK 还不够？为什么我必须再次 ROLLBACK？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+But why isn't the one automatic call to ROLLBACK enough?  Why must I ROLLBACK again?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The rollback that's caused by the flush() is not the end of the complete transaction
 block; while it ends the database transaction in play, from the :class:`.Session`
@@ -225,15 +251,27 @@ to correspond to the current transaction block.  ``flush()`` keeps the
 above code is predictable and consistent.
 
 
-How do I make a Query that always adds a certain filter to every query?
+如何制作始终向每个查询添加特定过滤器的查询？
 ------------------------------------------------------------------------------------------------
+
+How do I make a Query that always adds a certain filter to every query?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 See the recipe at `FilteredQuery <https://www.sqlalchemy.org/trac/wiki/UsageRecipes/FilteredQuery>`_.
 
 .. _faq_query_deduplicating:
 
-My Query does not return the same number of objects as query.count() tells me - why?
+我的查询没有返回与 query.count() 告诉我的相同数量的对象 - 为什么？
 -------------------------------------------------------------------------------------
+
+My Query does not return the same number of objects as query.count() tells me - why?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_query.Query` object, when asked to return a list of ORM-mapped objects,
 will **deduplicate the objects based on primary key**.   That is, if we
@@ -304,8 +342,14 @@ the behavior of joined eager loading in order to create a more consistent usage
 pattern.
 
 
-I've created a mapping against an Outer Join, and while the query returns rows, no objects are returned.  Why not?
+我已经针对 Outer Join 创建了映射，虽然查询返回行，但没有返回任何对象。为什么不？
 ------------------------------------------------------------------------------------------------------------------
+
+I've created a mapping against an Outer Join, and while the query returns rows, no objects are returned.  Why not?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Rows returned by an outer join may contain NULL for part of the primary key,
 as the primary key is the composite of both tables.  The :class:`_query.Query` object ignores incoming rows
@@ -315,8 +359,14 @@ value, or alternatively if the value has no NULL values.  See ``allow_partial_pk
 at :class:`_orm.Mapper`.
 
 
-I'm using ``joinedload()`` or ``lazy=False`` to create a JOIN/OUTER JOIN and SQLAlchemy is not constructing the correct query when I try to add a WHERE, ORDER BY, LIMIT, etc. (which relies upon the (OUTER) JOIN)
+我正在使用 ``joinedload()`` 或 ``lazy=False`` 来创建 JOIN/OUTER JOIN，而当我尝试添加 WHERE、ORDER BY、LIMIT 等（依赖于（OUTER）JOIN）时，SQLAlchemy 没有构建正确的查询
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+I'm using ``joinedload()`` or ``lazy=False`` to create a JOIN/OUTER JOIN and SQLAlchemy is not constructing the correct query when I try to add a WHERE, ORDER BY, LIMIT, etc. (which relies upon the (OUTER) JOIN)
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The joins generated by joined eager loading are only used to fully load related
 collections, and are designed to have no impact on the primary results of the query.
@@ -324,8 +374,14 @@ Since they are anonymously aliased, they cannot be referenced directly.
 
 For detail on this behavior, see :ref:`zen_of_eager_loading`.
 
-Query has no ``__len__()``, why not?
+查询没有 ``__len__()``，为什么没有？
 ------------------------------------
+
+Query has no ``__len__()``, why not?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The Python ``__len__()`` magic method applied to an object allows the ``len()``
 builtin to be used to determine the length of the collection. It's intuitive
@@ -353,8 +409,14 @@ output:
     ITER!
     LEN!
 
-How Do I use Textual SQL with ORM Queries?
+如何在 ORM 查询中使用文本 SQL？
 ------------------------------------------
+
+How Do I use Textual SQL with ORM Queries?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 See:
 
@@ -362,18 +424,36 @@ See:
 
 * :ref:`session_sql_expressions` - Using :class:`.Session` with textual SQL directly.
 
-I'm calling ``Session.delete(myobject)`` and it isn't removed from the parent collection!
+我正在调用 ``Session.delete(myobject)``，但它没有从父集合中删除！
 ------------------------------------------------------------------------------------------
+
+I'm calling ``Session.delete(myobject)`` and it isn't removed from the parent collection!
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 See :ref:`session_deleting_from_collections` for a description of this behavior.
 
-why isn't my ``__init__()`` called when I load objects?
+为什么加载对象时没有调用我的 ``__init__()``？
 -------------------------------------------------------
+
+why isn't my ``__init__()`` called when I load objects?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 See :ref:`mapped_class_load_events` for a description of this behavior.
 
-how do I use ON DELETE CASCADE with SA's ORM?
+如何将 ON DELETE CASCADE 与 SA 的 ORM 结合使用？
 ---------------------------------------------
+
+how do I use ON DELETE CASCADE with SA's ORM?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy will always issue UPDATE or DELETE statements for dependent
 rows which are currently loaded in the :class:`.Session`.  For rows which
@@ -383,8 +463,14 @@ there is no ON DELETE CASCADE configured.
 To configure SQLAlchemy to cooperate with ON DELETE CASCADE, see
 :ref:`passive_deletes`.
 
-I set the "foo_id" attribute on my instance to "7", but the "foo" attribute is still ``None`` - shouldn't it have loaded Foo with id #7?
+我将实例上的“foo_id”属性设置为“7”，但“foo”属性仍为“None” - 它不应该加载 ID 为 #7 的 Foo 吗？
 ----------------------------------------------------------------------------------------------------------------------------------------------------
+
+I set the "foo_id" attribute on my instance to "7", but the "foo" attribute is still ``None`` - shouldn't it have loaded Foo with id #7?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ORM is not constructed in such a way as to support
 immediate population of relationships driven from foreign
@@ -482,8 +568,14 @@ relationships.
 
 .. _faq_walk_objects:
 
-How do I walk all objects that are related to a given object?
+如何遍历与给定对象相关的所有对象？
 -------------------------------------------------------------
+
+How do I walk all objects that are related to a given object?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 An object that has other objects related to it will correspond to the
 :func:`_orm.relationship` constructs set up between mappers.  This code fragment will
@@ -553,8 +645,14 @@ Output:
 
 
 
+有没有办法自动仅拥有唯一的关键字（或其他类型的对象），而无需对关键字进行查询并获取对包含该关键字的行的引用？
+---------------------------------------------------------------------------------------------
+
 Is there a way to automagically have only unique keywords (or other kinds of objects) without doing a query for the keyword and getting a reference to the row containing that keyword?
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When people read the many-to-many example in the docs, they get hit with the
 fact that if you create the same ``Keyword`` twice, it gets put in the DB twice.
@@ -564,8 +662,14 @@ This `UniqueObject <https://www.sqlalchemy.org/trac/wiki/UsageRecipes/UniqueObje
 
 .. _faq_post_update_update:
 
-Why does post_update emit UPDATE in addition to the first UPDATE?
+为什么 post_update 除了第一个 UPDATE 之外还会发出 UPDATE？
 -----------------------------------------------------------------
+
+Why does post_update emit UPDATE in addition to the first UPDATE?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The post_update feature, documented at :ref:`post_update`, involves that an
 UPDATE statement is emitted in response to changes to a particular

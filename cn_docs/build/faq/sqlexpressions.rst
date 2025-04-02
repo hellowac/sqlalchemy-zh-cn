@@ -1,5 +1,7 @@
-SQL Expressions
+SQL 表达式
 ===============
+
+SQL Expressions
 
 .. contents::
     :local:
@@ -8,8 +10,14 @@ SQL Expressions
 
 .. _faq_sql_expression_string:
 
-How do I render SQL expressions as strings, possibly with bound parameters inlined?
+如何将 SQL 表达式呈现为字符串，可能内联绑定参数？
 ------------------------------------------------------------------------------------
+
+How do I render SQL expressions as strings, possibly with bound parameters inlined?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The "stringification" of a SQLAlchemy Core statement object or
 expression fragment, as well as that of an ORM :class:`_query.Query` object,
@@ -38,8 +46,14 @@ as:
     >>> print(column("x") == "some value")
     {printsql}x = :x_1
 
-Stringifying for Specific Databases
+针对特定数据库进行字符串化
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Stringifying for Specific Databases
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A complication arises when the statement or fragment we are stringifying
 contains elements that have a database-specific string format, or when it
@@ -81,8 +95,14 @@ accessor first::
     statement = query.statement
     print(statement.compile(someengine))
 
-Rendering Bound Parameters Inline
+内联呈现绑定参数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Rendering Bound Parameters Inline
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. warning:: **Never** use these techniques with string content received from
    untrusted input, such as from web forms or other user-input applications.
@@ -307,8 +327,14 @@ include:
     FROM a
     WHERE a.data = UUID('47b154cd-36b2-42ae-9718-888629ab9857')
 
-Rendering "POSTCOMPILE" Parameters as Bound Parameters
+将“POSTCOMPILE”参数呈现为绑定参数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Rendering "POSTCOMPILE" Parameters as Bound Parameters
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 SQLAlchemy includes a variant on a bound parameter known as
 :paramref:`_sql.BindParameter.expanding`, which is a "late evaluated" parameter
@@ -381,8 +407,14 @@ in the same way, such as SQLite's positional form:
 
 .. _faq_sql_expression_percent_signs:
 
-Why are percent signs being doubled up when stringifying SQL statements?
+为什么在对 SQL 语句进行字符串化时百分号会加倍？
 ------------------------------------------------------------------------
+
+Why are percent signs being doubled up when stringifying SQL statements?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Many :term:`DBAPI` implementations make use of the ``pyformat`` or ``format``
 `paramstyle <https://www.python.org/dev/peps/pep-0249/#paramstyle>`_, which
@@ -446,8 +478,14 @@ no longer be escaped:
 
 .. _faq_sql_expression_op_parenthesis:
 
-I'm using op() to generate a custom operator and my parenthesis are not coming out correctly
+我正在使用 op() 生成自定义运算符，但我的括号无法正确显示
 ---------------------------------------------------------------------------------------------
+
+I'm using op() to generate a custom operator and my parenthesis are not coming out correctly
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :meth:`.Operators.op` method allows one to create a custom database operator
 otherwise not known by SQLAlchemy:
@@ -486,8 +524,14 @@ an expression that has left/right operands and an operator) using the
     >>> print((column("q1") + column("q2")).self_group().op("->")(column("p")))
     {printsql}(q1 + q2) -> p
 
-Why are the parentheses rules like this?
+为什么括号规则是这样的？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Why are the parentheses rules like this?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 A lot of databases barf when there are excessive parenthesis or when
 parenthesis are in unusual places they doesn't expect, so SQLAlchemy does not

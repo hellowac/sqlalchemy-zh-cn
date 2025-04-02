@@ -1,7 +1,9 @@
 .. _types_toplevel:
 
-SQL Datatype Objects
+SQL 数据类型对象
 =====================
+
+SQL Datatype Objects
 
 .. toctree::
     :maxdepth: 3

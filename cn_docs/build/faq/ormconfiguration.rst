@@ -1,5 +1,7 @@
-ORM Configuration
+ORM 配置
 =================
+
+ORM Configuration
 
 .. contents::
     :local:
@@ -8,8 +10,14 @@ ORM Configuration
 
 .. _faq_mapper_primary_key:
 
-How do I map a table that has no primary key?
+如何映射没有主键的表？
 ---------------------------------------------
+
+How do I map a table that has no primary key?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The SQLAlchemy ORM, in order to map to a particular table, needs there to be
 at least one column denoted as a primary key column; multiple-column,
@@ -73,14 +81,26 @@ columns:
     )
 
 
-How do I configure a Column that is a Python reserved word or similar?
+如何配置 Python 保留字或类似字的列？
 ----------------------------------------------------------------------
+
+How do I configure a Column that is a Python reserved word or similar?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Column-based attributes can be given any name desired in the mapping. See
 :ref:`mapper_column_distinct_names`.
 
-How do I get a list of all columns, relationships, mapped attributes, etc. given a mapped class?
+给定映射类，如何获取所有列、关系、映射属性等的列表？
 -------------------------------------------------------------------------------------------------
+
+How do I get a list of all columns, relationships, mapped attributes, etc. given a mapped class?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This information is all available from the :class:`_orm.Mapper` object.
 
@@ -119,8 +139,14 @@ such as:
 
 .. _faq_combining_columns:
 
-I'm getting a warning or error about "Implicitly combining column X under attribute Y"
+我收到有关“在属性 Y 下隐式组合列 X”的警告或错误
 --------------------------------------------------------------------------------------
+
+I'm getting a warning or error about "Implicitly combining column X under attribute Y"
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 This condition refers to when a mapping contains two columns that are being
 mapped under the same attribute name due to their name, but there's no indication
@@ -193,8 +219,14 @@ them together using :func:`.column_property`::
         id = column_property(Column(Integer, primary_key=True), A.id)
         a_id = Column(Integer, ForeignKey("a.id"))
 
-I'm using Declarative and setting primaryjoin/secondaryjoin using an ``and_()`` or ``or_()``, and I am getting an error message about foreign keys.
+我正在使用 Declarative 并使用 ``and_()`` 或 ``or_()`` 设置 primaryjoin/secondaryjoin，并且收到有关外键的错误消息。
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+I'm using Declarative and setting primaryjoin/secondaryjoin using an ``and_()`` or ``or_()``, and I am getting an error message about foreign keys.
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Are you doing this?::
 
@@ -245,8 +277,14 @@ The same idea applies to all the other arguments, such as ``foreign_keys``::
 
 .. _faq_subqueryload_limit_sort:
 
-Why is ``ORDER BY`` recommended with ``LIMIT`` (especially with ``subqueryload()``)?
+为什么建议将 ``ORDER BY`` 与 ``LIMIT`` 一起使用（尤其是与 ``subqueryload()`` 一起使用）？
 ------------------------------------------------------------------------------------
+
+Why is ``ORDER BY`` recommended with ``LIMIT`` (especially with ``subqueryload()``)?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When ORDER BY is not used for a SELECT statement that returns rows, the
 relational database is free to returned matched rows in any arbitrary
@@ -352,16 +390,28 @@ loads directly to primary key values just loaded.
 
 .. _defaults_default_factory_insert_default:
 
-What are ``default``, ``default_factory`` and ``insert_default`` and what should I use?
+什么是 ``default``、``default_factory`` 和 ``insert_default``，我应该使用哪个？
 ---------------------------------------------------------------------------------------
+
+What are ``default``, ``default_factory`` and ``insert_default`` and what should I use?
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 There's a bit of a clash in SQLAlchemy's API here due to the addition of PEP-681
 dataclass transforms, which is strict about its naming conventions. PEP-681 comes
 into play if you are using :class:`_orm.MappedAsDataclass` as shown in :ref:`orm_declarative_native_dataclasses`.
 If you are not using MappedAsDataclass, then it does not apply.
 
-Part One - Classic SQLAlchemy that is not using dataclasses
+第一部分 - 不使用数据类的经典 SQLAlchemy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Part One - Classic SQLAlchemy that is not using dataclasses
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 When **not** using :class:`_orm.MappedAsDataclass`, as has been the case for many years
 in SQLAlchemy, the :func:`_orm.mapped_column` (and :class:`_schema.Column`)
@@ -386,8 +436,14 @@ parameter is also available under a new name, called
 :paramref:`_orm.mapped_column.default` and :paramref:`_orm.mapped_column.insert_default`
 parameters are **synonymous**.
 
-Part Two - Using Dataclasses support with MappedAsDataclass
+第二部分 - 使用 MappedAsDataclass 的数据类支持
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Part Two - Using Dataclasses support with MappedAsDataclass
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionchanged:: 2.1 The behavior of column level defaults when using
    dataclasses has changed to use an approach that uses class-level descriptors

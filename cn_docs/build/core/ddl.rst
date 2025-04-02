@@ -2,26 +2,40 @@
 .. _metadata_ddl:
 .. currentmodule:: sqlalchemy.schema
 
-Customizing DDL
+自定义 DDL
 ===============
 
-In the preceding sections we've discussed a variety of schema constructs
-including :class:`~sqlalchemy.schema.Table`,
-:class:`~sqlalchemy.schema.ForeignKeyConstraint`,
-:class:`~sqlalchemy.schema.CheckConstraint`, and
-:class:`~sqlalchemy.schema.Sequence`. Throughout, we've relied upon the
-``create()`` and :func:`~sqlalchemy.schema.MetaData.create_all` methods of
-:class:`~sqlalchemy.schema.Table` and :class:`~sqlalchemy.schema.MetaData` in
-order to issue data definition language (DDL) for all constructs. When issued,
-a pre-determined order of operations is invoked, and DDL to create each table
-is created unconditionally including all constraints and other objects
-associated with it. For more complex scenarios where database-specific DDL is
-required, SQLAlchemy offers two techniques which can be used to add any DDL
-based on any condition, either accompanying the standard generation of tables
-or by itself.
+Customizing DDL
+
+.. tab:: 中文
+
+    在前面的章节中，我们讨论了各种模式构造，包括 :class:`~sqlalchemy.schema.Table`，:class:`~sqlalchemy.schema.ForeignKeyConstraint`，:class:`~sqlalchemy.schema.CheckConstraint` 和 :class:`~sqlalchemy.schema.Sequence`。在整个过程中，我们依赖于 :class:`~sqlalchemy.schema.Table` 和 :class:`~sqlalchemy.schema.MetaData` 的 ``create()`` 和 :func:`~sqlalchemy.schema.MetaData.create_all` 方法来发出所有构造的数据定义语言（DDL）。当发出时，会调用预定的操作顺序，并无条件地创建每个表的DDL，包括与其相关的所有约束和其他对象。对于需要数据库特定DDL的更复杂场景，SQLAlchemy提供了两种技术，可以根据任何条件添加任何DDL，无论是伴随标准的表生成还是单独生成。
+
+.. tab:: 英文
+
+    In the preceding sections we've discussed a variety of schema constructs
+    including :class:`~sqlalchemy.schema.Table`,
+    :class:`~sqlalchemy.schema.ForeignKeyConstraint`,
+    :class:`~sqlalchemy.schema.CheckConstraint`, and
+    :class:`~sqlalchemy.schema.Sequence`. Throughout, we've relied upon the
+    ``create()`` and :func:`~sqlalchemy.schema.MetaData.create_all` methods of
+    :class:`~sqlalchemy.schema.Table` and :class:`~sqlalchemy.schema.MetaData` in
+    order to issue data definition language (DDL) for all constructs. When issued,
+    a pre-determined order of operations is invoked, and DDL to create each table
+    is created unconditionally including all constraints and other objects
+    associated with it. For more complex scenarios where database-specific DDL is
+    required, SQLAlchemy offers two techniques which can be used to add any DDL
+    based on any condition, either accompanying the standard generation of tables
+    or by itself.
+
+自定义 DDL
+----------
 
 Custom DDL
-----------
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 Custom DDL phrases are most easily achieved using the
 :class:`~sqlalchemy.schema.DDL` construct. This construct works like all the
@@ -46,8 +60,14 @@ details.
 
 .. _schema_ddl_sequences:
 
-Controlling DDL Sequences
+控制 DDL 序列
 -------------------------
+
+Controlling DDL Sequences
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The :class:`_schema.DDL` construct introduced previously also has the
 ability to be invoked conditionally based on inspection of the
@@ -140,8 +160,14 @@ first looking within the PostgreSQL catalogs to see if it exists:
     ALTER TABLE users DROP CONSTRAINT cst_user_name_length
     DROP TABLE users{stop}
 
-Using the built-in DDLElement Classes
+使用内置 DDLElement 类
 -------------------------------------
+
+Using the built-in DDLElement Classes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The ``sqlalchemy.schema`` package contains SQL expression constructs that
 provide DDL expressions, all of which extend from the common base
@@ -177,8 +203,14 @@ User-defined DDL constructs may also be created as subclasses of
 
 .. _schema_ddl_ddl_if:
 
-Controlling DDL Generation of Constraints and Indexes
+控制 DDL 约束和索引的生成
 -----------------------------------------------------
+
+Controlling DDL Generation of Constraints and Indexes
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. versionadded:: 2.0
 
@@ -305,8 +337,14 @@ to inspect the database versioning information would best use the given
 
 .. _schema_api_ddl:
 
-DDL Expression Constructs API
+DDL 表达式构造 API
 -----------------------------
+
+DDL Expression Constructs API
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 .. autofunction:: sort_tables
 

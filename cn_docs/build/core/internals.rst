@@ -1,9 +1,17 @@
 .. _core_internal_toplevel:
 
-Core Internals
+Core 内部
 ==============
 
-Some key internal constructs are listed here.
+Core Internals
+
+.. tab:: 中文
+
+    这里列出了一些关键的内部结构。
+
+.. tab:: 英文
+
+    Some key internal constructs are listed here.
 
 .. currentmodule:: sqlalchemy
 

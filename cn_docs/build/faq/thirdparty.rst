@@ -1,5 +1,7 @@
-Third Party Integration Issues
+第三方包集成问题
 ===============================
+
+Third Party Integration Issues
 
 .. contents::
     :local:
@@ -8,8 +10,14 @@ Third Party Integration Issues
 
 .. _numpy_int64:
 
-I'm getting errors related to "``numpy.int64``", "``numpy.bool_``", etc.
+我收到与 “numpy.int64”、 “numpy.bool_” 等相关的错误。
 ------------------------------------------------------------------------
+
+I'm getting errors related to "``numpy.int64``", "``numpy.bool_``", etc.
+
+.. tab:: 中文
+
+.. tab:: 英文
 
 The numpy_ package has its own numeric datatypes that extend from Python's
 numeric types, but contain some behaviors that in some cases make them impossible
@@ -70,7 +78,9 @@ applying the Python ``int()`` function to types like ``numpy.int32`` and
 
 .. _numpy: https://numpy.org
 
-SQL expression for WHERE/HAVING role expected, got True
+预期 WHERE/HAVING 角色的 SQL 表达式为 True
 -------------------------------------------------------
+
+SQL expression for WHERE/HAVING role expected, got True
 
 See :ref:`numpy_int64`.

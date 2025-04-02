@@ -2,8 +2,10 @@
 
 .. _types_api:
 
-Base Type API
+基本类型 API
 -------------
+
+Base Type API
 
 .. autoclass:: TypeEngine
    :members:

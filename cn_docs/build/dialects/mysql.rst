@@ -1,74 +1,132 @@
 .. _mysql_toplevel:
 
-MySQL and MariaDB
+MySQL 和 MariaDB
 =================
+
+MySQL and MariaDB
 
 .. automodule:: sqlalchemy.dialects.mysql.base
 
-MySQL SQL Constructs
+MySQL SQL 构造
 --------------------
+
+MySQL SQL Constructs
 
 .. currentmodule:: sqlalchemy.dialects.mysql
 
 .. autoclass:: match
     :members:
 
-MySQL Data Types
+MySQL 数据类型
 ----------------
 
-As with all SQLAlchemy dialects, all UPPERCASE types that are known to be
-valid with MySQL are importable from the top level dialect::
+MySQL Data Types
 
-    from sqlalchemy.dialects.mysql import (
-        BIGINT,
-        BINARY,
-        BIT,
-        BLOB,
-        BOOLEAN,
-        CHAR,
-        DATE,
-        DATETIME,
-        DECIMAL,
-        DECIMAL,
-        DOUBLE,
-        ENUM,
-        FLOAT,
-        INTEGER,
-        LONGBLOB,
-        LONGTEXT,
-        MEDIUMBLOB,
-        MEDIUMINT,
-        MEDIUMTEXT,
-        NCHAR,
-        NUMERIC,
-        NVARCHAR,
-        REAL,
-        SET,
-        SMALLINT,
-        TEXT,
-        TIME,
-        TIMESTAMP,
-        TINYBLOB,
-        TINYINT,
-        TINYTEXT,
-        VARBINARY,
-        VARCHAR,
-        YEAR,
-    )
+.. tab:: 中文
 
-In addition to the above types, MariaDB also supports the following::
+    与所有SQLAlchemy方言一样，所有已知对MySQL有效的UPPERCASE类型都可以从顶级方言中导入::
 
-    from sqlalchemy.dialects.mysql import (
-        INET4,
-        INET6,
-    )
+        from sqlalchemy.dialects.mysql import (
+            BIGINT,
+            BINARY,
+            BIT,
+            BLOB,
+            BOOLEAN,
+            CHAR,
+            DATE,
+            DATETIME,
+            DECIMAL,
+            DECIMAL,
+            DOUBLE,
+            ENUM,
+            FLOAT,
+            INTEGER,
+            LONGBLOB,
+            LONGTEXT,
+            MEDIUMBLOB,
+            MEDIUMINT,
+            MEDIUMTEXT,
+            NCHAR,
+            NUMERIC,
+            NVARCHAR,
+            REAL,
+            SET,
+            SMALLINT,
+            TEXT,
+            TIME,
+            TIMESTAMP,
+            TINYBLOB,
+            TINYINT,
+            TINYTEXT,
+            VARBINARY,
+            VARCHAR,
+            YEAR,
+        )
 
-Types which are specific to MySQL or MariaDB, or have specific
-construction arguments, are as follows:
+    除了上述类型，MariaDB还支持以下类型::
+
+        from sqlalchemy.dialects.mysql import (
+            INET4,
+            INET6,
+        )
+
+    特定于MySQL或MariaDB，或具有特定构造参数的类型如下：
+
+.. tab:: 英文
+
+    As with all SQLAlchemy dialects, all UPPERCASE types that are known to be
+    valid with MySQL are importable from the top level dialect::
+
+        from sqlalchemy.dialects.mysql import (
+            BIGINT,
+            BINARY,
+            BIT,
+            BLOB,
+            BOOLEAN,
+            CHAR,
+            DATE,
+            DATETIME,
+            DECIMAL,
+            DECIMAL,
+            DOUBLE,
+            ENUM,
+            FLOAT,
+            INTEGER,
+            LONGBLOB,
+            LONGTEXT,
+            MEDIUMBLOB,
+            MEDIUMINT,
+            MEDIUMTEXT,
+            NCHAR,
+            NUMERIC,
+            NVARCHAR,
+            REAL,
+            SET,
+            SMALLINT,
+            TEXT,
+            TIME,
+            TIMESTAMP,
+            TINYBLOB,
+            TINYINT,
+            TINYTEXT,
+            VARBINARY,
+            VARCHAR,
+            YEAR,
+        )
+
+    In addition to the above types, MariaDB also supports the following::
+
+        from sqlalchemy.dialects.mysql import (
+            INET4,
+            INET6,
+        )
+
+    Types which are specific to MySQL or MariaDB, or have specific
+    construction arguments, are as follows:
 
 .. note: where :noindex: is used, indicates a type that is not redefined
-   in the dialect module, just imported from sqltypes.  this avoids warnings
-   in the sphinx build
+in the dialect module, just imported from sqltypes.  this avoids warnings
+in the sphinx build
 
 .. currentmodule:: sqlalchemy.dialects.mysql
 
@@ -215,8 +273,10 @@ construction arguments, are as follows:
 .. autoclass:: YEAR
     :members: __init__
 
-MySQL DML Constructs
+MySQL DML 构造
 -------------------------
+
+MySQL DML Constructs
 
 .. autofunction:: sqlalchemy.dialects.mysql.insert
 
@@ -227,8 +287,10 @@ MySQL DML Constructs
 
 
 
-mysqlclient (fork of MySQL-Python)
+mysqlclient（MySQL-Python 的分支）
 ----------------------------------
+
+mysqlclient (fork of MySQL-Python)
 
 .. automodule:: sqlalchemy.dialects.mysql.mysqldb
 
