@@ -5,6 +5,12 @@
 
 Composing Mapped Hierarchies with Mixins
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 A common need when mapping classes using the :ref:`Declarative
 <orm_declarative_mapping>` style is to share common functionality, such as
 particular columns, table or mapper options, naming schemes, or other mapped
@@ -153,6 +159,12 @@ attribute is used on the newly defined class.
 
 Augmenting the Base
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 In addition to using a pure mixin, most of the techniques in this
 section can also be applied to the base class directly, for patterns that
 should apply to all classes derived from a particular base.  The example
@@ -259,6 +271,12 @@ example below::
 
 Mixing in Columns
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 Columns can be indicated in mixins assuming the
 :ref:`Declarative table <orm_declarative_table>` style of configuration
 is in use (as opposed to
@@ -328,6 +346,12 @@ applied to the target class.
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Mixing in Relationships
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
 
 Relationships created by :func:`~sqlalchemy.orm.relationship` are provided
 with declarative mixin classes exclusively using the
@@ -414,6 +438,12 @@ explicit primaryjoin which refers to pending mapped columns on both
 
 Mixing in :func:`_orm.column_property` and other :class:`_orm.MapperProperty` classes
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 Like :func:`_orm.relationship`, other
 :class:`_orm.MapperProperty` subclasses such as
 :func:`_orm.column_property` also need to have class-local copies generated
@@ -488,6 +518,12 @@ it produces the full expression:
 
 Using Mixins and Base Classes with Mapped Inheritance Patterns
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 When dealing with mapper inheritance patterns as documented at
 :ref:`inheritance_toplevel`, some additional capabilities are present
 when using :class:`_orm.declared_attr` either with mixin classes, or when
@@ -518,6 +554,12 @@ in the following two sections.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Using :func:`_orm.declared_attr` with inheriting :class:`.Table` and :class:`.Mapper` arguments
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
 
 A common recipe with mixins is to create a ``def __tablename__(cls)``
 function that generates a name for the mapped :class:`.Table` dynamically.
@@ -657,6 +699,12 @@ for inheriting subclasses by default::
 
 Using :func:`_orm.declared_attr` to generate table-specific inheriting columns
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 In contrast to how ``__tablename__`` and other special names are handled when
 used with :class:`_orm.declared_attr`, when we mix in columns and properties (e.g.
 relationships, column properties, etc.), the function is
@@ -734,6 +782,12 @@ function should be invoked **for each class in the hierarchy**, in *almost*
 
 Combining Table/Mapper Arguments from Multiple Mixins
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 In the case of ``__table_args__`` or ``__mapper_args__``
 specified with declarative mixins, you may want to combine
 some parameters from several mixins with those you wish to
@@ -771,6 +825,12 @@ from multiple collections::
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Creating Indexes and Constraints with Naming Conventions on Mixins
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
 
 Using named constraints such as :class:`.Index`, :class:`.UniqueConstraint`,
 :class:`.CheckConstraint`, where each object is to be unique to a specific

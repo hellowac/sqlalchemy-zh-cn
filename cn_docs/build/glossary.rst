@@ -890,6 +890,7 @@ Glossary
 
     instrumentation
     instrumented
+    仪器化
     instrumenting
         .. tab:: 中文
 

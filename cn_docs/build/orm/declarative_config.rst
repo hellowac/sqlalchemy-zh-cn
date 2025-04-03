@@ -6,6 +6,12 @@
 
 Mapper Configuration with Declarative
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 The section :ref:`orm_mapper_configuration_overview` discusses the general
 configurational elements of a :class:`_orm.Mapper` construct, which is the
 structure that defines how a particular user defined class is mapped to a
@@ -19,6 +25,12 @@ the :class:`_orm.Mapper`.
 --------------------------------------------
 
 Defining Mapped Properties with Declarative
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
 
 The examples given at :ref:`orm_declarative_table_config_toplevel`
 illustrate mappings against table-bound columns, using the :func:`_orm.mapped_column`
@@ -168,6 +180,12 @@ Things to note above:
 
 Mapper Configuration Options with Declarative
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 With all mapping forms, the mapping of the class is configured through
 parameters that become part of the :class:`_orm.Mapper` object.
 The function which ultimately receives these arguments is the
@@ -260,6 +278,12 @@ configuring a single-table inheritance mapping::
 
 Constructing mapper arguments dynamically
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 The ``__mapper_args__`` dictionary may be generated from a class-bound
 descriptor method rather than from a fixed dictionary by making use of the
 :func:`_orm.declared_attr` construct.    This is useful to create arguments
@@ -325,6 +349,12 @@ Other Declarative Mapping Directives
 ``__declare_last__()``
 ~~~~~~~~~~~~~~~~~~~~~~
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 The ``__declare_last__()`` hook allows definition of
 a class level function that is automatically called by the
 :meth:`.MapperEvents.after_configured` event, which occurs after mappings are
@@ -339,6 +369,12 @@ assumed to be completed and the 'configure' step has finished::
 ``__declare_first__()``
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 Like ``__declare_last__()``, but is called at the beginning of mapper
 configuration via the :meth:`.MapperEvents.before_configured` event::
 
@@ -352,6 +388,12 @@ configuration via the :meth:`.MapperEvents.before_configured` event::
 
 ``metadata``
 ~~~~~~~~~~~~
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
 
 The :class:`_schema.MetaData` collection normally used to assign a new
 :class:`_schema.Table` is the :attr:`_orm.registry.metadata` attribute
@@ -414,6 +456,12 @@ be illustrated using :meth:`_orm.registry.mapped` as follows::
 ``__abstract__``
 ~~~~~~~~~~~~~~~~
 
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 ``__abstract__`` causes declarative to skip the production
 of a table or mapper for the class entirely.  A class can be added within a
 hierarchy in the same way as mixin (see :ref:`declarative_mixins`), allowing
@@ -466,6 +514,12 @@ created perhaps within distinct databases::
 
 ``__table_cls__``
 ~~~~~~~~~~~~~~~~~
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
 
 Allows the callable / class used to generate a :class:`_schema.Table` to be customized.
 This is a very open-ended hook that can allow special customizations
