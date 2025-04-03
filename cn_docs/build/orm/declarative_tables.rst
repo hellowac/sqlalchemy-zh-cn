@@ -1759,7 +1759,7 @@ Native Enums and Naming
 
 .. tab:: 中文
 
-    :paramref:`.sqltypes.Enum.native_enum` 参数指的是 :class:`.sqltypes.Enum` 数据类型是否应创建所谓的“本地”枚举，在 MySQL/MariaDB 上是 ``ENUM`` 数据类型，在 PostgreSQL 上是通过 ``CREATE TYPE`` 创建的新 ``TYPE`` 对象，或者是“非本地”枚举，这意味着将使用 ``VARCHAR`` 来创建数据类型。对于 MySQL/MariaDB 或 PostgreSQL 以外的后端，在所有情况下都使用 ``VARCHAR``（第三方方言可能有其自己的行为）。
+    :paramref:`.sqltypes.Enum.native_enum` 参数指的是 :class:`.sqltypes.Enum` 数据类型是否应创建所谓的“本地”枚举，在 MySQL/MariaDB 上是 ``ENUM`` 数据类型，在 PostgreSQL 上是通过 ``CREATE TYPE`` 创建的新 ``TYPE`` 对象，或者是“非本地”枚举，这意味着将使用 ``VARCHAR`` 来创建数据类型。对于 MySQL/MariaDB 或 PostgreSQL 以外的后端，在所有情况下都使用 ``VARCHAR`` （第三方方言可能有其自己的行为）。
 
     由于 PostgreSQL 的 ``CREATE TYPE`` 要求必须为要创建的类型提供一个显式名称，因此在处理隐式生成的 :class:`.sqltypes.Enum` 而未在映射中指定显式 :class:`.sqltypes.Enum` 数据类型时，存在特殊的回退逻辑：
 
