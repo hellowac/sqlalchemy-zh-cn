@@ -85,7 +85,7 @@ Declarative Table with ``mapped_column()``
             Column("nickname", String(30)),
         )
 
-    当上述 ``User`` 类映射时，可以通过``__table__``属性直接访问此 :class:`_schema.Table` 对象；这在 :ref:`orm_declarative_metadata` 中有进一步描述。
+    当上述 ``User`` 类映射时，可以通过 ``__table__`` 属性直接访问此 :class:`_schema.Table` 对象；这在 :ref:`orm_declarative_metadata` 中有进一步描述。
 
     .. admonition::  ``mapped_column()`` 取代了 ``Column()`` 的使用
 
@@ -496,7 +496,7 @@ Customizing the Type Map
 
     Python类型到SQLAlchemy :class:`_types.TypeEngine` 类型的映射在上一节中描述的默认情况下存在于 ``sqlalchemy.sql.sqltypes`` 模块中的硬编码字典中。然而，协调声明式映射过程的 :class:`_orm.registry` 对象首先会咨询一个本地的用户定义类型字典，该字典可以在构造 :class:`_orm.registry` 时作为 :paramref:`_orm.registry.type_annotation_map` 参数传递，并且可以在首次使用时与 :class:`_orm.DeclarativeBase` 超类关联。
 
-    例如，如果我们希望将 ``int`` 使用 :class:`_sqltypes.BIGINT` 数据类型， ``datetime.datetime`` 使用 ``timezone=True`` 的 :class:`_sqltypes.TIMESTAMP` 数据类型，并且仅在Microsoft SQL Server上希望将Python ``str``使用 :class:`_sqltypes.NVARCHAR` 数据类型，则可以配置注册表和声明式基类，如下所示::
+    例如，如果我们希望将 ``int`` 使用 :class:`_sqltypes.BIGINT` 数据类型， ``datetime.datetime`` 使用 ``timezone=True`` 的 :class:`_sqltypes.TIMESTAMP` 数据类型，并且仅在Microsoft SQL Server上希望将Python ``str`` 使用 :class:`_sqltypes.NVARCHAR` 数据类型，则可以配置注册表和声明式基类，如下所示::
 
         import datetime
 
@@ -1871,68 +1871,113 @@ Altering the Configuration of the Default Enum
 
 .. tab:: 中文
 
+    为了修改隐式生成的 :class:`.enum.Enum` 数据类型的固定配置，请在 :paramref:`_orm.registry.type_annotation_map` 中指定新条目，指示附加参数。例如，要无条件地使用“非本地枚举”，可以将 :paramref:`.Enum.native_enum` 参数设置为 False，适用于所有类型::
 
+        import enum
+        import typing
+        import sqlalchemy
+        from sqlalchemy.orm import DeclarativeBase
+
+
+        class Base(DeclarativeBase):
+            type_annotation_map = {
+                enum.Enum: sqlalchemy.Enum(enum.Enum, native_enum=False),
+                typing.Literal: sqlalchemy.Enum(enum.Enum, native_enum=False),
+            }
+
+    .. versionchanged:: 2.0.1 
+        
+        实现了在建立 :paramref:`_orm.registry.type_annotation_map` 时覆盖 :class:`_sqltypes.Enum` 数据类型中的参数（如 :paramref:`_sqltypes.Enum.native_enum`）的支持。此前，此功能不起作用。
+
+    要对特定 ``enum.Enum`` 子类型使用特定配置，例如在使用示例 ``Status`` 数据类型时将字符串长度设置为50::
+
+        import enum
+        import sqlalchemy
+        from sqlalchemy.orm import DeclarativeBase
+
+
+        class Status(enum.Enum):
+            PENDING = "pending"
+            RECEIVED = "received"
+            COMPLETED = "completed"
+
+
+        class Base(DeclarativeBase):
+            type_annotation_map = {
+                Status: sqlalchemy.Enum(Status, length=50, native_enum=False)
+            }
+
+    默认情况下，自动生成的 :class:`_sqltypes.Enum` 不与 ``Base`` 使用的 :class:`_sql.MetaData` 实例关联，因此如果元数据定义了模式，它将不会自动与枚举关联。要自动将枚举与它们所属的元数据或表中的模式关联，可以设置 :paramref:`_sqltypes.Enum.inherit_schema` 参数::
+
+        from enum import Enum
+        import sqlalchemy as sa
+        from sqlalchemy.orm import DeclarativeBase
+
+
+        class Base(DeclarativeBase):
+            metadata = sa.MetaData(schema="my_schema")
+            type_annotation_map = {Enum: sa.Enum(Enum, inherit_schema=True)}
 
 .. tab:: 英文
 
-In order to modify the fixed configuration of the :class:`.enum.Enum` datatype
-that's generated implicitly, specify new entries in the
-:paramref:`_orm.registry.type_annotation_map`, indicating additional arguments.
-For example, to use "non native enumerations" unconditionally, the
-:paramref:`.Enum.native_enum` parameter may be set to False for all types::
+    In order to modify the fixed configuration of the :class:`.enum.Enum` datatype
+    that's generated implicitly, specify new entries in the
+    :paramref:`_orm.registry.type_annotation_map`, indicating additional arguments.
+    For example, to use "non native enumerations" unconditionally, the
+    :paramref:`.Enum.native_enum` parameter may be set to False for all types::
 
-    import enum
-    import typing
-    import sqlalchemy
-    from sqlalchemy.orm import DeclarativeBase
-
-
-    class Base(DeclarativeBase):
-        type_annotation_map = {
-            enum.Enum: sqlalchemy.Enum(enum.Enum, native_enum=False),
-            typing.Literal: sqlalchemy.Enum(enum.Enum, native_enum=False),
-        }
-
-.. versionchanged:: 2.0.1  Implemented support for overriding parameters
-   such as :paramref:`_sqltypes.Enum.native_enum` within the
-   :class:`_sqltypes.Enum` datatype when establishing the
-   :paramref:`_orm.registry.type_annotation_map`.  Previously, this
-   functionality was not working.
-
-To use a specific configuration for a specific ``enum.Enum`` subtype, such
-as setting the string length to 50 when using the example ``Status``
-datatype::
-
-    import enum
-    import sqlalchemy
-    from sqlalchemy.orm import DeclarativeBase
+        import enum
+        import typing
+        import sqlalchemy
+        from sqlalchemy.orm import DeclarativeBase
 
 
-    class Status(enum.Enum):
-        PENDING = "pending"
-        RECEIVED = "received"
-        COMPLETED = "completed"
+        class Base(DeclarativeBase):
+            type_annotation_map = {
+                enum.Enum: sqlalchemy.Enum(enum.Enum, native_enum=False),
+                typing.Literal: sqlalchemy.Enum(enum.Enum, native_enum=False),
+            }
+
+    .. versionchanged:: 2.0.1  Implemented support for overriding parameters
+    such as :paramref:`_sqltypes.Enum.native_enum` within the
+    :class:`_sqltypes.Enum` datatype when establishing the
+    :paramref:`_orm.registry.type_annotation_map`.  Previously, this
+    functionality was not working.
+
+    To use a specific configuration for a specific ``enum.Enum`` subtype, such
+    as setting the string length to 50 when using the example ``Status``
+    datatype::
+
+        import enum
+        import sqlalchemy
+        from sqlalchemy.orm import DeclarativeBase
 
 
-    class Base(DeclarativeBase):
-        type_annotation_map = {
-            Status: sqlalchemy.Enum(Status, length=50, native_enum=False)
-        }
-
-By default :class:`_sqltypes.Enum` that are automatically generated are not
-associated with the :class:`_sql.MetaData` instance used by the ``Base``, so if
-the metadata defines a schema it will not be automatically associated with the
-enum. To automatically associate the enum with the schema in the metadata or
-table they belong to the :paramref:`_sqltypes.Enum.inherit_schema` can be set::
-
-    from enum import Enum
-    import sqlalchemy as sa
-    from sqlalchemy.orm import DeclarativeBase
+        class Status(enum.Enum):
+            PENDING = "pending"
+            RECEIVED = "received"
+            COMPLETED = "completed"
 
 
-    class Base(DeclarativeBase):
-        metadata = sa.MetaData(schema="my_schema")
-        type_annotation_map = {Enum: sa.Enum(Enum, inherit_schema=True)}
+        class Base(DeclarativeBase):
+            type_annotation_map = {
+                Status: sqlalchemy.Enum(Status, length=50, native_enum=False)
+            }
+
+    By default :class:`_sqltypes.Enum` that are automatically generated are not
+    associated with the :class:`_sql.MetaData` instance used by the ``Base``, so if
+    the metadata defines a schema it will not be automatically associated with the
+    enum. To automatically associate the enum with the schema in the metadata or
+    table they belong to the :paramref:`_sqltypes.Enum.inherit_schema` can be set::
+
+        from enum import Enum
+        import sqlalchemy as sa
+        from sqlalchemy.orm import DeclarativeBase
+
+
+        class Base(DeclarativeBase):
+            metadata = sa.MetaData(schema="my_schema")
+            type_annotation_map = {Enum: sa.Enum(Enum, inherit_schema=True)}
 
 将特定的 ``enum.Enum`` 或 ``typing.Literal`` 链接到其他数据类型
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1941,33 +1986,46 @@ Linking Specific ``enum.Enum`` or ``typing.Literal`` to other datatypes
 
 .. tab:: 中文
 
+    上述示例中使用的 :class:`_sqltypes.Enum` 可以自动配置自身以适应 ``enum.Enum`` 或 ``typing.Literal`` 类型对象上存在的参数/属性。对于需要将特定种类的 ``enum.Enum`` 或 ``typing.Literal`` 链接到其他类型的用例，也可以将这些特定类型放置在类型映射中。在下面的示例中，包含非字符串类型的 ``Literal[]`` 条目链接到 :class:`_sqltypes.JSON` 数据类型::
 
+        from typing import Literal
+
+        from sqlalchemy import JSON
+        from sqlalchemy.orm import DeclarativeBase
+
+        my_literal = Literal[0, 1, True, False, "true", "false"]
+
+
+        class Base(DeclarativeBase):
+            type_annotation_map = {my_literal: JSON}
+
+    在上述配置中， ``my_literal`` 数据类型将解析为 :class:`._sqltypes.JSON` 实例。其他 ``Literal`` 变体将继续解析为 :class:`_sqltypes.Enum` 数据类型。
 
 .. tab:: 英文
 
-The above examples feature the use of an :class:`_sqltypes.Enum` that is
-automatically configuring itself to the arguments / attributes present on
-an ``enum.Enum`` or ``typing.Literal`` type object.    For use cases where
-specific kinds of ``enum.Enum`` or ``typing.Literal`` should be linked to
-other types, these specific types may be placed in the type map also.
-In the example below, an entry for ``Literal[]`` that contains non-string
-types is linked to the :class:`_sqltypes.JSON` datatype::
+    The above examples feature the use of an :class:`_sqltypes.Enum` that is
+    automatically configuring itself to the arguments / attributes present on
+    an ``enum.Enum`` or ``typing.Literal`` type object.    For use cases where
+    specific kinds of ``enum.Enum`` or ``typing.Literal`` should be linked to
+    other types, these specific types may be placed in the type map also.
+    In the example below, an entry for ``Literal[]`` that contains non-string
+    types is linked to the :class:`_sqltypes.JSON` datatype::
 
 
-    from typing import Literal
+        from typing import Literal
 
-    from sqlalchemy import JSON
-    from sqlalchemy.orm import DeclarativeBase
+        from sqlalchemy import JSON
+        from sqlalchemy.orm import DeclarativeBase
 
-    my_literal = Literal[0, 1, True, False, "true", "false"]
+        my_literal = Literal[0, 1, True, False, "true", "false"]
 
 
-    class Base(DeclarativeBase):
-        type_annotation_map = {my_literal: JSON}
+        class Base(DeclarativeBase):
+            type_annotation_map = {my_literal: JSON}
 
-In the above configuration, the ``my_literal`` datatype will resolve to a
-:class:`._sqltypes.JSON` instance.  Other ``Literal`` variants will continue
-to resolve to :class:`_sqltypes.Enum` datatypes.
+    In the above configuration, the ``my_literal`` datatype will resolve to a
+    :class:`._sqltypes.JSON` instance.  Other ``Literal`` variants will continue
+    to resolve to :class:`_sqltypes.Enum` datatypes.
 
 
 ``mapped_column()`` 中的数据类功能
@@ -1977,14 +2035,14 @@ Dataclass features in ``mapped_column()``
 
 .. tab:: 中文
 
-
+    :func:`_orm.mapped_column` 构造与SQLAlchemy的“本地数据类”功能集成，讨论见 :ref:`orm_declarative_native_dataclasses`。有关 :func:`_orm.mapped_column` 支持的其他指令的当前背景，请参见该部分。
 
 .. tab:: 英文
 
-The :func:`_orm.mapped_column` construct integrates with SQLAlchemy's
-"native dataclasses" feature, discussed at
-:ref:`orm_declarative_native_dataclasses`.   See that section for current
-background on additional directives supported by :func:`_orm.mapped_column`.
+    The :func:`_orm.mapped_column` construct integrates with SQLAlchemy's
+    "native dataclasses" feature, discussed at
+    :ref:`orm_declarative_native_dataclasses`.   See that section for current
+    background on additional directives supported by :func:`_orm.mapped_column`.
 
 
 
@@ -1997,38 +2055,53 @@ Accessing Table and Metadata
 
 .. tab:: 中文
 
+    声明式映射类将始终包含一个名为 ``__table__`` 的属性；当使用 ``__tablename__`` 的上述配置完成时，声明式过程通过 ``__table__`` 属性提供 :class:`_schema.Table` 对象::
 
+        # 访问 Table
+        user_table = User.__table__
+
+    上述表最终与 :attr:`_orm.Mapper.local_table` 属性对应，我们可以通过 :ref:`runtime inspection system <inspection_toplevel>` 看到::
+
+        from sqlalchemy import inspect
+
+        user_table = inspect(User).local_table
+
+    与声明式 :class:`_orm.registry` 以及基类关联的 :class:`_schema.MetaData` 集合通常是运行DDL操作（如CREATE）以及与Alembic等迁移工具一起使用所必需的。此对象可通过 :class:`_orm.registry` 以及声明式基类的 ``.metadata`` 属性获取。下面，对于一个小脚本，我们可能希望针对SQLite数据库发出所有表的CREATE语句::
+
+        engine = create_engine("sqlite://")
+
+        Base.metadata.create_all(engine)
 
 .. tab:: 英文
 
-A declaratively mapped class will always include an attribute called
-``__table__``; when the above configuration using ``__tablename__`` is
-complete, the declarative process makes the :class:`_schema.Table`
-available via the ``__table__`` attribute::
+    A declaratively mapped class will always include an attribute called
+    ``__table__``; when the above configuration using ``__tablename__`` is
+    complete, the declarative process makes the :class:`_schema.Table`
+    available via the ``__table__`` attribute::
 
 
-    # access the Table
-    user_table = User.__table__
+        # access the Table
+        user_table = User.__table__
 
-The above table is ultimately the same one that corresponds to the
-:attr:`_orm.Mapper.local_table` attribute, which we can see through the
-:ref:`runtime inspection system <inspection_toplevel>`::
+    The above table is ultimately the same one that corresponds to the
+    :attr:`_orm.Mapper.local_table` attribute, which we can see through the
+    :ref:`runtime inspection system <inspection_toplevel>`::
 
-    from sqlalchemy import inspect
+        from sqlalchemy import inspect
 
-    user_table = inspect(User).local_table
+        user_table = inspect(User).local_table
 
-The :class:`_schema.MetaData` collection associated with both the declarative
-:class:`_orm.registry` as well as the base class is frequently necessary in
-order to run DDL operations such as CREATE, as well as in use with migration
-tools such as Alembic.   This object is available via the ``.metadata``
-attribute of :class:`_orm.registry` as well as the declarative base class.
-Below, for a small script we may wish to emit a CREATE for all tables against a
-SQLite database::
+    The :class:`_schema.MetaData` collection associated with both the declarative
+    :class:`_orm.registry` as well as the base class is frequently necessary in
+    order to run DDL operations such as CREATE, as well as in use with migration
+    tools such as Alembic.   This object is available via the ``.metadata``
+    attribute of :class:`_orm.registry` as well as the declarative base class.
+    Below, for a small script we may wish to emit a CREATE for all tables against a
+    SQLite database::
 
-    engine = create_engine("sqlite://")
+        engine = create_engine("sqlite://")
 
-    Base.metadata.create_all(engine)
+        Base.metadata.create_all(engine)
 
 .. _orm_declarative_table_configuration:
 
@@ -2039,50 +2112,78 @@ Declarative Table Configuration
 
 .. tab:: 中文
 
+    在使用带有 ``__tablename__`` 声明类属性的声明式表配置时，应使用 ``__table_args__`` 声明类属性提供要传递给 :class:`_schema.Table` 构造函数的附加参数。
 
+    此属性适用于通常传递给 :class:`_schema.Table` 构造函数的定位参数和关键字参数。
+    该属性可以通过两种形式之一指定。 一种是作为字典::
+
+        class MyClass(Base):
+            __tablename__ = "sometable"
+            __table_args__ = {"mysql_engine": "InnoDB"}
+
+    另一种是元组形式，每个参数都是定位参数（通常是约束）::
+
+        class MyClass(Base):
+            __tablename__ = "sometable"
+            __table_args__ = (
+                ForeignKeyConstraint(["id"], ["remote_table.id"]),
+                UniqueConstraint("foo"),
+            )
+
+    可以通过将最后一个参数指定为字典来使用上述形式指定关键字参数::
+
+        class MyClass(Base):
+            __tablename__ = "sometable"
+            __table_args__ = (
+                ForeignKeyConstraint(["id"], ["remote_table.id"]),
+                UniqueConstraint("foo"),
+                {"autoload": True},
+            )
+
+    类还可以使用 :func:`_orm.declared_attr` 方法装饰器以动态样式指定 ``__table_args__`` 声明属性和 ``__tablename__`` 属性。 有关背景，请参见 :ref:`orm_mixins_toplevel`。
 
 .. tab:: 英文
 
-When using Declarative Table configuration with the ``__tablename__``
-declarative class attribute, additional arguments to be supplied to the
-:class:`_schema.Table` constructor should be provided using the
-``__table_args__`` declarative class attribute.
+    When using Declarative Table configuration with the ``__tablename__``
+    declarative class attribute, additional arguments to be supplied to the
+    :class:`_schema.Table` constructor should be provided using the
+    ``__table_args__`` declarative class attribute.
 
-This attribute accommodates both positional as well as keyword
-arguments that are normally sent to the
-:class:`_schema.Table` constructor.
-The attribute can be specified in one of two forms. One is as a
-dictionary::
+    This attribute accommodates both positional as well as keyword
+    arguments that are normally sent to the
+    :class:`_schema.Table` constructor.
+    The attribute can be specified in one of two forms. One is as a
+    dictionary::
 
-    class MyClass(Base):
-        __tablename__ = "sometable"
-        __table_args__ = {"mysql_engine": "InnoDB"}
+        class MyClass(Base):
+            __tablename__ = "sometable"
+            __table_args__ = {"mysql_engine": "InnoDB"}
 
-The other, a tuple, where each argument is positional
-(usually constraints)::
+    The other, a tuple, where each argument is positional
+    (usually constraints)::
 
-    class MyClass(Base):
-        __tablename__ = "sometable"
-        __table_args__ = (
-            ForeignKeyConstraint(["id"], ["remote_table.id"]),
-            UniqueConstraint("foo"),
-        )
+        class MyClass(Base):
+            __tablename__ = "sometable"
+            __table_args__ = (
+                ForeignKeyConstraint(["id"], ["remote_table.id"]),
+                UniqueConstraint("foo"),
+            )
 
-Keyword arguments can be specified with the above form by
-specifying the last argument as a dictionary::
+    Keyword arguments can be specified with the above form by
+    specifying the last argument as a dictionary::
 
-    class MyClass(Base):
-        __tablename__ = "sometable"
-        __table_args__ = (
-            ForeignKeyConstraint(["id"], ["remote_table.id"]),
-            UniqueConstraint("foo"),
-            {"autoload": True},
-        )
+        class MyClass(Base):
+            __tablename__ = "sometable"
+            __table_args__ = (
+                ForeignKeyConstraint(["id"], ["remote_table.id"]),
+                UniqueConstraint("foo"),
+                {"autoload": True},
+            )
 
-A class may also specify the ``__table_args__`` declarative attribute,
-as well as the ``__tablename__`` attribute, in a dynamic style using the
-:func:`_orm.declared_attr` method decorator.   See
-:ref:`orm_mixins_toplevel` for background.
+    A class may also specify the ``__table_args__`` declarative attribute,
+    as well as the ``__tablename__`` attribute, in a dynamic style using the
+    :func:`_orm.declared_attr` method decorator.   See
+    :ref:`orm_mixins_toplevel` for background.
 
 .. _orm_declarative_table_schema_name:
 
@@ -2093,50 +2194,81 @@ Explicit Schema Name with Declarative Table
 
 .. tab:: 中文
 
+    类 :class:`_schema.Table` 的模式名称如 :ref:`schema_table_schema_name` 中所述，使用 :paramref:`_schema.Table.schema` 参数应用于单个 :class:`_schema.Table`。在使用声明式表时，此选项与其他选项一样传递给 ``__table_args__`` 字典::
 
+        from sqlalchemy.orm import DeclarativeBase
+
+
+        class Base(DeclarativeBase):
+            pass
+
+
+        class MyClass(Base):
+            __tablename__ = "sometable"
+            __table_args__ = {"schema": "some_schema"}
+
+    也可以使用 :ref:`schema_metadata_schema_name` 中记录的 :paramref:`_schema.MetaData.schema` 参数将模式名称全局应用于所有 :class:`_schema.Table` 对象。可以单独构建 :class:`_schema.MetaData` 对象，并通过直接分配给 ``metadata`` 属性将其与 :class:`_orm.DeclarativeBase` 子类关联::
+
+        from sqlalchemy import MetaData
+        from sqlalchemy.orm import DeclarativeBase
+
+        metadata_obj = MetaData(schema="some_schema")
+
+
+        class Base(DeclarativeBase):
+            metadata = metadata_obj
+
+
+        class MyClass(Base):
+            # 默认将使用 "some_schema"
+            __tablename__ = "sometable"
+
+    .. seealso::
+
+        :ref:`metadata_toplevel` 中的 :ref:`schema_table_schema_name` 。
 
 .. tab:: 英文
 
-The schema name for a :class:`_schema.Table` as documented at
-:ref:`schema_table_schema_name` is applied to an individual :class:`_schema.Table`
-using the :paramref:`_schema.Table.schema` argument.   When using Declarative
-tables, this option is passed like any other to the ``__table_args__``
-dictionary::
+    The schema name for a :class:`_schema.Table` as documented at
+    :ref:`schema_table_schema_name` is applied to an individual :class:`_schema.Table`
+    using the :paramref:`_schema.Table.schema` argument.   When using Declarative
+    tables, this option is passed like any other to the ``__table_args__``
+    dictionary::
 
-    from sqlalchemy.orm import DeclarativeBase
-
-
-    class Base(DeclarativeBase):
-        pass
+        from sqlalchemy.orm import DeclarativeBase
 
 
-    class MyClass(Base):
-        __tablename__ = "sometable"
-        __table_args__ = {"schema": "some_schema"}
-
-The schema name can also be applied to all :class:`_schema.Table` objects
-globally by using the :paramref:`_schema.MetaData.schema` parameter documented
-at :ref:`schema_metadata_schema_name`.   The :class:`_schema.MetaData` object
-may be constructed separately and associated with a :class:`_orm.DeclarativeBase`
-subclass by assigning to the ``metadata`` attribute directly::
-
-    from sqlalchemy import MetaData
-    from sqlalchemy.orm import DeclarativeBase
-
-    metadata_obj = MetaData(schema="some_schema")
+        class Base(DeclarativeBase):
+            pass
 
 
-    class Base(DeclarativeBase):
-        metadata = metadata_obj
+        class MyClass(Base):
+            __tablename__ = "sometable"
+            __table_args__ = {"schema": "some_schema"}
+
+    The schema name can also be applied to all :class:`_schema.Table` objects
+    globally by using the :paramref:`_schema.MetaData.schema` parameter documented
+    at :ref:`schema_metadata_schema_name`.   The :class:`_schema.MetaData` object
+    may be constructed separately and associated with a :class:`_orm.DeclarativeBase`
+    subclass by assigning to the ``metadata`` attribute directly::
+
+        from sqlalchemy import MetaData
+        from sqlalchemy.orm import DeclarativeBase
+
+        metadata_obj = MetaData(schema="some_schema")
 
 
-    class MyClass(Base):
-        # will use "some_schema" by default
-        __tablename__ = "sometable"
+        class Base(DeclarativeBase):
+            metadata = metadata_obj
 
-.. seealso::
 
-    :ref:`schema_table_schema_name` - in the :ref:`metadata_toplevel` documentation.
+        class MyClass(Base):
+            # will use "some_schema" by default
+            __tablename__ = "sometable"
+
+    .. seealso::
+
+        :ref:`schema_table_schema_name` - in the :ref:`metadata_toplevel` documentation.
 
 .. _orm_declarative_column_options:
 
@@ -2147,52 +2279,83 @@ Setting Load and Persistence Options for Declarative Mapped Columns
 
 .. tab:: 中文
 
+    :func:`_orm.mapped_column` 构造接受影响生成的 :class:`_schema.Column` 映射的其他ORM特定参数，影响其加载和持久化行为。常用的选项包括：
 
+    * **延迟列加载** - :paramref:`_orm.mapped_column.deferred` 布尔值默认使用 :ref:`延迟列加载 <orm_queryguide_column_deferral>` 建立 :class:`_schema.Column`。在下面的示例中， ``User.bio`` 列默认不会加载，而是仅在访问时加载
+      
+      ::
+
+        class User(Base):
+            __tablename__ = "user"
+
+            id: Mapped[int] = mapped_column(primary_key=True)
+            name: Mapped[str]
+            bio: Mapped[str] = mapped_column(Text, deferred=True)
+
+      .. seealso::
+
+          :ref:`orm_queryguide_column_deferral` - 延迟列加载的完整描述
+
+    * **活动历史** - :paramref:`_orm.mapped_column.active_history` 确保在更改属性值时，先前的值将已加载并成为在检查属性历史时的 :attr:`.AttributeState.history` 集合的一部分。这可能会产生额外的SQL语句
+      
+      ::
+
+        class User(Base):
+            __tablename__ = "user"
+
+            id: Mapped[int] = mapped_column(primary_key=True)
+            important_identifier: Mapped[str] = mapped_column(active_history=True)
+
+    有关支持参数的列表，请参见 :func:`_orm.mapped_column` 的文档字符串。
+
+    .. seealso::
+
+        :ref:`orm_imperative_table_column_options` - 描述使用 :func:`_orm.column_property` 和 :func:`_orm.deferred` 配置命令式表
 
 .. tab:: 英文
 
-The :func:`_orm.mapped_column` construct accepts additional ORM-specific
-arguments that affect how the generated :class:`_schema.Column` is
-mapped, affecting its load and persistence-time behavior.   Options
-that are commonly used include:
-
-* **deferred column loading** - The :paramref:`_orm.mapped_column.deferred`
-  boolean establishes the :class:`_schema.Column` using
-  :ref:`deferred column loading <orm_queryguide_column_deferral>` by default.  In the example
-  below, the ``User.bio`` column will not be loaded by default, but only
-  when accessed::
-
-      class User(Base):
-          __tablename__ = "user"
-
-          id: Mapped[int] = mapped_column(primary_key=True)
-          name: Mapped[str]
-          bio: Mapped[str] = mapped_column(Text, deferred=True)
-
-  .. seealso::
-
-     :ref:`orm_queryguide_column_deferral` - full description of deferred column loading
-
-* **active history** - The :paramref:`_orm.mapped_column.active_history`
-  ensures that upon change of value for the attribute, the previous value
-  will have been loaded and made part of the :attr:`.AttributeState.history`
-  collection when inspecting the history of the attribute.   This may incur
-  additional SQL statements::
-
-    class User(Base):
-        __tablename__ = "user"
-
-        id: Mapped[int] = mapped_column(primary_key=True)
-        important_identifier: Mapped[str] = mapped_column(active_history=True)
-
-See the docstring for :func:`_orm.mapped_column` for a list of supported
-parameters.
-
-.. seealso::
-
-    :ref:`orm_imperative_table_column_options` - describes using
-    :func:`_orm.column_property` and :func:`_orm.deferred` for use with
-    Imperative Table configuration
+    The :func:`_orm.mapped_column` construct accepts additional ORM-specific
+    arguments that affect how the generated :class:`_schema.Column` is
+    mapped, affecting its load and persistence-time behavior.   Options
+    that are commonly used include:
+    
+    * **deferred column loading** - The :paramref:`_orm.mapped_column.deferred`
+      boolean establishes the :class:`_schema.Column` using
+      :ref:`deferred column loading <orm_queryguide_column_deferral>` by default.  In the example
+      below, the ``User.bio`` column will not be loaded by default, but only
+      when accessed::
+    
+          class User(Base):
+              __tablename__ = "user"
+    
+              id: Mapped[int] = mapped_column(primary_key=True)
+              name: Mapped[str]
+              bio: Mapped[str] = mapped_column(Text, deferred=True)
+    
+      .. seealso::
+    
+         :ref:`orm_queryguide_column_deferral` - full description of deferred column loading
+    
+    * **active history** - The :paramref:`_orm.mapped_column.active_history`
+      ensures that upon change of value for the attribute, the previous value
+      will have been loaded and made part of the :attr:`.AttributeState.history`
+      collection when inspecting the history of the attribute.   This may incur
+      additional SQL statements::
+    
+        class User(Base):
+            __tablename__ = "user"
+    
+            id: Mapped[int] = mapped_column(primary_key=True)
+            important_identifier: Mapped[str] = mapped_column(active_history=True)
+    
+    See the docstring for :func:`_orm.mapped_column` for a list of supported
+    parameters.
+    
+    .. seealso::
+    
+        :ref:`orm_imperative_table_column_options` - describes using
+        :func:`_orm.column_property` and :func:`_orm.deferred` for use with
+        Imperative Table configuration
 
 .. _mapper_column_distinct_names:
 
@@ -2205,42 +2368,63 @@ Naming Declarative Mapped Columns Explicitly
 
 .. tab:: 中文
 
+    到目前为止的所有示例中，:func:`_orm.mapped_column` 构造都链接到ORM映射属性，其中给 :func:`_orm.mapped_column` 的Python属性名称也是我们在CREATE TABLE语句以及查询中看到的列名称。可以通过传递字符串位置参数 :paramref:`_orm.mapped_column.__name` 作为第一个位置参数来表示SQL中列的名称。在下面的示例中， ``User`` 类映射有给列本身的备用名称::
 
+        class User(Base):
+            __tablename__ = "user"
+
+            id: Mapped[int] = mapped_column("user_id", primary_key=True)
+            name: Mapped[str] = mapped_column("user_name")
+
+    上述示例中， ``User.id`` 解析为名为 ``user_id`` 的列， ``User.name`` 解析为名为 ``user_name`` 的列。我们可以使用Python属性名称编写 :func:`_sql.select` 语句，并将看到生成的SQL名称：
+
+    .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import select
+        >>> print(select(User.id, User.name).where(User.name == "x"))
+        {printsql}SELECT "user".user_id, "user".user_name
+        FROM "user"
+        WHERE "user".user_name = :user_name_1
+
+
+    .. seealso::
+
+        :ref:`orm_imperative_table_column_naming` - 适用于命令式表
 
 .. tab:: 英文
 
-All of the examples thus far feature the :func:`_orm.mapped_column` construct
-linked to an ORM mapped attribute, where the Python attribute name given
-to the :func:`_orm.mapped_column` is also that of the column as we see in
-CREATE TABLE statements as well as queries.   The name for a column as
-expressed in SQL may be indicated by passing the string positional argument
-:paramref:`_orm.mapped_column.__name` as the first positional argument.
-In the example below, the ``User`` class is mapped with alternate names
-given to the columns themselves::
+    All of the examples thus far feature the :func:`_orm.mapped_column` construct
+    linked to an ORM mapped attribute, where the Python attribute name given
+    to the :func:`_orm.mapped_column` is also that of the column as we see in
+    CREATE TABLE statements as well as queries.   The name for a column as
+    expressed in SQL may be indicated by passing the string positional argument
+    :paramref:`_orm.mapped_column.__name` as the first positional argument.
+    In the example below, the ``User`` class is mapped with alternate names
+    given to the columns themselves::
 
-    class User(Base):
-        __tablename__ = "user"
+        class User(Base):
+            __tablename__ = "user"
 
-        id: Mapped[int] = mapped_column("user_id", primary_key=True)
-        name: Mapped[str] = mapped_column("user_name")
+            id: Mapped[int] = mapped_column("user_id", primary_key=True)
+            name: Mapped[str] = mapped_column("user_name")
 
-Where above ``User.id`` resolves to a column named ``user_id``
-and ``User.name`` resolves to a column named ``user_name``.  We
-may write a :func:`_sql.select` statement using our Python attribute names
-and will see the SQL names generated:
+    Where above ``User.id`` resolves to a column named ``user_id``
+    and ``User.name`` resolves to a column named ``user_name``.  We
+    may write a :func:`_sql.select` statement using our Python attribute names
+    and will see the SQL names generated:
 
-.. sourcecode:: pycon+sql
+    .. sourcecode:: pycon+sql
 
-    >>> from sqlalchemy import select
-    >>> print(select(User.id, User.name).where(User.name == "x"))
-    {printsql}SELECT "user".user_id, "user".user_name
-    FROM "user"
-    WHERE "user".user_name = :user_name_1
+        >>> from sqlalchemy import select
+        >>> print(select(User.id, User.name).where(User.name == "x"))
+        {printsql}SELECT "user".user_id, "user".user_name
+        FROM "user"
+        WHERE "user".user_name = :user_name_1
 
 
-.. seealso::
+    .. seealso::
 
-    :ref:`orm_imperative_table_column_naming` - applies to Imperative Table
+        :ref:`orm_imperative_table_column_naming` - applies to Imperative Table
 
 .. _orm_declarative_table_adding_columns:
 
@@ -2251,56 +2435,78 @@ Appending additional columns to an existing Declarative mapped class
 
 .. tab:: 中文
 
+    声明式表配置允许在 :class:`.Table` 元数据已经生成后，向现有映射添加新的 :class:`_schema.Column` 对象。
 
+    对于使用声明式基类声明的声明式类，底层元类 :class:`.DeclarativeMeta` 包含一个 ``__setattr__()`` 方法，该方法将拦截额外的 :func:`_orm.mapped_column` 或核心 :class:`.Column` 对象，并将它们添加到 :class:`.Table`（使用 :meth:`.Table.append_column`）以及现有的 :class:`.Mapper`（使用 :meth:`.Mapper.add_property`）::
+
+        MyClass.some_new_column = mapped_column(String)
+
+    使用核心 :class:`_schema.Column`::
+
+        MyClass.some_new_column = Column(String)
+
+    支持所有参数，包括备用名称，例如 ``MyClass.some_new_column = mapped_column("some_name", String)``。但是，必须将SQL类型显式传递给 :func:`_orm.mapped_column` 或 :class:`_schema.Column` 对象，如上述示例中传递的 :class:`_sqltypes.String` 类型。 :class:`_orm.Mapped` 注释类型无法参与此操作。
+
+    在使用单表继承的特定情况下，也可以将其他 :class:`_schema.Column` 对象添加到映射中，其中映射子类上存在其他列，但它们没有自己的 :class:`.Table`。这在 :ref:`single_inheritance` 部分中进行了说明。
+
+    .. seealso::
+
+    :ref:`orm_declarative_table_adding_relationship` - 类似的 :func:`_orm.relationship` 示例
+
+    .. note:: 
+        
+        将映射属性分配给已映射的类仅在使用“声明式基类”时才会正确运行，这意味着 :class:`_orm.DeclarativeBase` 的用户定义子类或 :func:`_orm.declarative_base` 或 :meth:`_orm.registry.generate_base` 返回的动态生成类。此“基类”包含一个实现特殊 ``__setattr__()`` 方法的Python元类，用于拦截这些操作。
+
+        如果类是使用 :meth:`_orm.registry.mapped` 之类的装饰器或 :meth:`_orm.registry.map_imperatively` 之类的命令式函数进行映射的，则在运行时将类映射的属性分配给映射类将 **不会** 起作用。
 
 .. tab:: 英文
 
-A declarative table configuration allows the addition of new
-:class:`_schema.Column` objects to an existing mapping after the :class:`.Table`
-metadata has already been generated.
-
-For a declarative class that is declared using a declarative base class,
-the underlying metaclass :class:`.DeclarativeMeta` includes a ``__setattr__()``
-method that will intercept additional :func:`_orm.mapped_column` or Core
-:class:`.Column` objects and
-add them to both the :class:`.Table` using :meth:`.Table.append_column`
-as well as to the existing :class:`.Mapper` using :meth:`.Mapper.add_property`::
-
-    MyClass.some_new_column = mapped_column(String)
-
-Using core :class:`_schema.Column`::
-
-    MyClass.some_new_column = Column(String)
-
-All arguments are supported including an alternate name, such as
-``MyClass.some_new_column = mapped_column("some_name", String)``.  However,
-the SQL type must be passed to the :func:`_orm.mapped_column` or
-:class:`_schema.Column` object explicitly, as in the above examples where
-the :class:`_sqltypes.String` type is passed.  There's no capability for
-the :class:`_orm.Mapped` annotation type to take part in the operation.
-
-Additional :class:`_schema.Column` objects may also be added to a mapping
-in the specific circumstance of using single table inheritance, where
-additional columns are present on mapped subclasses that have
-no :class:`.Table` of their own.  This is illustrated in the section
-:ref:`single_inheritance`.
-
-.. seealso::
-
-   :ref:`orm_declarative_table_adding_relationship` - similar examples for :func:`_orm.relationship`
-
-.. note:: Assignment of mapped
-    properties to an already mapped class will only
-    function correctly if the "declarative base" class is used, meaning
-    the user-defined subclass of :class:`_orm.DeclarativeBase` or the
-    dynamically generated class returned by :func:`_orm.declarative_base`
-    or :meth:`_orm.registry.generate_base`.   This "base" class includes
-    a Python metaclass which implements a special ``__setattr__()`` method
-    that intercepts these operations.
-
-    Runtime assignment of class-mapped attributes to a mapped class will **not** work
-    if the class is mapped using decorators like :meth:`_orm.registry.mapped`
-    or imperative functions like :meth:`_orm.registry.map_imperatively`.
+    A declarative table configuration allows the addition of new
+    :class:`_schema.Column` objects to an existing mapping after the :class:`.Table`
+    metadata has already been generated.
+    
+    For a declarative class that is declared using a declarative base class,
+    the underlying metaclass :class:`.DeclarativeMeta` includes a ``__setattr__()``
+    method that will intercept additional :func:`_orm.mapped_column` or Core
+    :class:`.Column` objects and
+    add them to both the :class:`.Table` using :meth:`.Table.append_column`
+    as well as to the existing :class:`.Mapper` using :meth:`.Mapper.add_property`::
+    
+        MyClass.some_new_column = mapped_column(String)
+    
+    Using core :class:`_schema.Column`::
+    
+        MyClass.some_new_column = Column(String)
+    
+    All arguments are supported including an alternate name, such as
+    ``MyClass.some_new_column = mapped_column("some_name", String)``.  However,
+    the SQL type must be passed to the :func:`_orm.mapped_column` or
+    :class:`_schema.Column` object explicitly, as in the above examples where
+    the :class:`_sqltypes.String` type is passed.  There's no capability for
+    the :class:`_orm.Mapped` annotation type to take part in the operation.
+    
+    Additional :class:`_schema.Column` objects may also be added to a mapping
+    in the specific circumstance of using single table inheritance, where
+    additional columns are present on mapped subclasses that have
+    no :class:`.Table` of their own.  This is illustrated in the section
+    :ref:`single_inheritance`.
+    
+    .. seealso::
+    
+       :ref:`orm_declarative_table_adding_relationship` - similar examples for :func:`_orm.relationship`
+    
+    .. note:: Assignment of mapped
+        properties to an already mapped class will only
+        function correctly if the "declarative base" class is used, meaning
+        the user-defined subclass of :class:`_orm.DeclarativeBase` or the
+        dynamically generated class returned by :func:`_orm.declarative_base`
+        or :meth:`_orm.registry.generate_base`.   This "base" class includes
+        a Python metaclass which implements a special ``__setattr__()`` method
+        that intercepts these operations.
+    
+        Runtime assignment of class-mapped attributes to a mapped class will **not** work
+        if the class is mapped using decorators like :meth:`_orm.registry.mapped`
+        or imperative functions like :meth:`_orm.registry.map_imperatively`.
 
 
 .. _orm_imperative_table_configuration:
@@ -2312,56 +2518,21 @@ Declarative with Imperative Table (a.k.a. Hybrid Declarative)
 
 .. tab:: 中文
 
+    声明式映射还可以使用预先存在的 :class:`_schema.Table` 对象，或者其他任意的 :class:`_sql.FromClause` 构造（例如 :class:`_sql.Join` 或 :class:`_sql.Subquery`），这些构造是单独构建的。
+
+    这被称为“混合声明式(hybrid declarative)”映射，因为类使用声明式样式进行所有涉及映射器配置的操作，但映射的 :class:`_schema.Table` 对象是单独生成的，并直接传递给声明式过程::
+
+        from sqlalchemy import Column, ForeignKey, Integer, String, Table
+        from sqlalchemy.orm import DeclarativeBase
 
 
-.. tab:: 英文
-
-Declarative mappings may also be provided with a pre-existing
-:class:`_schema.Table` object, or otherwise a :class:`_schema.Table` or other
-arbitrary :class:`_sql.FromClause` construct (such as a :class:`_sql.Join`
-or :class:`_sql.Subquery`) that is constructed separately.
-
-This is referred to as a "hybrid declarative"
-mapping, as the class is mapped using the declarative style for everything
-involving the mapper configuration, however the mapped :class:`_schema.Table`
-object is produced separately and passed to the declarative process
-directly::
+        class Base(DeclarativeBase):
+            pass
 
 
-    from sqlalchemy import Column, ForeignKey, Integer, String
-    from sqlalchemy.orm import DeclarativeBase
+        # 直接构建Table。 Base.metadata 集合通常是MetaData的一个不错选择，但可以使用任何MetaData集合。
 
-
-    class Base(DeclarativeBase):
-        pass
-
-
-    # construct a Table directly.  The Base.metadata collection is
-    # usually a good choice for MetaData but any MetaData
-    # collection may be used.
-
-    user_table = Table(
-        "user",
-        Base.metadata,
-        Column("id", Integer, primary_key=True),
-        Column("name", String),
-        Column("fullname", String),
-        Column("nickname", String),
-    )
-
-
-    # construct the User class using this table.
-    class User(Base):
-        __table__ = user_table
-
-Above, a :class:`_schema.Table` object is constructed using the approach
-described at :ref:`metadata_describing`.   It can then be applied directly
-to a class that is declaratively mapped.  The ``__tablename__`` and
-``__table_args__`` declarative class attributes are not used in this form.
-The above configuration is often more readable as an inline definition::
-
-    class User(Base):
-        __table__ = Table(
+        user_table = Table(
             "user",
             Base.metadata,
             Column("id", Integer, primary_key=True),
@@ -2370,64 +2541,187 @@ The above configuration is often more readable as an inline definition::
             Column("nickname", String),
         )
 
-A natural effect of the above style is that the ``__table__`` attribute is
-itself defined within the class definition block.   As such it may be
-immediately referenced within subsequent attributes, such as the example
-below which illustrates referring to the ``type`` column in a polymorphic
-mapper configuration::
 
-    class Person(Base):
-        __table__ = Table(
-            "person",
+        # 使用此表构建User类。
+        class User(Base):
+            __table__ = user_table
+
+    以上，:class:`_schema.Table` 对象是使用 :ref:`metadata_describing` 中描述的方法构建的。然后可以直接应用于声明式映射的类。此形式不使用 ``__tablename__`` 和 ``__table_args__`` 声明类属性。上面的配置通常更易读为内联定义::
+
+        class User(Base):
+            __table__ = Table(
+                "user",
+                Base.metadata,
+                Column("id", Integer, primary_key=True),
+                Column("name", String),
+                Column("fullname", String),
+                Column("nickname", String),
+            )
+
+    上述样式的一个自然结果是 ``__table__`` 属性本身在类定义块中定义。因此，可以在后续属性中立即引用，例如下面的示例，该示例说明在多态映射器配置中引用 ``type`` 列::
+
+        class Person(Base):
+            __table__ = Table(
+                "person",
+                Base.metadata,
+                Column("id", Integer, primary_key=True),
+                Column("name", String(50)),
+                Column("type", String(50)),
+            )
+
+            __mapper_args__ = {
+                "polymorphic_on": __table__.c.type,
+                "polymorphic_identity": "person",
+            }
+
+    当要映射非 :class:`_schema.Table` 构造（例如 :class:`_sql.Join` 或 :class:`_sql.Subquery` 对象）时，也使用“命令式表(imperative table)”形式。下面是一个示例::
+
+        from sqlalchemy import func, select
+
+        subq = (
+            select(
+                func.count(orders.c.id).label("order_count"),
+                func.max(orders.c.price).label("highest_order"),
+                orders.c.customer_id,
+            )
+            .group_by(orders.c.customer_id)
+            .subquery()
+        )
+
+        customer_select = (
+            select(customers, subq)
+            .join_from(customers, subq, customers.c.id == subq.c.customer_id)
+            .subquery()
+        )
+
+
+        class Customer(Base):
+            __table__ = customer_select
+
+    有关映射到非 :class:`_schema.Table` 构造的背景，请参见 :ref:`orm_mapping_joins` 和 :ref:`orm_mapping_arbitrary_subqueries` 部分。
+
+    当类本身使用替代形式的属性声明（例如Python数据类）时，“命令式表(imperative table)”形式特别有用。有关详细信息，请参见 :ref:`orm_declarative_dataclasses` 部分。
+
+    .. seealso::
+
+        :ref:`metadata_describing`
+
+        :ref:`orm_declarative_dataclasses`
+
+.. tab:: 英文
+
+    Declarative mappings may also be provided with a pre-existing
+    :class:`_schema.Table` object, or otherwise a :class:`_schema.Table` or other
+    arbitrary :class:`_sql.FromClause` construct (such as a :class:`_sql.Join`
+    or :class:`_sql.Subquery`) that is constructed separately.
+    
+    This is referred to as a "hybrid declarative"
+    mapping, as the class is mapped using the declarative style for everything
+    involving the mapper configuration, however the mapped :class:`_schema.Table`
+    object is produced separately and passed to the declarative process
+    directly::
+    
+    
+        from sqlalchemy import Column, ForeignKey, Integer, String
+        from sqlalchemy.orm import DeclarativeBase
+    
+    
+        class Base(DeclarativeBase):
+            pass
+    
+    
+        # construct a Table directly.  The Base.metadata collection is
+        # usually a good choice for MetaData but any MetaData
+        # collection may be used.
+    
+        user_table = Table(
+            "user",
             Base.metadata,
             Column("id", Integer, primary_key=True),
-            Column("name", String(50)),
-            Column("type", String(50)),
+            Column("name", String),
+            Column("fullname", String),
+            Column("nickname", String),
         )
-
-        __mapper_args__ = {
-            "polymorphic_on": __table__.c.type,
-            "polymorphic_identity": "person",
-        }
-
-The "imperative table" form is also used when a non-:class:`_schema.Table`
-construct, such as a :class:`_sql.Join` or :class:`_sql.Subquery` object,
-is to be mapped.  An example below::
-
-    from sqlalchemy import func, select
-
-    subq = (
-        select(
-            func.count(orders.c.id).label("order_count"),
-            func.max(orders.c.price).label("highest_order"),
-            orders.c.customer_id,
+    
+    
+        # construct the User class using this table.
+        class User(Base):
+            __table__ = user_table
+    
+    Above, a :class:`_schema.Table` object is constructed using the approach
+    described at :ref:`metadata_describing`.   It can then be applied directly
+    to a class that is declaratively mapped.  The ``__tablename__`` and
+    ``__table_args__`` declarative class attributes are not used in this form.
+    The above configuration is often more readable as an inline definition::
+    
+        class User(Base):
+            __table__ = Table(
+                "user",
+                Base.metadata,
+                Column("id", Integer, primary_key=True),
+                Column("name", String),
+                Column("fullname", String),
+                Column("nickname", String),
+            )
+    
+    A natural effect of the above style is that the ``__table__`` attribute is
+    itself defined within the class definition block.   As such it may be
+    immediately referenced within subsequent attributes, such as the example
+    below which illustrates referring to the ``type`` column in a polymorphic
+    mapper configuration::
+    
+        class Person(Base):
+            __table__ = Table(
+                "person",
+                Base.metadata,
+                Column("id", Integer, primary_key=True),
+                Column("name", String(50)),
+                Column("type", String(50)),
+            )
+    
+            __mapper_args__ = {
+                "polymorphic_on": __table__.c.type,
+                "polymorphic_identity": "person",
+            }
+    
+    The "imperative table" form is also used when a non-:class:`_schema.Table`
+    construct, such as a :class:`_sql.Join` or :class:`_sql.Subquery` object,
+    is to be mapped.  An example below::
+    
+        from sqlalchemy import func, select
+    
+        subq = (
+            select(
+                func.count(orders.c.id).label("order_count"),
+                func.max(orders.c.price).label("highest_order"),
+                orders.c.customer_id,
+            )
+            .group_by(orders.c.customer_id)
+            .subquery()
         )
-        .group_by(orders.c.customer_id)
-        .subquery()
-    )
-
-    customer_select = (
-        select(customers, subq)
-        .join_from(customers, subq, customers.c.id == subq.c.customer_id)
-        .subquery()
-    )
-
-
-    class Customer(Base):
-        __table__ = customer_select
-
-For background on mapping to non-:class:`_schema.Table` constructs see
-the sections :ref:`orm_mapping_joins` and :ref:`orm_mapping_arbitrary_subqueries`.
-
-The "imperative table" form is of particular use when the class itself
-is using an alternative form of attribute declaration, such as Python
-dataclasses.   See the section :ref:`orm_declarative_dataclasses` for detail.
-
-.. seealso::
-
-    :ref:`metadata_describing`
-
-    :ref:`orm_declarative_dataclasses`
+    
+        customer_select = (
+            select(customers, subq)
+            .join_from(customers, subq, customers.c.id == subq.c.customer_id)
+            .subquery()
+        )
+    
+    
+        class Customer(Base):
+            __table__ = customer_select
+    
+    For background on mapping to non-:class:`_schema.Table` constructs see
+    the sections :ref:`orm_mapping_joins` and :ref:`orm_mapping_arbitrary_subqueries`.
+    
+    The "imperative table" form is of particular use when the class itself
+    is using an alternative form of attribute declaration, such as Python
+    dataclasses.   See the section :ref:`orm_declarative_dataclasses` for detail.
+    
+    .. seealso::
+    
+        :ref:`metadata_describing`
+    
+        :ref:`orm_declarative_dataclasses`
 
 .. _orm_imperative_table_column_naming:
 
@@ -2438,60 +2732,94 @@ Alternate Attribute Names for Mapping Table Columns
 
 .. tab:: 中文
 
+    :ref:`orm_declarative_table_column_naming` 部分说明了如何使用 :func:`_orm.mapped_column` 为生成的 :class:`_schema.Column` 对象提供单独于其映射的属性名称的特定名称。
 
+    使用命令式表配置时，我们已经有 :class:`_schema.Column` 对象。要将它们映射到备用名称，我们可以将 :class:`_schema.Column` 直接分配给所需的属性::
+
+        user_table = Table(
+            "user",
+            Base.metadata,
+            Column("user_id", Integer, primary_key=True),
+            Column("user_name", String),
+        )
+
+
+        class User(Base):
+            __table__ = user_table
+
+            id = user_table.c.user_id
+            name = user_table.c.user_name
+
+    上述 ``User`` 映射将通过 ``User.id`` 和 ``User.name`` 属性引用 ``"user_id"`` 和 ``"user_name"`` 列，与 :ref:`orm_declarative_table_column_naming` 中演示的方式相同。
+
+    上述映射的一个警告是，直接内联链接到 :class:`_schema.Column` 在使用 :pep:`484` 类型工具时不会正确键入。一种解决此问题的策略是将 :class:`_schema.Column` 对象应用于 :func:`_orm.column_property` 函数中；虽然 :class:`_orm.Mapper` 已经自动为其内部使用生成了此属性对象，但通过在类声明中命名它，类型工具将能够将属性与 :class:`_orm.Mapped` 注释匹配::
+
+        from sqlalchemy.orm import column_property
+        from sqlalchemy.orm import Mapped
+
+
+        class User(Base):
+            __table__ = user_table
+
+            id: Mapped[int] = column_property(user_table.c.user_id)
+            name: Mapped[str] = column_property(user_table.c.user_name)
+
+    .. seealso::
+
+        :ref:`orm_declarative_table_column_naming` - 应用到声明式表(Declarative Table)
 
 .. tab:: 英文
 
-The section :ref:`orm_declarative_table_column_naming` illustrated how to
-use :func:`_orm.mapped_column` to provide a specific name for the generated
-:class:`_schema.Column` object separate from the attribute name under which
-it is mapped.
+    The section :ref:`orm_declarative_table_column_naming` illustrated how to
+    use :func:`_orm.mapped_column` to provide a specific name for the generated
+    :class:`_schema.Column` object separate from the attribute name under which
+    it is mapped.
+    
+    When using Imperative Table configuration, we already have
+    :class:`_schema.Column` objects present.  To map these to alternate names
+    we may assign the :class:`_schema.Column` to the desired attributes
+    directly::
+    
+        user_table = Table(
+            "user",
+            Base.metadata,
+            Column("user_id", Integer, primary_key=True),
+            Column("user_name", String),
+        )
+    
+    
+        class User(Base):
+            __table__ = user_table
+    
+            id = user_table.c.user_id
+            name = user_table.c.user_name
+    
+    The ``User`` mapping above will refer to the ``"user_id"`` and ``"user_name"``
+    columns via the ``User.id`` and ``User.name`` attributes, in the same
+    way as demonstrated at :ref:`orm_declarative_table_column_naming`.
+    
+    One caveat to the above mapping is that the direct inline link to
+    :class:`_schema.Column` will not be typed correctly when using
+    :pep:`484` typing tools.   A strategy to resolve this is to apply the
+    :class:`_schema.Column` objects within the :func:`_orm.column_property`
+    function; while the :class:`_orm.Mapper` already generates this property
+    object for its internal use automatically, by naming it in the class
+    declaration, typing tools will be able to match the attribute to the
+    :class:`_orm.Mapped` annotation::
+    
+        from sqlalchemy.orm import column_property
+        from sqlalchemy.orm import Mapped
+    
+    
+        class User(Base):
+            __table__ = user_table
+    
+            id: Mapped[int] = column_property(user_table.c.user_id)
+            name: Mapped[str] = column_property(user_table.c.user_name)
 
-When using Imperative Table configuration, we already have
-:class:`_schema.Column` objects present.  To map these to alternate names
-we may assign the :class:`_schema.Column` to the desired attributes
-directly::
+    .. seealso::
 
-    user_table = Table(
-        "user",
-        Base.metadata,
-        Column("user_id", Integer, primary_key=True),
-        Column("user_name", String),
-    )
-
-
-    class User(Base):
-        __table__ = user_table
-
-        id = user_table.c.user_id
-        name = user_table.c.user_name
-
-The ``User`` mapping above will refer to the ``"user_id"`` and ``"user_name"``
-columns via the ``User.id`` and ``User.name`` attributes, in the same
-way as demonstrated at :ref:`orm_declarative_table_column_naming`.
-
-One caveat to the above mapping is that the direct inline link to
-:class:`_schema.Column` will not be typed correctly when using
-:pep:`484` typing tools.   A strategy to resolve this is to apply the
-:class:`_schema.Column` objects within the :func:`_orm.column_property`
-function; while the :class:`_orm.Mapper` already generates this property
-object for its internal use automatically, by naming it in the class
-declaration, typing tools will be able to match the attribute to the
-:class:`_orm.Mapped` annotation::
-
-    from sqlalchemy.orm import column_property
-    from sqlalchemy.orm import Mapped
-
-
-    class User(Base):
-        __table__ = user_table
-
-        id: Mapped[int] = column_property(user_table.c.user_id)
-        name: Mapped[str] = column_property(user_table.c.user_name)
-
-.. seealso::
-
-    :ref:`orm_declarative_table_column_naming` - applies to Declarative Table
+        :ref:`orm_declarative_table_column_naming` - applies to Declarative Table
 
 .. _column_property_options:
 
@@ -2504,83 +2832,136 @@ Applying Load, Persistence and Mapping Options for Imperative Table Columns
 
 .. tab:: 中文
 
+    :ref:`orm_declarative_column_options` 部分回顾了在使用 :func:`_orm.mapped_column` 构造和声明式表配置时如何设置加载和持久化选项。使用命令式表配置时，我们已经有现有的 :class:`_schema.Column` 对象被映射。为了将这些 :class:`_schema.Column` 对象与特定于ORM映射的其他参数一起映射，我们可以使用 :func:`_orm.column_property` 和 :func:`_orm.deferred` 构造来关联列的其他参数。选项包括：
 
+    * **延迟列加载** - 
+      :func:`_orm.deferred` 函数是调用 :func:`_orm.column_property` 并将 :paramref:`_orm.column_property.deferred` 参数设置为 ``True`` 的简写；此构造默认使用 :ref:`延迟列加载 <orm_queryguide_column_deferral>` 建立 :class:`_schema.Column`。在下面的示例中， ``User.bio`` 列默认不会加载，而是仅在访问时加载::
+
+        from sqlalchemy.orm import deferred
+
+        user_table = Table(
+            "user",
+            Base.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("name", String),
+            Column("bio", Text),
+        )
+
+
+        class User(Base):
+            __table__ = user_table
+
+            bio = deferred(user_table.c.bio)
+
+    .. seealso::
+
+        :ref:`orm_queryguide_column_deferral` - 延迟列加载的完整描述
+
+    * **活动历史** - 
+      :paramref:`_orm.column_property.active_history` 确保在更改属性值时，先前的值将已加载并成为在检查属性历史时的 :attr:`.AttributeState.history` 集合的一部分。这可能会产生额外的SQL语句::
+
+        from sqlalchemy.orm import column_property
+
+        user_table = Table(
+            "user",
+            Base.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("important_identifier", String),
+        )
+
+
+        class User(Base):
+            __table__ = user_table
+
+            important_identifier = column_property(
+                user_table.c.important_identifier, active_history=True
+            )
+
+    .. seealso::
+
+        :func:`_orm.column_property` 构造对于将类映射到如连接和选择等替代FROM子句的情况也很重要。有关这些情况的更多背景信息，请参见：
+
+        * :ref:`maptojoin`
+
+        * :ref:`mapper_sql_expressions`
+
+        对于使用 :func:`_orm.mapped_column` 的声明式表配置，大多数选项可以直接使用；有关示例，请参见 :ref:`orm_declarative_column_options` 部分。
 
 .. tab:: 英文
 
-The section :ref:`orm_declarative_column_options` reviewed how to set load
-and persistence options when using the :func:`_orm.mapped_column` construct
-with Declarative Table configuration.  When using Imperative Table configuration,
-we already have existing :class:`_schema.Column` objects that are mapped.
-In order to map these :class:`_schema.Column` objects along with additional
-parameters that are specific to the ORM mapping, we may use the
-:func:`_orm.column_property` and :func:`_orm.deferred` constructs in order to
-associate additional parameters with the column.   Options include:
-
-* **deferred column loading** - The :func:`_orm.deferred` function is shorthand
-  for invoking :func:`_orm.column_property` with the
-  :paramref:`_orm.column_property.deferred` parameter set to ``True``;
-  this construct establishes the :class:`_schema.Column` using
-  :ref:`deferred column loading <orm_queryguide_column_deferral>` by default.  In the example
-  below, the ``User.bio`` column will not be loaded by default, but only
-  when accessed::
-
-    from sqlalchemy.orm import deferred
-
-    user_table = Table(
-        "user",
-        Base.metadata,
-        Column("id", Integer, primary_key=True),
-        Column("name", String),
-        Column("bio", Text),
-    )
-
-
-    class User(Base):
-        __table__ = user_table
-
-        bio = deferred(user_table.c.bio)
-
- .. seealso::
-
-     :ref:`orm_queryguide_column_deferral` - full description of deferred column loading
-
-* **active history** - The :paramref:`_orm.column_property.active_history`
-  ensures that upon change of value for the attribute, the previous value
-  will have been loaded and made part of the :attr:`.AttributeState.history`
-  collection when inspecting the history of the attribute.   This may incur
-  additional SQL statements::
-
-    from sqlalchemy.orm import deferred
-
-    user_table = Table(
-        "user",
-        Base.metadata,
-        Column("id", Integer, primary_key=True),
-        Column("important_identifier", String),
-    )
-
-
-    class User(Base):
-        __table__ = user_table
-
-        important_identifier = column_property(
-            user_table.c.important_identifier, active_history=True
+    The section :ref:`orm_declarative_column_options` reviewed how to set load
+    and persistence options when using the :func:`_orm.mapped_column` construct
+    with Declarative Table configuration.  When using Imperative Table configuration,
+    we already have existing :class:`_schema.Column` objects that are mapped.
+    In order to map these :class:`_schema.Column` objects along with additional
+    parameters that are specific to the ORM mapping, we may use the
+    :func:`_orm.column_property` and :func:`_orm.deferred` constructs in order to
+    associate additional parameters with the column.   Options include:
+    
+    * **deferred column loading** - The :func:`_orm.deferred` function is shorthand
+      for invoking :func:`_orm.column_property` with the
+      :paramref:`_orm.column_property.deferred` parameter set to ``True``;
+      this construct establishes the :class:`_schema.Column` using
+      :ref:`deferred column loading <orm_queryguide_column_deferral>` by default.  In the example
+      below, the ``User.bio`` column will not be loaded by default, but only
+      when accessed::
+    
+        from sqlalchemy.orm import deferred
+    
+        user_table = Table(
+            "user",
+            Base.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("name", String),
+            Column("bio", Text),
         )
-
-.. seealso::
-
-    The :func:`_orm.column_property` construct is also important for cases
-    where classes are mapped to alternative FROM clauses such as joins and
-    selects.  More background on these cases is at:
-
-    * :ref:`maptojoin`
-
-    * :ref:`mapper_sql_expressions`
-
-    For Declarative Table configuration with :func:`_orm.mapped_column`,
-    most options are available directly; see the section
-    :ref:`orm_declarative_column_options` for examples.
+    
+    
+        class User(Base):
+            __table__ = user_table
+    
+            bio = deferred(user_table.c.bio)
+    
+     .. seealso::
+    
+         :ref:`orm_queryguide_column_deferral` - full description of deferred column loading
+    
+    * **active history** - The :paramref:`_orm.column_property.active_history`
+      ensures that upon change of value for the attribute, the previous value
+      will have been loaded and made part of the :attr:`.AttributeState.history`
+      collection when inspecting the history of the attribute.   This may incur
+      additional SQL statements::
+    
+        from sqlalchemy.orm import deferred
+    
+        user_table = Table(
+            "user",
+            Base.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("important_identifier", String),
+        )
+    
+    
+        class User(Base):
+            __table__ = user_table
+    
+            important_identifier = column_property(
+                user_table.c.important_identifier, active_history=True
+            )
+    
+    .. seealso::
+    
+        The :func:`_orm.column_property` construct is also important for cases
+        where classes are mapped to alternative FROM clauses such as joins and
+        selects.  More background on these cases is at:
+    
+        * :ref:`maptojoin`
+    
+        * :ref:`mapper_sql_expressions`
+    
+        For Declarative Table configuration with :func:`_orm.mapped_column`,
+        most options are available directly; see the section
+        :ref:`orm_declarative_column_options` for examples.
 
 
 
@@ -2593,68 +2974,109 @@ Mapping Declaratively with Reflected Tables
 
 .. tab:: 中文
 
+    有几种模式可以提供针对从数据库中内省的一系列 :class:`_schema.Table` 对象生成映射类的方法，使用在 :ref:`metadata_reflection` 中描述的反射过程。
 
+    将类映射到从数据库反射的表的简单方法是使用声明式混合映射，将 :paramref:`_schema.Table.autoload_with` 参数传递给 :class:`_schema.Table` 的构造函数::
+
+        from sqlalchemy import create_engine
+        from sqlalchemy import Table
+        from sqlalchemy.orm import DeclarativeBase
+
+        engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
+
+
+        class Base(DeclarativeBase):
+            pass
+
+
+        class MyClass(Base):
+            __table__ = Table(
+                "mytable",
+                Base.metadata,
+                autoload_with=engine,
+            )
+
+    上述模式的一个变体是使用 :meth:`.MetaData.reflect` 方法一次反射一组 :class:`.Table` 对象，然后从 :class:`.MetaData` 中引用它们::
+
+        from sqlalchemy import create_engine
+        from sqlalchemy import Table
+        from sqlalchemy.orm import DeclarativeBase
+
+        engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
+
+
+        class Base(DeclarativeBase):
+            pass
+
+
+        Base.metadata.reflect(engine)
+
+
+        class MyClass(Base):
+            __table__ = Base.metadata.tables["mytable"]
+
+    使用 ``__table__`` 方法的一个警告是，映射类不能在表被反射之前声明，这需要在声明应用程序类时存在数据库连接源；通常类在应用程序模块被导入时声明，但在应用程序开始运行代码以便消耗配置信息并创建引擎之前，数据库连接不可用。当前有两种方法可以解决这个问题，在接下来的两个部分中描述。
 
 .. tab:: 英文
 
-There are several patterns available which provide for producing mapped
-classes against a series of :class:`_schema.Table` objects that were
-introspected from the database, using the reflection process described at
-:ref:`metadata_reflection`.
+    There are several patterns available which provide for producing mapped
+    classes against a series of :class:`_schema.Table` objects that were
+    introspected from the database, using the reflection process described at
+    :ref:`metadata_reflection`.
 
-A simple way to map a class to a table reflected from the database is to
-use a declarative hybrid mapping, passing the
-:paramref:`_schema.Table.autoload_with` parameter to the constructor for
-:class:`_schema.Table`::
+    A simple way to map a class to a table reflected from the database is to
+    use a declarative hybrid mapping, passing the
+    :paramref:`_schema.Table.autoload_with` parameter to the constructor for
+    :class:`_schema.Table`::
 
-    from sqlalchemy import create_engine
-    from sqlalchemy import Table
-    from sqlalchemy.orm import DeclarativeBase
+        from sqlalchemy import create_engine
+        from sqlalchemy import Table
+        from sqlalchemy.orm import DeclarativeBase
 
-    engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
-
-
-    class Base(DeclarativeBase):
-        pass
+        engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
 
 
-    class MyClass(Base):
-        __table__ = Table(
-            "mytable",
-            Base.metadata,
-            autoload_with=engine,
-        )
-
-A variant on the above pattern that scales for many tables is to use the
-:meth:`.MetaData.reflect` method to reflect a full set of :class:`.Table`
-objects at once, then refer to them from the :class:`.MetaData`::
+        class Base(DeclarativeBase):
+            pass
 
 
-    from sqlalchemy import create_engine
-    from sqlalchemy import Table
-    from sqlalchemy.orm import DeclarativeBase
+        class MyClass(Base):
+            __table__ = Table(
+                "mytable",
+                Base.metadata,
+                autoload_with=engine,
+            )
 
-    engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
-
-
-    class Base(DeclarativeBase):
-        pass
-
-
-    Base.metadata.reflect(engine)
+    A variant on the above pattern that scales for many tables is to use the
+    :meth:`.MetaData.reflect` method to reflect a full set of :class:`.Table`
+    objects at once, then refer to them from the :class:`.MetaData`::
 
 
-    class MyClass(Base):
-        __table__ = Base.metadata.tables["mytable"]
+        from sqlalchemy import create_engine
+        from sqlalchemy import Table
+        from sqlalchemy.orm import DeclarativeBase
 
-One caveat to the approach of using ``__table__`` is that the mapped classes cannot
-be declared until the tables have been reflected, which requires the database
-connectivity source to be present while the application classes are being
-declared; it's typical that classes are declared as the modules of an
-application are being imported, but database connectivity isn't available
-until the application starts running code so that it can consume configuration
-information and create an engine.   There are currently two approaches
-to working around this, described in the next two sections.
+        engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
+
+
+        class Base(DeclarativeBase):
+            pass
+
+
+        Base.metadata.reflect(engine)
+
+
+        class MyClass(Base):
+            __table__ = Base.metadata.tables["mytable"]
+
+    One caveat to the approach of using ``__table__`` is that the mapped classes cannot
+    be declared until the tables have been reflected, which requires the database
+    connectivity source to be present while the application classes are being
+    declared; it's typical that classes are declared as the modules of an
+    application are being imported, but database connectivity isn't available
+    until the application starts running code so that it can consume configuration
+    information and create an engine.   There are currently two approaches
+    to working around this, described in the next two sections.
 
 .. _orm_declarative_reflected_deferred_reflection:
 
@@ -2665,56 +3087,85 @@ Using DeferredReflection
 
 .. tab:: 中文
 
+    为了适应在表元数据反射之后声明映射类的用例，可以使用一个简单的扩展，称为 :class:`.DeferredReflection` 混入，它会更改声明式映射过程，直到调用一个特殊的类级别方法 :meth:`.DeferredReflection.prepare`，该方法将对目标数据库执行反射过程，并将结果与声明式表映射过程集成，即使用 ``__tablename__`` 属性的类::
 
+        from sqlalchemy.ext.declarative import DeferredReflection
+        from sqlalchemy.orm import DeclarativeBase
+
+
+        class Base(DeclarativeBase):
+            pass
+
+
+        class Reflected(DeferredReflection):
+            __abstract__ = True
+
+
+        class Foo(Reflected, Base):
+            __tablename__ = "foo"
+            bars = relationship("Bar")
+
+
+        class Bar(Reflected, Base):
+            __tablename__ = "bar"
+
+            foo_id = mapped_column(Integer, ForeignKey("foo.id"))
+
+    在上面，我们创建了一个混入类 ``Reflected``，它将作为我们声明层次结构中类的基础，当调用 ``Reflected.prepare`` 方法时，这些类应该成为映射的。上述映射在给定 :class:`_engine.Engine` 之前是不完整的::
+
+        engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
+        Reflected.prepare(engine)
+
+    ``Reflected`` 类的目的是定义应该反射映射的类的范围。插件将在调用 ``.prepare()`` 的目标的子类树中搜索，并反射所有由声明类命名的表；与目标表没有通过外键约束关联的目标数据库中的表将不会被反射。
 
 .. tab:: 英文
 
-To accommodate the use case of declaring mapped classes where reflection of
-table metadata can occur afterwards, a simple extension called the
-:class:`.DeferredReflection` mixin is available, which alters the declarative
-mapping process to be delayed until a special class-level
-:meth:`.DeferredReflection.prepare` method is called, which will perform
-the reflection process against a target database, and will integrate the
-results with the declarative table mapping process, that is, classes which
-use the ``__tablename__`` attribute::
+    To accommodate the use case of declaring mapped classes where reflection of
+    table metadata can occur afterwards, a simple extension called the
+    :class:`.DeferredReflection` mixin is available, which alters the declarative
+    mapping process to be delayed until a special class-level
+    :meth:`.DeferredReflection.prepare` method is called, which will perform
+    the reflection process against a target database, and will integrate the
+    results with the declarative table mapping process, that is, classes which
+    use the ``__tablename__`` attribute::
 
-    from sqlalchemy.ext.declarative import DeferredReflection
-    from sqlalchemy.orm import DeclarativeBase
-
-
-    class Base(DeclarativeBase):
-        pass
+        from sqlalchemy.ext.declarative import DeferredReflection
+        from sqlalchemy.orm import DeclarativeBase
 
 
-    class Reflected(DeferredReflection):
-        __abstract__ = True
+        class Base(DeclarativeBase):
+            pass
 
 
-    class Foo(Reflected, Base):
-        __tablename__ = "foo"
-        bars = relationship("Bar")
+        class Reflected(DeferredReflection):
+            __abstract__ = True
 
 
-    class Bar(Reflected, Base):
-        __tablename__ = "bar"
-
-        foo_id = mapped_column(Integer, ForeignKey("foo.id"))
-
-Above, we create a mixin class ``Reflected`` that will serve as a base
-for classes in our declarative hierarchy that should become mapped when
-the ``Reflected.prepare`` method is called.   The above mapping is not
-complete until we do so, given an :class:`_engine.Engine`::
+        class Foo(Reflected, Base):
+            __tablename__ = "foo"
+            bars = relationship("Bar")
 
 
-    engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
-    Reflected.prepare(engine)
+        class Bar(Reflected, Base):
+            __tablename__ = "bar"
 
-The purpose of the ``Reflected`` class is to define the scope at which
-classes should be reflectively mapped.   The plugin will search among the
-subclass tree of the target against which ``.prepare()`` is called and reflect
-all tables which are named by declared classes; tables in the target database
-that are not part of mappings and are not related to the target tables
-via foreign key constraint will not be reflected.
+            foo_id = mapped_column(Integer, ForeignKey("foo.id"))
+
+    Above, we create a mixin class ``Reflected`` that will serve as a base
+    for classes in our declarative hierarchy that should become mapped when
+    the ``Reflected.prepare`` method is called.   The above mapping is not
+    complete until we do so, given an :class:`_engine.Engine`::
+
+
+        engine = create_engine("postgresql+psycopg2://user:pass@hostname/my_existing_database")
+        Reflected.prepare(engine)
+
+    The purpose of the ``Reflected`` class is to define the scope at which
+    classes should be reflectively mapped.   The plugin will search among the
+    subclass tree of the target against which ``.prepare()`` is called and reflect
+    all tables which are named by declared classes; tables in the target database
+    that are not part of mappings and are not related to the target tables
+    via foreign key constraint will not be reflected.
 
 使用 Automap
 ^^^^^^^^^^^^^^
@@ -2723,24 +3174,28 @@ Using Automap
 
 .. tab:: 中文
 
+    对映射现有数据库使用表反射的更自动化解决方案是使用 :ref:`automap_toplevel` 扩展。此扩展将从数据库模式生成整个映射类，包括基于观察到的外键约束的类之间的关系。虽然它包括自定义的钩子，例如允许自定义类命名和关系命名方案的钩子，但automap面向的是一种快速的零配置工作方式。如果应用程序希望具有使用表反射的完全显式模型，则 :ref:`DeferredReflection <orm_declarative_reflected_deferred_reflection>` 类可能更适合其不那么自动化的方法。
 
+    .. seealso::
+
+        :ref:`automap_toplevel`
 
 .. tab:: 英文
 
-A more automated solution to mapping against an existing database where table
-reflection is to be used is to use the :ref:`automap_toplevel` extension. This
-extension will generate entire mapped classes from a database schema, including
-relationships between classes based on observed foreign key constraints. While
-it includes hooks for customization, such as hooks that allow custom
-class naming and relationship naming schemes, automap is oriented towards an
-expedient zero-configuration style of working. If an application wishes to have
-a fully explicit model that makes use of table reflection, the
-:ref:`DeferredReflection <orm_declarative_reflected_deferred_reflection>`
-class may be preferable for its less automated approach.
+    A more automated solution to mapping against an existing database where table
+    reflection is to be used is to use the :ref:`automap_toplevel` extension. This
+    extension will generate entire mapped classes from a database schema, including
+    relationships between classes based on observed foreign key constraints. While
+    it includes hooks for customization, such as hooks that allow custom
+    class naming and relationship naming schemes, automap is oriented towards an
+    expedient zero-configuration style of working. If an application wishes to have
+    a fully explicit model that makes use of table reflection, the
+    :ref:`DeferredReflection <orm_declarative_reflected_deferred_reflection>`
+    class may be preferable for its less automated approach.
 
-.. seealso::
+    .. seealso::
 
-    :ref:`automap_toplevel`
+        :ref:`automap_toplevel`
 
 
 .. _mapper_automated_reflection_schemes:
@@ -2752,62 +3207,94 @@ Automating Column Naming Schemes from Reflected Tables
 
 .. tab:: 中文
 
+    使用任何前述的反射技术时，我们可以选择更改列的映射命名方案。:class:`_schema.Column` 对象包含一个参数 :paramref:`_schema.Column.key`，这是一个字符串名称，用于确定此 :class:`_schema.Column` 在 :attr:`_schema.Table.c` 集合中以何种名称存在，与列的SQL名称无关。如果没有通过其他方式提供，例如在 :ref:`orm_imperative_table_column_naming` 中说明的那样，此键也将由 :class:`_orm.Mapper` 用作映射 :class:`_schema.Column` 的属性名称。
 
+    使用表反射时，我们可以拦截将用于 :class:`_schema.Column` 的参数，并使用 :meth:`_events.DDLEvents.column_reflect` 事件应用所需的任何更改，包括 ``.key`` 属性以及数据类型。
+
+    事件钩子最容易与使用中的 :class:`_schema.MetaData` 对象关联，如下所示::
+
+        from sqlalchemy import event
+        from sqlalchemy.orm import DeclarativeBase
+
+
+        class Base(DeclarativeBase):
+            pass
+
+
+        @event.listens_for(Base.metadata, "column_reflect")
+        def column_reflect(inspector, table, column_info):
+            # 设置 column.key = "attr_<lower_case_name>"
+            column_info["key"] = "attr_%s" % column_info["name"].lower()
+
+    使用上述事件，反射 :class:`_schema.Column` 对象时将使用我们的事件拦截，并添加一个新的 ``.key`` 元素，如下所示::
+
+        class MyClass(Base):
+            __table__ = Table("some_table", Base.metadata, autoload_with=some_engine)
+
+    该方法还适用于 :class:`.DeferredReflection` 基类以及 :ref:`automap_toplevel` 扩展。对于automap的详细信息，请参见 :ref:`automap_intercepting_columns` 部分。
+
+    .. seealso::
+
+        :ref:`orm_declarative_reflected`
+
+        :meth:`_events.DDLEvents.column_reflect`
+
+        :ref:`automap_intercepting_columns` - 见 :ref:`automap_toplevel` 文档
 
 .. tab:: 英文
 
-When using any of the previous reflection techniques, we have the option
-to change the naming scheme by which columns are mapped.   The
-:class:`_schema.Column` object includes a parameter
-:paramref:`_schema.Column.key` which is a string name that determines
-under what name
-this :class:`_schema.Column` will be present in the :attr:`_schema.Table.c`
-collection, independently of the SQL name of the column.  This key is also
-used by :class:`_orm.Mapper` as the attribute name under which the
-:class:`_schema.Column` will be mapped, if not supplied through other
-means such as that illustrated at :ref:`orm_imperative_table_column_naming`.
+    When using any of the previous reflection techniques, we have the option
+    to change the naming scheme by which columns are mapped.   The
+    :class:`_schema.Column` object includes a parameter
+    :paramref:`_schema.Column.key` which is a string name that determines
+    under what name
+    this :class:`_schema.Column` will be present in the :attr:`_schema.Table.c`
+    collection, independently of the SQL name of the column.  This key is also
+    used by :class:`_orm.Mapper` as the attribute name under which the
+    :class:`_schema.Column` will be mapped, if not supplied through other
+    means such as that illustrated at :ref:`orm_imperative_table_column_naming`.
 
-When working with table reflection, we can intercept the parameters that
-will be used for :class:`_schema.Column` as they are received using
-the :meth:`_events.DDLEvents.column_reflect` event and apply whatever
-changes we need, including the ``.key`` attribute but also things like
-datatypes.
+    When working with table reflection, we can intercept the parameters that
+    will be used for :class:`_schema.Column` as they are received using
+    the :meth:`_events.DDLEvents.column_reflect` event and apply whatever
+    changes we need, including the ``.key`` attribute but also things like
+    datatypes.
 
-The event hook is most easily
-associated with the :class:`_schema.MetaData` object that's in use
-as illustrated below::
+    The event hook is most easily
+    associated with the :class:`_schema.MetaData` object that's in use
+    as illustrated below::
 
-    from sqlalchemy import event
-    from sqlalchemy.orm import DeclarativeBase
-
-
-    class Base(DeclarativeBase):
-        pass
+        from sqlalchemy import event
+        from sqlalchemy.orm import DeclarativeBase
 
 
-    @event.listens_for(Base.metadata, "column_reflect")
-    def column_reflect(inspector, table, column_info):
-        # set column.key = "attr_<lower_case_name>"
-        column_info["key"] = "attr_%s" % column_info["name"].lower()
+        class Base(DeclarativeBase):
+            pass
 
-With the above event, the reflection of :class:`_schema.Column` objects will be intercepted
-with our event that adds a new ".key" element, such as in a mapping as below::
 
-    class MyClass(Base):
-        __table__ = Table("some_table", Base.metadata, autoload_with=some_engine)
+        @event.listens_for(Base.metadata, "column_reflect")
+        def column_reflect(inspector, table, column_info):
+            # set column.key = "attr_<lower_case_name>"
+            column_info["key"] = "attr_%s" % column_info["name"].lower()
 
-The approach also works with both the :class:`.DeferredReflection` base class
-as well as with the :ref:`automap_toplevel` extension.   For automap
-specifically, see the section :ref:`automap_intercepting_columns` for
-background.
+    With the above event, the reflection of :class:`_schema.Column` objects will be intercepted
+    with our event that adds a new ".key" element, such as in a mapping as below::
 
-.. seealso::
+        class MyClass(Base):
+            __table__ = Table("some_table", Base.metadata, autoload_with=some_engine)
 
-    :ref:`orm_declarative_reflected`
+    The approach also works with both the :class:`.DeferredReflection` base class
+    as well as with the :ref:`automap_toplevel` extension.   For automap
+    specifically, see the section :ref:`automap_intercepting_columns` for
+    background.
 
-    :meth:`_events.DDLEvents.column_reflect`
+    .. seealso::
 
-    :ref:`automap_intercepting_columns` - in the :ref:`automap_toplevel` documentation
+        :ref:`orm_declarative_reflected`
+
+        :meth:`_events.DDLEvents.column_reflect`
+
+        :ref:`automap_intercepting_columns` - in the :ref:`automap_toplevel` documentation
 
 
 .. _mapper_primary_key:
@@ -2819,64 +3306,96 @@ Mapping to an Explicit Set of Primary Key Columns
 
 .. tab:: 中文
 
+    :class:`.Mapper` 构造在成功映射表时，总是需要至少一个列被标识为该可选择的“主键”。这是为了在加载或持久化ORM对象时，可以使用适当的 :term:`identity key` 将其放置在 :term:`identity map` 中。
 
+    在这些情况下，反射表不包括主键约束，以及在一般情况下 :ref:`映射任意可选择的 <orm_mapping_arbitrary_subqueries>` 时，可能不存在主键列，提供了 :paramref:`.Mapper.primary_key` 参数，以便可以将任何一组列配置为表的“主键”，就ORM映射而言。
+
+    给定以下示例：针对现有 :class:`.Table` 对象的命令式表映射，其中表没有声明主键（如在反射场景中可能发生的那样），我们可以如下示例映射这样的表::
+
+        from sqlalchemy import Column
+        from sqlalchemy import MetaData
+        from sqlalchemy import String
+        from sqlalchemy import Table
+        from sqlalchemy import UniqueConstraint
+        from sqlalchemy.orm import DeclarativeBase
+
+
+        metadata = MetaData()
+        group_users = Table(
+            "group_users",
+            metadata,
+            Column("user_id", String(40), nullable=False),
+            Column("group_id", String(40), nullable=False),
+            UniqueConstraint("user_id", "group_id"),
+        )
+
+
+        class Base(DeclarativeBase):
+            pass
+
+
+        class GroupUsers(Base):
+            __table__ = group_users
+            __mapper_args__ = {"primary_key": [group_users.c.user_id, group_users.c.group_id]}
+
+    在上面， ``group_users`` 表是某种类型的关联表，具有字符串列 ``user_id`` 和 ``group_id``，但没有设置主键；相反，只有一个 :class:`.UniqueConstraint` 确立了这两列代表唯一键。:class:`.Mapper` 不会自动检查唯一约束是否为主键；相反，我们使用 :paramref:`.Mapper.primary_key` 参数，传递 ``[group_users.c.user_id, group_users.c.group_id]`` 的集合，表明这两列应被用于构建 ``GroupUsers`` 类实例的标识键。
 
 .. tab:: 英文
 
-The :class:`.Mapper` construct in order to successfully map a table always
-requires that at least one column be identified as the "primary key" for
-that selectable.   This is so that when an ORM object is loaded or persisted,
-it can be placed in the :term:`identity map` with an appropriate
-:term:`identity key`.
+    The :class:`.Mapper` construct in order to successfully map a table always
+    requires that at least one column be identified as the "primary key" for
+    that selectable.   This is so that when an ORM object is loaded or persisted,
+    it can be placed in the :term:`identity map` with an appropriate
+    :term:`identity key`.
 
-In those cases where the a reflected table to be mapped does not include
-a primary key constraint, as well as in the general case for
-:ref:`mapping against arbitrary selectables <orm_mapping_arbitrary_subqueries>`
-where primary key columns might not be present, the
-:paramref:`.Mapper.primary_key` parameter is provided so that any set of
-columns may be configured as the "primary key" for the table, as far as
-ORM mapping is concerned.
+    In those cases where the a reflected table to be mapped does not include
+    a primary key constraint, as well as in the general case for
+    :ref:`mapping against arbitrary selectables <orm_mapping_arbitrary_subqueries>`
+    where primary key columns might not be present, the
+    :paramref:`.Mapper.primary_key` parameter is provided so that any set of
+    columns may be configured as the "primary key" for the table, as far as
+    ORM mapping is concerned.
 
-Given the following example of an Imperative Table
-mapping against an existing :class:`.Table` object where the table does not
-have any declared primary key (as may occur in reflection scenarios), we may
-map such a table as in the following example::
+    Given the following example of an Imperative Table
+    mapping against an existing :class:`.Table` object where the table does not
+    have any declared primary key (as may occur in reflection scenarios), we may
+    map such a table as in the following example::
 
-    from sqlalchemy import Column
-    from sqlalchemy import MetaData
-    from sqlalchemy import String
-    from sqlalchemy import Table
-    from sqlalchemy import UniqueConstraint
-    from sqlalchemy.orm import DeclarativeBase
-
-
-    metadata = MetaData()
-    group_users = Table(
-        "group_users",
-        metadata,
-        Column("user_id", String(40), nullable=False),
-        Column("group_id", String(40), nullable=False),
-        UniqueConstraint("user_id", "group_id"),
-    )
+        from sqlalchemy import Column
+        from sqlalchemy import MetaData
+        from sqlalchemy import String
+        from sqlalchemy import Table
+        from sqlalchemy import UniqueConstraint
+        from sqlalchemy.orm import DeclarativeBase
 
 
-    class Base(DeclarativeBase):
-        pass
+        metadata = MetaData()
+        group_users = Table(
+            "group_users",
+            metadata,
+            Column("user_id", String(40), nullable=False),
+            Column("group_id", String(40), nullable=False),
+            UniqueConstraint("user_id", "group_id"),
+        )
 
 
-    class GroupUsers(Base):
-        __table__ = group_users
-        __mapper_args__ = {"primary_key": [group_users.c.user_id, group_users.c.group_id]}
+        class Base(DeclarativeBase):
+            pass
 
-Above, the ``group_users`` table is an association table of some kind
-with string columns ``user_id`` and ``group_id``, but no primary key is set up;
-instead, there is only a :class:`.UniqueConstraint` establishing that the
-two columns represent a unique key.   The :class:`.Mapper` does not automatically
-inspect unique constraints for primary keys; instead, we make use of the
-:paramref:`.Mapper.primary_key` parameter, passing a collection of
-``[group_users.c.user_id, group_users.c.group_id]``, indicating that these two
-columns should be used in order to construct the identity key for instances
-of the ``GroupUsers`` class.
+
+        class GroupUsers(Base):
+            __table__ = group_users
+            __mapper_args__ = {"primary_key": [group_users.c.user_id, group_users.c.group_id]}
+
+    Above, the ``group_users`` table is an association table of some kind
+    with string columns ``user_id`` and ``group_id``, but no primary key is set up;
+    instead, there is only a :class:`.UniqueConstraint` establishing that the
+    two columns represent a unique key.   The :class:`.Mapper` does not automatically
+    inspect unique constraints for primary keys; instead, we make use of the
+    :paramref:`.Mapper.primary_key` parameter, passing a collection of
+    ``[group_users.c.user_id, group_users.c.group_id]``, indicating that these two
+    columns should be used in order to construct the identity key for instances
+    of the ``GroupUsers`` class.
 
 
 .. _include_exclude_cols:
@@ -2888,70 +3407,99 @@ Mapping a Subset of Table Columns
 
 .. tab:: 中文
 
+    有时表反射可能会提供一个包含许多不重要列的 :class:`_schema.Table` ，这些列可以安全地忽略。对于具有许多不需要在应用程序中引用的列的表，:paramref:`_orm.Mapper.include_properties` 或 :paramref:`_orm.Mapper.exclude_properties` 参数可以指示要映射的列子集，目标 :class:`_schema.Table` 中的其他列将不会被ORM以任何方式考虑。示例::
 
+        class User(Base):
+            __table__ = user_table
+            __mapper_args__ = {"include_properties": ["user_id", "user_name"]}
+
+    在上述示例中， ``User`` 类将映射到 ``user_table`` 表，仅包括 ``user_id`` 和 ``user_name`` 列 - 其余的不被引用。
+
+    类似地::
+
+        class Address(Base):
+            __table__ = address_table
+            __mapper_args__ = {"exclude_properties": ["street", "city", "state", "zip"]}
+
+    将 ``Address`` 类映射到 ``address_table`` 表，包括所有存在的列，除了 ``street``、 ``city``、 ``state`` 和 ``zip`` 。
+
+    如两个示例中所示，列可以通过字符串名称引用，也可以直接引用 :class:`_schema.Column` 对象。直接引用对象可能有助于明确性以及在映射到可能具有重复名称的多表构造时解决歧义::
+
+        class User(Base):
+            __table__ = user_table
+            __mapper_args__ = {
+                "include_properties": [user_table.c.user_id, user_table.c.user_name]
+            }
+
+    当列不包含在映射中时，这些列不会在执行 :func:`_sql.select` 或遗留 :class:`_query.Query` 对象时发出的SELECT语句中引用，也不会在映射类上有任何表示该列的映射属性；分配该名称的属性除了正常的Python属性分配外不会有任何效果。
+
+    然而，重要的是要注意，即使这些列可能从ORM映射中排除， **架构级别的列默认值仍将有效(schema level column defaults WILL
+    still be in effect)** ，对于包含这些默认值的 :class:`_schema.Column` 对象也是如此。
+
+    “架构级别的列默认值”是指在 :ref:`metadata_defaults` 中描述的默认值，包括由 :paramref:`_schema.Column.default`、:paramref:`_schema.Column.onupdate`、:paramref:`_schema.Column.server_default` 和 :paramref:`_schema.Column.server_onupdate` 参数配置的默认值。这些构造继续具有正常效果，因为在 :paramref:`_schema.Column.default` 和 :paramref:`_schema.Column.onupdate` 的情况下，:class:`_schema.Column` 对象仍然存在于底层 :class:`_schema.Table` 上，从而允许在ORM发出INSERT或UPDATE时进行默认函数，并且在 :paramref:`_schema.Column.server_default` 和 :paramref:`_schema.Column.server_onupdate` 的情况下，关系数据库本身会以服务器端行为发出这些默认值。
 
 .. tab:: 英文
 
-Sometimes table reflection may provide a :class:`_schema.Table` with many
-columns that are not important for our needs and may be safely ignored.
-For such a table that has lots of columns that don't need to be referenced
-in the application, the :paramref:`_orm.Mapper.include_properties`
-or :paramref:`_orm.Mapper.exclude_properties` parameters can indicate
-a subset of columns to be mapped, where other columns from the
-target :class:`_schema.Table` will not be considered by the ORM in any
-way.   Example::
+    Sometimes table reflection may provide a :class:`_schema.Table` with many
+    columns that are not important for our needs and may be safely ignored.
+    For such a table that has lots of columns that don't need to be referenced
+    in the application, the :paramref:`_orm.Mapper.include_properties`
+    or :paramref:`_orm.Mapper.exclude_properties` parameters can indicate
+    a subset of columns to be mapped, where other columns from the
+    target :class:`_schema.Table` will not be considered by the ORM in any
+    way.   Example::
 
-    class User(Base):
-        __table__ = user_table
-        __mapper_args__ = {"include_properties": ["user_id", "user_name"]}
+        class User(Base):
+            __table__ = user_table
+            __mapper_args__ = {"include_properties": ["user_id", "user_name"]}
 
-In the above example, the ``User`` class will map to the ``user_table`` table, only
-including the ``user_id`` and ``user_name`` columns - the rest are not referenced.
+    In the above example, the ``User`` class will map to the ``user_table`` table, only
+    including the ``user_id`` and ``user_name`` columns - the rest are not referenced.
 
-Similarly::
+    Similarly::
 
-    class Address(Base):
-        __table__ = address_table
-        __mapper_args__ = {"exclude_properties": ["street", "city", "state", "zip"]}
+        class Address(Base):
+            __table__ = address_table
+            __mapper_args__ = {"exclude_properties": ["street", "city", "state", "zip"]}
 
-will map the ``Address`` class to the ``address_table`` table, including
-all columns present except ``street``, ``city``, ``state``, and ``zip``.
+    will map the ``Address`` class to the ``address_table`` table, including
+    all columns present except ``street``, ``city``, ``state``, and ``zip``.
 
-As indicated in the two examples, columns may be referenced either
-by string name or by referring to the :class:`_schema.Column` object
-directly.  Referring to the object directly may be useful for explicitness as
-well as to resolve ambiguities when
-mapping to multi-table constructs that might have repeated names::
+    As indicated in the two examples, columns may be referenced either
+    by string name or by referring to the :class:`_schema.Column` object
+    directly.  Referring to the object directly may be useful for explicitness as
+    well as to resolve ambiguities when
+    mapping to multi-table constructs that might have repeated names::
 
-    class User(Base):
-        __table__ = user_table
-        __mapper_args__ = {
-            "include_properties": [user_table.c.user_id, user_table.c.user_name]
-        }
+        class User(Base):
+            __table__ = user_table
+            __mapper_args__ = {
+                "include_properties": [user_table.c.user_id, user_table.c.user_name]
+            }
 
-When columns are not included in a mapping, these columns will not be
-referenced in any SELECT statements emitted when executing :func:`_sql.select`
-or legacy :class:`_query.Query` objects, nor will there be any mapped attribute
-on the mapped class which represents the column; assigning an attribute of that
-name will have no effect beyond that of a normal Python attribute assignment.
+    When columns are not included in a mapping, these columns will not be
+    referenced in any SELECT statements emitted when executing :func:`_sql.select`
+    or legacy :class:`_query.Query` objects, nor will there be any mapped attribute
+    on the mapped class which represents the column; assigning an attribute of that
+    name will have no effect beyond that of a normal Python attribute assignment.
 
-However, it is important to note that **schema level column defaults WILL
-still be in effect** for those :class:`_schema.Column` objects that include them,
-even though they may be excluded from the ORM mapping.
+    However, it is important to note that **schema level column defaults WILL
+    still be in effect** for those :class:`_schema.Column` objects that include them,
+    even though they may be excluded from the ORM mapping.
 
-"Schema level column defaults" refers to the defaults described at
-:ref:`metadata_defaults` including those configured by the
-:paramref:`_schema.Column.default`, :paramref:`_schema.Column.onupdate`,
-:paramref:`_schema.Column.server_default` and
-:paramref:`_schema.Column.server_onupdate` parameters. These constructs
-continue to have normal effects because in the case of
-:paramref:`_schema.Column.default` and :paramref:`_schema.Column.onupdate`, the
-:class:`_schema.Column` object is still present on the underlying
-:class:`_schema.Table`, thus allowing the default functions to take place when
-the ORM emits an INSERT or UPDATE, and in the case of
-:paramref:`_schema.Column.server_default` and
-:paramref:`_schema.Column.server_onupdate`, the relational database itself
-emits these defaults as a server side behavior.
+    "Schema level column defaults" refers to the defaults described at
+    :ref:`metadata_defaults` including those configured by the
+    :paramref:`_schema.Column.default`, :paramref:`_schema.Column.onupdate`,
+    :paramref:`_schema.Column.server_default` and
+    :paramref:`_schema.Column.server_onupdate` parameters. These constructs
+    continue to have normal effects because in the case of
+    :paramref:`_schema.Column.default` and :paramref:`_schema.Column.onupdate`, the
+    :class:`_schema.Column` object is still present on the underlying
+    :class:`_schema.Table`, thus allowing the default functions to take place when
+    the ORM emits an INSERT or UPDATE, and in the case of
+    :paramref:`_schema.Column.server_default` and
+    :paramref:`_schema.Column.server_onupdate`, the relational database itself
+    emits these defaults as a server side behavior.
 
 
 
