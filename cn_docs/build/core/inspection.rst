@@ -20,7 +20,7 @@ Available Inspection Targets
 
     以下是许多最常见的检查目标列表。
 
-    * :class:`.Connectable`（即 :class:`_engine.Engine`，:class:`_engine.Connection`） - 返回 :class:`_reflection.Inspector` 对象。
+    * :class:`.Connectable` （即 :class:`_engine.Engine`，:class:`_engine.Connection`） - 返回 :class:`_reflection.Inspector` 对象。
     * :class:`_expression.ClauseElement` - 所有SQL表达式组件，包括 :class:`_schema.Table` ， :class:`_schema.Column`，作为它们自己的检查对象，这意味着传递给 :func:`_sa.inspect` 的任何这些对象都会返回它们自己。
     * ``object`` - 给定的对象将由ORM检查其映射 - 如果是，则返回表示对象的映射状态的 :class:`.InstanceState`。 :class:`.InstanceState` 还通过 :class:`.AttributeState` 接口提供对每个属性状态的访问，以及通过 :class:`.History` 对象提供任何属性的每次刷新“历史”。
 
@@ -28,7 +28,7 @@ Available Inspection Targets
 
           :ref:`orm_mapper_inspection_instancestate`
 
-    * ``type``（即类） - 给定的类将由ORM检查其映射 - 如果是，则返回该类的 :class:`_orm.Mapper`。
+    * ``type`` （即类） - 给定的类将由ORM检查其映射 - 如果是，则返回该类的 :class:`_orm.Mapper`。
 
       .. seealso::
 

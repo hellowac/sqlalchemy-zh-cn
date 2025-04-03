@@ -1184,7 +1184,7 @@ Using the Inspector to inspect schema objects
 
 .. tab:: 中文
 
-    SQLAlchemy 还没有提供 :class:`_reflection.Inspector`（在 :ref:`metadata_reflection_inspector` 中介绍）的 asyncio 版本，
+    SQLAlchemy 还没有提供 :class:`_reflection.Inspector` （在 :ref:`metadata_reflection_inspector` 中介绍）的 asyncio 版本，
     但是可以通过利用 :class:`_asyncio.AsyncConnection` 的 :meth:`_asyncio.AsyncConnection.run_sync` 方法在 asyncio 上下文中使用现有接口::
 
         import asyncio

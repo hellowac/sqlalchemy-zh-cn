@@ -621,7 +621,7 @@ Potential breaking change to odbc_connect= handling for mssql+pyodbc
 
 .. tab:: 中文
 
-    修复了一个 mssql+pyodbc 问题，其中在未引用的 ``odbc_connect=``（原始 DBAPI）连接字符串中有效的加号被替换为空格。
+    修复了一个 mssql+pyodbc 问题，其中在未引用的 ``odbc_connect=`` （原始 DBAPI）连接字符串中有效的加号被替换为空格。
 
     之前，pyodbc 连接器总是将 odbc_connect 值传递给 unquote_plus()，即使不需要也是如此。因此，如果（未引用的）odbc_connect 值包含 ``PWD=pass+word``，它将被更改为 ``PWD=pass word``，并且登录将失败。一种解决方法是仅引用加号 — ``PWD=pass%2Bword`` — 然后它将被解码为 ``PWD=pass+word``。
 
