@@ -167,40 +167,63 @@ Composite Adjacency Lists
 
 .. tab:: 中文
 
+    邻接列表关系的一个子类别是一个罕见的情况，其中一个特定列在连接条件的“本地(local)”和“远程(remote)”两侧都存在。下面的 ``Folder`` 类是一个示例；使用复合主键， ``account_id`` 列指向自身，以指示与父文件夹属于同一帐户的子文件夹；而 ``folder_id`` 则指向该帐户中的特定文件夹::
+
+        class Folder(Base):
+            __tablename__ = "folder"
+            __table_args__ = (
+                ForeignKeyConstraint(
+                    ["account_id", "parent_id"], ["folder.account_id", "folder.folder_id"]
+                ),
+            )
+
+            account_id = mapped_column(Integer, primary_key=True)
+            folder_id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer)
+            name = mapped_column(String)
+
+            parent_folder = relationship(
+                "Folder", back_populates="child_folders", remote_side=[account_id, folder_id]
+            )
+
+            child_folders = relationship("Folder", back_populates="parent_folder")
+
+    在上面的代码中，我们将 ``account_id`` 传递到 :paramref:`_orm.relationship.remote_side` 列表中。:func:`_orm.relationship` 识别出这里的 ``account_id`` 列在两侧都有，并将“远程”列与 ``folder_id`` 列对齐，后者被识别为仅存在于“远程”一侧。
+
 .. tab:: 英文
 
-A sub-category of the adjacency list relationship is the rare
-case where a particular column is present on both the "local" and
-"remote" side of the join condition.  An example is the ``Folder``
-class below; using a composite primary key, the ``account_id``
-column refers to itself, to indicate sub folders which are within
-the same account as that of the parent; while ``folder_id`` refers
-to a specific folder within that account::
+    A sub-category of the adjacency list relationship is the rare
+    case where a particular column is present on both the "local" and
+    "remote" side of the join condition.  An example is the ``Folder``
+    class below; using a composite primary key, the ``account_id``
+    column refers to itself, to indicate sub folders which are within
+    the same account as that of the parent; while ``folder_id`` refers
+    to a specific folder within that account::
 
-    class Folder(Base):
-        __tablename__ = "folder"
-        __table_args__ = (
-            ForeignKeyConstraint(
-                ["account_id", "parent_id"], ["folder.account_id", "folder.folder_id"]
-            ),
-        )
+        class Folder(Base):
+            __tablename__ = "folder"
+            __table_args__ = (
+                ForeignKeyConstraint(
+                    ["account_id", "parent_id"], ["folder.account_id", "folder.folder_id"]
+                ),
+            )
 
-        account_id = mapped_column(Integer, primary_key=True)
-        folder_id = mapped_column(Integer, primary_key=True)
-        parent_id = mapped_column(Integer)
-        name = mapped_column(String)
+            account_id = mapped_column(Integer, primary_key=True)
+            folder_id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer)
+            name = mapped_column(String)
 
-        parent_folder = relationship(
-            "Folder", back_populates="child_folders", remote_side=[account_id, folder_id]
-        )
+            parent_folder = relationship(
+                "Folder", back_populates="child_folders", remote_side=[account_id, folder_id]
+            )
 
-        child_folders = relationship("Folder", back_populates="parent_folder")
+            child_folders = relationship("Folder", back_populates="parent_folder")
 
-Above, we pass ``account_id`` into the :paramref:`_orm.relationship.remote_side` list.
-:func:`_orm.relationship` recognizes that the ``account_id`` column here
-is on both sides, and aligns the "remote" column along with the
-``folder_id`` column, which it recognizes as uniquely present on
-the "remote" side.
+    Above, we pass ``account_id`` into the :paramref:`_orm.relationship.remote_side` list.
+    :func:`_orm.relationship` recognizes that the ``account_id`` column here
+    is on both sides, and aligns the "remote" column along with the
+    ``folder_id`` column, which it recognizes as uniquely present on
+    the "remote" side.
 
 .. _self_referential_query:
 
@@ -211,42 +234,71 @@ Self-Referential Query Strategies
 
 .. tab:: 中文
 
+    自引用结构的查询与其他查询一样工作::
+
+        # 获取所有名为 'child2' 的节点
+        session.scalars(select(Node).where(Node.data == "child2"))
+
+    但是，当尝试沿着树的一个级别到下一个级别的外键进行连接时，需要特别注意。在 SQL 中，从一个表到自身的连接要求表达式的至少一侧被“别名化(aliased)”，以便可以明确引用它。
+
+    回想一下 ORM 教程中的 :ref:`orm_queryguide_orm_aliases` ， :func:`_orm.aliased` 构造通常用于提供 ORM 实体的“别名”。使用这种技术从 ``Node`` 到自身的连接如下所示：
+
+    .. sourcecode:: python+sql
+
+        from sqlalchemy.orm import aliased
+
+        nodealias = aliased(Node)
+        session.scalars(
+            select(Node)
+            .where(Node.data == "subchild1")
+            .join(Node.parent.of_type(nodealias))
+            .where(nodealias.data == "child2")
+        ).all()
+        {execsql}SELECT node.id AS node_id,
+                node.parent_id AS node_parent_id,
+                node.data AS node_data
+        FROM node JOIN node AS node_1
+            ON node.parent_id = node_1.id
+        WHERE node.data = ?
+            AND node_1.data = ?
+        ['subchild1', 'child2']
+
 .. tab:: 英文
 
-Querying of self-referential structures works like any other query::
+    Querying of self-referential structures works like any other query::
 
-    # get all nodes named 'child2'
-    session.scalars(select(Node).where(Node.data == "child2"))
+        # get all nodes named 'child2'
+        session.scalars(select(Node).where(Node.data == "child2"))
 
-However extra care is needed when attempting to join along
-the foreign key from one level of the tree to the next.  In SQL,
-a join from a table to itself requires that at least one side of the
-expression be "aliased" so that it can be unambiguously referred to.
+    However extra care is needed when attempting to join along
+    the foreign key from one level of the tree to the next.  In SQL,
+    a join from a table to itself requires that at least one side of the
+    expression be "aliased" so that it can be unambiguously referred to.
 
-Recall from :ref:`orm_queryguide_orm_aliases` in the ORM tutorial that the
-:func:`_orm.aliased` construct is normally used to provide an "alias" of
-an ORM entity.  Joining from ``Node`` to itself using this technique
-looks like:
+    Recall from :ref:`orm_queryguide_orm_aliases` in the ORM tutorial that the
+    :func:`_orm.aliased` construct is normally used to provide an "alias" of
+    an ORM entity.  Joining from ``Node`` to itself using this technique
+    looks like:
 
-.. sourcecode:: python+sql
+    .. sourcecode:: python+sql
 
-    from sqlalchemy.orm import aliased
+        from sqlalchemy.orm import aliased
 
-    nodealias = aliased(Node)
-    session.scalars(
-        select(Node)
-        .where(Node.data == "subchild1")
-        .join(Node.parent.of_type(nodealias))
-        .where(nodealias.data == "child2")
-    ).all()
-    {execsql}SELECT node.id AS node_id,
-            node.parent_id AS node_parent_id,
-            node.data AS node_data
-    FROM node JOIN node AS node_1
-        ON node.parent_id = node_1.id
-    WHERE node.data = ?
-        AND node_1.data = ?
-    ['subchild1', 'child2']
+        nodealias = aliased(Node)
+        session.scalars(
+            select(Node)
+            .where(Node.data == "subchild1")
+            .join(Node.parent.of_type(nodealias))
+            .where(nodealias.data == "child2")
+        ).all()
+        {execsql}SELECT node.id AS node_id,
+                node.parent_id AS node_parent_id,
+                node.data AS node_data
+        FROM node JOIN node AS node_1
+            ON node.parent_id = node_1.id
+        WHERE node.data = ?
+            AND node_1.data = ?
+        ['subchild1', 'child2']
 
 
 .. _self_referential_eager_loading:
@@ -258,43 +310,72 @@ Configuring Self-Referential Eager Loading
 
 .. tab:: 中文
 
+    在正常查询操作期间，关系的预加载（eager loading）使用从父表到子表的连接或外连接进行，这样父表及其直接子集合或引用可以从单个 SQL 语句中填充，或通过第二个语句填充所有直接子集合。SQLAlchemy 的连接和子查询预加载在连接到相关项时始终使用别名表，因此与自引用连接兼容。然而，要对自引用关系使用预加载，SQLAlchemy 需要知道应该连接和/或查询多深的层次；否则，根本不会进行预加载。此深度设置通过 :paramref:`~.relationships.join_depth` 配置：
+
+    .. sourcecode:: python+sql
+
+        class Node(Base):
+            __tablename__ = "node"
+            id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer, ForeignKey("node.id"))
+            data = mapped_column(String(50))
+            children = relationship("Node", lazy="joined", join_depth=2)
+
+
+        session.scalars(select(Node)).all()
+        {execsql}SELECT node_1.id AS node_1_id,
+                node_1.parent_id AS node_1_parent_id,
+                node_1.data AS node_1_data,
+                node_2.id AS node_2_id,
+                node_2.parent_id AS node_2_parent_id,
+                node_2.data AS node_2_data,
+                node.id AS node_id,
+                node.parent_id AS node_parent_id,
+                node.data AS node_data
+        FROM node
+            LEFT OUTER JOIN node AS node_2
+                ON node.id = node_2.parent_id
+            LEFT OUTER JOIN node AS node_1
+                ON node_2.id = node_1.parent_id
+        []
+
 .. tab:: 英文
 
-Eager loading of relationships occurs using joins or outerjoins from parent to
-child table during a normal query operation, such that the parent and its
-immediate child collection or reference can be populated from a single SQL
-statement, or a second statement for all immediate child collections.
-SQLAlchemy's joined and subquery eager loading use aliased tables in all cases
-when joining to related items, so are compatible with self-referential
-joining. However, to use eager loading with a self-referential relationship,
-SQLAlchemy needs to be told how many levels deep it should join and/or query;
-otherwise the eager load will not take place at all. This depth setting is
-configured via :paramref:`~.relationships.join_depth`:
+    Eager loading of relationships occurs using joins or outerjoins from parent to
+    child table during a normal query operation, such that the parent and its
+    immediate child collection or reference can be populated from a single SQL
+    statement, or a second statement for all immediate child collections.
+    SQLAlchemy's joined and subquery eager loading use aliased tables in all cases
+    when joining to related items, so are compatible with self-referential
+    joining. However, to use eager loading with a self-referential relationship,
+    SQLAlchemy needs to be told how many levels deep it should join and/or query;
+    otherwise the eager load will not take place at all. This depth setting is
+    configured via :paramref:`~.relationships.join_depth`:
 
-.. sourcecode:: python+sql
+    .. sourcecode:: python+sql
 
-    class Node(Base):
-        __tablename__ = "node"
-        id = mapped_column(Integer, primary_key=True)
-        parent_id = mapped_column(Integer, ForeignKey("node.id"))
-        data = mapped_column(String(50))
-        children = relationship("Node", lazy="joined", join_depth=2)
+        class Node(Base):
+            __tablename__ = "node"
+            id = mapped_column(Integer, primary_key=True)
+            parent_id = mapped_column(Integer, ForeignKey("node.id"))
+            data = mapped_column(String(50))
+            children = relationship("Node", lazy="joined", join_depth=2)
 
 
-    session.scalars(select(Node)).all()
-    {execsql}SELECT node_1.id AS node_1_id,
-            node_1.parent_id AS node_1_parent_id,
-            node_1.data AS node_1_data,
-            node_2.id AS node_2_id,
-            node_2.parent_id AS node_2_parent_id,
-            node_2.data AS node_2_data,
-            node.id AS node_id,
-            node.parent_id AS node_parent_id,
-            node.data AS node_data
-    FROM node
-        LEFT OUTER JOIN node AS node_2
-            ON node.id = node_2.parent_id
-        LEFT OUTER JOIN node AS node_1
-            ON node_2.id = node_1.parent_id
-    []
+        session.scalars(select(Node)).all()
+        {execsql}SELECT node_1.id AS node_1_id,
+                node_1.parent_id AS node_1_parent_id,
+                node_1.data AS node_1_data,
+                node_2.id AS node_2_id,
+                node_2.parent_id AS node_2_parent_id,
+                node_2.data AS node_2_data,
+                node.id AS node_id,
+                node.parent_id AS node_parent_id,
+                node.data AS node_data
+        FROM node
+            LEFT OUTER JOIN node AS node_2
+                ON node.id = node_2.parent_id
+            LEFT OUTER JOIN node AS node_1
+                ON node_2.id = node_1.parent_id
+        []
 
