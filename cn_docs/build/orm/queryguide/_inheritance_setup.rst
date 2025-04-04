@@ -1,12 +1,18 @@
 :orphan:
 
 ============================================
-Setup for ORM Queryguide: Joined Inheritance
+ORM 查询指南的设置：连接继承
 ============================================
 
-This page illustrates the mappings and fixture data used by the
-:ref:`joined_inheritance` examples in the :doc:`inheritance` document of
-the :ref:`queryguide_toplevel`.
+Setup for ORM Queryguide: Joined Inheritance
+
+.. tab:: 中文
+
+    本页说明了:ref:`queryguide_toplevel` 的:doc:`inheritance` 文档中的:ref:`joined_inheritance` 示例所使用的映射和装置数据。
+
+.. tab:: 英文
+
+    This page illustrates the mappings and fixture data used by the :ref:`joined_inheritance` examples in the :doc:`inheritance` document of the :ref:`queryguide_toplevel`.
 
 ..  sourcecode:: python
 
