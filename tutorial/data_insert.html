@@ -1,0 +1,990 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="copyright" title="版权所有" href="../copyright.html" /><link rel="next" title="使用 SELECT 语句" href="data_select.html" /><link rel="prev" title="处理数据" href="data.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>使用 INSERT 语句 - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">概述</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">SQLAlchemy 统一教程</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="data.html">处理数据</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../orm/index.html">SQLAlchemy ORM</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../orm/quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/queryguide/index.html">ORM 查询指南</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../orm/examples.html">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">SQLAlchemy Core</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/schema.html">Schema 定义语言</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/ddl.html">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/api_basics.html">Core API 基础</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/exceptions.html">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">常见问题</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/installation.html">安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/connections.html">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/ormconfiguration.html">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">错误消息</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../changelog/index.html">变更和迁移</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_21.html">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_02.html">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <aside class="topic">
+<p class="topic-title">SQLAlchemy 1.4 / 2.0 Tutorial</p>
+<p>This page is part of the <a class="reference internal" href="index.html"><span class="doc">SQLAlchemy 统一教程</span></a>.</p>
+<p>Previous: <a class="reference internal" href="data.html"><span class="doc">处理数据</span></a>   |   Next: <a class="reference internal" href="data_select.html"><span class="doc">使用 SELECT 语句</span></a></p>
+</aside>
+<section class="core-header orm-addin" id="insert">
+<span id="tutorial-core-insert"></span><h1>使用 INSERT 语句<a class="headerlink" href="#insert" title="Link to this heading">¶</a></h1>
+<p>Using INSERT Statements</p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>使用 Core 以及在进行批量操作时使用 ORM 时，直接使用 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.insert" title="sqlalchemy.sql.expression.insert"><code class="xref py py-func docutils literal notranslate"><span class="pre">insert()</span></code></a> 函数生成 SQL INSERT 语句 - 该函数生成一个新的 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 实例，表示 SQL 中的 INSERT 语句，用于向表中添加新数据。</p>
+<div class="orm-header docutils container">
+<p><strong>ORM 读者</strong> -</p>
+<p>本节详细介绍了 Core 生成单个 SQL INSERT 语句以向表中添加新行的方式。使用 ORM 时，我们通常使用另一个工具，即 <a class="reference internal" href="../glossary.html#term-unit-of-work"><span class="xref std std-term">unit of work</span></a>，它将自动生成多个 INSERT 语句。然而，即使在 ORM 为我们运行时，了解 Core 如何处理数据创建和操作也非常有用。此外，ORM 支持直接使用 INSERT，使用称为 <a class="reference internal" href="orm_data_manipulation.html#tutorial-orm-bulk"><span class="std std-ref">批量/多行 INSERT、upsert、UPDATE 和 DELETE</span></a> 的功能。</p>
+<p>要直接跳到如何使用正常的工作单元模式使用 ORM 插入行，请参阅 <a class="reference internal" href="orm_data_manipulation.html#tutorial-inserting-orm"><span class="std std-ref">使用 ORM 工作单元模式插入行</span></a>。</p>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>When using Core as well as when using the ORM for bulk operations, a SQL INSERT
+statement is generated directly using the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.insert" title="sqlalchemy.sql.expression.insert"><code class="xref py py-func docutils literal notranslate"><span class="pre">insert()</span></code></a> function - this
+function generates a new instance of <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> which represents an
+INSERT statement in SQL, that adds new data into a table.</p>
+<div class="orm-header docutils container">
+<p><strong>ORM Readers</strong> -</p>
+<p>This section details the Core means of generating an individual SQL INSERT
+statement in order to add new rows to a table. When using the ORM, we
+normally use another tool that rides on top of this called the
+<a class="reference internal" href="../glossary.html#term-unit-of-work"><span class="xref std std-term">unit of work</span></a>, which will automate the production of many INSERT
+statements at once. However, understanding how the Core handles data
+creation and manipulation is very useful even when the ORM is running
+it for us.  Additionally, the ORM supports direct use of INSERT
+using a feature called <a class="reference internal" href="orm_data_manipulation.html#tutorial-orm-bulk"><span class="std std-ref">批量/多行 INSERT、upsert、UPDATE 和 DELETE</span></a>.</p>
+<p>To skip directly to how to INSERT rows with the ORM using normal
+unit of work patterns, see <a class="reference internal" href="orm_data_manipulation.html#tutorial-inserting-orm"><span class="std std-ref">使用 ORM 工作单元模式插入行</span></a>.</p>
+</div>
+</div>
+</div>
+<section id="insert-sql">
+<h2>insert() SQL 表达式构造<a class="headerlink" href="#insert-sql" title="Link to this heading">¶</a></h2>
+<p>The insert() SQL Expression Construct</p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>一个简单的 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 示例，展示目标表和 VALUES 子句:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">insert</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">user_table</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;spongebob&quot;</span><span class="p">,</span> <span class="n">fullname</span><span class="o">=</span><span class="s2">&quot;Spongebob Squarepants&quot;</span><span class="p">)</span></pre></div>
+</div>
+<p>上面的 <code class="docutils literal notranslate"><span class="pre">stmt</span></code> 变量是 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 的一个实例。大多数 SQL 表达式可以直接字符串化，以查看生成的内容的一般形式:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">fullname</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(:</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">fullname</span><span class="p">)</span>
+</div></pre></div>
+</div>
+<p>字符串化形式是通过生成对象的 <a class="reference internal" href="../core/internals.html#sqlalchemy.engine.Compiled" title="sqlalchemy.engine.Compiled"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiled</span></code></a> 形式创建的，其中包括语句的数据库特定字符串 SQL 表示；我们可以使用 <a class="reference internal" href="../core/foundation.html#sqlalchemy.sql.expression.ClauseElement.compile" title="sqlalchemy.sql.expression.ClauseElement.compile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ClauseElement.compile()</span></code></a> 方法直接获取此对象:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compiled</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span></pre></div>
+</div>
+<p>我们的 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 构造是一个“参数化”构造的示例，之前在 <a class="reference internal" href="dbapi_transactions.html#tutorial-sending-parameters"><span class="std std-ref">发送参数</span></a> 中说明；要查看 <code class="docutils literal notranslate"><span class="pre">name</span></code> 和 <code class="docutils literal notranslate"><span class="pre">fullname</span></code> <a class="reference internal" href="../glossary.html#term-bound-parameters"><span class="xref std std-term">bound parameters</span></a>，这些也可以从 <a class="reference internal" href="../core/internals.html#sqlalchemy.engine.Compiled" title="sqlalchemy.engine.Compiled"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiled</span></code></a> 构造中获取:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compiled</span><span class="o">.</span><span class="n">params</span>
+<span class="go">{&#39;name&#39;: &#39;spongebob&#39;, &#39;fullname&#39;: &#39;Spongebob Squarepants&#39;}</span></pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>A simple example of <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> illustrating the target table
+and the VALUES clause at once:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">insert</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">user_table</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;spongebob&quot;</span><span class="p">,</span> <span class="n">fullname</span><span class="o">=</span><span class="s2">&quot;Spongebob Squarepants&quot;</span><span class="p">)</span></pre></div>
+</div>
+<p>The above <code class="docutils literal notranslate"><span class="pre">stmt</span></code> variable is an instance of <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a>.  Most
+SQL expressions can be stringified in place as a means to see the general
+form of what’s being produced:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">fullname</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(:</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">fullname</span><span class="p">)</span>
+</div></pre></div>
+</div>
+<p>The stringified form is created by producing a <a class="reference internal" href="../core/internals.html#sqlalchemy.engine.Compiled" title="sqlalchemy.engine.Compiled"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiled</span></code></a> form
+of the object which includes a database-specific string SQL representation of
+the statement; we can acquire this object directly using the
+<a class="reference internal" href="../core/foundation.html#sqlalchemy.sql.expression.ClauseElement.compile" title="sqlalchemy.sql.expression.ClauseElement.compile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ClauseElement.compile()</span></code></a> method:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compiled</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span></pre></div>
+</div>
+<p>Our <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> construct is an example of a “parameterized”
+construct, illustrated previously at <a class="reference internal" href="dbapi_transactions.html#tutorial-sending-parameters"><span class="std std-ref">发送参数</span></a>; to
+view the <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">fullname</span></code> <a class="reference internal" href="../glossary.html#term-bound-parameters"><span class="xref std std-term">bound parameters</span></a>, these are
+available from the <a class="reference internal" href="../core/internals.html#sqlalchemy.engine.Compiled" title="sqlalchemy.engine.Compiled"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiled</span></code></a> construct as well:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compiled</span><span class="o">.</span><span class="n">params</span>
+<span class="go">{&#39;name&#39;: &#39;spongebob&#39;, &#39;fullname&#39;: &#39;Spongebob Squarepants&#39;}</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h2>执行语句<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p>Executing the Statement</p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<p>通过执行该语句，我们可以在 <code class="docutils literal notranslate"><span class="pre">user_table</span></code> 中插入一行。
+INSERT SQL 以及捆绑的参数可以在 SQL 日志中看到：</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="go">...     result = conn.execute(stmt)</span>
+<span class="go">...     conn.commit()</span>
+<div class='show_sql'><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">fullname</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="o">?</span><span class="p">)</span>
+<span class="p">[...]</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;spongebob&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Spongebob Squarepants&#39;</span><span class="p">)</span>
+<span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<p>在上面的简单形式中，INSERT 语句不返回任何行，如果仅插入一行，通常会包括返回在插入该行期间生成的列级默认值信息的功能，最常见的是整数主键值。在上述情况下，SQLite 数据库中的第一行通常会返回第一个整数主键值 <code class="docutils literal notranslate"><span class="pre">1</span></code>，我们可以使用 <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.inserted_primary_key" title="sqlalchemy.engine.CursorResult.inserted_primary_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.inserted_primary_key</span></code></a> 访问器获取：</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">inserted_primary_key</span>
+<span class="go">(1,)</span></pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<p><a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.inserted_primary_key" title="sqlalchemy.engine.CursorResult.inserted_primary_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.inserted_primary_key</span></code></a> 返回一个元组，因为主键可能包含多个列。这被称为 <a class="reference internal" href="../glossary.html#term-composite-primary-key"><span class="xref std std-term">composite primary key</span></a>。<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.inserted_primary_key" title="sqlalchemy.engine.CursorResult.inserted_primary_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.inserted_primary_key</span></code></a> 旨在始终包含刚插入记录的完整主键，而不仅仅是“cursor.lastrowid”类型的值，并且无论是否使用“自增”，都旨在填充，因此为了表达完整的主键，它是一个元组。</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">在 1.4.8 版本发生变更: </span>由 <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.inserted_primary_key" title="sqlalchemy.engine.CursorResult.inserted_primary_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.inserted_primary_key</span></code></a> 返回的元组现在是一个命名元组，通过将其返回为 <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Row" title="sqlalchemy.engine.Row"><code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code></a> 对象来实现。</p>
+</div>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<p>Invoking the statement we can INSERT a row into <code class="docutils literal notranslate"><span class="pre">user_table</span></code>.
+The INSERT SQL as well as the bundled parameters can be seen in the
+SQL logging:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="go">...     result = conn.execute(stmt)</span>
+<span class="go">...     conn.commit()</span>
+<div class='show_sql'><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">fullname</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="o">?</span><span class="p">)</span>
+<span class="p">[...]</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;spongebob&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Spongebob Squarepants&#39;</span><span class="p">)</span>
+<span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<p>In its simple form above, the INSERT statement does not return any rows, and if
+only a single row is inserted, it will usually include the ability to return
+information about column-level default values that were generated during the
+INSERT of that row, most commonly an integer primary key value.  In the above
+case the first row in a SQLite database will normally return <code class="docutils literal notranslate"><span class="pre">1</span></code> for the
+first integer primary key value, which we can acquire using the
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.inserted_primary_key" title="sqlalchemy.engine.CursorResult.inserted_primary_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.inserted_primary_key</span></code></a> accessor:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">inserted_primary_key</span>
+<span class="go">(1,)</span></pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<p><a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.inserted_primary_key" title="sqlalchemy.engine.CursorResult.inserted_primary_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.inserted_primary_key</span></code></a> returns a tuple</p>
+</div>
+<p>because a primary key may contain multiple columns.  This is known as
+a <a class="reference internal" href="../glossary.html#term-composite-primary-key"><span class="xref std std-term">composite primary key</span></a>.  The <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.inserted_primary_key" title="sqlalchemy.engine.CursorResult.inserted_primary_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.inserted_primary_key</span></code></a>
+is intended to always contain the complete primary key of the record just
+inserted, not just a “cursor.lastrowid” kind of value, and is also intended
+to be populated regardless of whether or not “autoincrement” were used, hence
+to express a complete primary key it’s a tuple.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">在 1.4.8 版本发生变更: </span>the tuple returned by</p>
+</div>
+<p><a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.inserted_primary_key" title="sqlalchemy.engine.CursorResult.inserted_primary_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.inserted_primary_key</span></code></a> is now a named tuple
+fulfilled by returning it as a <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Row" title="sqlalchemy.engine.Row"><code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code></a> object.</p>
+</div>
+</div>
+</section>
+<section id="insert-values">
+<span id="tutorial-core-insert-values-clause"></span><h2>INSERT 通常会自动生成“values”子句<a class="headerlink" href="#insert-values" title="Link to this heading">¶</a></h2>
+<p>INSERT usually generates the “values” clause automatically</p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">中文</label><div class="tab-content docutils container">
+<p>示例中使用了 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> 方法来显式创建 SQL INSERT 语句的 VALUES 子句。如果我们不实际使用 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> 并仅打印出一个“空”语句，我们会得到一个包含表中每一列的 INSERT:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert</span><span class="p">(</span><span class="n">user_table</span><span class="p">))</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">fullname</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(:</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">fullname</span><span class="p">)</span>
+</div></pre></div>
+</div>
+<p>如果我们使用尚未调用 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> 的 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 构造并执行它而不是打印它，该语句将基于我们传递给 <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.execute" title="sqlalchemy.engine.Connection.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.execute()</span></code></a> 方法的参数编译为字符串，并仅包括与传递的参数相关的列。这实际上是使用 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 插入行的常用方法，无需键入显式 VALUES 子句。下面的示例说明了一个带有一组参数的两列 INSERT 语句的执行：</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="go">...     result = conn.execute(</span>
+<span class="go">...         insert(user_table),</span>
+<span class="go">...         [</span>
+<span class="go">...             {&quot;name&quot;: &quot;sandy&quot;, &quot;fullname&quot;: &quot;Sandy Cheeks&quot;},</span>
+<span class="go">...             {&quot;name&quot;: &quot;patrick&quot;, &quot;fullname&quot;: &quot;Patrick Star&quot;},</span>
+<span class="go">...         ],</span>
+<span class="go">...     )</span>
+<span class="go">...     conn.commit()</span>
+<div class='show_sql'><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">fullname</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="o">?</span><span class="p">)</span>
+<span class="p">[...]</span><span class="w"> </span><span class="p">[(</span><span class="s1">&#39;sandy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sandy Cheeks&#39;</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;patrick&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Patrick Star&#39;</span><span class="p">)]</span>
+<span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<p>上面的执行采用了在 <a class="reference internal" href="dbapi_transactions.html#tutorial-multiple-parameters"><span class="std std-ref">发送多个参数</span></a> 中首次介绍的“executemany”形式，但与使用 <a class="reference internal" href="../core/sqlelement.html#sqlalchemy.sql.expression.text" title="sqlalchemy.sql.expression.text"><code class="xref py py-func docutils literal notranslate"><span class="pre">text()</span></code></a> 构造不同，我们不需要拼出任何 SQL。通过将字典或字典列表传递给与 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 构造结合使用的 <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.execute" title="sqlalchemy.engine.Connection.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.execute()</span></code></a> 方法，<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> 确保传递的列名将自动在 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 构造的 VALUES 子句中表示。</p>
+<div class="admonition deepalchemy">
+<p class="admonition-title">Deep Alchemy</p>
+<p>嗨，欢迎来到 <strong>深度炼金术(Deep Alchemy)</strong> 的第一版。左边的人被称为 <strong>炼金术士(The Alchemist)</strong> ，你会注意到他们 <strong>不是</strong> 巫师，因为尖顶帽子没有向上翘。炼金术士来解释通常 <strong>更高级和/或复杂(more advanced and/or tricky)</strong> 且 <strong>通常不需要(not usually needed)</strong> 的内容，但无论出于何种原因，他们认为你应该了解 SQLAlchemy 能做的这个事情。</p>
+<p>在本版中，为了在 <code class="docutils literal notranslate"><span class="pre">address_table</span></code> 中也有一些有趣的数据，下面是一个更高级的示例，说明如何在同时包括从参数生成的附加 VALUES 的情况下显式使用 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> 方法。构造了一个 <a class="reference internal" href="../glossary.html#term-scalar-subquery"><span class="xref std std-term">scalar subquery</span></a>，使用了在下一节中介绍的 <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.select" title="sqlalchemy.sql.expression.select"><code class="xref py py-func docutils literal notranslate"><span class="pre">select()</span></code></a> 构造，子查询中使用的参数使用 <a class="reference internal" href="../core/sqlelement.html#sqlalchemy.sql.expression.bindparam" title="sqlalchemy.sql.expression.bindparam"><code class="xref py py-func docutils literal notranslate"><span class="pre">bindparam()</span></code></a> 构造显式设置绑定参数名称。</p>
+<p>这是一些稍微 <strong>更深(deeper)</strong> 的炼金术，我们可以添加相关的行而不需要将 <code class="docutils literal notranslate"><span class="pre">user_table</span></code> 操作的主键标识符获取到应用程序中。大多数炼金术士将简单地使用 ORM，它会为我们处理类似的事情。</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span><span class="p">,</span> <span class="n">bindparam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scalar_subq</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     select(user_table.c.id)</span>
+<span class="go">...     .where(user_table.c.name == bindparam(&quot;username&quot;))</span>
+<span class="go">...     .scalar_subquery()</span>
+<span class="go">... )</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="go">...     result = conn.execute(</span>
+<span class="go">...         insert(address_table).values(user_id=scalar_subq),</span>
+<span class="go">...         [</span>
+<span class="go">...             {</span>
+<span class="go">...                 &quot;username&quot;: &quot;spongebob&quot;,</span>
+<span class="go">...                 &quot;email_address&quot;: &quot;spongebob@sqlalchemy.org&quot;,</span>
+<span class="go">...             },</span>
+<span class="go">...             {&quot;username&quot;: &quot;sandy&quot;, &quot;email_address&quot;: &quot;sandy@sqlalchemy.org&quot;},</span>
+<span class="go">...             {&quot;username&quot;: &quot;sandy&quot;, &quot;email_address&quot;: &quot;sandy@squirrelpower.org&quot;},</span>
+<span class="go">...         ],</span>
+<span class="go">...     )</span>
+<span class="go">...     conn.commit()</span>
+<div class='show_sql'><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">email_address</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">((</span><span class="k">SELECT</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="p">),</span><span class="w"> </span><span class="o">?</span><span class="p">)</span>
+<span class="p">[...]</span><span class="w"> </span><span class="p">[(</span><span class="s1">&#39;spongebob&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;spongebob@sqlalchemy.org&#39;</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;sandy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;sandy@sqlalchemy.org&#39;</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;sandy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;sandy@squirrelpower.org&#39;</span><span class="p">)]</span>
+<span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<p>有了这些，我们的表中有了一些更有趣的数据，我们将在接下来的部分中使用这些数据。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<p>如果我们指示 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> 不带任何参数，则生成一个真正的“空” INSERT，它仅插入表的“默认值”而不包含任何显式值；并非每个数据库后端都支持此功能，但这是 SQLite 生成的内容:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert</span><span class="p">(</span><span class="n">user_table</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">engine</span><span class="p">))</span></pre></div>
+</div>
+<p>{printsql}INSERT INTO user_account DEFAULT VALUES</p>
+</div>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">英文</label><div class="tab-content docutils container">
+<p>The example above made use of the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> method to
+explicitly create the VALUES clause of the SQL INSERT statement.   If
+we don’t actually use <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> and just print out an “empty”
+statement, we get an INSERT for every column in the table:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert</span><span class="p">(</span><span class="n">user_table</span><span class="p">))</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">fullname</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(:</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">fullname</span><span class="p">)</span>
+</div></pre></div>
+</div>
+<p>If we take an <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> construct that has not had
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> called upon it and execute it
+rather than print it, the statement will be compiled to a string based
+on the parameters that we passed to the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.execute" title="sqlalchemy.engine.Connection.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.execute()</span></code></a>
+method, and only include columns relevant to the parameters that were
+passed.   This is actually the usual way that
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> is used to insert rows without having to type out
+an explicit VALUES clause.   The example below illustrates a two-column
+INSERT statement being executed with a list of parameters at once:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="go">...     result = conn.execute(</span>
+<span class="go">...         insert(user_table),</span>
+<span class="go">...         [</span>
+<span class="go">...             {&quot;name&quot;: &quot;sandy&quot;, &quot;fullname&quot;: &quot;Sandy Cheeks&quot;},</span>
+<span class="go">...             {&quot;name&quot;: &quot;patrick&quot;, &quot;fullname&quot;: &quot;Patrick Star&quot;},</span>
+<span class="go">...         ],</span>
+<span class="go">...     )</span>
+<span class="go">...     conn.commit()</span>
+<div class='show_sql'><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">fullname</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="o">?</span><span class="p">)</span>
+<span class="p">[...]</span><span class="w"> </span><span class="p">[(</span><span class="s1">&#39;sandy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sandy Cheeks&#39;</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;patrick&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Patrick Star&#39;</span><span class="p">)]</span>
+<span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<p>The execution above features “executemany” form first illustrated at
+<a class="reference internal" href="dbapi_transactions.html#tutorial-multiple-parameters"><span class="std std-ref">发送多个参数</span></a>, however unlike when using the
+<a class="reference internal" href="../core/sqlelement.html#sqlalchemy.sql.expression.text" title="sqlalchemy.sql.expression.text"><code class="xref py py-func docutils literal notranslate"><span class="pre">text()</span></code></a> construct, we didn’t have to spell out any SQL.
+By passing a dictionary or list of dictionaries to the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.execute" title="sqlalchemy.engine.Connection.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.execute()</span></code></a>
+method in conjunction with the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> construct, the
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> ensures that the column names which are passed
+will be expressed in the VALUES clause of the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a>
+construct automatically.</p>
+<div class="admonition deepalchemy">
+<p class="admonition-title">Deep Alchemy</p>
+<p>Hi, welcome to the first edition of <strong>Deep Alchemy</strong>.   The person on the
+left is known as <strong>The Alchemist</strong>, and you’ll note they are <strong>not</strong> a wizard,
+as the pointy hat is not sticking upwards.   The Alchemist comes around to
+describe things that are generally <strong>more advanced and/or tricky</strong> and
+additionally <strong>not usually needed</strong>, but for whatever reason they feel you
+should know about this thing that SQLAlchemy can do.</p>
+<p>In this edition, towards the goal of having some interesting data in the
+<code class="docutils literal notranslate"><span class="pre">address_table</span></code> as well, below is a more advanced example illustrating
+how the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> method may be used explicitly while at
+the same time including for additional VALUES generated from the
+parameters.    A <a class="reference internal" href="../glossary.html#term-scalar-subquery"><span class="xref std std-term">scalar subquery</span></a> is constructed, making use of the
+<a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.select" title="sqlalchemy.sql.expression.select"><code class="xref py py-func docutils literal notranslate"><span class="pre">select()</span></code></a> construct introduced in the next section, and the
+parameters used in the subquery are set up using an explicit bound
+parameter name, established using the <a class="reference internal" href="../core/sqlelement.html#sqlalchemy.sql.expression.bindparam" title="sqlalchemy.sql.expression.bindparam"><code class="xref py py-func docutils literal notranslate"><span class="pre">bindparam()</span></code></a> construct.</p>
+<p>This is some slightly <strong>deeper</strong> alchemy just so that we can add related
+rows without fetching the primary key identifiers from the <code class="docutils literal notranslate"><span class="pre">user_table</span></code>
+operation into the application.   Most Alchemists will simply use the ORM
+which takes care of things like this for us.</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span><span class="p">,</span> <span class="n">bindparam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scalar_subq</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     select(user_table.c.id)</span>
+<span class="go">...     .where(user_table.c.name == bindparam(&quot;username&quot;))</span>
+<span class="go">...     .scalar_subquery()</span>
+<span class="go">... )</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="go">...     result = conn.execute(</span>
+<span class="go">...         insert(address_table).values(user_id=scalar_subq),</span>
+<span class="go">...         [</span>
+<span class="go">...             {</span>
+<span class="go">...                 &quot;username&quot;: &quot;spongebob&quot;,</span>
+<span class="go">...                 &quot;email_address&quot;: &quot;spongebob@sqlalchemy.org&quot;,</span>
+<span class="go">...             },</span>
+<span class="go">...             {&quot;username&quot;: &quot;sandy&quot;, &quot;email_address&quot;: &quot;sandy@sqlalchemy.org&quot;},</span>
+<span class="go">...             {&quot;username&quot;: &quot;sandy&quot;, &quot;email_address&quot;: &quot;sandy@squirrelpower.org&quot;},</span>
+<span class="go">...         ],</span>
+<span class="go">...     )</span>
+<span class="go">...     conn.commit()</span>
+<div class='show_sql'><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">email_address</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">((</span><span class="k">SELECT</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="p">),</span><span class="w"> </span><span class="o">?</span><span class="p">)</span>
+<span class="p">[...]</span><span class="w"> </span><span class="p">[(</span><span class="s1">&#39;spongebob&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;spongebob@sqlalchemy.org&#39;</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;sandy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;sandy@sqlalchemy.org&#39;</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;sandy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;sandy@squirrelpower.org&#39;</span><span class="p">)]</span>
+<span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<p>With that, we have some more interesting data in our tables that we will
+make use of in the upcoming sections.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<p>A true “empty” INSERT that inserts only the “defaults” for a table without including any explicit values at all is generated if we indicate <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.values" title="sqlalchemy.sql.expression.Insert.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.values()</span></code></a> with no arguments; not every database backend supports this, but here’s what SQLite produces:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert</span><span class="p">(</span><span class="n">user_table</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">engine</span><span class="p">))</span></pre></div>
+</div>
+<p>{printsql}INSERT INTO user_account DEFAULT VALUES</p>
+</div>
+</div>
+</div>
+</section>
+<section id="insert-returning">
+<span id="tutorial-insert-returning"></span><h2>INSERT…RETURNING<a class="headerlink" href="#insert-returning" title="Link to this heading">¶</a></h2>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--1">中文</label><div class="tab-content docutils container">
+<p>对于支持的后端，RETURNING 子句会自动使用以检索最后插入的主键值以及服务器默认值。然而，也可以使用 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.returning" title="sqlalchemy.sql.expression.Insert.returning"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.returning()</span></code></a> 方法显式指定 RETURNING 子句；在这种情况下，执行语句时返回的 <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Result" title="sqlalchemy.engine.Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">Result</span></code></a> 对象包含可以获取的行:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">insert_stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">address_table</span><span class="p">)</span><span class="o">.</span><span class="n">returning</span><span class="p">(</span>
+<span class="go">...     address_table.c.id, address_table.c.email_address</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert_stmt</span><span class="p">)</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">email_address</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(:</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">email_address</span><span class="p">)</span>
+<span class="k">RETURNING</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span>
+</div></pre></div>
+</div>
+<p>它还可以与 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.from_select" title="sqlalchemy.sql.expression.Insert.from_select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.from_select()</span></code></a> 结合使用，如下面的示例所示，构建在 <a class="reference internal" href="#tutorial-insert-from-select"><span class="std std-ref">INSERT…FROM SELECT</span></a> 中提到的示例之上:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">select_stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;@aol.com&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">insert_stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">address_table</span><span class="p">)</span><span class="o">.</span><span class="n">from_select</span><span class="p">(</span>
+<span class="go">...     [&quot;user_id&quot;, &quot;email_address&quot;], select_stmt</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert_stmt</span><span class="o">.</span><span class="n">returning</span><span class="p">(</span><span class="n">address_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">address_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">email_address</span><span class="p">))</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">email_address</span><span class="p">)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">:</span><span class="n">name_1</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">anon_1</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">RETURNING</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span>
+</div></pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<p>RETURNING 功能还支持 UPDATE 和 DELETE 语句，这将在本教程的后面介绍。</p>
+<p>对于 INSERT 语句，RETURNING 功能可用于单行语句以及一次插入多行的语句。支持 RETURNING 的多行 INSERT 是特定于方言的，但对于支持 RETURNING 的所有 SQLAlchemy 包含的方言均支持此功能。有关此功能的背景信息，请参阅部分 <a class="reference internal" href="../core/connections.html#engine-insertmanyvalues"><span class="std std-ref">INSERT 语句的“插入多个值”行为</span></a>。</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p>ORM 也支持带或不带 RETURNING 的批量 INSERT。参考文档请参阅 <a class="reference internal" href="../orm/queryguide/dml.html#orm-queryguide-bulk-insert"><span class="std std-ref">ORM 批量 INSERT 语句</span></a>。</p>
+</div>
+</div>
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--2">英文</label><div class="tab-content docutils container">
+<p>The RETURNING clause for supported backends is used
+automatically in order to retrieve the last inserted primary key value
+as well as the values for server defaults.   However the RETURNING clause
+may also be specified explicitly using the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.returning" title="sqlalchemy.sql.expression.Insert.returning"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.returning()</span></code></a>
+method; in this case, the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Result" title="sqlalchemy.engine.Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">Result</span></code></a>
+object that’s returned when the statement is executed has rows which
+can be fetched:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">insert_stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">address_table</span><span class="p">)</span><span class="o">.</span><span class="n">returning</span><span class="p">(</span>
+<span class="go">...     address_table.c.id, address_table.c.email_address</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert_stmt</span><span class="p">)</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">email_address</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(:</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="p">:</span><span class="n">email_address</span><span class="p">)</span>
+<span class="k">RETURNING</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span>
+</div></pre></div>
+</div>
+<p>It can also be combined with <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.from_select" title="sqlalchemy.sql.expression.Insert.from_select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.from_select()</span></code></a>,
+as in the example below that builds upon the example stated in
+<a class="reference internal" href="#tutorial-insert-from-select"><span class="std std-ref">INSERT…FROM SELECT</span></a>:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">select_stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;@aol.com&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">insert_stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">address_table</span><span class="p">)</span><span class="o">.</span><span class="n">from_select</span><span class="p">(</span>
+<span class="go">...     [&quot;user_id&quot;, &quot;email_address&quot;], select_stmt</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert_stmt</span><span class="o">.</span><span class="n">returning</span><span class="p">(</span><span class="n">address_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">address_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">email_address</span><span class="p">))</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">email_address</span><span class="p">)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">:</span><span class="n">name_1</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">anon_1</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">RETURNING</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span>
+</div></pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<p>The RETURNING feature is also supported by UPDATE and DELETE statements,
+which will be introduced later in this tutorial.</p>
+<p>For INSERT statements, the RETURNING feature may be used
+both for single-row statements as well as for statements that INSERT
+multiple rows at once.  Support for multiple-row INSERT with RETURNING
+is dialect specific, however is supported for all the dialects
+that are included in SQLAlchemy which support RETURNING.  See the section
+<a class="reference internal" href="../core/connections.html#engine-insertmanyvalues"><span class="std std-ref">INSERT 语句的“插入多个值”行为</span></a> for background on this feature.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p>Bulk INSERT with or without RETURNING is also supported by the ORM.  See
+<a class="reference internal" href="../orm/queryguide/dml.html#orm-queryguide-bulk-insert"><span class="std std-ref">ORM 批量 INSERT 语句</span></a> for reference documentation.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="insert-from-select">
+<span id="tutorial-insert-from-select"></span><h2>INSERT…FROM SELECT<a class="headerlink" href="#insert-from-select" title="Link to this heading">¶</a></h2>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--1">中文</label><div class="tab-content docutils container">
+<p>一个较少使用但为完整性考虑而存在的 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 特性是，<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> 构造可以通过 <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.from_select" title="sqlalchemy.sql.expression.Insert.from_select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.from_select()</span></code></a> 方法直接从 SELECT 获取行来组成 INSERT。这种方法接受一个 <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.select" title="sqlalchemy.sql.expression.select"><code class="xref py py-func docutils literal notranslate"><span class="pre">select()</span></code></a> 构造和一列列名列表，目标是实际 INSERT 中的列。在下面的示例中，行被添加到 <code class="docutils literal notranslate"><span class="pre">address</span></code> 表中，这些行是从 <code class="docutils literal notranslate"><span class="pre">user_account</span></code> 表中派生的，给每个用户一个免费的 <code class="docutils literal notranslate"><span class="pre">aol.com</span></code> 电子邮件地址:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">select_stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;@aol.com&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">insert_stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">address_table</span><span class="p">)</span><span class="o">.</span><span class="n">from_select</span><span class="p">(</span>
+<span class="go">...     [&quot;user_id&quot;, &quot;email_address&quot;], select_stmt</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert_stmt</span><span class="p">)</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">email_address</span><span class="p">)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">:</span><span class="n">name_1</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">anon_1</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span>
+</div></pre></div>
+</div>
+<p>这种构造用于当希望将数据从数据库的某些其他部分直接复制到一组新行中，而无需实际从客户端获取和重新发送数据时。</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> - 在 SQL 表达式 API 文档中</p>
+</div>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--2">英文</label><div class="tab-content docutils container">
+<p>A less used feature of <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a>, but here for completeness, the
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> construct can compose an INSERT that gets rows directly
+from a SELECT using the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert.from_select" title="sqlalchemy.sql.expression.Insert.from_select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.from_select()</span></code></a> method.
+This method accepts a <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.select" title="sqlalchemy.sql.expression.select"><code class="xref py py-func docutils literal notranslate"><span class="pre">select()</span></code></a> construct, which is discussed in the
+next section, along with a list of column names to be targeted in the
+actual INSERT.  In the example below, rows are added to the <code class="docutils literal notranslate"><span class="pre">address</span></code>
+table which are derived from rows in the <code class="docutils literal notranslate"><span class="pre">user_account</span></code> table, giving each
+user a free email address at <code class="docutils literal notranslate"><span class="pre">aol.com</span></code>:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">select_stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;@aol.com&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">insert_stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">address_table</span><span class="p">)</span><span class="o">.</span><span class="n">from_select</span><span class="p">(</span>
+<span class="go">...     [&quot;user_id&quot;, &quot;email_address&quot;], select_stmt</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">insert_stmt</span><span class="p">)</span>
+<div class='show_sql_print'><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">email_address</span><span class="p">)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">:</span><span class="n">name_1</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">anon_1</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span>
+</div></pre></div>
+</div>
+<p>This construct is used when one wants to copy data from
+some other part of the database directly into a new set of rows, without
+actually fetching and re-sending the data from the client.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> - in the SQL Expression API documentation</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<aside class="topic">
+<p class="topic-title">SQLAlchemy 1.4 / 2.0 Tutorial</p>
+<p>Next Tutorial Section: <a class="reference internal" href="data_select.html"><span class="doc">使用 SELECT 语句</span></a></p>
+</aside>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="data_select.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">使用 SELECT 语句</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="data.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">处理数据</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">使用 INSERT 语句</a><ul>
+<li><a class="reference internal" href="#insert-sql">insert() SQL 表达式构造</a></li>
+<li><a class="reference internal" href="#id1">执行语句</a></li>
+<li><a class="reference internal" href="#insert-values">INSERT 通常会自动生成“values”子句</a></li>
+<li><a class="reference internal" href="#insert-returning">INSERT…RETURNING</a></li>
+<li><a class="reference internal" href="#insert-from-select">INSERT…FROM SELECT</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

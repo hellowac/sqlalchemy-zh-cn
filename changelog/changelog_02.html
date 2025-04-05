@@ -1,0 +1,1411 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="copyright" title="版权所有" href="../copyright.html" /><link rel="next" title="0.1 Changelog" href="changelog_01.html" /><link rel="prev" title="0.3 Changelog" href="changelog_03.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>0.2 Changelog - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">概述</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">SQLAlchemy 统一教程</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/data.html">处理数据</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_insert.html">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../orm/index.html">SQLAlchemy ORM</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../orm/quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/queryguide/index.html">ORM 查询指南</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../orm/examples.html">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">SQLAlchemy Core</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/schema.html">Schema 定义语言</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/ddl.html">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/api_basics.html">Core API 基础</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/exceptions.html">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">常见问题</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/installation.html">安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/connections.html">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/ormconfiguration.html">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">错误消息</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">变更和迁移</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_21.html">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="changelog">
+<h1>0.2 Changelog<a class="headerlink" href="#changelog" title="Link to this heading">¶</a></h1>
+<section id="change-0.2.8">
+<h2 class="release-version">0.2.8<a class="headerlink" href="#change-0.2.8" title="Link to this heading">¶</a></h2>
+Released: Tue Sep 05 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.8-0"><span class="target" id="change-3bbadb0e14ad8a356003b9897cb91e87"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3bbadb0e14ad8a356003b9897cb91e87">¶</a></span><p>cleanup on connection methods + documentation.  custom DBAPI
+arguments specified in query string, ‘connect_args’ argument
+to ‘create_engine’, or custom creation function via ‘creator’
+function to ‘create_engine’.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-1"><span class="target" id="change-74b02ececd1ed7dfe95d6a425751c152"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-74b02ececd1ed7dfe95d6a425751c152">¶</a></span><p>added “recycle” argument to Pool, is “pool_recycle” on create_engine,
+defaults to 3600 seconds; connections after this age will be closed and
+replaced with a new one, to handle db’s that automatically close
+stale connections</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/274">#274</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-2"><span class="target" id="change-891655bb143a645ffda95f976413f7e4"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-891655bb143a645ffda95f976413f7e4">¶</a></span><p>changed “invalidate” semantics with pooled connection; will
+instruct the underlying connection record to reconnect the next
+time its called.  “invalidate” will also automatically be called
+if any error is thrown in the underlying call to connection.cursor().
+this will hopefully allow the connection pool to reconnect to a
+database that had been stopped and started without restarting
+the connecting application</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/121">#121</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-3"><span class="target" id="change-210fa589aa63e27cbcd167e3d413bd4a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-210fa589aa63e27cbcd167e3d413bd4a">¶</a></span><p>eesh !  the tutorial doctest was broken for quite some time.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-4"><span class="target" id="change-0689db83c9414012f77d5ac5be7dad82"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0689db83c9414012f77d5ac5be7dad82">¶</a></span><p>add_property() method on mapper does a “compile all mappers”
+step in case the given property references a non-compiled mapper
+(as it did in the case of the tutorial !)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-5"><span class="target" id="change-6dd4134b65e78d4e47e987a1214fc28a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6dd4134b65e78d4e47e987a1214fc28a">¶</a></span><p>check for pg sequence already existing before create</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/277">#277</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-6"><span class="target" id="change-d42420b8e77c60ee21356f414d9890fd"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-d42420b8e77c60ee21356f414d9890fd">¶</a></span><p>if a contextual session is established via MapperExtension.get_session
+(as it is using the sessioncontext plugin, etc), a lazy load operation
+will use that session by default if the parent object is not
+persistent with a session already.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-7"><span class="target" id="change-c038fba1d9f8665b96a21fc0e7b2de11"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-c038fba1d9f8665b96a21fc0e7b2de11">¶</a></span><p>lazy loads will not fire off for an object that does not have a
+database identity (why?
+see <a class="reference external" href="https://www.sqlalchemy.org/trac/wiki/WhyDontForeignKeysLoadData">https://www.sqlalchemy.org/trac/wiki/WhyDontForeignKeysLoadData</a>)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-8"><span class="target" id="change-721c4061d19ede0ca96b182b60e5d466"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-721c4061d19ede0ca96b182b60e5d466">¶</a></span><p>unit-of-work does a better check for “orphaned” objects that are
+part of a “delete-orphan” cascade, for certain conditions where the
+parent isn’t available to cascade from.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-9"><span class="target" id="change-fac2a3b6748371c68b935a45f19d6e6a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-fac2a3b6748371c68b935a45f19d6e6a">¶</a></span><p>mappers can tell if one of their objects is an “orphan” based
+on interactions with the attribute package. this check is based
+on a status flag maintained for each relationship
+when objects are attached and detached from each other.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-10"><span class="target" id="change-031952863e78271a6465312378851202"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-031952863e78271a6465312378851202">¶</a></span><p>it is now invalid to declare a self-referential relationship with
+“delete-orphan” (as the abovementioned check would make them impossible
+to save)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-11"><span class="target" id="change-b95860b65d50a5e16644a3a7090677c9"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-b95860b65d50a5e16644a3a7090677c9">¶</a></span><p>improved the check for objects being part of a session when the
+unit of work seeks to flush() them as part of a relationship..</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-12"><span class="target" id="change-aa5e5306b0d71cd750994e09e8191826"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-aa5e5306b0d71cd750994e09e8191826">¶</a></span><p>statement execution supports using the same BindParam
+object more than once in an expression; simplified handling of positional
+parameters.  nice job by Bill Noon figuring out the basic idea.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/280">#280</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-13"><span class="target" id="change-0be4a1e8c04f9408aad86c3b03efb039"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0be4a1e8c04f9408aad86c3b03efb039">¶</a></span><p>postgres reflection moved to use pg_schema tables, can be overridden
+with use_information_schema=True argument to create_engine.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/60">#60</a>, <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/71">#71</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-14"><span class="target" id="change-18aeba9b6838ec86beda042ba1d8ebd1"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-18aeba9b6838ec86beda042ba1d8ebd1">¶</a></span><p>added case_sensitive argument to MetaData, Table, Column, determines
+itself automatically based on if a parent schemaitem has a non-None
+setting for the flag, or if not, then whether the identifier name is all lower
+case or not.  when set to True, quoting is applied to identifiers with mixed or
+uppercase identifiers.  quoting is also applied automatically in all cases to
+identifiers that are known to be reserved words or contain other non-standard
+characters. various database dialects can override all of this behavior, but
+currently they are all using the default behavior.  tested with postgres, mysql,
+sqlite, oracle.  needs more testing with firebird, ms-sql. part of the ongoing
+work with</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/155">#155</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-15"><span class="target" id="change-6890864b32d49c0993860a394a3ca922"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6890864b32d49c0993860a394a3ca922">¶</a></span><p>unit tests updated to run without any pysqlite installed; pool
+test uses a mock DBAPI</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-16"><span class="target" id="change-5d0ce32e4eab9c49742272a0546562b9"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-5d0ce32e4eab9c49742272a0546562b9">¶</a></span><p>urls support escaped characters in passwords</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/281">#281</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-17"><span class="target" id="change-69829bd44736e35b59f6af5eb1bc3824"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-69829bd44736e35b59f6af5eb1bc3824">¶</a></span><p>added limit/offset to UNION queries (though not yet in oracle)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-18"><span class="target" id="change-76b257b9178528b6903fdfbacb5deb90"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-76b257b9178528b6903fdfbacb5deb90">¶</a></span><p>added “timezone=True” flag to DateTime and Time types.  postgres
+so far will convert this to “TIME[STAMP] (WITH|WITHOUT) TIME ZONE”,
+so that control over timezone presence is more controllable (psycopg2
+returns datetimes with tzinfo’s if available, which can create confusion
+against datetimes that don’t).</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-19"><span class="target" id="change-25fa8a2f375fce26a8771751148efaa5"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-25fa8a2f375fce26a8771751148efaa5">¶</a></span><p>fix to using query.count() with distinct, **kwargs with SelectResults
+count()</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/287">#287</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-20"><span class="target" id="change-cbd4157fde09c2e29b1106f3ba99d5bb"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-cbd4157fde09c2e29b1106f3ba99d5bb">¶</a></span><p>deregister Table from MetaData when autoload fails;</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/289">#289</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-21"><span class="target" id="change-c628d36cd3ecb839d688028cc3c07f4a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-c628d36cd3ecb839d688028cc3c07f4a">¶</a></span><p>import of py2.5s sqlite3</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/293">#293</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.8-22"><span class="target" id="change-675e2de9dc96db028d1fad889acfe61c"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-675e2de9dc96db028d1fad889acfe61c">¶</a></span><p>unicode fix for startswith()/endswith()</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/296">#296</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-0.2.7">
+<h2 class="release-version">0.2.7<a class="headerlink" href="#change-0.2.7" title="Link to this heading">¶</a></h2>
+Released: Sat Aug 12 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.7-0"><span class="target" id="change-f68d31c5108f5178cd9ca5ed2f52188e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-f68d31c5108f5178cd9ca5ed2f52188e">¶</a></span><p>quoting facilities set up so that database-specific quoting can be
+turned on for individual table, schema, and column identifiers when
+used in all queries/creates/drops.  Enabled via “quote=True” in
+Table or Column, as well as “quote_schema=True” in Table.  Thanks to
+Aaron Spike for the excellent efforts.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-1"><span class="target" id="change-28022343f9e0c1b8eec8a5cfa8770f0c"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-28022343f9e0c1b8eec8a5cfa8770f0c">¶</a></span><p>assignmapper was setting is_primary=True, causing all sorts of mayhem
+by not raising an error when redundant mappers were set up, fixed</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-2"><span class="target" id="change-f2160b22aae40f4e15a130ce0c1744d8"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-f2160b22aae40f4e15a130ce0c1744d8">¶</a></span><p>added allow_null_pks option to Mapper, allows rows where some
+primary key columns are null (i.e. when mapping to outer joins etc)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-3"><span class="target" id="change-a49bbbe749059d3091e84512bef6f9ad"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-a49bbbe749059d3091e84512bef6f9ad">¶</a></span><p>modification to unitofwork to not maintain ordering within the
+“new” list or within the UOWTask “objects” list; instead, new objects
+are tagged with an ordering identifier as they are registered as new
+with the session, and the INSERT statements are then sorted within the
+mapper save_obj.  the INSERT ordering has basically been pushed all
+the way to the end of the flush cycle. that way the various sorts and
+organizations occurring within UOWTask (particularly the circular task
+sort) don’t have to worry about maintaining order (which they weren’t anyway)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-4"><span class="target" id="change-b48fef6da67e2ecf70da2c57a64e38de"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-b48fef6da67e2ecf70da2c57a64e38de">¶</a></span><p>fixed reflection of foreign keys to autoload the referenced table
+if it was not loaded already</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-5"><span class="target" id="change-455463b280eb3132e92fe54f7734d6f5"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-455463b280eb3132e92fe54f7734d6f5">¶</a></span><ul>
+<li><p>pass URL query string arguments to connect() function</p></li>
+</ul>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/256">#256</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-6"><span class="target" id="change-3e931a2ab54c0feecb7e62a15a1ed310"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3e931a2ab54c0feecb7e62a15a1ed310">¶</a></span><ul>
+<li><p>oracle boolean type</p></li>
+</ul>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/257">#257</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-7"><span class="target" id="change-81bfd9246d95eb794f4c8bfbecf65ba2"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-81bfd9246d95eb794f4c8bfbecf65ba2">¶</a></span><p>custom primary/secondary join conditions in a relation <em>will</em> be propagated
+to backrefs by default.  specifying a backref() will override this behavior.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-8"><span class="target" id="change-ab95309b460511ad583b25a5609ca143"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-ab95309b460511ad583b25a5609ca143">¶</a></span><p>better check for ambiguous join conditions in sql.Join; propagates to a
+better error message in PropertyLoader (i.e. relation()/backref()) for when
+the join condition can’t be reasonably determined.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-9"><span class="target" id="change-6e9df47b5d985faac8a19aba9ac31d0e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6e9df47b5d985faac8a19aba9ac31d0e">¶</a></span><p>sqlite creates ForeignKeyConstraint objects properly upon table
+reflection.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-10"><span class="target" id="change-b83f55045895c513f494d037e3676755"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-b83f55045895c513f494d037e3676755">¶</a></span><p>adjustments to pool stemming from changes made for.
+overflow counter should only be decremented if the connection actually
+succeeded.  added a test script to attempt testing this.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/224">#224</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-11"><span class="target" id="change-6639f317c4e35284c4e7434c92765c69"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6639f317c4e35284c4e7434c92765c69">¶</a></span><p>fixed mysql reflection of default values to be PassiveDefault</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-12"><span class="target" id="change-2dd28b0bca11a936a2a7c39234817f58"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-2dd28b0bca11a936a2a7c39234817f58">¶</a></span><p>added reflected ‘tinyint’, ‘mediumint’ type to MS-SQL.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/263">#263</a>, <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/264">#264</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-13"><span class="target" id="change-bbbc83a81584527d32666718a578efdd"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-bbbc83a81584527d32666718a578efdd">¶</a></span><p>SingletonThreadPool has a size and does a cleanup pass, so that
+only a given number of thread-local connections stay around (needed
+for sqlite applications that dispose of threads en masse)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-14"><span class="target" id="change-5420b64df06d75a52fbf5648918bfea5"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-5420b64df06d75a52fbf5648918bfea5">¶</a></span><p>fixed small pickle bug(s) with lazy loaders</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/265">#265</a>, <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/267">#267</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-15"><span class="target" id="change-cd224ce5fcbe2a9f3baabaca462adb1a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-cd224ce5fcbe2a9f3baabaca462adb1a">¶</a></span><p>fixed possible error in mysql reflection where certain versions
+return an array instead of string for SHOW CREATE TABLE call</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-16"><span class="target" id="change-bc6d5f6159746979ffec371aca55f56f"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-bc6d5f6159746979ffec371aca55f56f">¶</a></span><p>fix to lazy loads when mapping to joins</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/1770">#1770</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-17"><span class="target" id="change-f6a82444b216aaf6d5a5f5d28f86e206"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-f6a82444b216aaf6d5a5f5d28f86e206">¶</a></span><p>all create()/drop() calls have a keyword argument of “connectable”.
+“engine” is deprecated.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-18"><span class="target" id="change-69a4eb2afb9e5e132d1f0946f576a722"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-69a4eb2afb9e5e132d1f0946f576a722">¶</a></span><p>fixed ms-sql connect() to work with adodbapi</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-19"><span class="target" id="change-a68b1295306f4992d0aacdefb2690416"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-a68b1295306f4992d0aacdefb2690416">¶</a></span><p>added “nowait” flag to Select()</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-20"><span class="target" id="change-5fb6ec3bc3afd934a7d137242f6bf080"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-5fb6ec3bc3afd934a7d137242f6bf080">¶</a></span><p>inheritance check uses issubclass() instead of direct __mro__ check
+to make sure class A inherits from B, allowing mapper inheritance to more
+flexibly correspond to class inheritance</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/271">#271</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-21"><span class="target" id="change-8e0c5881a8bd4d0dcd278f5d50e67358"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8e0c5881a8bd4d0dcd278f5d50e67358">¶</a></span><p>SelectResults will use a subselect, when calling an aggregate (i.e.
+max, min, etc.) on a SelectResults that has an ORDER BY clause</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/252">#252</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-22"><span class="target" id="change-ed310693d7a6e356cb2bdd490308eccc"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-ed310693d7a6e356cb2bdd490308eccc">¶</a></span><p>fixes to types so that database-specific types more easily used;
+fixes to mysql text types to work with this methodology</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/269">#269</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-23"><span class="target" id="change-82615419630b2ffbd6f9ce7d4f12932d"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-82615419630b2ffbd6f9ce7d4f12932d">¶</a></span><p>some fixes to sqlite date type organization</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.7-24"><span class="target" id="change-b5319ee829a2a90ef9a71fea9b6ad83b"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-b5319ee829a2a90ef9a71fea9b6ad83b">¶</a></span><p>added MSTinyInteger to MS-SQL</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/263">#263</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-0.2.6">
+<h2 class="release-version">0.2.6<a class="headerlink" href="#change-0.2.6" title="Link to this heading">¶</a></h2>
+Released: Thu Jul 20 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.6-0"><span class="target" id="change-f8f62c879ce023c4b5a34014b6a07e0e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-f8f62c879ce023c4b5a34014b6a07e0e">¶</a></span><p>big overhaul to schema to allow truly composite primary and foreign
+key constraints, via new ForeignKeyConstraint and PrimaryKeyConstraint
+objects.
+Existing methods of primary/foreign key creation have not been changed
+but use these new objects behind the scenes.  table creation
+and reflection is now more table oriented rather than column oriented.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/76">#76</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-1"><span class="target" id="change-77fcf46249de1df2311dcc5841a81672"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-77fcf46249de1df2311dcc5841a81672">¶</a></span><p>overhaul to MapperExtension calling scheme, wasn’t working very well
+previously</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-2"><span class="target" id="change-3e7930f4e1f7db2df2614a03b648a0d4"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3e7930f4e1f7db2df2614a03b648a0d4">¶</a></span><p>tweaks to ActiveMapper, supports self-referential relationships</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-3"><span class="target" id="change-88865e828653eacf13fd80f9f9c2699e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-88865e828653eacf13fd80f9f9c2699e">¶</a></span><p>slight rearrangement to objectstore (in activemapper/threadlocal)
+so that the SessionContext is referenced by ‘.context’ instead
+of subclassed directly.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-4"><span class="target" id="change-88eda57ebf8024f3f435fb8ec29d769a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-88eda57ebf8024f3f435fb8ec29d769a">¶</a></span><p>activemapper will use threadlocal’s objectstore if the mod is
+activated when activemapper is imported</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-5"><span class="target" id="change-9e2123c55cfece3d0453cd0f4facf76f"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-9e2123c55cfece3d0453cd0f4facf76f">¶</a></span><p>small fix to URL regexp to allow filenames with ‘&#64;’ in them</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-6"><span class="target" id="change-b249794857f4ffef83824b29eb577243"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-b249794857f4ffef83824b29eb577243">¶</a></span><p>fixes to Session expunge/update/etc…needs more cleanup.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-7"><span class="target" id="change-48c4b88fb3577c2a7420d02f29968a64"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-48c4b88fb3577c2a7420d02f29968a64">¶</a></span><p>select_table mappers <em>still</em> weren’t always compiling</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-8"><span class="target" id="change-6110d6d0c21f6d8574611b4a3931fedb"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6110d6d0c21f6d8574611b4a3931fedb">¶</a></span><p>fixed up Boolean datatype</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-9"><span class="target" id="change-ee2c3e4930941f8e1b65654539428565"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-ee2c3e4930941f8e1b65654539428565">¶</a></span><p>added count()/count_by() to list of methods proxied by assignmapper;
+this also adds them to activemapper</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-10"><span class="target" id="change-4df52daf5a58fc301e4a1e627b125995"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-4df52daf5a58fc301e4a1e627b125995">¶</a></span><p>connection exceptions wrapped in DBAPIError</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-11"><span class="target" id="change-bf375e7b928b6b2fa4a0c42c22c38c70"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-bf375e7b928b6b2fa4a0c42c22c38c70">¶</a></span><p>ActiveMapper now supports autoloading column definitions from the
+database if you supply a __autoload__ = True attribute in your
+mapping inner-class.  Currently this does not support reflecting
+any relationships.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-12"><span class="target" id="change-7594a508ec44d989e4dc22ca9c08cf72"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-7594a508ec44d989e4dc22ca9c08cf72">¶</a></span><p>deferred column load could screw up the connection status in
+a flush() under some circumstances, this was fixed</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-13"><span class="target" id="change-df8c878cc9c3bc4bc30c295a7d73f671"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-df8c878cc9c3bc4bc30c295a7d73f671">¶</a></span><p>expunge() was not working with cascade, fixed.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-14"><span class="target" id="change-288343a3c32f10a42628139244fbe8f1"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-288343a3c32f10a42628139244fbe8f1">¶</a></span><p>potential endless loop in cascading operations fixed.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-15"><span class="target" id="change-07327ed0a795f6353c3c638aeed5975d"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-07327ed0a795f6353c3c638aeed5975d">¶</a></span><p>added “synonym()” function, applied to properties to have a
+propname the same as another, for the purposes of overriding props
+and allowing the original propname to be accessible in select_by().</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-16"><span class="target" id="change-2a08703fcdc6dab5940f3e16b74754a9"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-2a08703fcdc6dab5940f3e16b74754a9">¶</a></span><p>fix to typing in clause construction which specifically helps
+type issues with polymorphic_union (CAST/ColumnClause propagates
+its type to proxy columns)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-17"><span class="target" id="change-95665b34b7c34a6ed0c412d09c6f8b5a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-95665b34b7c34a6ed0c412d09c6f8b5a">¶</a></span><p>mapper compilation work ongoing, someday it’ll work….moved
+around the initialization of MapperProperty objects to be after
+all mappers are created to better handle circular compilations.
+do_init() method is called on all properties now which are more
+aware of their “inherited” status if so.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-18"><span class="target" id="change-089e0f59d1470ea7c96c1170212b9e0d"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-089e0f59d1470ea7c96c1170212b9e0d">¶</a></span><p>eager loads explicitly disallowed on self-referential relationships, or
+relationships to an inheriting mapper (which is also self-referential)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-19"><span class="target" id="change-309f20e1cd0b0511d7f17353f217004a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-309f20e1cd0b0511d7f17353f217004a">¶</a></span><p>reduced bind param size in query._get to appease the picky oracle</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/244">#244</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-20"><span class="target" id="change-8cf76d441e1c43db7d944b29dd3957c7"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8cf76d441e1c43db7d944b29dd3957c7">¶</a></span><p>added ‘checkfirst’ argument to table.create()/table.drop(), as
+well as table.exists()</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/234">#234</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-21"><span class="target" id="change-0227275efbac00a91adbe472de048594"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0227275efbac00a91adbe472de048594">¶</a></span><p>some other ongoing fixes to inheritance</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/245">#245</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.6-22"><span class="target" id="change-920a89b86f9399735f51a77600c9cf8b"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-920a89b86f9399735f51a77600c9cf8b">¶</a></span><p>attribute/backref/orphan/history-tracking tweaks as usual…</p>
+<p></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-0.2.5">
+<h2 class="release-version">0.2.5<a class="headerlink" href="#change-0.2.5" title="Link to this heading">¶</a></h2>
+Released: Sat Jul 08 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.5-0"><span class="target" id="change-6c5bbff7b5e3d9af04c26c7cf472a488"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6c5bbff7b5e3d9af04c26c7cf472a488">¶</a></span><p>fixed endless loop bug in select_by(), if the traversal hit
+two mappers that referenced each other</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.5-1"><span class="target" id="change-59e2b6515f9cf90eab511b44b21c6c21"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-59e2b6515f9cf90eab511b44b21c6c21">¶</a></span><p>upgraded all unittests to insert ‘./lib/’ into sys.path,
+working around new setuptools PYTHONPATH-killing behavior</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.5-2"><span class="target" id="change-a635a07bb0755421e364596ccc416ed3"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-a635a07bb0755421e364596ccc416ed3">¶</a></span><p>further fixes with attributes/dependencies/etc….</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.5-3"><span class="target" id="change-0f308612c0441691991056a9ab1577b2"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0f308612c0441691991056a9ab1577b2">¶</a></span><p>improved error handling for when DynamicMetaData is not connected</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.5-4"><span class="target" id="change-d449f97ddbe9cb671592e5b7821d2555"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-d449f97ddbe9cb671592e5b7821d2555">¶</a></span><p>MS-SQL support largely working (tested with pymssql)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.5-5"><span class="target" id="change-10cb588f38e3ba8028e1fa3d9eda66aa"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-10cb588f38e3ba8028e1fa3d9eda66aa">¶</a></span><p>ordering of UPDATE and DELETE statements within groups is now
+in order of primary key values, for more deterministic ordering</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.5-6"><span class="target" id="change-736e4b3a6aa7ac48bbd1ed840f55abde"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-736e4b3a6aa7ac48bbd1ed840f55abde">¶</a></span><p>after_insert/delete/update mapper extensions now called per object,
+not per-object-per-table</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.5-7"><span class="target" id="change-efafc61951a6e94fc868a8288241c457"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-efafc61951a6e94fc868a8288241c457">¶</a></span><p>further fixes/refactorings to mapper compilation</p>
+<p></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-0.2.4">
+<h2 class="release-version">0.2.4<a class="headerlink" href="#change-0.2.4" title="Link to this heading">¶</a></h2>
+Released: Tue Jun 27 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.4-0"><span class="target" id="change-ad79406bdf9ff4dd50cc4712d7ef6ede"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-ad79406bdf9ff4dd50cc4712d7ef6ede">¶</a></span><p>try/except when the mapper sets init.__name__ on a mapped class,
+supports python 2.3</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-1"><span class="target" id="change-62bf207102cbb650c0a7f8df8bfafa8f"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-62bf207102cbb650c0a7f8df8bfafa8f">¶</a></span><p>fixed bug where threadlocal engine would still autocommit
+despite a transaction in progress</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-2"><span class="target" id="change-240cbf4e4d00720bad97b00f9418461a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-240cbf4e4d00720bad97b00f9418461a">¶</a></span><p>lazy load and deferred load operations require the parent object
+to be in a Session to do the operation; whereas before the operation
+would just return a blank list or None, it now raises an exception.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-3"><span class="target" id="change-07be64fc9973f6dd2e46c0d537b52c0a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-07be64fc9973f6dd2e46c0d537b52c0a">¶</a></span><p>Session.update() is slightly more lenient if the session to which
+the given object was formerly attached to was garbage collected;
+otherwise still requires you explicitly remove the instance from
+the previous Session.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-4"><span class="target" id="change-51b9869ab9d4cf9e77da66d618a94802"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-51b9869ab9d4cf9e77da66d618a94802">¶</a></span><p>fixes to mapper compilation, checking for more error conditions</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-5"><span class="target" id="change-03a4cc85caf469f1dc0aff0590a1863a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-03a4cc85caf469f1dc0aff0590a1863a">¶</a></span><p>small fix to eager loading combined with ordering/limit/offset</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-6"><span class="target" id="change-ca92856cf7f0269c0384cdab04f6e02a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-ca92856cf7f0269c0384cdab04f6e02a">¶</a></span><p>utterly remarkable:  added a single space between ‘CREATE TABLE’
+and ‘(&lt;the rest of it&gt;’ since <em>that’s how MySQL indicates a non-
+reserved word tablename…..</em></p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/206">#206</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-7"><span class="target" id="change-4aadd1394222f4244ef7c8cba4717753"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-4aadd1394222f4244ef7c8cba4717753">¶</a></span><p>more fixes to inheritance, related to many-to-many relations
+properly saving</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-8"><span class="target" id="change-8988c487400090a1e553b717bab0ebe8"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8988c487400090a1e553b717bab0ebe8">¶</a></span><p>fixed bug when specifying explicit module to mysql dialect</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-9"><span class="target" id="change-343c6000dc8252a15f438367a548099c"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-343c6000dc8252a15f438367a548099c">¶</a></span><p>when QueuePool times out it raises a TimeoutError instead of
+erroneously making another connection</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-10"><span class="target" id="change-90b6ad1a4b48a77cb1587a668db4f7ef"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-90b6ad1a4b48a77cb1587a668db4f7ef">¶</a></span><p>Queue.Queue usage in pool has been replaced with a locally
+modified version (works in py2.3/2.4!) that uses a threading.RLock
+for a mutex.  this is to fix a reported case where a ConnectionFairy’s
+__del__() method got called within the Queue’s get() method, which
+then returns its connection to the Queue via the put() method,
+causing a reentrant hang unless threading.RLock is used.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-11"><span class="target" id="change-b4f10360f1d0891a0962f3f9c2768aca"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-b4f10360f1d0891a0962f3f9c2768aca">¶</a></span><p>postgres will not place SERIAL keyword on a primary key column
+if it has a foreign key constraint</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-12"><span class="target" id="change-adea3d7d82966c7931857cae6dd60450"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-adea3d7d82966c7931857cae6dd60450">¶</a></span><p>cursor() method on ConnectionFairy allows db-specific extension
+arguments to be propagated</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/221">#221</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-13"><span class="target" id="change-6c1fbbe4abd643ebc8f3ffb21a9af71e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6c1fbbe4abd643ebc8f3ffb21a9af71e">¶</a></span><p>lazy load bind params properly propagate column type</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/225">#225</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-14"><span class="target" id="change-22f10061c7f8be06b4bdcb04c8b9df8d"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-22f10061c7f8be06b4bdcb04c8b9df8d">¶</a></span><p>new MySQL types: MSEnum, MSTinyText, MSMediumText, MSLongText, etc.
+more support for MS-specific length/precision params in numeric types
+patch courtesy Mike Bernson</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.4-15"><span class="target" id="change-352e899ebdf1244cadff3555b1420e2b"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-352e899ebdf1244cadff3555b1420e2b">¶</a></span><p>some fixes to connection pool invalidate()</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/224">#224</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-0.2.3">
+<h2 class="release-version">0.2.3<a class="headerlink" href="#change-0.2.3" title="Link to this heading">¶</a></h2>
+Released: Sat Jun 17 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.3-0"><span class="target" id="change-8291e03c8c5f2701838ae5d2f8be31c3"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8291e03c8c5f2701838ae5d2f8be31c3">¶</a></span><p>overhaul to mapper compilation to be deferred.  this allows mappers
+to be constructed in any order, and their relationships to each
+other are compiled when the mappers are first used.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-1"><span class="target" id="change-9b32bca1789e60d5e16e1edc3a21a32e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-9b32bca1789e60d5e16e1edc3a21a32e">¶</a></span><p>fixed a pretty big speed bottleneck in cascading behavior particularly
+when backrefs were in use</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-2"><span class="target" id="change-1c0e73f78920f1f97d78a0e02b7db01f"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-1c0e73f78920f1f97d78a0e02b7db01f">¶</a></span><p>the attribute instrumentation module has been completely rewritten; its
+now a large degree simpler and clearer, slightly faster.  the “history”
+of an attribute is no longer micromanaged with each change and is
+instead part of a “CommittedState” object created when the
+instance is first loaded.  HistoryArraySet is gone, the behavior of
+list attributes is now more open ended (i.e. they’re not sets anymore).</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-3"><span class="target" id="change-c64bb0af937cfa88844e4ab96b6733fd"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-c64bb0af937cfa88844e4ab96b6733fd">¶</a></span><p>py2.4 “set” construct used internally, falls back to sets.Set when
+“set” not available/ordering is needed.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-4"><span class="target" id="change-8de15dabb0ded4dfee956d664aef38e4"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8de15dabb0ded4dfee956d664aef38e4">¶</a></span><p>fix to transaction control, so that repeated rollback() calls
+don’t fail (was failing pretty badly when flush() would raise
+an exception in a larger try/except transaction block)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-5"><span class="target" id="change-34c175944f8e671890f062d720dda4b5"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-34c175944f8e671890f062d720dda4b5">¶</a></span><p>”foreignkey” argument to relation() can also be a list.  fixed
+auto-foreignkey detection</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/151">#151</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-6"><span class="target" id="change-c720f31d6d377648e95acdd146d1ed90"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-c720f31d6d377648e95acdd146d1ed90">¶</a></span><p>fixed bug where tables with schema names weren’t getting indexed in
+the MetaData object properly</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-7"><span class="target" id="change-5f5ca83d1dd3a0599d44cfd324640ae3"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-5f5ca83d1dd3a0599d44cfd324640ae3">¶</a></span><p>fixed bug where Column with redefined “key” property wasn’t getting
+type conversion happening in the ResultProxy</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/207">#207</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-8"><span class="target" id="change-ecc83114559345f0a9a3eaa6df5bb4b9"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-ecc83114559345f0a9a3eaa6df5bb4b9">¶</a></span><p>fixed ‘port’ attribute of URL to be an integer if present</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-9"><span class="target" id="change-7b441f457cf77d508db40bebef05589b"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-7b441f457cf77d508db40bebef05589b">¶</a></span><p>fixed old bug where if a many-to-many table mapped as “secondary”
+had extra columns, delete operations didn’t work</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-10"><span class="target" id="change-de389a34b53d442e9d0b3b965217ab28"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-de389a34b53d442e9d0b3b965217ab28">¶</a></span><p>bugfixes for mapping against UNION queries</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-11"><span class="target" id="change-8f30bc9cbea047626bdc2a9439e7b5d9"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8f30bc9cbea047626bdc2a9439e7b5d9">¶</a></span><p>fixed incorrect exception class thrown when no DB driver present</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-12"><span class="target" id="change-f46f46103387cad34879ec24046fcf1e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-f46f46103387cad34879ec24046fcf1e">¶</a></span><p>added NonExistentTable exception thrown when reflecting a table
+that doesn’t exist</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/138">#138</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-13"><span class="target" id="change-aafc1f39ed388e24a34c35773df53c20"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-aafc1f39ed388e24a34c35773df53c20">¶</a></span><p>small fix to ActiveMapper regarding one-to-one backrefs, other
+refactorings</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-14"><span class="target" id="change-bb50a7f88718f169a72b62a811969d9f"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-bb50a7f88718f169a72b62a811969d9f">¶</a></span><p>overridden constructor in mapped classes gets __name__ and
+__doc__ from the original class</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-15"><span class="target" id="change-63471dc1ed02b7737a4624ed9f337f79"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-63471dc1ed02b7737a4624ed9f337f79">¶</a></span><p>fixed small bug in selectresult.py regarding mapper extension</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/200">#200</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-16"><span class="target" id="change-63c68a2ab8ee24aabc39666ea967de89"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-63c68a2ab8ee24aabc39666ea967de89">¶</a></span><p>small tweak to cascade_mappers, not very strongly supported
+function at the moment</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-17"><span class="target" id="change-d5c489545664e97beb313f16da2784e8"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-d5c489545664e97beb313f16da2784e8">¶</a></span><p>some fixes to between(), column.between() to propagate typing
+information better</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/202">#202</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-18"><span class="target" id="change-8c5324bac2a3c16712cfe35d35c030fb"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8c5324bac2a3c16712cfe35d35c030fb">¶</a></span><p>if an object fails to be constructed, is not added to the
+session</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/203">#203</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.3-19"><span class="target" id="change-d71618f02787ee9db4cb33bd9b9eb692"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-d71618f02787ee9db4cb33bd9b9eb692">¶</a></span><p>CAST function has been made into its own clause object with
+its own compilation function in ansicompiler; allows MySQL
+to silently ignore most CAST calls since MySQL
+seems to only support the standard CAST syntax with Date types.
+MySQL-compatible CAST support for strings, ints, etc. a TODO</p>
+<p></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-0.2.2">
+<h2 class="release-version">0.2.2<a class="headerlink" href="#change-0.2.2" title="Link to this heading">¶</a></h2>
+Released: Mon Jun 05 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.2-0"><span class="target" id="change-bd742cfd65f6050597926dae4390d9e1"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-bd742cfd65f6050597926dae4390d9e1">¶</a></span><p>big improvements to polymorphic inheritance behavior, enabling it
+to work with adjacency list table structures</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/190">#190</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-1"><span class="target" id="change-379544c91d5eb4c6c05ac1b9457687e4"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-379544c91d5eb4c6c05ac1b9457687e4">¶</a></span><p>major fixes and refactorings to inheritance relationships overall,
+more unit tests</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-2"><span class="target" id="change-5721b63173344cabdf45367267f595c2"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-5721b63173344cabdf45367267f595c2">¶</a></span><p>fixed “echo_pool” flag on create_engine()</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-3"><span class="target" id="change-c4f0077420c5dcf5a3897967a07a0157"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-c4f0077420c5dcf5a3897967a07a0157">¶</a></span><p>fix to docs, removed incorrect info that close() is unsafe to use
+with threadlocal strategy (its totally safe !)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-4"><span class="target" id="change-388830402ad051c6cdc28d707c1eb34d"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-388830402ad051c6cdc28d707c1eb34d">¶</a></span><p>create_engine() can take URLs as string or unicode</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/188">#188</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-5"><span class="target" id="change-9b0f96f37a1fed6d2bb5f20ab572737a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-9b0f96f37a1fed6d2bb5f20ab572737a">¶</a></span><p>firebird support partially completed;
+thanks to James Ralston and Brad Clements for their efforts.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-6"><span class="target" id="change-615b40df2b68e4c59eab279554f94f0f"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-615b40df2b68e4c59eab279554f94f0f">¶</a></span><p>Oracle url translation was broken, fixed, will feed host/port/sid
+into cx_oracle makedsn() if ‘database’ field is present, else uses
+straight TNS name from the ‘host’ field</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-7"><span class="target" id="change-3b0a8d2e0dcba1cba0638fd178df5af8"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3b0a8d2e0dcba1cba0638fd178df5af8">¶</a></span><p>fix to using unicode criterion for query.get()/query.load()</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-8"><span class="target" id="change-8d66948e4fce771b72c1b176af8458dd"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8d66948e4fce771b72c1b176af8458dd">¶</a></span><p>count() function on selectables now uses table primary key or
+first column instead of “1” for criterion, also uses label “rowcount”
+instead of “count”.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-9"><span class="target" id="change-3e0af16f5eb71a64848fe32af5739cc7"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3e0af16f5eb71a64848fe32af5739cc7">¶</a></span><p>got rudimental “mapping to multiple tables” functionality cleaned up,
+more correctly documented</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-10"><span class="target" id="change-1258190627b876b0ffe8295ecdd5ffb8"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-1258190627b876b0ffe8295ecdd5ffb8">¶</a></span><p>restored global_connect() function, attaches to a DynamicMetaData
+instance called “default_metadata”.  leaving MetaData arg to Table
+out will use the default metadata.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-11"><span class="target" id="change-8336c6d85ddfcfef3ac1ffa500344255"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8336c6d85ddfcfef3ac1ffa500344255">¶</a></span><p>fixes to session cascade behavior, entity_name propagation</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-12"><span class="target" id="change-8341e0a7cda1491806850d425a74bb8c"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8341e0a7cda1491806850d425a74bb8c">¶</a></span><p>reorganized unittests into subdirectories</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.2-13"><span class="target" id="change-0f6562e42a0e8a9b74b9302ca568a13d"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0f6562e42a0e8a9b74b9302ca568a13d">¶</a></span><p>more fixes to threadlocal connection nesting patterns</p>
+<p></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-0.2.1">
+<h2 class="release-version">0.2.1<a class="headerlink" href="#change-0.2.1" title="Link to this heading">¶</a></h2>
+Released: Mon May 29 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.1-0"><span class="target" id="change-26b387ee2747217a96f6982738dc82ac"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-26b387ee2747217a96f6982738dc82ac">¶</a></span><p>”pool” argument to create_engine() properly propagates</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-1"><span class="target" id="change-bfd7ab5d5c9af9f46885a6f856400645"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-bfd7ab5d5c9af9f46885a6f856400645">¶</a></span><p>fixes to URL, raises exception if not parsed, does not pass blank
+fields along to the DB connect string (a string such as
+user:host&#64;/db was breaking on postgres)</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-2"><span class="target" id="change-05ae6d2f0e41b25c9aefe7a65ffb0b98"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-05ae6d2f0e41b25c9aefe7a65ffb0b98">¶</a></span><p>small fixes to Mapper when it inserts and tries to get
+new primary key values back</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-3"><span class="target" id="change-9cf0fdd64a8448f403279ba717187a9f"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-9cf0fdd64a8448f403279ba717187a9f">¶</a></span><p>rewrote half of TLEngine, the ComposedSQLEngine used with
+‘strategy=”threadlocal”’.  it now properly implements engine.begin()/
+engine.commit(), which nest fully with connection.begin()/trans.commit().
+added about six unittests.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-4"><span class="target" id="change-d9a9007ac13e6499a26f44a500fa7c5d"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-d9a9007ac13e6499a26f44a500fa7c5d">¶</a></span><p>major “duh” in pool.Pool, forgot to put back the WeakValueDictionary.
+unittest which was supposed to check for this was also silently missing
+it.  fixed unittest to ensure that ConnectionFairy properly falls out
+of scope.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-5"><span class="target" id="change-d110ae3a45ebc503ac45c8483c5bfc3d"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-d110ae3a45ebc503ac45c8483c5bfc3d">¶</a></span><p>placeholder dispose() method added to SingletonThreadPool, doesn’t
+do anything yet</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-6"><span class="target" id="change-25946e86814860e1bc890e293c2ab638"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-25946e86814860e1bc890e293c2ab638">¶</a></span><p>rollback() is automatically called when an exception is raised,
+but only if there’s no transaction in process (i.e. works more like
+autocommit).</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-7"><span class="target" id="change-7d94f3def3f5ff26407726dd433da955"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-7d94f3def3f5ff26407726dd433da955">¶</a></span><p>fixed exception raise in sqlite if no sqlite module present</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-8"><span class="target" id="change-8abad0d2f2c6c44e00ac58e5c17cadb4"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8abad0d2f2c6c44e00ac58e5c17cadb4">¶</a></span><p>added extra example detail for association object doc</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.1-9"><span class="target" id="change-bec5627771341c1349121e09bd06b71e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-bec5627771341c1349121e09bd06b71e">¶</a></span><p>Connection adds checks for already being closed</p>
+<p></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-0.2.0">
+<h2 class="release-version">0.2.0<a class="headerlink" href="#change-0.2.0" title="Link to this heading">¶</a></h2>
+Released: Sat May 27 2006<ul class="simple">
+<li><p class="caption" id="change-0.2.0-0"><span class="target" id="change-eb84c383fb66582cc54c697758830e55"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-eb84c383fb66582cc54c697758830e55">¶</a></span><p>overhaul to Engine system so that what was formerly the SQLEngine
+is now a ComposedSQLEngine which consists of a variety of components,
+including a Dialect, ConnectionProvider, etc. This impacted all the
+db modules as well as Session and Mapper.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-1"><span class="target" id="change-f2c892830ace1639382bc5ec15d687f4"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-f2c892830ace1639382bc5ec15d687f4">¶</a></span><p>create_engine now takes only RFC-1738-style strings:
+<code class="docutils literal notranslate"><span class="pre">driver://user:password&#64;host:port/database</span></code></p>
+<p><strong>update</strong> this format is generally but not exactly RFC-1738,
+including that underscores, not dashes or periods, are accepted in the
+“scheme” portion.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-2"><span class="target" id="change-c962e5efdda3519cd260a842cfbf1633"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-c962e5efdda3519cd260a842cfbf1633">¶</a></span><p>total rewrite of connection-scoping methodology, Connection objects
+can now execute clause elements directly, added explicit “close” as
+well as support throughout Engine/ORM to handle closing properly,
+no longer relying upon __del__ internally to return connections
+to the pool.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/152">#152</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-3"><span class="target" id="change-258687fe610d04ccd25d09e8b41156a7"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-258687fe610d04ccd25d09e8b41156a7">¶</a></span><p>overhaul to Session interface and scoping.  uses hibernate-style
+methods, including query(class), save(), save_or_update(), etc.
+no threadlocal scope is installed by default.  Provides a binding
+interface to specific Engines and/or Connections so that underlying
+Schema objects do not need to be bound to an Engine.  Added a basic
+SessionTransaction object that can simplistically aggregate transactions
+across multiple engines.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-4"><span class="target" id="change-78e49d8a0a13ccbb005df73ef3366953"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-78e49d8a0a13ccbb005df73ef3366953">¶</a></span><p>overhaul to mapper’s dependency and “cascade” behavior; dependency logic
+factored out of properties.py into a separate module “dependency.py”.
+“cascade” behavior is now explicitly controllable, proper implementation
+of “delete”, “delete-orphan”, etc.  dependency system can now determine at
+flush time if a child object has a parent or not so that it makes better
+decisions on how that child should be updated in the DB with regards to deletes.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-5"><span class="target" id="change-485af54d0f5397c314da6e88136207a1"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-485af54d0f5397c314da6e88136207a1">¶</a></span><p>overhaul to Schema to build upon MetaData object instead of an Engine.
+Entire SQL/Schema system can be used with no Engines whatsoever, executed
+solely by an explicit Connection object.  the “bound” methodology exists via the
+BoundMetaData for schema objects.  ProxyEngine is generally not needed
+anymore and is replaced by DynamicMetaData.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-6"><span class="target" id="change-3630275017278ecdd227d14ffa6548c8"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3630275017278ecdd227d14ffa6548c8">¶</a></span><p>true polymorphic behavior implemented, fixes</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/167">#167</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-7"><span class="target" id="change-3d8b1afa02b15535632392487a516dde"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3d8b1afa02b15535632392487a516dde">¶</a></span><p>”oid” system has been totally moved into compile-time behavior;
+if they are used in an order_by where they are not available, the order_by
+doesn’t get compiled, fixes</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/147">#147</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-8"><span class="target" id="change-8bf8612ef556f0bf755fe718681e6980"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8bf8612ef556f0bf755fe718681e6980">¶</a></span><p>overhaul to packaging; “mapping” is now “orm”, “objectstore” is now
+“session”, the old “objectstore” namespace gets loaded in via the
+“threadlocal” mod if used</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-9"><span class="target" id="change-ffb12a0fc7cadef5121724285bb70b4e"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-ffb12a0fc7cadef5121724285bb70b4e">¶</a></span><p>mods now called in via “import &lt;modname&gt;”.  extensions favored over
+mods as mods are globally-monkeypatching</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-10"><span class="target" id="change-8d8c686814c344c1621cc615bb1d45e8"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8d8c686814c344c1621cc615bb1d45e8">¶</a></span><p>fix to add_property so that it propagates properties to inheriting
+mappers</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/154">#154</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-11"><span class="target" id="change-a7ac11b48266cc795fd469a4dab8d818"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-a7ac11b48266cc795fd469a4dab8d818">¶</a></span><p>backrefs create themselves against primary mapper of its originating
+property, primary/secondary join arguments can be specified to override.
+helps their usage with polymorphic mappers</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-12"><span class="target" id="change-4ba29fdbbc8becb660237815d53b83e4"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-4ba29fdbbc8becb660237815d53b83e4">¶</a></span><p>”table exists” function has been implemented</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/31">#31</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-13"><span class="target" id="change-30c09019de225b41f95bdc0851e58dc7"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-30c09019de225b41f95bdc0851e58dc7">¶</a></span><p>”create_all/drop_all” added to MetaData object</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/98">#98</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-14"><span class="target" id="change-d7d3b18ab1260ef31dc840caf70b800a"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-d7d3b18ab1260ef31dc840caf70b800a">¶</a></span><p>improvements and fixes to topological sort algorithm, as well as more
+unit tests</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-15"><span class="target" id="change-01b8d39163627d26378163c4770488fd"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-01b8d39163627d26378163c4770488fd">¶</a></span><p>tutorial page added to docs which also can be run with a custom doctest
+runner to ensure its properly working.  docs generally overhauled to
+deal with new code patterns</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-16"><span class="target" id="change-3afbbfc302967cb3d9fab98edf0a3603"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3afbbfc302967cb3d9fab98edf0a3603">¶</a></span><p>many more fixes, refactorings.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-0.2.0-17"><span class="target" id="change-33ee602ad0a9e541e3c6ad6117aa50a8"><strong>[no_tags]</strong> <a class="changelog-reference headerlink reference internal" href="#change-33ee602ad0a9e541e3c6ad6117aa50a8">¶</a></span><p>migration guide is available on the Wiki at
+<a class="reference external" href="https://www.sqlalchemy.org/trac/wiki/02Migration">https://www.sqlalchemy.org/trac/wiki/02Migration</a></p>
+<p></p>
+</p>
+</li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="changelog_01.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">0.1 Changelog</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="changelog_03.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">0.3 Changelog</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">0.2 Changelog</a><ul>
+<li><a class="reference internal" href="#change-0.2.8">0.2.8</a></li>
+<li><a class="reference internal" href="#change-0.2.7">0.2.7</a></li>
+<li><a class="reference internal" href="#change-0.2.6">0.2.6</a></li>
+<li><a class="reference internal" href="#change-0.2.5">0.2.5</a></li>
+<li><a class="reference internal" href="#change-0.2.4">0.2.4</a></li>
+<li><a class="reference internal" href="#change-0.2.3">0.2.3</a></li>
+<li><a class="reference internal" href="#change-0.2.2">0.2.2</a></li>
+<li><a class="reference internal" href="#change-0.2.1">0.2.1</a></li>
+<li><a class="reference internal" href="#change-0.2.0">0.2.0</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

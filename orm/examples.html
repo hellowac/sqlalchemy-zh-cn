@@ -1,0 +1,1344 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="copyright" title="版权所有" href="../copyright.html" /><link rel="next" title="SQLAlchemy Core" href="../core/index.html" /><link rel="prev" title="替代类检测" href="extensions/instrumentation.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>核心和 ORM 示例 - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">概述</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">SQLAlchemy 统一教程</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/data.html">处理数据</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_insert.html">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">SQLAlchemy ORM</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="queryguide/index.html">ORM 查询指南</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="queryguide/select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="queryguide/inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="queryguide/dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="queryguide/columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="queryguide/relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="queryguide/api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="queryguide/query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">SQLAlchemy Core</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/schema.html">Schema 定义语言</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/ddl.html">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/api_basics.html">Core API 基础</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/exceptions.html">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">常见问题</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/installation.html">安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/connections.html">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/ormconfiguration.html">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">错误消息</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../changelog/index.html">变更和迁移</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_21.html">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_02.html">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="orm">
+<span id="examples-toplevel"></span><h1>核心和 ORM 示例<a class="headerlink" href="#orm" title="Link to this heading">¶</a></h1>
+<p>Core and ORM Examples</p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>SQLAlchemy 发行版包含各种代码示例，展示了一些典型和一些不太典型的模式。所有示例都可以运行，并且可以在发行版的 <code class="docutils literal notranslate"><span class="pre">/examples</span></code> 目录中找到。所有示例的描述和源代码都可以在这里找到。</p>
+<p>更多 SQLAlchemy 示例，包括一些用户贡献的，可以在 wiki 上找到 <a class="reference external" href="https://www.sqlalchemy.org/trac/wiki/UsageRecipes">https://www.sqlalchemy.org/trac/wiki/UsageRecipes</a> 。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>The SQLAlchemy distribution includes a variety of code examples illustrating
+a select set of patterns, some typical and some not so typical.   All are
+runnable and can be found in the <code class="docutils literal notranslate"><span class="pre">/examples</span></code> directory of the
+distribution.   Descriptions and source code for all can be found here.</p>
+<p>Additional SQLAlchemy examples, some user contributed, are available on the
+wiki at <a class="reference external" href="https://www.sqlalchemy.org/trac/wiki/UsageRecipes">https://www.sqlalchemy.org/trac/wiki/UsageRecipes</a>.</p>
+</div>
+</div>
+<section id="id2">
+<h2>映射配方<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>Mapping Recipes</p>
+<section id="examples-adjacencylist">
+<span id="id3"></span><h3>邻接表<a class="headerlink" href="#examples-adjacencylist" title="Link to this heading">¶</a></h3>
+<p>Adjacency List</p>
+<p id="module-examples.adjacency_list">An example of a dictionary-of-dictionaries structure mapped using
+an adjacency list model.</p>
+<p>E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="s2">&quot;rootnode&quot;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;node1&quot;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;node3&quot;</span><span class="p">)</span>
+<span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="n">dump_tree</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></pre></div>
+</div>
+<p>Listing of files:<ul class="simple">
+<li><p><a class="reference external" href="../_modules/examples/adjacency_list/adjacency_list.html">adjacency_list.py</a></p></li>
+</ul>
+</p>
+</section>
+<section id="examples-associations">
+<span id="id4"></span><h3>关联<a class="headerlink" href="#examples-associations" title="Link to this heading">¶</a></h3>
+<p>Associations</p>
+<p id="module-examples.association">Examples illustrating the usage of the “association object” pattern,
+where an intermediary class mediates the relationship between two
+classes that are associated in a many-to-many pattern.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/association/proxied_association.html">proxied_association.py</a> - Same example as basic_association, adding in
+usage of <a class="reference internal" href="extensions/associationproxy.html#module-sqlalchemy.ext.associationproxy" title="sqlalchemy.ext.associationproxy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sqlalchemy.ext.associationproxy</span></code></a> to make explicit references
+to <code class="docutils literal notranslate"><span class="pre">OrderItem</span></code> optional.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/association/basic_association.html">basic_association.py</a> - Illustrate a many-to-many relationship between an
+“Order” and a collection of “Item” objects, associating a purchase price
+with each via an association object called “OrderItem”</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/association/dict_of_sets_with_default.html">dict_of_sets_with_default.py</a> - An advanced association proxy example which
+illustrates nesting of association proxies to produce multi-level Python
+collections, in this case a dictionary with string keys and sets of integers
+as values, which conceal the underlying mapped classes.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="asyncio">
+<span id="examples-asyncio"></span><h3>Asyncio 集成<a class="headerlink" href="#asyncio" title="Link to this heading">¶</a></h3>
+<p>Asyncio Integration</p>
+<p id="module-examples.asyncio">Examples illustrating the asyncio engine feature of SQLAlchemy.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/asyncio/async_orm_writeonly.html">async_orm_writeonly.py</a> - Illustrates using <strong>write only relationships</strong> for simpler handling
+of ORM collections under asyncio.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/asyncio/greenlet_orm.html">greenlet_orm.py</a> - Illustrates use of the sqlalchemy.ext.asyncio.AsyncSession object
+for asynchronous ORM use, including the optional run_sync() method.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/asyncio/gather_orm_statements.html">gather_orm_statements.py</a> - Illustrates how to run many statements concurrently using <code class="docutils literal notranslate"><span class="pre">asyncio.gather()</span></code>
+along many asyncio database connections, merging ORM results into a single
+<code class="docutils literal notranslate"><span class="pre">AsyncSession</span></code>.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/asyncio/basic.html">basic.py</a> - Illustrates the asyncio engine / connection interface.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/asyncio/async_orm.html">async_orm.py</a> - Illustrates use of the <code class="docutils literal notranslate"><span class="pre">sqlalchemy.ext.asyncio.AsyncSession</span></code> object
+for asynchronous ORM use.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="id5">
+<h3>有向图<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<p>Directed Graphs</p>
+<p id="module-examples.graphs">An example of persistence for a directed graph structure.   The
+graph is stored as a collection of edges, each referencing both a
+“lower” and an “upper” node in a table of nodes.  Basic persistence
+and querying for lower- and upper- neighbors are illustrated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n2</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">n5</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">n2</span><span class="o">.</span><span class="n">add_neighbor</span><span class="p">(</span><span class="n">n5</span><span class="p">)</span>
+<span class="n">print</span><span class="p">(</span><span class="n">n2</span><span class="o">.</span><span class="n">higher_neighbors</span><span class="p">())</span></pre></div>
+</div>
+<p>Listing of files:<ul class="simple">
+<li><p><a class="reference external" href="../_modules/examples/graphs/directed_graph.html">directed_graph.py</a></p></li>
+</ul>
+</p>
+</section>
+<section id="id6">
+<h3>动态关系作为字典<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<p>Dynamic Relations as Dictionaries</p>
+<p id="module-examples.dynamic_dict">Illustrates how to place a dictionary-like facade on top of a
+“dynamic” relation, so that dictionary operations (assuming simple
+string keys) can operate upon a large collection without loading the
+full collection at once.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><a class="reference external" href="../_modules/examples/dynamic_dict/dynamic_dict.html">dynamic_dict.py</a></p></li>
+</ul>
+</p>
+</section>
+<section id="examples-generic-associations">
+<span id="id7"></span><h3>通用关联<a class="headerlink" href="#examples-generic-associations" title="Link to this heading">¶</a></h3>
+<p>Generic Associations</p>
+<p id="module-examples.generic_associations">Illustrates various methods of associating multiple types of
+parents with a particular child object.</p>
+<p>The examples all use the declarative extension along with
+declarative mixins.   Each one presents the identical use
+case at the end - two classes, <code class="docutils literal notranslate"><span class="pre">Customer</span></code> and <code class="docutils literal notranslate"><span class="pre">Supplier</span></code>, both
+subclassing the <code class="docutils literal notranslate"><span class="pre">HasAddresses</span></code> mixin, which ensures that the
+parent class is provided with an <code class="docutils literal notranslate"><span class="pre">addresses</span></code> collection
+which contains <code class="docutils literal notranslate"><span class="pre">Address</span></code> objects.</p>
+<p>The <a class="reference external" href="../_modules/examples/generic_associations/discriminator_on_association.html">discriminator_on_association.py</a> and <a class="reference external" href="../_modules/examples/generic_associations/generic_fk.html">generic_fk.py</a> scripts
+are modernized versions of recipes presented in the 2007 blog post
+<a class="reference external" href="https://techspot.zzzeek.org/2007/05/29/polymorphic-associations-with-sqlalchemy/">Polymorphic Associations with SQLAlchemy</a>.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/generic_associations/table_per_association.html">table_per_association.py</a> - Illustrates a mixin which provides a generic association
+via a individually generated association tables for each parent class.
+The associated objects themselves are persisted in a single table
+shared among all parents.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/generic_associations/discriminator_on_association.html">discriminator_on_association.py</a> - Illustrates a mixin which provides a generic association
+using a single target table and a single association table,
+referred to by all parent tables.  The association table
+contains a “discriminator” column which determines what type of
+parent object associates to each particular row in the association
+table.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/generic_associations/generic_fk.html">generic_fk.py</a> - Illustrates a so-called “generic foreign key”, in a similar fashion
+to that of popular frameworks such as Django, ROR, etc.  This
+approach bypasses standard referential integrity
+practices, in that the “foreign key” column is not actually
+constrained to refer to any particular table; instead,
+in-application logic is used to determine which table is referenced.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/generic_associations/table_per_related.html">table_per_related.py</a> - Illustrates a generic association which persists association
+objects within individual tables, each one generated to persist
+those objects on behalf of a particular parent class.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="id8">
+<h3>物化路径<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<p>Materialized Paths</p>
+<p id="module-examples.materialized_paths">Illustrates the “materialized paths” pattern for hierarchical data using the
+SQLAlchemy ORM.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/materialized_paths/materialized_paths.html">materialized_paths.py</a> - Illustrates the “materialized paths” pattern.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="id9">
+<h3>嵌套集<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<p>Nested Sets</p>
+<p id="module-examples.nested_sets">Illustrates a rudimentary way to implement the “nested sets”
+pattern for hierarchical data using the SQLAlchemy ORM.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/nested_sets/nested_sets.html">nested_sets.py</a> - Celko’s “Nested Sets” Tree Structure.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="examples-performance">
+<span id="id10"></span><h3>性能<a class="headerlink" href="#examples-performance" title="Link to this heading">¶</a></h3>
+<p>Performance</p>
+<p id="module-examples.performance">A performance profiling suite for a variety of SQLAlchemy use cases.</p>
+<p>Each suite focuses on a specific use case with a particular performance
+profile and associated implications:</p>
+<ul class="simple">
+<li><p>bulk inserts</p></li>
+<li><p>individual inserts, with or without transactions</p></li>
+<li><p>fetching large numbers of rows</p></li>
+<li><p>running lots of short queries</p></li>
+</ul>
+<p>All suites include a variety of use patterns illustrating both Core
+and ORM use, and are generally sorted in order of performance from worst
+to greatest, inversely based on amount of functionality provided by SQLAlchemy,
+greatest to least (these two things generally correspond perfectly).</p>
+<p>A command line tool is presented at the package level which allows
+individual suites to be run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">performance</span> <span class="o">--</span><span class="n">help</span>
+<span class="n">usage</span><span class="p">:</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">performance</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span> <span class="n">TEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dburl</span> <span class="n">DBURL</span><span class="p">]</span>
+                                      <span class="p">[</span><span class="o">--</span><span class="n">num</span> <span class="n">NUM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">profile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dump</span><span class="p">]</span>
+                                      <span class="p">[</span><span class="o">--</span><span class="n">echo</span><span class="p">]</span>
+
+                                      <span class="p">{</span><span class="n">bulk_inserts</span><span class="p">,</span><span class="n">large_resultsets</span><span class="p">,</span><span class="n">single_inserts</span><span class="p">}</span>
+
+<span class="n">positional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="p">{</span><span class="n">bulk_inserts</span><span class="p">,</span><span class="n">large_resultsets</span><span class="p">,</span><span class="n">single_inserts</span><span class="p">}</span>
+                        <span class="n">suite</span> <span class="n">to</span> <span class="n">run</span>
+
+<span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+  <span class="o">--</span><span class="n">test</span> <span class="n">TEST</span>           <span class="n">run</span> <span class="n">specific</span> <span class="n">test</span> <span class="n">name</span>
+  <span class="o">--</span><span class="n">dburl</span> <span class="n">DBURL</span>         <span class="n">database</span> <span class="n">URL</span><span class="p">,</span> <span class="n">default</span> <span class="n">sqlite</span><span class="p">:</span><span class="o">///</span><span class="n">profile</span><span class="o">.</span><span class="n">db</span>
+  <span class="o">--</span><span class="n">num</span> <span class="n">NUM</span>             <span class="n">Number</span> <span class="n">of</span> <span class="n">iterations</span><span class="o">/</span><span class="n">items</span><span class="o">/</span><span class="n">etc</span> <span class="k">for</span> <span class="n">tests</span><span class="p">;</span>
+                        <span class="n">default</span> <span class="ow">is</span> <span class="n">module</span><span class="o">-</span><span class="n">specific</span>
+  <span class="o">--</span><span class="n">profile</span>             <span class="n">run</span> <span class="n">profiling</span> <span class="ow">and</span> <span class="n">dump</span> <span class="n">call</span> <span class="n">counts</span>
+  <span class="o">--</span><span class="n">dump</span>                <span class="n">dump</span> <span class="n">full</span> <span class="n">call</span> <span class="n">profile</span> <span class="p">(</span><span class="n">implies</span> <span class="o">--</span><span class="n">profile</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">echo</span>                <span class="n">Echo</span> <span class="n">SQL</span> <span class="n">output</span></pre></div>
+</div>
+<p>An example run looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">performance</span> <span class="n">bulk_inserts</span></pre></div>
+</div>
+<p>Or with options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">performance</span> <span class="n">bulk_inserts</span> \
+    <span class="o">--</span><span class="n">dburl</span> <span class="n">mysql</span><span class="o">+</span><span class="n">mysqldb</span><span class="p">:</span><span class="o">//</span><span class="n">scott</span><span class="p">:</span><span class="n">tiger</span><span class="nd">@localhost</span><span class="o">/</span><span class="n">test</span> \
+    <span class="o">--</span><span class="n">profile</span> <span class="o">--</span><span class="n">num</span> <span class="mi">1000</span></pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../faq/performance.html#faq-how-to-profile"><span class="std std-ref">如何分析 SQLAlchemy 支持的应用程序？</span></a></p>
+</div>
+<section id="file-listing">
+<h4>File Listing<a class="headerlink" href="#file-listing" title="Link to this heading">¶</a></h4>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/performance/short_selects.html">short_selects.py</a> - This series of tests illustrates different ways to SELECT a single
+record by primary key</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/performance/__main__.html">__main__.py</a> - Allows the examples/performance package to be run as a script.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/performance/single_inserts.html">single_inserts.py</a> - In this series of tests, we’re looking at a method that inserts a row
+within a distinct transaction, and afterwards returns to essentially a
+“closed” state.   This would be analogous to an API call that starts up
+a database connection, inserts the row, commits and closes.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/performance/bulk_updates.html">bulk_updates.py</a> - This series of tests will illustrate different ways to UPDATE a large number
+of rows in bulk (under construction! there’s just one test at the moment)</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/performance/large_resultsets.html">large_resultsets.py</a> - In this series of tests, we are looking at time to load a large number
+of very small and simple rows.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/performance/bulk_inserts.html">bulk_inserts.py</a> - This series of tests illustrates different ways to INSERT a large number
+of rows in bulk.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="running-all-tests-with-time">
+<h4>Running all tests with time<a class="headerlink" href="#running-all-tests-with-time" title="Link to this heading">¶</a></h4>
+<p>This is the default form of run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">performance</span> <span class="n">single_inserts</span>
+<span class="n">Tests</span> <span class="n">to</span> <span class="n">run</span><span class="p">:</span> <span class="n">test_orm_commit</span><span class="p">,</span> <span class="n">test_bulk_save</span><span class="p">,</span>
+              <span class="n">test_bulk_insert_dictionaries</span><span class="p">,</span> <span class="n">test_core</span><span class="p">,</span>
+              <span class="n">test_core_query_caching</span><span class="p">,</span> <span class="n">test_dbapi_raw_w_connect</span><span class="p">,</span>
+              <span class="n">test_dbapi_raw_w_pool</span>
+
+<span class="n">test_orm_commit</span> <span class="p">:</span> <span class="n">Individual</span> <span class="n">INSERT</span><span class="o">/</span><span class="n">COMMIT</span> <span class="n">pairs</span> <span class="n">via</span> <span class="n">the</span>
+    <span class="n">ORM</span> <span class="p">(</span><span class="mi">10000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">13.690218</span> <span class="n">sec</span>
+<span class="n">test_bulk_save</span> <span class="p">:</span> <span class="n">Individual</span> <span class="n">INSERT</span><span class="o">/</span><span class="n">COMMIT</span> <span class="n">pairs</span> <span class="n">using</span>
+    <span class="n">the</span> <span class="s2">&quot;bulk&quot;</span> <span class="n">API</span>  <span class="p">(</span><span class="mi">10000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">11.290371</span> <span class="n">sec</span>
+<span class="n">test_bulk_insert_dictionaries</span> <span class="p">:</span> <span class="n">Individual</span> <span class="n">INSERT</span><span class="o">/</span><span class="n">COMMIT</span> <span class="n">pairs</span> <span class="n">using</span>
+    <span class="n">the</span> <span class="s2">&quot;bulk&quot;</span> <span class="n">API</span> <span class="k">with</span> <span class="n">dictionaries</span> <span class="p">(</span><span class="mi">10000</span> <span class="n">iterations</span><span class="p">);</span>
+    <span class="n">total</span> <span class="n">time</span> <span class="mf">10.814626</span> <span class="n">sec</span>
+<span class="n">test_core</span> <span class="p">:</span> <span class="n">Individual</span> <span class="n">INSERT</span><span class="o">/</span><span class="n">COMMIT</span> <span class="n">pairs</span> <span class="n">using</span> <span class="n">Core</span><span class="o">.</span>
+    <span class="p">(</span><span class="mi">10000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">9.665620</span> <span class="n">sec</span>
+<span class="n">test_core_query_caching</span> <span class="p">:</span> <span class="n">Individual</span> <span class="n">INSERT</span><span class="o">/</span><span class="n">COMMIT</span> <span class="n">pairs</span> <span class="n">using</span> <span class="n">Core</span>
+    <span class="k">with</span> <span class="n">query</span> <span class="n">caching</span> <span class="p">(</span><span class="mi">10000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">9.209010</span> <span class="n">sec</span>
+<span class="n">test_dbapi_raw_w_connect</span> <span class="p">:</span> <span class="n">Individual</span> <span class="n">INSERT</span><span class="o">/</span><span class="n">COMMIT</span> <span class="n">pairs</span> <span class="n">w</span><span class="o">/</span> <span class="n">DBAPI</span> <span class="o">+</span>
+    <span class="n">connection</span> <span class="n">each</span> <span class="n">time</span> <span class="p">(</span><span class="mi">10000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">9.551103</span> <span class="n">sec</span>
+<span class="n">test_dbapi_raw_w_pool</span> <span class="p">:</span> <span class="n">Individual</span> <span class="n">INSERT</span><span class="o">/</span><span class="n">COMMIT</span> <span class="n">pairs</span> <span class="n">w</span><span class="o">/</span> <span class="n">DBAPI</span> <span class="o">+</span>
+    <span class="n">connection</span> <span class="n">pool</span> <span class="p">(</span><span class="mi">10000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">8.001813</span> <span class="n">sec</span></pre></div>
+</div>
+</section>
+<section id="dumping-profiles-for-individual-tests">
+<h4>Dumping Profiles for Individual Tests<a class="headerlink" href="#dumping-profiles-for-individual-tests" title="Link to this heading">¶</a></h4>
+<p>A Python profile output can be dumped for all tests, or more commonly
+individual tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">performance</span> <span class="n">single_inserts</span> <span class="o">--</span><span class="n">test</span> <span class="n">test_core</span> <span class="o">--</span><span class="n">num</span> <span class="mi">1000</span> <span class="o">--</span><span class="n">dump</span>
+<span class="n">Tests</span> <span class="n">to</span> <span class="n">run</span><span class="p">:</span> <span class="n">test_core</span>
+<span class="n">test_core</span> <span class="p">:</span> <span class="n">Individual</span> <span class="n">INSERT</span><span class="o">/</span><span class="n">COMMIT</span> <span class="n">pairs</span> <span class="n">using</span> <span class="n">Core</span><span class="o">.</span> <span class="p">(</span><span class="mi">1000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">fn</span> <span class="n">calls</span> <span class="mi">186109</span>
+         <span class="mi">186109</span> <span class="n">function</span> <span class="n">calls</span> <span class="p">(</span><span class="mi">186102</span> <span class="n">primitive</span> <span class="n">calls</span><span class="p">)</span> <span class="ow">in</span> <span class="mf">1.089</span> <span class="n">seconds</span>
+
+   <span class="n">Ordered</span> <span class="n">by</span><span class="p">:</span> <span class="n">internal</span> <span class="n">time</span><span class="p">,</span> <span class="n">call</span> <span class="n">count</span>
+
+   <span class="n">ncalls</span>  <span class="n">tottime</span>  <span class="n">percall</span>  <span class="n">cumtime</span>  <span class="n">percall</span> <span class="n">filename</span><span class="p">:</span><span class="n">lineno</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+     <span class="mi">1000</span>    <span class="mf">0.634</span>    <span class="mf">0.001</span>    <span class="mf">0.634</span>    <span class="mf">0.001</span> <span class="p">{</span><span class="n">method</span> <span class="s1">&#39;commit&#39;</span> <span class="n">of</span> <span class="s1">&#39;sqlite3.Connection&#39;</span> <span class="n">objects</span><span class="p">}</span>
+     <span class="mi">1000</span>    <span class="mf">0.154</span>    <span class="mf">0.000</span>    <span class="mf">0.154</span>    <span class="mf">0.000</span> <span class="p">{</span><span class="n">method</span> <span class="s1">&#39;execute&#39;</span> <span class="n">of</span> <span class="s1">&#39;sqlite3.Cursor&#39;</span> <span class="n">objects</span><span class="p">}</span>
+     <span class="mi">1000</span>    <span class="mf">0.021</span>    <span class="mf">0.000</span>    <span class="mf">0.074</span>    <span class="mf">0.000</span> <span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">classic</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sqlalchemy</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">sqlalchemy</span><span class="o">/</span><span class="n">sql</span><span class="o">/</span><span class="n">compiler</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1950</span><span class="p">(</span><span class="n">_get_colparams</span><span class="p">)</span>
+     <span class="mi">1000</span>    <span class="mf">0.015</span>    <span class="mf">0.000</span>    <span class="mf">0.034</span>    <span class="mf">0.000</span> <span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">classic</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sqlalchemy</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">sqlalchemy</span><span class="o">/</span><span class="n">engine</span><span class="o">/</span><span class="n">default</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">503</span><span class="p">(</span><span class="n">_init_compiled</span><span class="p">)</span>
+        <span class="mi">1</span>    <span class="mf">0.012</span>    <span class="mf">0.012</span>    <span class="mf">1.091</span>    <span class="mf">1.091</span> <span class="n">examples</span><span class="o">/</span><span class="n">performance</span><span class="o">/</span><span class="n">single_inserts</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">79</span><span class="p">(</span><span class="n">test_core</span><span class="p">)</span>
+
+    <span class="o">...</span></pre></div>
+</div>
+</section>
+<section id="writing-your-own-suites">
+<span id="examples-profiling-writeyourown"></span><h4>Writing your Own Suites<a class="headerlink" href="#writing-your-own-suites" title="Link to this heading">¶</a></h4>
+<p>The profiler suite system is extensible, and can be applied to your own set
+of tests.  This is a valuable technique to use in deciding upon the proper
+approach for some performance-critical set of routines.  For example,
+if we wanted to profile the difference between several kinds of loading,
+we can create a file <code class="docutils literal notranslate"><span class="pre">test_loads.py</span></code>, with the following content:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">examples.performance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Profiler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">create_engine</span><span class="p">,</span> <span class="n">ForeignKey</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">joinedload</span><span class="p">,</span> <span class="n">subqueryload</span><span class="p">,</span> <span class="n">Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.declarative</span><span class="w"> </span><span class="kn">import</span> <span class="n">declarative_base</span>
+
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+<span class="n">engine</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Parent</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;parent&quot;</span>
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">children</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Child&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;child&quot;</span>
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">parent_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;parent.id&quot;</span><span class="p">))</span>
+
+
+<span class="c1"># Init with name of file, default number of items</span>
+<span class="n">Profiler</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="s2">&quot;test_loads&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+
+<span class="nd">@Profiler</span><span class="o">.</span><span class="n">setup_once</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_once</span><span class="p">(</span><span class="n">dburl</span><span class="p">,</span> <span class="n">echo</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+    <span class="s2">&quot;setup once.  create an engine, insert fixture data&quot;</span>
+    <span class="k">global</span> <span class="n">engine</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">dburl</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">)</span>
+    <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">drop_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+    <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+    <span class="n">sess</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+    <span class="n">sess</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">Parent</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">Child</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">range</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">sess</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+
+<span class="nd">@Profiler</span><span class="o">.</span><span class="n">setup</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="n">dburl</span><span class="p">,</span> <span class="n">echo</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+    <span class="s2">&quot;setup per test.  create a new Session.&quot;</span>
+    <span class="k">global</span> <span class="n">session</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+    <span class="c1"># pre-connect so this part isn&#39;t profiled (if we choose)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">connection</span><span class="p">()</span>
+
+
+<span class="nd">@Profiler</span><span class="o">.</span><span class="n">profile</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_lazyload</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="s2">&quot;load everything, no eager loading.&quot;</span>
+
+    <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">children</span>
+
+
+<span class="nd">@Profiler</span><span class="o">.</span><span class="n">profile</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_joinedload</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="s2">&quot;load everything, joined eager loading.&quot;</span>
+
+    <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Parent</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">joinedload</span><span class="p">(</span><span class="s2">&quot;children&quot;</span><span class="p">)):</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">children</span>
+
+
+<span class="nd">@Profiler</span><span class="o">.</span><span class="n">profile</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_subqueryload</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="s2">&quot;load everything, subquery eager loading.&quot;</span>
+
+    <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Parent</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">subqueryload</span><span class="p">(</span><span class="s2">&quot;children&quot;</span><span class="p">)):</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">children</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">Profiler</span><span class="o">.</span><span class="n">main</span><span class="p">()</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>We can run our new script directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="n">test_loads</span><span class="o">.</span><span class="n">py</span>  <span class="o">--</span><span class="n">dburl</span> <span class="n">postgresql</span><span class="o">+</span><span class="n">psycopg2</span><span class="p">:</span><span class="o">//</span><span class="n">scott</span><span class="p">:</span><span class="n">tiger</span><span class="nd">@localhost</span><span class="o">/</span><span class="n">test</span>
+<span class="n">Running</span> <span class="n">setup</span> <span class="n">once</span><span class="o">...</span>
+<span class="n">Tests</span> <span class="n">to</span> <span class="n">run</span><span class="p">:</span> <span class="n">test_lazyload</span><span class="p">,</span> <span class="n">test_joinedload</span><span class="p">,</span> <span class="n">test_subqueryload</span>
+<span class="n">test_lazyload</span> <span class="p">:</span> <span class="n">load</span> <span class="n">everything</span><span class="p">,</span> <span class="n">no</span> <span class="n">eager</span> <span class="n">loading</span><span class="o">.</span> <span class="p">(</span><span class="mi">1000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">11.971159</span> <span class="n">sec</span>
+<span class="n">test_joinedload</span> <span class="p">:</span> <span class="n">load</span> <span class="n">everything</span><span class="p">,</span> <span class="n">joined</span> <span class="n">eager</span> <span class="n">loading</span><span class="o">.</span> <span class="p">(</span><span class="mi">1000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">2.754592</span> <span class="n">sec</span>
+<span class="n">test_subqueryload</span> <span class="p">:</span> <span class="n">load</span> <span class="n">everything</span><span class="p">,</span> <span class="n">subquery</span> <span class="n">eager</span> <span class="n">loading</span><span class="o">.</span> <span class="p">(</span><span class="mi">1000</span> <span class="n">iterations</span><span class="p">);</span> <span class="n">total</span> <span class="n">time</span> <span class="mf">2.977696</span> <span class="n">sec</span></pre></div>
+</div>
+</section>
+</section>
+<section id="examples-spaceinvaders">
+<span id="id11"></span><h3>太空入侵者<a class="headerlink" href="#examples-spaceinvaders" title="Link to this heading">¶</a></h3>
+<p>Space Invaders</p>
+<p id="module-examples.space_invaders">A Space Invaders game using SQLite as the state machine.</p>
+<p>Originally developed in 2012.  Adapted to work in Python 3.</p>
+<p>Runs in a textual console using ASCII art.</p>
+<img alt="../_images/space_invaders.jpg" src="../_images/space_invaders.jpg" />
+<p>To run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">space_invaders</span><span class="o">.</span><span class="n">space_invaders</span></pre></div>
+</div>
+<p>While it runs, watch the SQL output in the log:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">tail</span> <span class="o">-</span><span class="n">f</span> <span class="n">space_invaders</span><span class="o">.</span><span class="n">log</span></pre></div>
+</div>
+<p>enjoy!</p>
+<p>Listing of files:<ul class="simple">
+<li><p><a class="reference external" href="../_modules/examples/space_invaders/space_invaders.html">space_invaders.py</a></p></li>
+</ul>
+</p>
+</section>
+<section id="examples-versioning">
+<span id="id12"></span><h3>对象版本控制<a class="headerlink" href="#examples-versioning" title="Link to this heading">¶</a></h3>
+<p>Versioning Objects</p>
+<section id="examples-versioned-history">
+<span id="id13"></span><h4>使用历史表进行版本控制<a class="headerlink" href="#examples-versioned-history" title="Link to this heading">¶</a></h4>
+<p>Versioning with a History Table</p>
+<p id="module-examples.versioned_history">Illustrates an extension which creates version tables for entities and stores
+records for each change. The given extensions generate an anonymous “history”
+class which represents historical versions of the target object.</p>
+<p>Compare to the <a class="reference internal" href="#examples-versioned-rows"><span class="std std-ref">使用时间行进行版本控制</span></a> examples which write updates
+as new rows in the same table, without using a separate history table.</p>
+<p>Usage is illustrated via a unit test module <code class="docutils literal notranslate"><span class="pre">test_versioning.py</span></code>, which is
+run using SQLAlchemy’s internal pytest plugin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">pytest</span> <span class="n">test</span><span class="o">/</span><span class="n">base</span><span class="o">/</span><span class="n">test_examples</span><span class="o">.</span><span class="n">py</span></pre></div>
+</div>
+<p>A fragment of example usage, using declarative:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">history_meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">Versioned</span><span class="p">,</span> <span class="n">versioned_session</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SomeClass</span><span class="p">(</span><span class="n">Versioned</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;sometable&quot;</span>
+
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">is</span> <span class="n">SomeClass</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+
+<span class="n">Session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+<span class="n">versioned_session</span><span class="p">(</span><span class="n">Session</span><span class="p">)</span>
+
+<span class="n">sess</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">SomeClass</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sc1&quot;</span><span class="p">)</span>
+<span class="n">sess</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+<span class="n">sess</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="n">sc</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;sc1modified&quot;</span>
+<span class="n">sess</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="k">assert</span> <span class="n">sc</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="mi">2</span>
+
+<span class="n">SomeClassHistory</span> <span class="o">=</span> <span class="n">SomeClass</span><span class="o">.</span><span class="n">__history_mapper__</span><span class="o">.</span><span class="n">class_</span>
+
+<span class="k">assert</span> <span class="n">sess</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">SomeClassHistory</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="n">SomeClassHistory</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">SomeClassHistory</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sc1&quot;</span><span class="p">)]</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Versioned</span></code> mixin is designed to work with declarative.  To use
+the extension with classical mappers, the <code class="docutils literal notranslate"><span class="pre">_history_mapper</span></code> function
+can be applied:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">history_meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">_history_mapper</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">(</span><span class="n">SomeClass</span><span class="p">,</span> <span class="n">sometable</span><span class="p">)</span>
+<span class="n">_history_mapper</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+<span class="n">SomeHistoryClass</span> <span class="o">=</span> <span class="n">SomeClass</span><span class="o">.</span><span class="n">__history_mapper__</span><span class="o">.</span><span class="n">class_</span></pre></div>
+</div>
+<p>The versioning example also integrates with the ORM optimistic concurrency
+feature documented at <a class="reference internal" href="versioning.html#mapper-version-counter"><span class="std std-ref">配置版本计数器</span></a>.   To enable this feature,
+set the flag <code class="docutils literal notranslate"><span class="pre">Versioned.use_mapper_versioning</span></code> to True:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SomeClass</span><span class="p">(</span><span class="n">Versioned</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;sometable&quot;</span>
+
+    <span class="n">use_mapper_versioning</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">is</span> <span class="n">SomeClass</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>Above, if two instance of <code class="docutils literal notranslate"><span class="pre">SomeClass</span></code> with the same version identifier
+are updated and sent to the database for UPDATE concurrently, if the database
+isolation level allows the two UPDATE statements to proceed, one will fail
+because it no longer is against the last known version identifier.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/versioned_history/history_meta.html">history_meta.py</a> - Versioned mixin class and other utilities.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/versioned_history/test_versioning.html">test_versioning.py</a> - Unit tests illustrating usage of the <code class="docutils literal notranslate"><span class="pre">history_meta.py</span></code>
+module functions.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="examples-versioned-rows">
+<span id="id14"></span><h4>使用时间行进行版本控制<a class="headerlink" href="#examples-versioned-rows" title="Link to this heading">¶</a></h4>
+<p>Versioning using Temporal Rows</p>
+<p id="module-examples.versioned_rows">Several examples that illustrate the technique of intercepting changes
+that would be first interpreted as an UPDATE on a row, and instead turning
+it into an INSERT of a new row, leaving the previous row intact as
+a historical version.</p>
+<p>Compare to the <a class="reference internal" href="#examples-versioned-history"><span class="std std-ref">使用历史表进行版本控制</span></a> example which writes a
+history row to a separate history table.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/versioned_rows/versioned_rows.html">versioned_rows.py</a> - Illustrates a method to intercept changes on objects, turning
+an UPDATE statement on a single row into an INSERT statement, so that a new
+row is inserted with the new data, keeping the old row intact.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/versioned_rows/versioned_map.html">versioned_map.py</a> - A variant of the versioned_rows example built around the
+concept of a “vertical table” structure, like those illustrated in
+<a class="reference internal" href="#examples-vertical-tables"><span class="std std-ref">垂直属性映射</span></a> examples.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/versioned_rows/versioned_update_old_row.html">versioned_update_old_row.py</a> - Illustrates the same UPDATE into INSERT technique of <code class="docutils literal notranslate"><span class="pre">versioned_rows.py</span></code>,
+but also emits an UPDATE on the <strong>old</strong> row to affect a change in timestamp.
+Also includes a <a class="reference internal" href="events.html#sqlalchemy.orm.SessionEvents.do_orm_execute" title="sqlalchemy.orm.SessionEvents.do_orm_execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SessionEvents.do_orm_execute()</span></code></a> hook to limit queries
+to only the most recent version.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/versioned_rows/versioned_rows_w_versionid.html">versioned_rows_w_versionid.py</a> - Illustrates a method to intercept changes on objects, turning
+an UPDATE statement on a single row into an INSERT statement, so that a new
+row is inserted with the new data, keeping the old row intact.</p>
+</p></li>
+</ul>
+</p>
+</section>
+</section>
+<section id="examples-vertical-tables">
+<span id="id15"></span><h3>垂直属性映射<a class="headerlink" href="#examples-vertical-tables" title="Link to this heading">¶</a></h3>
+<p>Vertical Attribute Mapping</p>
+<p id="module-examples.vertical">Illustrates “vertical table” mappings.</p>
+<p>A “vertical table” refers to a technique where individual attributes
+of an object are stored as distinct rows in a table. The “vertical
+table” technique is used to persist objects which can have a varied
+set of attributes, at the expense of simple query control and brevity.
+It is commonly found in content/document management systems in order
+to represent user-created structures flexibly.</p>
+<p>Two variants on the approach are given.  In the second, each row
+references a “datatype” which contains information about the type of
+information stored in the attribute, such as integer, string, or date.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shrew</span> <span class="o">=</span> <span class="n">Animal</span><span class="p">(</span><span class="s2">&quot;shrew&quot;</span><span class="p">)</span>
+<span class="n">shrew</span><span class="p">[</span><span class="s2">&quot;cuteness&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">shrew</span><span class="p">[</span><span class="s2">&quot;weasel-like&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">shrew</span><span class="p">[</span><span class="s2">&quot;poisonous&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">shrew</span><span class="p">)</span>
+<span class="n">session</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Animal</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="n">Animal</span><span class="o">.</span><span class="n">facts</span><span class="o">.</span><span class="n">any</span><span class="p">(</span>
+        <span class="n">and_</span><span class="p">(</span><span class="n">AnimalFact</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;weasel-like&quot;</span><span class="p">,</span> <span class="n">AnimalFact</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">print</span><span class="p">(</span><span class="s2">&quot;weasel-like animals&quot;</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></pre></div>
+</div>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/vertical/dictlike-polymorphic.html">dictlike-polymorphic.py</a> - Mapping a polymorphic-valued vertical table as a dictionary.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/vertical/dictlike.html">dictlike.py</a> - Mapping a vertical table as a dictionary.</p>
+</p></li>
+</ul>
+</p>
+</section>
+</section>
+<section id="examples-inheritance">
+<span id="id16"></span><h2>继承映射配方<a class="headerlink" href="#examples-inheritance" title="Link to this heading">¶</a></h2>
+<p>Inheritance Mapping Recipes</p>
+<section id="module-examples.inheritance">
+<span id="basic-inheritance-mappings"></span><h3>Basic Inheritance Mappings<a class="headerlink" href="#module-examples.inheritance" title="Link to this heading">¶</a></h3>
+<p>Working examples of single-table, joined-table, and concrete-table
+inheritance as described in <a class="reference internal" href="inheritance.html#inheritance-toplevel"><span class="std std-ref">映射类继承层次结构</span></a>.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/inheritance/joined.html">joined.py</a> - Joined-table (table-per-subclass) inheritance example.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/inheritance/single.html">single.py</a> - Single-table (table-per-hierarchy) inheritance example.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/inheritance/concrete.html">concrete.py</a> - Concrete-table (table-per-class) inheritance example.</p>
+</p></li>
+</ul>
+</p>
+</section>
+</section>
+<section id="api">
+<h2>特殊 API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<p>Special APIs</p>
+<section id="examples-instrumentation">
+<span id="id17"></span><h3>属性检测<a class="headerlink" href="#examples-instrumentation" title="Link to this heading">¶</a></h3>
+<p>Attribute Instrumentation</p>
+<p id="module-examples.custom_attributes">Examples illustrating modifications to SQLAlchemy’s attribute management
+system.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/custom_attributes/active_column_defaults.html">active_column_defaults.py</a> - Illustrates use of the <a class="reference internal" href="events.html#sqlalchemy.orm.AttributeEvents.init_scalar" title="sqlalchemy.orm.AttributeEvents.init_scalar"><code class="xref py py-meth docutils literal notranslate"><span class="pre">AttributeEvents.init_scalar()</span></code></a>
+event, in conjunction with Core column defaults to provide
+ORM objects that automatically produce the default value
+when an un-set attribute is accessed.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/custom_attributes/custom_management.html">custom_management.py</a> - Illustrates customized class instrumentation, using
+the <a class="reference internal" href="extensions/instrumentation.html#module-sqlalchemy.ext.instrumentation" title="sqlalchemy.ext.instrumentation"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sqlalchemy.ext.instrumentation</span></code></a> extension package.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/custom_attributes/listen_for_events.html">listen_for_events.py</a> - Illustrates how to attach events to all instrumented attributes
+and listen for change events.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="examples-sharding">
+<span id="id18"></span><h3>水平分片<a class="headerlink" href="#examples-sharding" title="Link to this heading">¶</a></h3>
+<p>Horizontal Sharding</p>
+<p id="module-examples.sharding">A basic example of using the SQLAlchemy Sharding API.
+Sharding refers to horizontally scaling data across multiple
+databases.</p>
+<p>The basic components of a “sharded” mapping are:</p>
+<ul class="simple">
+<li><p>multiple <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> instances, each assigned a “shard id”.
+These <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> instances may refer to different databases,
+or different schemas / accounts within the same database, or they can
+even be differentiated only by options that will cause them to access
+different schemas or tables when used.</p></li>
+<li><p>a function which can return a single shard id, given an instance
+to be saved; this is called “shard_chooser”</p></li>
+<li><p>a function which can return a list of shard ids which apply to a particular
+instance identifier; this is called “id_chooser”.If it returns all shard ids,
+all shards will be searched.</p></li>
+<li><p>a function which can return a list of shard ids to try, given a particular
+Query (“query_chooser”).  If it returns all shard ids, all shards will be
+queried and the results joined together.</p></li>
+</ul>
+<p>In these examples, different kinds of shards are used against the same basic
+example which accommodates weather data on a per-continent basis. We provide
+example shard_chooser, id_chooser and query_chooser functions. The
+query_chooser illustrates inspection of the SQL expression element in order to
+attempt to determine a single shard being requested.</p>
+<p>The construction of generic sharding routines is an ambitious approach
+to the issue of organizing instances among multiple databases.   For a
+more plain-spoken alternative, the “distinct entity” approach
+is a simple method of assigning objects to different tables (and potentially
+database nodes) in an explicit way - described on the wiki at
+<a class="reference external" href="https://www.sqlalchemy.org/trac/wiki/UsageRecipes/EntityName">EntityName</a>.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/sharding/asyncio.html">asyncio.py</a> - Illustrates sharding API used with asyncio.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/sharding/separate_databases.html">separate_databases.py</a> - Illustrates sharding using distinct SQLite databases.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/sharding/separate_schema_translates.html">separate_schema_translates.py</a> - Illustrates sharding using a single database with multiple schemas,
+where a different “schema_translates_map” can be used for each shard.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/sharding/separate_tables.html">separate_tables.py</a> - Illustrates sharding using a single SQLite database, that will however
+have multiple tables using a naming convention.</p>
+</p></li>
+</ul>
+</p>
+</section>
+</section>
+<section id="id19">
+<h2>扩展核心<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h2>
+<p>Extending Core</p>
+<section id="module-examples.syntax_extensions">
+<span id="extending-statements-like-select-insert-etc"></span><span id="examples-syntax-extensions"></span><h3>Extending Statements like SELECT, INSERT, etc<a class="headerlink" href="#module-examples.syntax_extensions" title="Link to this heading">¶</a></h3>
+<p>A detailed example of extending the <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select" title="sqlalchemy.sql.expression.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> construct to include
+a new non-SQL standard clause <code class="docutils literal notranslate"><span class="pre">QUALIFY</span></code>.</p>
+<p>This example illustrates both the <a class="reference internal" href="../core/compiler.html#sqlalchemy-ext-compiler-toplevel"><span class="std std-ref">自定义 SQL 构造和编译扩展</span></a>
+as well as an extension known as <a class="reference internal" href="../core/compiler.html#sqlalchemy.sql.SyntaxExtension" title="sqlalchemy.sql.SyntaxExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyntaxExtension</span></code></a>.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><a class="reference external" href="../_modules/examples/syntax_extensions/test_qualify.html">test_qualify.py</a></p></li>
+<li><p><a class="reference external" href="../_modules/examples/syntax_extensions/qualify.html">qualify.py</a></p></li>
+</ul>
+</p>
+</section>
+</section>
+<section id="id20">
+<h2>扩展 ORM<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h2>
+<p>Extending the ORM</p>
+<section id="examples-session-orm-events">
+<span id="id21"></span><h3>ORM 查询事件<a class="headerlink" href="#examples-session-orm-events" title="Link to this heading">¶</a></h3>
+<p>ORM Query Events-</p>
+<p id="module-examples.extending_query">Recipes which illustrate augmentation of ORM SELECT behavior as used by
+<a class="reference internal" href="session_api.html#sqlalchemy.orm.Session.execute" title="sqlalchemy.orm.Session.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.execute()</span></code></a> with <a class="reference internal" href="../glossary.html#term-2.0-style"><span class="xref std std-term">2.0 style</span></a> use of
+<a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.select" title="sqlalchemy.sql.expression.select"><code class="xref py py-func docutils literal notranslate"><span class="pre">select()</span></code></a>, as well as the <a class="reference internal" href="../glossary.html#term-1.x-style"><span class="xref std std-term">1.x style</span></a> <a class="reference internal" href="queryguide/query.html#sqlalchemy.orm.Query" title="sqlalchemy.orm.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>
+object.</p>
+<p>Examples include demonstrations of the <a class="reference internal" href="queryguide/api.html#sqlalchemy.orm.with_loader_criteria" title="sqlalchemy.orm.with_loader_criteria"><code class="xref py py-func docutils literal notranslate"><span class="pre">with_loader_criteria()</span></code></a>
+option as well as the <a class="reference internal" href="events.html#sqlalchemy.orm.SessionEvents.do_orm_execute" title="sqlalchemy.orm.SessionEvents.do_orm_execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SessionEvents.do_orm_execute()</span></code></a> hook.</p>
+<p>As of SQLAlchemy 1.4, the <a class="reference internal" href="queryguide/query.html#sqlalchemy.orm.Query" title="sqlalchemy.orm.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> construct is unified
+with the <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select" title="sqlalchemy.sql.expression.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> construct, so that these two objects
+are mostly the same.</p>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/extending_query/temporal_range.html">temporal_range.py</a> - Illustrates a custom per-query criteria that will be applied
+to selected entities.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/extending_query/filter_public.html">filter_public.py</a> - Illustrates a global criteria applied to entities of a particular type.</p>
+</p></li>
+</ul>
+</p>
+</section>
+<section id="dogpile">
+<span id="examples-caching"></span><h3>Dogpile 缓存<a class="headerlink" href="#dogpile" title="Link to this heading">¶</a></h3>
+<p>Dogpile Caching</p>
+<p id="module-examples.dogpile_caching">Illustrates how to embed
+<a class="reference external" href="https://dogpilecache.sqlalchemy.org/">dogpile.cache</a>
+functionality with ORM queries, allowing full cache control
+as well as the ability to pull “lazy loaded” attributes from long term cache.</p>
+<p>In this demo, the following techniques are illustrated:</p>
+<ul class="simple">
+<li><p>Using the <a class="reference internal" href="events.html#sqlalchemy.orm.SessionEvents.do_orm_execute" title="sqlalchemy.orm.SessionEvents.do_orm_execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SessionEvents.do_orm_execute()</span></code></a> event hook</p></li>
+<li><p>Basic technique of circumventing <a class="reference internal" href="session_api.html#sqlalchemy.orm.Session.execute" title="sqlalchemy.orm.Session.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.execute()</span></code></a> to pull from a
+custom cache source instead of the database.</p></li>
+<li><p>Rudimental caching with dogpile.cache, using “regions” which allow
+global control over a fixed set of configurations.</p></li>
+<li><p>Using custom <code class="xref py py-class docutils literal notranslate"><span class="pre">UserDefinedOption</span></code> objects to configure options in
+a statement object.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="session_events.html#do-orm-execute-re-executing"><span class="std std-ref">重新执行语句</span></a> - includes a general example of the
+technique presented here.</p>
+</div>
+<p>E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># query for Person objects, specifying cache</span>
+<span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">FromCache</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">))</span>
+
+<span class="c1"># specify that each Person&#39;s &quot;addresses&quot; collection comes from</span>
+<span class="c1"># cache too</span>
+<span class="n">stmt</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">RelationshipCache</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">))</span>
+
+<span class="c1"># execute and results</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+
+<span class="n">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></pre></div>
+</div>
+<p>To run, both SQLAlchemy and dogpile.cache must be
+installed or on the current PYTHONPATH. The demo will create a local
+directory for datafiles, insert initial data, and run. Running the
+demo a second time will utilize the cache files already present, and
+exactly one SQL statement against two tables will be emitted - the
+displayed result however will utilize dozens of lazyloads that all
+pull from cache.</p>
+<p>The demo scripts themselves, in order of complexity, are run as Python
+modules so that relative imports work:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">dogpile_caching</span><span class="o">.</span><span class="n">helloworld</span>
+
+<span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">dogpile_caching</span><span class="o">.</span><span class="n">relationship_caching</span>
+
+<span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">dogpile_caching</span><span class="o">.</span><span class="n">advanced</span>
+
+<span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">examples</span><span class="o">.</span><span class="n">dogpile_caching</span><span class="o">.</span><span class="n">local_session_caching</span></pre></div>
+</div>
+<p>Listing of files:<ul class="simple">
+<li><p><p><a class="reference external" href="../_modules/examples/dogpile_caching/environment.html">environment.py</a> - Establish data / cache file paths, and configurations,
+bootstrap fixture data if necessary.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/dogpile_caching/caching_query.html">caching_query.py</a> - Represent functions and classes
+which allow the usage of Dogpile caching with SQLAlchemy.
+Introduces a query option called FromCache.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/dogpile_caching/model.html">model.py</a> - The datamodel, which represents Person that has multiple
+Address objects, each with PostalCode, City, Country.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/dogpile_caching/fixture_data.html">fixture_data.py</a> - Installs some sample data.   Here we have a handful of postal codes for
+a few US/Canadian cities.   Then, 100 Person records are installed, each
+with a randomly selected postal code.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/dogpile_caching/helloworld.html">helloworld.py</a> - Illustrate how to load some data, and cache the results.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/dogpile_caching/relationship_caching.html">relationship_caching.py</a> - Illustrates how to add cache options on
+relationship endpoints, so that lazyloads load from cache.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/dogpile_caching/advanced.html">advanced.py</a> - Illustrate usage of Query combined with the FromCache option,
+including front-end loading, cache invalidation and collection caching.</p>
+</p></li>
+<li><p><p><a class="reference external" href="../_modules/examples/dogpile_caching/local_session_caching.html">local_session_caching.py</a> - This example creates a new dogpile.cache backend that will persist data in a
+dictionary which is local to the current session.   remove() the session and
+the cache is gone.</p>
+</p></li>
+</ul>
+</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../core/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">SQLAlchemy Core</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="extensions/instrumentation.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">替代类检测</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">核心和 ORM 示例</a><ul>
+<li><a class="reference internal" href="#id2">映射配方</a><ul>
+<li><a class="reference internal" href="#examples-adjacencylist">邻接表</a></li>
+<li><a class="reference internal" href="#examples-associations">关联</a></li>
+<li><a class="reference internal" href="#asyncio">Asyncio 集成</a></li>
+<li><a class="reference internal" href="#id5">有向图</a></li>
+<li><a class="reference internal" href="#id6">动态关系作为字典</a></li>
+<li><a class="reference internal" href="#examples-generic-associations">通用关联</a></li>
+<li><a class="reference internal" href="#id8">物化路径</a></li>
+<li><a class="reference internal" href="#id9">嵌套集</a></li>
+<li><a class="reference internal" href="#examples-performance">性能</a><ul>
+<li><a class="reference internal" href="#file-listing">File Listing</a></li>
+<li><a class="reference internal" href="#running-all-tests-with-time">Running all tests with time</a></li>
+<li><a class="reference internal" href="#dumping-profiles-for-individual-tests">Dumping Profiles for Individual Tests</a></li>
+<li><a class="reference internal" href="#writing-your-own-suites">Writing your Own Suites</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples-spaceinvaders">太空入侵者</a></li>
+<li><a class="reference internal" href="#examples-versioning">对象版本控制</a><ul>
+<li><a class="reference internal" href="#examples-versioned-history">使用历史表进行版本控制</a></li>
+<li><a class="reference internal" href="#examples-versioned-rows">使用时间行进行版本控制</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples-vertical-tables">垂直属性映射</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples-inheritance">继承映射配方</a><ul>
+<li><a class="reference internal" href="#module-examples.inheritance">Basic Inheritance Mappings</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api">特殊 API</a><ul>
+<li><a class="reference internal" href="#examples-instrumentation">属性检测</a></li>
+<li><a class="reference internal" href="#examples-sharding">水平分片</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id19">扩展核心</a><ul>
+<li><a class="reference internal" href="#module-examples.syntax_extensions">Extending Statements like SELECT, INSERT, etc</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id20">扩展 ORM</a><ul>
+<li><a class="reference internal" href="#examples-session-orm-events">ORM 查询事件</a></li>
+<li><a class="reference internal" href="#dogpile">Dogpile 缓存</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

@@ -1,0 +1,1056 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="copyright" title="版权所有" href="../copyright.html" /><link rel="next" title="元数据 / Schema" href="metadata_schema.html" /><link rel="prev" title="安装" href="installation.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>连接 / 引擎 - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">概述</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">SQLAlchemy 统一教程</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/data.html">处理数据</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_insert.html">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../orm/index.html">SQLAlchemy ORM</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../orm/quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/queryguide/index.html">ORM 查询指南</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../orm/examples.html">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">SQLAlchemy Core</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/schema.html">Schema 定义语言</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/ddl.html">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/api_basics.html">Core API 基础</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/exceptions.html">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">常见问题</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">安装</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ormconfiguration.html">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">错误消息</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../changelog/index.html">变更和迁移</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_21.html">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_02.html">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="id1">
+<h1>连接 / 引擎<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p>Connections / Engines</p>
+<nav class="contents faq local" id="id2">
+<ul class="simple">
+<li><p><a class="reference internal" href="#id3" id="id8">如何配置日志记录？</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id9">如何池化数据库连接？我的连接是否已池化？</a></p></li>
+<li><p><a class="reference internal" href="#api" id="id10">如何将自定义连接参数传递给我的数据库 API？</a></p></li>
+<li><p><a class="reference internal" href="#mysql" id="id11">“MySQL 服务器已消失”</a></p></li>
+<li><p><a class="reference internal" href="#mysql-sync-errors" id="id12">“命令不同步；您现在无法运行此命令”/“此结果对象不返回行。它已自动关闭”</a></p></li>
+<li><p><a class="reference internal" href="#faq-execute-retry" id="id13">如何自动“重试”语句执行？</a></p>
+<ul>
+<li><p><a class="reference internal" href="#dbapi" id="id14">使用 DBAPI 自动提交允许只读版本的透明重新连接</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#sqlalchemy-rollback" id="id15">为什么 SQLAlchemy 发出如此多的 ROLLBACK？</a></p>
+<ul>
+<li><p><a class="reference internal" href="#myisam" id="id16">我在使用 MyISAM - 我如何关闭它？</a></p></li>
+<li><p><a class="reference internal" href="#sql-server-rollback-commit" id="id17">我在使用 SQL Server - 我如何将这些 ROLLBACK 转换为 COMMIT？</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#sqlite" id="id18">我正在使用与 SQLite 数据库的多个连接（通常用于测试事务操作），并且我的测试程序无法正常工作！</a></p></li>
+<li><p><a class="reference internal" href="#faq-dbapi-connection" id="id19">使用引擎时如何获取原始 DBAPI 连接？</a></p>
+<ul>
+<li><p><a class="reference internal" href="#asyncio" id="id20">访问 asyncio 驱动程序的底层连接</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#python-os-fork" id="id21">如何将引擎/连接/会话与 Python 多处理或 os.fork() 结合使用？</a></p></li>
+</ul>
+</nav>
+<section id="id3">
+<h2>如何配置日志记录？<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p>How do I configure logging?</p>
+<p>See <a class="reference internal" href="../core/engines.html#dbengine-logging"><span class="std std-ref">配置日志记录</span></a>.</p>
+</section>
+<section id="id4">
+<h2>如何池化数据库连接？我的连接是否已池化？<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p>How do I pool database connections?   Are my connections pooled?</p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>SQLAlchemy在大多数情况下自动执行应用程序级别的连接池。对于所有包含的方言（使用 “memory” 数据库的SQLite除外）， <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> 对象指的是一个 <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.QueuePool" title="sqlalchemy.pool.QueuePool"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueuePool</span></code></a> 作为连接源。</p>
+<p>有关更多详细信息，请参见 <a class="reference internal" href="../core/engines.html#engines-toplevel"><span class="std std-ref">Engine 配置</span></a> 和 <a class="reference internal" href="../core/pooling.html#pooling-toplevel"><span class="std std-ref">连接池</span></a>。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>SQLAlchemy performs application-level connection pooling automatically
+in most cases.  For all included dialects (except SQLite when using a
+“memory” database), a <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> object refers to a
+<a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.QueuePool" title="sqlalchemy.pool.QueuePool"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueuePool</span></code></a> as a source of connectivity.</p>
+<p>For more detail, see <a class="reference internal" href="../core/engines.html#engines-toplevel"><span class="std std-ref">Engine 配置</span></a> and <a class="reference internal" href="../core/pooling.html#pooling-toplevel"><span class="std std-ref">连接池</span></a>.</p>
+</div>
+</div>
+</section>
+<section id="api">
+<h2>如何将自定义连接参数传递给我的数据库 API？<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<p>How do I pass custom connect arguments to my database API?</p>
+<p>The <a class="reference internal" href="../core/engines.html#sqlalchemy.create_engine" title="sqlalchemy.create_engine"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_engine()</span></code></a> call accepts additional arguments either
+directly via the <code class="docutils literal notranslate"><span class="pre">connect_args</span></code> keyword argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">e</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+    <span class="s2">&quot;mysql+mysqldb://scott:tiger@localhost/test&quot;</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;encoding&quot;</span><span class="p">:</span> <span class="s2">&quot;utf8&quot;</span><span class="p">}</span>
+<span class="p">)</span></pre></div>
+</div>
+<p>Or for basic string and integer arguments, they can usually be specified
+in the query string of the URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">e</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;mysql+mysqldb://scott:tiger@localhost/test?encoding=utf8&quot;</span><span class="p">)</span></pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../core/engines.html#custom-dbapi-args"><span class="std std-ref">自定义 DBAPI connect() 参数/连接例程</span></a></p>
+</div>
+</section>
+<section id="mysql">
+<h2>“MySQL 服务器已消失”<a class="headerlink" href="#mysql" title="Link to this heading">¶</a></h2>
+<p>“MySQL Server has gone away”</p>
+<p>The primary cause of this error is that the MySQL connection has timed out
+and has been closed by the server.   The MySQL server closes connections
+which have been idle a period of time which defaults to eight hours.
+To accommodate this, the immediate setting is to enable the
+<a class="reference internal" href="../core/engines.html#sqlalchemy.create_engine.params.pool_recycle" title="sqlalchemy.create_engine"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">create_engine.pool_recycle</span></code></a> setting, which will ensure that a
+connection which is older than a set amount of seconds will be discarded
+and replaced with a new connection when it is next checked out.</p>
+<p>For the more general case of accommodating database restarts and other
+temporary loss of connectivity due to network issues, connections that
+are in the pool may be recycled in response to more generalized disconnect
+detection techniques.  The section <a class="reference internal" href="../core/pooling.html#pool-disconnects"><span class="std std-ref">处理断开连接</span></a> provides
+background on both “pessimistic” (e.g. pre-ping) and “optimistic”
+(e.g. graceful recovery) techniques.   Modern SQLAlchemy tends to favor
+the “pessimistic” approach.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../core/pooling.html#pool-disconnects"><span class="std std-ref">处理断开连接</span></a></p>
+</div>
+</section>
+<section id="mysql-sync-errors">
+<span id="id5"></span><h2>“命令不同步；您现在无法运行此命令”/“此结果对象不返回行。它已自动关闭”<a class="headerlink" href="#mysql-sync-errors" title="Link to this heading">¶</a></h2>
+<p>“Commands out of sync; you can’t run this command now” / “This result object does not return rows. It has been closed automatically”</p>
+<p>The MySQL drivers have a fairly wide class of failure modes whereby the state of
+the connection to the server is in an invalid state.  Typically, when the connection
+is used again, one of these two error messages will occur.    The reason is because
+the state of the server has been changed to one in which the client library
+does not expect, such that when the client library emits a new statement
+on the connection, the server does not respond as expected.</p>
+<p>In SQLAlchemy, because database connections are pooled, the issue of the messaging
+being out of sync on a connection becomes more important, since when an operation
+fails, if the connection itself is in an unusable state, if it goes back into the
+connection pool, it will malfunction when checked out again.  The mitigation
+for this issue is that the connection is <strong>invalidated</strong> when such a failure
+mode occurs so that the underlying database connection to MySQL is discarded.
+This invalidation occurs automatically for many known failure modes and can
+also be called explicitly via the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.invalidate" title="sqlalchemy.engine.Connection.invalidate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.invalidate()</span></code></a> method.</p>
+<p>There is also a second class of failure modes within this category where a context manager
+such as <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">session.begin_nested():</span></code> wants to “roll back” the transaction
+when an error occurs; however within some failure modes of the connection, the
+rollback itself (which can also be a RELEASE SAVEPOINT operation) also
+fails, causing misleading stack traces.</p>
+<p>Originally, the cause of this error used to be fairly simple, it meant that
+a multithreaded program was invoking commands on a single connection from more
+than one thread.   This applied to the original “MySQLdb” native-C driver that was
+pretty much the only driver in use.   However, with the introduction of pure Python
+drivers like PyMySQL and MySQL-connector-Python, as well as increased use of
+tools such as gevent/eventlet, multiprocessing (often with Celery), and others,
+there is a whole series of factors that has been known to cause this problem, some of
+which have been improved across SQLAlchemy versions but others which are unavoidable:</p>
+<ul>
+<li><p><strong>Sharing a connection among threads</strong> - This is the original reason these kinds
+of errors occurred.  A program used the same connection in two or more threads at
+the same time, meaning multiple sets of messages got mixed up on the connection,
+putting the server-side session into a state that the client no longer knows how
+to interpret.   However, other causes are usually more likely today.</p></li>
+<li><p><strong>Sharing the filehandle for the connection among processes</strong> - This usually occurs
+when a program uses <code class="docutils literal notranslate"><span class="pre">os.fork()</span></code> to spawn a new process, and a TCP connection
+that is present in th parent process gets shared into one or more child processes.
+As multiple processes are now emitting messages to essentially the same filehandle,
+the server receives interleaved messages and breaks the state of the connection.</p>
+<p>This scenario can occur very easily if a program uses Python’s “multiprocessing”
+module and makes use of an <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> that was created in the parent
+process.  It’s common that “multiprocessing” is in use when using tools like
+Celery.  The correct approach should be either that a new <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a>
+is produced when a child process first starts, discarding any <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a>
+that came down from the parent process; or, the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> that’s inherited
+from the parent process can have it’s internal pool of connections disposed by
+calling <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine.dispose" title="sqlalchemy.engine.Engine.dispose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Engine.dispose()</span></code></a>.</p>
+</li>
+<li><p><strong>Greenlet Monkeypatching w/ Exits</strong> - When using a library like gevent or eventlet
+that monkeypatches the Python networking API, libraries like PyMySQL are now
+working in an asynchronous mode of operation, even though they are not developed
+explicitly against this model.  A common issue is that a greenthread is interrupted,
+often due to timeout logic in the application.  This results in the <code class="docutils literal notranslate"><span class="pre">GreenletExit</span></code>
+exception being raised, and the pure-Python MySQL driver is interrupted from
+its work, which may have been that it was receiving a response from the server
+or preparing to otherwise reset the state of the connection.   When the exception
+cuts all that work short, the conversation between client and server is now
+out of sync and subsequent usage of the connection may fail.   SQLAlchemy
+as of version 1.1.0 knows how to guard against this, as if a database operation
+is interrupted by a so-called “exit exception”, which includes <code class="docutils literal notranslate"><span class="pre">GreenletExit</span></code>
+and any other subclass of Python <code class="docutils literal notranslate"><span class="pre">BaseException</span></code> that is not also a subclass
+of <code class="docutils literal notranslate"><span class="pre">Exception</span></code>, the connection is invalidated.</p></li>
+<li><p><strong>Rollbacks / SAVEPOINT releases failing</strong> - Some classes of error cause
+the connection to be unusable within the context of a transaction, as well
+as when operating in a “SAVEPOINT” block.  In these cases, the failure
+on the connection has rendered any SAVEPOINT as no longer existing, yet
+when SQLAlchemy, or the application, attempts to “roll back” this savepoint,
+the “RELEASE SAVEPOINT” operation fails, typically with a message like
+“savepoint does not exist”.   In this case, under Python 3 there will be
+a chain of exceptions output, where the ultimate “cause” of the error
+will be displayed as well.  Under Python 2, there are no “chained” exceptions,
+however recent versions of SQLAlchemy will attempt to emit a warning
+illustrating the original failure cause, while still throwing the
+immediate error which is the failure of the ROLLBACK.</p></li>
+</ul>
+</section>
+<section id="faq-execute-retry">
+<span id="id6"></span><h2>如何自动“重试”语句执行？<a class="headerlink" href="#faq-execute-retry" title="Link to this heading">¶</a></h2>
+<p>How Do I “Retry” a Statement Execution Automatically?</p>
+<p>The documentation section <a class="reference internal" href="../core/pooling.html#pool-disconnects"><span class="std std-ref">处理断开连接</span></a> discusses the strategies
+available for pooled connections that have been disconnected since the last
+time a particular connection was checked out.   The most modern feature
+in this regard is the <a class="reference internal" href="../core/engines.html#sqlalchemy.create_engine.params.pre_ping" title="sqlalchemy.create_engine"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">create_engine.pre_ping</span></code></a> parameter, which
+allows that a “ping” is emitted on a database connection when it’s retrieved
+from the pool, reconnecting if the current connection has been disconnected.</p>
+<p>It’s important to note that this “ping” is only emitted <strong>before</strong> the
+connection is actually used for an operation.   Once the connection is
+delivered to the caller, per the Python <a class="reference internal" href="../glossary.html#term-DBAPI"><span class="xref std std-term">DBAPI</span></a> specification it is now
+subject to an <strong>autobegin</strong> operation, which means it will automatically BEGIN
+a new transaction when it is first used that remains in effect for subsequent
+statements, until the DBAPI-level <code class="docutils literal notranslate"><span class="pre">connection.commit()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">connection.rollback()</span></code> method is invoked.</p>
+<p>In modern use of SQLAlchemy, a series of SQL statements are always invoked
+within this transactional state, assuming
+<a class="reference internal" href="../core/connections.html#dbapi-autocommit"><span class="std std-ref">DBAPI autocommit mode</span></a> is not enabled (more on that in
+the next section), meaning that no single statement is automatically committed;
+if an operation fails, the effects of all statements within the current
+transaction will be lost.</p>
+<p>The implication that this has for the notion of “retrying” a statement is that
+in the default case, when a connection is lost, <strong>the entire transaction is
+lost</strong>. There is no useful way that the database can “reconnect and retry” and
+continue where it left off, since data is already lost.   For this reason,
+SQLAlchemy does not have a transparent “reconnection” feature that works
+mid-transaction, for the case when the database connection has disconnected
+while being used. The canonical approach to dealing with mid-operation
+disconnects is to <strong>retry the entire operation from the start of the
+transaction</strong>, often by using a custom Python decorator that will
+“retry” a particular function several times until it succeeds, or to otherwise
+architect the application in such a way that it is resilient against
+transactions that are dropped that then cause operations to fail.</p>
+<p>There is also the notion of extensions that can keep track of all of the
+statements that have proceeded within a transaction and then replay them all in
+a new transaction in order to approximate a “retry” operation.  SQLAlchemy’s
+<a class="reference internal" href="../core/events.html#core-event-toplevel"><span class="std std-ref">event system</span></a> does allow such a system to be
+constructed, however this approach is also not generally useful as there is
+no way to guarantee that those
+<a class="reference internal" href="../glossary.html#term-DML"><span class="xref std std-term">DML</span></a> statements will be working against the same state, as once a
+transaction has ended the state of the database in a new transaction may be
+totally different.   Architecting “retry” explicitly into the application
+at the points at which transactional operations begin and commit remains
+the better approach since the application-level transactional methods are
+the ones that know best how to re-run their steps.</p>
+<p>Otherwise, if SQLAlchemy were to provide a feature that transparently and
+silently “reconnected” a connection mid-transaction, the effect would be that
+data is silently lost.   By trying to hide the problem, SQLAlchemy would make
+the situation much worse.</p>
+<p>However, if we are <strong>not</strong> using transactions, then there are more options
+available, as the next section describes.</p>
+<section id="dbapi">
+<span id="faq-execute-retry-autocommit"></span><h3>使用 DBAPI 自动提交允许只读版本的透明重新连接<a class="headerlink" href="#dbapi" title="Link to this heading">¶</a></h3>
+<p>Using DBAPI Autocommit Allows for a Readonly Version of Transparent Reconnect</p>
+<p>With the rationale for not having a transparent reconnection mechanism stated,
+the preceding section rests upon the assumption that the application is in
+fact using DBAPI-level transactions.  As most DBAPIs now offer <a class="reference internal" href="../core/connections.html#dbapi-autocommit"><span class="std std-ref">native
+“autocommit” settings</span></a>, we can make use of these features to
+provide a limited form of transparent reconnect for <strong>read only,
+autocommit only operations</strong>.  A transparent statement retry may be applied to
+the <code class="docutils literal notranslate"><span class="pre">cursor.execute()</span></code> method of the DBAPI, however it is still not safe to
+apply to the <code class="docutils literal notranslate"><span class="pre">cursor.executemany()</span></code> method of the DBAPI, as the statement may
+have consumed any portion of the arguments given.</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The following recipe should <strong>not</strong> be used for operations that
+write data.   Users should carefully read and understand how the recipe
+works and test failure modes very carefully against the specifically
+targeted DBAPI driver before making production use of this recipe.
+The retry mechanism does not guarantee prevention of disconnection errors
+in all cases.</p>
+</div>
+<p>A simple retry mechanism may be applied to the DBAPI level <code class="docutils literal notranslate"><span class="pre">cursor.execute()</span></code>
+method by making use of the <a class="reference internal" href="../core/events.html#sqlalchemy.events.DialectEvents.do_execute" title="sqlalchemy.events.DialectEvents.do_execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DialectEvents.do_execute()</span></code></a> and
+<a class="reference internal" href="../core/events.html#sqlalchemy.events.DialectEvents.do_execute_no_params" title="sqlalchemy.events.DialectEvents.do_execute_no_params"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DialectEvents.do_execute_no_params()</span></code></a> hooks, which will be able to
+intercept disconnections during statement executions.   It will <strong>not</strong>
+intercept connection failures during result set fetch operations, for those
+DBAPIs that don’t fully buffer result sets.  The recipe requires that the
+database support DBAPI level autocommit and is <strong>not guaranteed</strong> for
+particular backends.  A single function <code class="docutils literal notranslate"><span class="pre">reconnecting_engine()</span></code> is presented
+which applies the event hooks to a given <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> object,
+returning an always-autocommit version that enables DBAPI-level autocommit.
+A connection will transparently reconnect for single-parameter and no-parameter
+statement executions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">reconnecting_engine</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">num_retries</span><span class="p">,</span> <span class="n">retry_interval</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_with_retries</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">cursor_obj</span><span class="p">,</span> <span class="n">statement</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">retry</span> <span class="ow">in</span> <span class="n">range</span><span class="p">(</span><span class="n">num_retries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fn</span><span class="p">(</span><span class="n">cursor_obj</span><span class="p">,</span> <span class="n">statement</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">engine</span><span class="o">.</span><span class="n">dialect</span><span class="o">.</span><span class="n">dbapi</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">raw_dbapi_err</span><span class="p">:</span>
+                <span class="n">connection</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">root_connection</span>
+                <span class="k">if</span> <span class="n">engine</span><span class="o">.</span><span class="n">dialect</span><span class="o">.</span><span class="n">is_disconnect</span><span class="p">(</span><span class="n">raw_dbapi_err</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">cursor_obj</span><span class="p">):</span>
+                    <span class="n">engine</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s2">&quot;disconnection error, attempt </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">retry</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">num_retries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">connection</span><span class="o">.</span><span class="n">invalidate</span><span class="p">()</span>
+
+                    <span class="c1"># use SQLAlchemy 2.0 API if available</span>
+                    <span class="k">if</span> <span class="n">hasattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">&quot;rollback&quot;</span><span class="p">):</span>
+                        <span class="n">connection</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">trans</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get_transaction</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">trans</span><span class="p">:</span>
+                            <span class="n">trans</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="n">num_retries</span><span class="p">:</span>
+                        <span class="k">raise</span>
+
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_interval</span><span class="p">)</span>
+                    <span class="n">context</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="n">cursor_obj</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">e</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">execution_options</span><span class="p">(</span><span class="n">isolation_level</span><span class="o">=</span><span class="s2">&quot;AUTOCOMMIT&quot;</span><span class="p">)</span>
+
+    <span class="nd">@event</span><span class="o">.</span><span class="n">listens_for</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">&quot;do_execute_no_params&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">do_execute_no_params</span><span class="p">(</span><span class="n">cursor_obj</span><span class="p">,</span> <span class="n">statement</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_run_with_retries</span><span class="p">(</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">dialect</span><span class="o">.</span><span class="n">do_execute_no_params</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">cursor_obj</span><span class="p">,</span> <span class="n">statement</span>
+        <span class="p">)</span>
+
+    <span class="nd">@event</span><span class="o">.</span><span class="n">listens_for</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">&quot;do_execute&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">do_execute</span><span class="p">(</span><span class="n">cursor_obj</span><span class="p">,</span> <span class="n">statement</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_run_with_retries</span><span class="p">(</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">dialect</span><span class="o">.</span><span class="n">do_execute</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">cursor_obj</span><span class="p">,</span> <span class="n">statement</span><span class="p">,</span> <span class="n">parameters</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">e</span></pre></div>
+</div>
+<p>Given the above recipe, a reconnection mid-transaction may be demonstrated
+using the following proof of concept script.  Once run, it will emit a
+<code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">1</span></code> statement to the database every five seconds:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;mysql+mysqldb://scott:tiger@localhost/test&quot;</span><span class="p">,</span> <span class="n">echo_pool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">do_a_thing</span><span class="p">(</span><span class="n">engine</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">print</span><span class="p">(</span><span class="s2">&quot;ping: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">([</span><span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">scalar</span><span class="p">())</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="n">e</span> <span class="o">=</span> <span class="n">reconnecting_engine</span><span class="p">(</span>
+        <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;mysql+mysqldb://scott:tiger@localhost/test&quot;</span><span class="p">,</span> <span class="n">echo_pool</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">num_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">retry_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">do_a_thing</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></pre></div>
+</div>
+<p>Restart the database while the script runs to demonstrate the transparent
+reconnect operation:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ python reconnect_test.py
+ping: 1
+ping: 1
+disconnection error, retrying operation
+Traceback (most recent call last):
+  ...
+MySQLdb._exceptions.OperationalError: (2006, &#39;MySQL server has gone away&#39;)
+2020-10-19 16:16:22,624 INFO sqlalchemy.pool.impl.QueuePool Invalidate connection &lt;_mysql.connection open to &#39;localhost&#39; at 0xf59240&gt;
+ping: 1
+ping: 1
+...</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">在 1.4 版本加入: </span>the above recipe makes use of 1.4-specific behaviors and will
+not work as given on previous SQLAlchemy versions.</p>
+</div>
+<p>The above recipe is tested for SQLAlchemy 1.4.</p>
+</section>
+</section>
+<section id="sqlalchemy-rollback">
+<h2>为什么 SQLAlchemy 发出如此多的 ROLLBACK？<a class="headerlink" href="#sqlalchemy-rollback" title="Link to this heading">¶</a></h2>
+<p>Why does SQLAlchemy issue so many ROLLBACKs?</p>
+<p>SQLAlchemy currently assumes DBAPI connections are in “non-autocommit” mode -
+this is the default behavior of the Python database API, meaning it
+must be assumed that a transaction is always in progress. The
+connection pool issues <code class="docutils literal notranslate"><span class="pre">connection.rollback()</span></code> when a connection is returned.
+This is so that any transactional resources remaining on the connection are
+released. On a database like PostgreSQL or MSSQL where table resources are
+aggressively locked, this is critical so that rows and tables don’t remain
+locked within connections that are no longer in use. An application can
+otherwise hang. It’s not just for locks, however, and is equally critical on
+any database that has any kind of transaction isolation, including MySQL with
+InnoDB. Any connection that is still inside an old transaction will return
+stale data, if that data was already queried on that connection within
+isolation. For background on why you might see stale data even on MySQL, see
+<a class="reference external" href="https://dev.mysql.com/doc/refman/5.1/en/innodb-transaction-model.html">https://dev.mysql.com/doc/refman/5.1/en/innodb-transaction-model.html</a></p>
+<section id="myisam">
+<h3>我在使用 MyISAM - 我如何关闭它？<a class="headerlink" href="#myisam" title="Link to this heading">¶</a></h3>
+<p>I’m on MyISAM - how do I turn it off?</p>
+<p>The behavior of the connection pool’s connection return behavior can be
+configured using <code class="docutils literal notranslate"><span class="pre">reset_on_return</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.pool</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueuePool</span>
+
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+    <span class="s2">&quot;mysql+mysqldb://scott:tiger@localhost/myisam_database&quot;</span><span class="p">,</span>
+    <span class="n">pool</span><span class="o">=</span><span class="n">QueuePool</span><span class="p">(</span><span class="n">reset_on_return</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="p">)</span></pre></div>
+</div>
+</section>
+<section id="sql-server-rollback-commit">
+<h3>我在使用 SQL Server - 我如何将这些 ROLLBACK 转换为 COMMIT？<a class="headerlink" href="#sql-server-rollback-commit" title="Link to this heading">¶</a></h3>
+<p>I’m on SQL Server - how do I turn those ROLLBACKs into COMMITs?</p>
+<p><code class="docutils literal notranslate"><span class="pre">reset_on_return</span></code> accepts the values <code class="docutils literal notranslate"><span class="pre">commit</span></code>, <code class="docutils literal notranslate"><span class="pre">rollback</span></code> in addition
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>, and <code class="docutils literal notranslate"><span class="pre">None</span></code>.   Setting to <code class="docutils literal notranslate"><span class="pre">commit</span></code> will cause
+a COMMIT as any connection is returned to the pool:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+    <span class="s2">&quot;mssql+pyodbc://scott:tiger@mydsn&quot;</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="n">QueuePool</span><span class="p">(</span><span class="n">reset_on_return</span><span class="o">=</span><span class="s2">&quot;commit&quot;</span><span class="p">)</span>
+<span class="p">)</span></pre></div>
+</div>
+</section>
+</section>
+<section id="sqlite">
+<h2>我正在使用与 SQLite 数据库的多个连接（通常用于测试事务操作），并且我的测试程序无法正常工作！<a class="headerlink" href="#sqlite" title="Link to this heading">¶</a></h2>
+<p>I am using multiple connections with a SQLite database (typically to test transaction operation), and my test program is not working!</p>
+<p>If using a SQLite <code class="docutils literal notranslate"><span class="pre">:memory:</span></code> database the default connection pool is the
+<a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.SingletonThreadPool" title="sqlalchemy.pool.SingletonThreadPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingletonThreadPool</span></code></a>, which maintains exactly one SQLite connection
+per thread.  So two connections in use in the same thread will actually be
+the same SQLite connection.  Make sure you’re not using a :memory: database
+so that the engine will use <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.QueuePool" title="sqlalchemy.pool.QueuePool"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueuePool</span></code></a> (the default for non-memory
+databases in current SQLAlchemy versions).</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../dialects/sqlite.html#pysqlite-threading-pooling"><span class="std std-ref">Threading/Pooling Behavior</span></a> - info on PySQLite’s behavior.</p>
+</div>
+</section>
+<section id="faq-dbapi-connection">
+<span id="id7"></span><h2>使用引擎时如何获取原始 DBAPI 连接？<a class="headerlink" href="#faq-dbapi-connection" title="Link to this heading">¶</a></h2>
+<p>How do I get at the raw DBAPI connection when using an Engine?</p>
+<p>With a regular SA engine-level Connection, you can get at a pool-proxied
+version of the DBAPI connection via the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.connection" title="sqlalchemy.engine.Connection.connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Connection.connection</span></code></a> attribute on
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a>, and for the really-real DBAPI connection you can call the
+<a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.dbapi_connection" title="sqlalchemy.pool.PoolProxiedConnection.dbapi_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.dbapi_connection</span></code></a> attribute on that.  On regular sync drivers
+there is usually no need to access the non-pool-proxied DBAPI connection,
+as all methods are proxied through:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+<span class="c1"># pep-249 style PoolProxiedConnection (historically called a &quot;connection fairy&quot;)</span>
+<span class="n">connection_fairy</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">connection</span>
+
+<span class="c1"># typically to run statements one would get a cursor() from this</span>
+<span class="c1"># object</span>
+<span class="n">cursor_obj</span> <span class="o">=</span> <span class="n">connection_fairy</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="c1"># ... work with cursor_obj</span>
+
+<span class="c1"># to bypass &quot;connection_fairy&quot;, such as to set attributes on the</span>
+<span class="c1"># unproxied pep-249 DBAPI connection, use .dbapi_connection</span>
+<span class="n">raw_dbapi_connection</span> <span class="o">=</span> <span class="n">connection_fairy</span><span class="o">.</span><span class="n">dbapi_connection</span>
+
+<span class="c1"># the same thing is available as .driver_connection (more on this</span>
+<span class="c1"># in the next section)</span>
+<span class="n">also_raw_dbapi_connection</span> <span class="o">=</span> <span class="n">connection_fairy</span><span class="o">.</span><span class="n">driver_connection</span></pre></div>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">在 1.4.24 版本发生变更: </span>Added the
+<a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.dbapi_connection" title="sqlalchemy.pool.PoolProxiedConnection.dbapi_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.dbapi_connection</span></code></a> attribute,
+which supersedes the previous
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.connection</span></code> attribute which still remains
+available; this attribute always provides a pep-249 synchronous style
+connection object.  The <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.driver_connection" title="sqlalchemy.pool.PoolProxiedConnection.driver_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.driver_connection</span></code></a>
+attribute is also added which will always refer to the real driver-level
+connection regardless of what API it presents.</p>
+</div>
+<section id="asyncio">
+<h3>访问 asyncio 驱动程序的底层连接<a class="headerlink" href="#asyncio" title="Link to this heading">¶</a></h3>
+<p>Accessing the underlying connection for an asyncio driver</p>
+<p>When an asyncio driver is in use, there are two changes to the above
+scheme.  The first is that when using an <a class="reference internal" href="../orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncConnection" title="sqlalchemy.ext.asyncio.AsyncConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncConnection</span></code></a>,
+the <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection" title="sqlalchemy.pool.PoolProxiedConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolProxiedConnection</span></code></a> must be accessed using the awaitable method
+<a class="reference internal" href="../orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncConnection.get_raw_connection" title="sqlalchemy.ext.asyncio.AsyncConnection.get_raw_connection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">AsyncConnection.get_raw_connection()</span></code></a>.   The
+returned <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection" title="sqlalchemy.pool.PoolProxiedConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolProxiedConnection</span></code></a> in this case retains a sync-style
+pep-249 usage pattern, and the <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.dbapi_connection" title="sqlalchemy.pool.PoolProxiedConnection.dbapi_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.dbapi_connection</span></code></a>
+attribute refers to a
+a SQLAlchemy-adapted connection object which adapts the asyncio
+connection to a sync style pep-249 API, in other words there are <em>two</em> levels
+of proxying going on when using an asyncio driver.   The actual asyncio connection
+is available from the <code class="xref py py-class docutils literal notranslate"><span class="pre">driver_connection</span></code> attribute.
+To restate the previous example in terms of asyncio looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="c1"># pep-249 style ConnectionFairy connection pool proxy object</span>
+    <span class="c1"># presents a sync interface</span>
+    <span class="n">connection_fairy</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">get_raw_connection</span><span class="p">()</span>
+
+    <span class="c1"># beneath that proxy is a second proxy which adapts the</span>
+    <span class="c1"># asyncio driver into a pep-249 connection object, accessible</span>
+    <span class="c1"># via .dbapi_connection as is the same with a sync API</span>
+    <span class="n">sqla_sync_conn</span> <span class="o">=</span> <span class="n">connection_fairy</span><span class="o">.</span><span class="n">dbapi_connection</span>
+
+    <span class="c1"># the really-real innermost driver connection is available</span>
+    <span class="c1"># from the .driver_connection attribute</span>
+    <span class="n">raw_asyncio_connection</span> <span class="o">=</span> <span class="n">connection_fairy</span><span class="o">.</span><span class="n">driver_connection</span>
+
+    <span class="c1"># work with raw asyncio connection</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_asyncio_connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></pre></div>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">在 1.4.24 版本发生变更: </span>Added the
+<a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.dbapi_connection" title="sqlalchemy.pool.PoolProxiedConnection.dbapi_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.dbapi_connection</span></code></a>
+and <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.driver_connection" title="sqlalchemy.pool.PoolProxiedConnection.driver_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.driver_connection</span></code></a> attributes to allow access
+to pep-249 connections, pep-249 adaption layers, and underlying driver
+connections using a consistent interface.</p>
+</div>
+<p>When using asyncio drivers, the above “DBAPI” connection is actually a
+SQLAlchemy-adapted form of connection which presents a synchronous-style
+pep-249 style API.  To access the actual
+asyncio driver connection, which will present the original asyncio API
+of the driver in use, this can be accessed via the
+<a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.driver_connection" title="sqlalchemy.pool.PoolProxiedConnection.driver_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.driver_connection</span></code></a> attribute of
+<a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection" title="sqlalchemy.pool.PoolProxiedConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolProxiedConnection</span></code></a>.
+For a standard pep-249 driver, <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.dbapi_connection" title="sqlalchemy.pool.PoolProxiedConnection.dbapi_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.dbapi_connection</span></code></a>
+and <a class="reference internal" href="../core/pooling.html#sqlalchemy.pool.PoolProxiedConnection.driver_connection" title="sqlalchemy.pool.PoolProxiedConnection.driver_connection"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PoolProxiedConnection.driver_connection</span></code></a> are synonymous.</p>
+<p>You must ensure that you revert any isolation level settings or other
+operation-specific settings on the connection back to normal before returning
+it to the pool.</p>
+<p>As an alternative to reverting settings, you can call the
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.detach" title="sqlalchemy.engine.Connection.detach"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.detach()</span></code></a> method on either <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a>
+or the proxied connection, which will de-associate the connection from the pool
+such that it will be closed and discarded when <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.close" title="sqlalchemy.engine.Connection.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.close()</span></code></a>
+is called:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>conn = engine.connect()
+conn.detach()  # detaches the DBAPI connection from the connection pool
+conn.connection.&lt;go nuts&gt;
+conn.close()  # connection is closed for real, the pool replaces it with a new connection</pre></div>
+</div>
+</section>
+</section>
+<section id="python-os-fork">
+<h2>如何将引擎/连接/会话与 Python 多处理或 os.fork() 结合使用？<a class="headerlink" href="#python-os-fork" title="Link to this heading">¶</a></h2>
+<p>How do I use engines / connections / sessions with Python multiprocessing, or os.fork()?</p>
+<p>This is covered in the section <a class="reference internal" href="../core/pooling.html#pooling-multiprocessing"><span class="std std-ref">使用具有多处理或 os.fork() 的连接池</span></a>.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="metadata_schema.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">元数据 / Schema</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="installation.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">安装</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">连接 / 引擎</a><ul>
+<li><a class="reference internal" href="#id3">如何配置日志记录？</a></li>
+<li><a class="reference internal" href="#id4">如何池化数据库连接？我的连接是否已池化？</a></li>
+<li><a class="reference internal" href="#api">如何将自定义连接参数传递给我的数据库 API？</a></li>
+<li><a class="reference internal" href="#mysql">“MySQL 服务器已消失”</a></li>
+<li><a class="reference internal" href="#mysql-sync-errors">“命令不同步；您现在无法运行此命令”/“此结果对象不返回行。它已自动关闭”</a></li>
+<li><a class="reference internal" href="#faq-execute-retry">如何自动“重试”语句执行？</a><ul>
+<li><a class="reference internal" href="#dbapi">使用 DBAPI 自动提交允许只读版本的透明重新连接</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy-rollback">为什么 SQLAlchemy 发出如此多的 ROLLBACK？</a><ul>
+<li><a class="reference internal" href="#myisam">我在使用 MyISAM - 我如何关闭它？</a></li>
+<li><a class="reference internal" href="#sql-server-rollback-commit">我在使用 SQL Server - 我如何将这些 ROLLBACK 转换为 COMMIT？</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlite">我正在使用与 SQLite 数据库的多个连接（通常用于测试事务操作），并且我的测试程序无法正常工作！</a></li>
+<li><a class="reference internal" href="#faq-dbapi-connection">使用引擎时如何获取原始 DBAPI 连接？</a><ul>
+<li><a class="reference internal" href="#asyncio">访问 asyncio 驱动程序的底层连接</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#python-os-fork">如何将引擎/连接/会话与 Python 多处理或 os.fork() 结合使用？</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

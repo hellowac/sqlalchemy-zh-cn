@@ -1,0 +1,984 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="copyright" title="版权所有" href="../copyright.html" /><link rel="next" title="2.0 Changelog" href="changelog_20.html" /><link rel="prev" title="SQLAlchemy 2.1 有什么新功能？" href="migration_21.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>2.1 Changelog - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">概述</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">SQLAlchemy 统一教程</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/data.html">处理数据</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_insert.html">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../orm/index.html">SQLAlchemy ORM</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../orm/quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/queryguide/index.html">ORM 查询指南</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../orm/examples.html">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">SQLAlchemy Core</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/schema.html">Schema 定义语言</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/ddl.html">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/api_basics.html">Core API 基础</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/exceptions.html">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">常见问题</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/installation.html">安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/connections.html">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/ormconfiguration.html">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">错误消息</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">变更和迁移</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_02.html">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="changelog">
+<h1>2.1 Changelog<a class="headerlink" href="#changelog" title="Link to this heading">¶</a></h1>
+<section id="change-2.1.0b1">
+<h2 class="release-version">2.1.0b1<a class="headerlink" href="#change-2.1.0b1" title="Link to this heading">¶</a></h2>
+no release date<section id="change-2.1.0b1-orm">
+<h3>orm<a class="headerlink" href="#change-2.1.0b1-orm" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-0"><span class="target" id="change-dfd82854336e6a97732fff1b294d05c8"><strong>[orm] [feature]</strong> <a class="changelog-reference headerlink reference internal" href="#change-dfd82854336e6a97732fff1b294d05c8">¶</a></span><p>The <a class="reference internal" href="../orm/relationship_api.html#sqlalchemy.orm.relationship.params.back_populates" title="sqlalchemy.orm.relationship"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">relationship.back_populates</span></code></a> argument to
+<a class="reference internal" href="../orm/relationship_api.html#sqlalchemy.orm.relationship" title="sqlalchemy.orm.relationship"><code class="xref py py-func docutils literal notranslate"><span class="pre">relationship()</span></code></a> may now be passed as a Python callable, which
+resolves to either the direct linked ORM attribute, or a string value as
+before.  ORM attributes are also accepted directly by
+<a class="reference internal" href="../orm/relationship_api.html#sqlalchemy.orm.relationship.params.back_populates" title="sqlalchemy.orm.relationship"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">relationship.back_populates</span></code></a>.   This change allows type
+checkers and IDEs to confirm the argument for
+<a class="reference internal" href="../orm/relationship_api.html#sqlalchemy.orm.relationship.params.back_populates" title="sqlalchemy.orm.relationship"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">relationship.back_populates</span></code></a> is valid. Thanks to Priyanshu
+Parikh for the help on suggesting and helping to implement this feature.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="migration_21.html#change-10050"><span class="std std-ref">ORM 关系允许调用 back_populates</span></a></p>
+</div>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10050">#10050</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-1"><span class="target" id="change-a51f1c5ea542ada891115f5e4f8f8b63"><strong>[orm] [usecase]</strong> <a class="changelog-reference headerlink reference internal" href="#change-a51f1c5ea542ada891115f5e4f8f8b63">¶</a></span><p>The <a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session.flush.params.objects" title="sqlalchemy.orm.Session.flush"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Session.flush.objects</span></code></a> parameter is now
+deprecated.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10816">#10816</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-2"><span class="target" id="change-3cc4f54cdac688f3ea756de4253bbb9f"><strong>[orm] [usecase]</strong> <a class="changelog-reference headerlink reference internal" href="#change-3cc4f54cdac688f3ea756de4253bbb9f">¶</a></span><p>Added the utility method <a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session.merge_all" title="sqlalchemy.orm.Session.merge_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.merge_all()</span></code></a> and
+<a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session.delete_all" title="sqlalchemy.orm.Session.delete_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.delete_all()</span></code></a> that operate on a collection
+of instances.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/11776">#11776</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-3"><span class="target" id="change-318c6ab764fb45ab54732b96ac5f15e5"><strong>[orm] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-318c6ab764fb45ab54732b96ac5f15e5">¶</a></span><p>Removed legacy signatures dating back to 0.9 release from the
+<a class="reference internal" href="../orm/events.html#sqlalchemy.orm.SessionEvents.after_bulk_update" title="sqlalchemy.orm.SessionEvents.after_bulk_update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SessionEvents.after_bulk_update()</span></code></a> and
+<a class="reference internal" href="../orm/events.html#sqlalchemy.orm.SessionEvents.after_bulk_delete" title="sqlalchemy.orm.SessionEvents.after_bulk_delete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SessionEvents.after_bulk_delete()</span></code></a>.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10721">#10721</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-4"><span class="target" id="change-125e138071dc56c152a07e536ae7fe37"><strong>[orm] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-125e138071dc56c152a07e536ae7fe37">¶</a></span><p>The <code class="docutils literal notranslate"><span class="pre">first_init</span></code> ORM event has been removed.  This event was
+non-functional throughout the 1.4 and 2.0 series and could not be invoked
+without raising an internal error, so it is not expected that there is any
+real-world use of this event hook.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10500">#10500</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-5"><span class="target" id="change-9f111f3062f198dfede2adc9f49f75a6"><strong>[orm] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-9f111f3062f198dfede2adc9f49f75a6">¶</a></span><p>A sweep through class and function names in the ORM renames many classes
+and functions that have no intent of public visibility to be underscored.
+This is to reduce ambiguity as to which APIs are intended to be targeted by
+third party applications and extensions.  Third parties are encouraged to
+propose new public APIs in Discussions to the extent they are needed to
+replace those that have been clarified as private.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10497">#10497</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-6"><span class="target" id="change-be48c720fe425155b897f8542c9aea44"><strong>[orm] [changed]</strong> <a class="changelog-reference headerlink reference internal" href="#change-be48c720fe425155b897f8542c9aea44">¶</a></span><p>The “non primary” mapper feature, long deprecated in SQLAlchemy since
+version 1.3, has been removed.   The sole use case for “non primary”
+mappers was that of using <a class="reference internal" href="../orm/relationship_api.html#sqlalchemy.orm.relationship" title="sqlalchemy.orm.relationship"><code class="xref py py-func docutils literal notranslate"><span class="pre">relationship()</span></code></a> to link to a mapped
+class against an alternative selectable; this use case is now suited by the
+<span class="xref std std-doc">relationship_aliased_class</span> feature.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12437">#12437</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-7"><span class="target" id="change-547dff662b6d57e4293a8c6652b2a021"><strong>[orm] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-547dff662b6d57e4293a8c6652b2a021">¶</a></span><p>A significant behavioral change has been made to the behavior of the
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> and
+<a class="reference internal" href="../orm/relationship_api.html#sqlalchemy.orm.relationship.params.default" title="sqlalchemy.orm.relationship"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">relationship.default</span></code></a> parameters, when used with
+SQLAlchemy’s <a class="reference internal" href="../orm/dataclasses.html#orm-declarative-native-dataclasses"><span class="std std-ref">声明式Dataclass映射</span></a> feature introduced
+in 2.0, where the given value (assumed to be an immutable scalar value) is
+no longer passed to the <code class="docutils literal notranslate"><span class="pre">&#64;dataclass</span></code> API as a real default, instead a
+token that leaves the value un-set in the object’s <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> is used, in
+conjunction with a descriptor-level default.  This prevents an un-set
+default value from overriding a default that was actually set elsewhere,
+such as in relationship / foreign key assignment patterns as well as in
+<a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session.merge" title="sqlalchemy.orm.Session.merge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.merge()</span></code></a> scenarios.   See the full writeup in the
+<a class="reference internal" href="migration_21.html#whatsnew-21-toplevel"><span class="std std-ref">SQLAlchemy 2.1 有什么新功能？</span></a> document which includes guidance on how to
+re-enable the 2.0 version of the behavior if needed.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="migration_21.html#change-12168"><span class="std std-ref">ORM 映射数据类不再在 __dict__ 中填充隐式 default</span></a></p>
+</div>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12168">#12168</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-8"><span class="target" id="change-4a02c20d7e6d3f6ddf81f1dd00c5679b"><strong>[orm] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-4a02c20d7e6d3f6ddf81f1dd00c5679b">¶</a></span><p>The behavior of <a class="reference internal" href="../orm/queryguide/inheritance.html#sqlalchemy.orm.with_polymorphic" title="sqlalchemy.orm.with_polymorphic"><code class="xref py py-func docutils literal notranslate"><span class="pre">with_polymorphic()</span></code></a> when used with a single
+inheritance mapping has been changed such that its behavior should match as
+closely as possible to that of an equivalent joined inheritance mapping.
+Specifically this means that the base class specified in the
+<a class="reference internal" href="../orm/queryguide/inheritance.html#sqlalchemy.orm.with_polymorphic" title="sqlalchemy.orm.with_polymorphic"><code class="xref py py-func docutils literal notranslate"><span class="pre">with_polymorphic()</span></code></a> construct will be the basemost class that is
+loaded, as well as all descendant classes of that basemost class.
+The change includes that the descendant classes named will no longer be
+exclusively indicated in “WHERE polymorphic_col IN” criteria; instead, the
+whole hierarchy starting with the given basemost class will be loaded.  If
+the query indicates that rows should only be instances of a specific
+subclass within the polymorphic hierarchy, an error is raised if an
+incompatible superclass is loaded in the result since it cannot be made to
+match the requested class; this behavior is the same as what joined
+inheritance has done for many years. The change also allows a single result
+set to include column-level results from multiple sibling classes at once
+which was not previously possible with single table inheritance.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12395">#12395</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-9"><span class="target" id="change-e37eff2c86324e023dba36bd711a6394"><strong>[orm] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-e37eff2c86324e023dba36bd711a6394">¶</a></span><p>The <a class="reference internal" href="../orm/relationship_api.html#sqlalchemy.orm.relationship.params.secondary" title="sqlalchemy.orm.relationship"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">relationship.secondary</span></code></a> parameter no longer uses Python
+<code class="docutils literal notranslate"><span class="pre">eval()</span></code> to evaluate the given string.   This parameter when passed a
+string should resolve to a table name that’s present in the local
+<a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.MetaData" title="sqlalchemy.schema.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetaData</span></code></a> collection only, and never needs to be any kind of
+Python expression otherwise.  To use a real deferred callable based on a
+name that may not be locally present yet, use a lambda instead.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10564">#10564</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-10"><span class="target" id="change-1b1c28ceb8ef7e096c67f199d27ce895"><strong>[orm] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-1b1c28ceb8ef7e096c67f199d27ce895">¶</a></span><p>Revised the set “binary” operators for the association proxy <code class="docutils literal notranslate"><span class="pre">set()</span></code>
+interface to correctly raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> for invalid use of the <code class="docutils literal notranslate"><span class="pre">|</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code>, and <code class="docutils literal notranslate"><span class="pre">-</span></code> operators, as well as the in-place mutation
+versions of these methods, to match the behavior of standard Python
+<code class="docutils literal notranslate"><span class="pre">set()</span></code> as well as SQLAlchemy ORM’s “intstrumented” set implementation.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/11349">#11349</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-11"><span class="target" id="change-9684c4c6a30753efedaa9f84f4ef15a4"><strong>[orm]</strong> <a class="changelog-reference headerlink reference internal" href="#change-9684c4c6a30753efedaa9f84f4ef15a4">¶</a></span><p>Ignore <a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session.params.join_transaction_mode" title="sqlalchemy.orm.Session"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Session.join_transaction_mode</span></code></a> in all cases when
+the bind provided to the <a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session" title="sqlalchemy.orm.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a> is an
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a>.
+Previously if an event that executed before the session logic,
+like <code class="xref py py-meth docutils literal notranslate"><span class="pre">ConnectionEvents.engine_connect()</span></code>,
+left the connection with an active transaction, the
+<a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session.params.join_transaction_mode" title="sqlalchemy.orm.Session"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Session.join_transaction_mode</span></code></a> behavior took
+place, leading to a surprising behavior.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/11163">#11163</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-12"><span class="target" id="change-0e9ce2cb93320bc5b49bfdbfba7481c6"><strong>[orm]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0e9ce2cb93320bc5b49bfdbfba7481c6">¶</a></span><p>The <a class="reference internal" href="../orm/queryguide/relationships.html#sqlalchemy.orm.noload" title="sqlalchemy.orm.noload"><code class="xref py py-func docutils literal notranslate"><span class="pre">noload()</span></code></a> relationship loader option and related
+<code class="docutils literal notranslate"><span class="pre">lazy='noload'</span></code> setting is deprecated and will be removed in a future
+release.   This option was originally intended for custom loader patterns
+that are no longer applicable in modern SQLAlchemy.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/11045">#11045</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-engine">
+<h3>engine<a class="headerlink" href="#change-2.1.0b1-engine" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-13"><span class="target" id="change-108bdcd295a2fa397a3e532d426bffc0"><strong>[engine] [usecase]</strong> <a class="changelog-reference headerlink reference internal" href="#change-108bdcd295a2fa397a3e532d426bffc0">¶</a></span><p>Added new execution option
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.execution_options.params.driver_column_names" title="sqlalchemy.engine.Connection.execution_options"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Connection.execution_options.driver_column_names</span></code></a>. This
+option disables the “name normalize” step that takes place against the
+DBAPI <code class="docutils literal notranslate"><span class="pre">cursor.description</span></code> for uppercase-default backends like Oracle,
+and will cause the keys of a result set (e.g. named tuple names, dictionary
+keys in <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Row._mapping" title="sqlalchemy.engine.Row._mapping"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Row._mapping</span></code></a>, etc.) to be exactly what was delivered in
+cursor.description.   This is mostly useful for plain textual statements
+using <a class="reference internal" href="../core/sqlelement.html#sqlalchemy.sql.expression.text" title="sqlalchemy.sql.expression.text"><code class="xref py py-func docutils literal notranslate"><span class="pre">text()</span></code></a> or <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.exec_driver_sql" title="sqlalchemy.engine.Connection.exec_driver_sql"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.exec_driver_sql()</span></code></a>.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10789">#10789</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-14"><span class="target" id="change-f4c981bcd220be1b3c4a3b21b4207e84"><strong>[engine] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-f4c981bcd220be1b3c4a3b21b4207e84">¶</a></span><p>An empty sequence passed to any <code class="docutils literal notranslate"><span class="pre">execute()</span></code> method now
+raised a deprecation warning, since such an executemany
+is invalid.
+Pull request courtesy of Carlos Sousa.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/9647">#9647</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-15"><span class="target" id="change-bd948188af8857d9012575a88290744d"><strong>[engine] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-bd948188af8857d9012575a88290744d">¶</a></span><p>Adjusted URL parsing and stringification to apply url quoting to the
+“database” portion of the URL.  This allows a URL where the “database”
+portion includes special characters such as question marks to be
+accommodated.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="migration_21.html#change-11234"><span class="std std-ref">URL stringify 和 parse 现在支持“数据库”部分的 URL 转义</span></a></p>
+</div>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/11234">#11234</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-sql">
+<h3>sql<a class="headerlink" href="#change-2.1.0b1-sql" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-16"><span class="target" id="change-0bf896628b29496e0a1452958f334395"><strong>[sql] [feature]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0bf896628b29496e0a1452958f334395">¶</a></span><p>Added the ability to create custom SQL constructs that can define new
+clauses within SELECT, INSERT, UPDATE, and DELETE statements without
+needing to modify the construction or compilation code of of
+<a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select" title="sqlalchemy.sql.expression.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a>, <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a>, <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a>, or <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a>
+directly.  Support for testing these constructs, including caching support,
+is present along with an example test suite.  The use case for these
+constructs is expected to be third party dialects for analytical SQL
+(so-called NewSQL) or other novel styles of database that introduce new
+clauses to these statements.   A new example suite is included which
+illustrates the <code class="docutils literal notranslate"><span class="pre">QUALIFY</span></code> SQL construct used by several NewSQL databases
+which includes a cachable implementation as well as a test suite.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../orm/examples.html#examples-syntax-extensions"><span class="std std-ref">Extending Statements like SELECT, INSERT, etc</span></a></p>
+</div>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12195">#12195</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-17"><span class="target" id="change-4a0eb97a54bd3872e593a172bdb16da2"><strong>[sql] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-4a0eb97a54bd3872e593a172bdb16da2">¶</a></span><p>The <code class="docutils literal notranslate"><span class="pre">.c</span></code> and <code class="docutils literal notranslate"><span class="pre">.columns</span></code> attributes on the <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select" title="sqlalchemy.sql.expression.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> and
+<a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.TextualSelect" title="sqlalchemy.sql.expression.TextualSelect"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextualSelect</span></code></a> constructs, which are not instances of
+<a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.FromClause" title="sqlalchemy.sql.expression.FromClause"><code class="xref py py-class docutils literal notranslate"><span class="pre">FromClause</span></code></a>, have been removed completely, in addition to the
+<code class="docutils literal notranslate"><span class="pre">.select()</span></code> method as well as other codepaths which would implicitly
+generate a subquery from a <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select" title="sqlalchemy.sql.expression.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> without the need to explicitly
+call the <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select.subquery" title="sqlalchemy.sql.expression.Select.subquery"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Select.subquery()</span></code></a> method.</p>
+<p>In the case of <code class="docutils literal notranslate"><span class="pre">.c</span></code> and <code class="docutils literal notranslate"><span class="pre">.columns</span></code>, these attributes were never useful
+in practice and have caused a great deal of confusion, hence were
+deprecated back in version 1.4, and have emitted warnings since that
+version.   Accessing the columns that are specific to a <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select" title="sqlalchemy.sql.expression.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a>
+construct is done via the <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select.selected_columns" title="sqlalchemy.sql.expression.Select.selected_columns"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Select.selected_columns</span></code></a> attribute, which
+was added in version 1.4 to suit the use case that users often expected
+<code class="docutils literal notranslate"><span class="pre">.c</span></code> to accomplish.  In the larger sense, implicit production of
+subqueries works against SQLAlchemy’s modern practice of making SQL
+structure as explicit as possible.</p>
+<p>Note that this is <strong>not related</strong> to the usual <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.FromClause.c" title="sqlalchemy.sql.expression.FromClause.c"><code class="xref py py-attr docutils literal notranslate"><span class="pre">FromClause.c</span></code></a> and
+<a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.FromClause.columns" title="sqlalchemy.sql.expression.FromClause.columns"><code class="xref py py-attr docutils literal notranslate"><span class="pre">FromClause.columns</span></code></a> attributes, common to objects such as
+<a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> and <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Subquery" title="sqlalchemy.sql.expression.Subquery"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subquery</span></code></a>,  which are unaffected by this
+change.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="migration_14.html#change-4617"><span class="std std-ref">A SELECT statement is no longer implicitly considered to be a FROM clause</span></a> - original notes from SQLAlchemy 1.4</p>
+</div>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10236">#10236</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-18"><span class="target" id="change-f209f702ffdc001cf7f6731d60dbc626"><strong>[sql] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-f209f702ffdc001cf7f6731d60dbc626">¶</a></span><p>the <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Numeric" title="sqlalchemy.types.Numeric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Numeric</span></code></a> and <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Float" title="sqlalchemy.types.Float"><code class="xref py py-class docutils literal notranslate"><span class="pre">Float</span></code></a> SQL types have been separated out
+so that <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Float" title="sqlalchemy.types.Float"><code class="xref py py-class docutils literal notranslate"><span class="pre">Float</span></code></a> no longer inherits from <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Numeric" title="sqlalchemy.types.Numeric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Numeric</span></code></a>; instead,
+they both extend from a common mixin <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.NumericCommon" title="sqlalchemy.types.NumericCommon"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericCommon</span></code></a>.  This
+corrects for some architectural shortcomings where numeric and float types
+are typically separate, and establishes more consistency with
+<a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Integer" title="sqlalchemy.types.Integer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Integer</span></code></a> also being a distinct type.   The change should not have
+any end-user implications except for code that may be using
+<code class="docutils literal notranslate"><span class="pre">isinstance()</span></code> to test for the <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Numeric" title="sqlalchemy.types.Numeric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Numeric</span></code></a> datatype; third party
+dialects which rely upon specific implementation types for numeric and/or
+float may also require adjustment to maintain compatibility.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/5252">#5252</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-19"><span class="target" id="change-45dd6833627d47780a5dc485f455af58"><strong>[sql] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-45dd6833627d47780a5dc485f455af58">¶</a></span><p>Fixed issue in name normalization (e.g. “uppercase” backends like Oracle)
+where using a <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.TextualSelect" title="sqlalchemy.sql.expression.TextualSelect"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextualSelect</span></code></a> would not properly maintain as
+uppercase column names that were quoted as uppercase, even though
+the <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.TextualSelect" title="sqlalchemy.sql.expression.TextualSelect"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextualSelect</span></code></a> includes a <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a> that explicitly
+holds this uppercase name.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10788">#10788</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-20"><span class="target" id="change-24bd84272d6ec6f184227d1c59e24da1"><strong>[sql] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-24bd84272d6ec6f184227d1c59e24da1">¶</a></span><p>Enhanced the caching structure of the <a class="reference internal" href="../core/sqlelement.html#sqlalchemy.sql.expression.over.params.rows" title="sqlalchemy.sql.expression.over"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">over.rows</span></code></a>
+and <a class="reference internal" href="../core/sqlelement.html#sqlalchemy.sql.expression.over.params.range" title="sqlalchemy.sql.expression.over"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">over.range</span></code></a> so that different numerical
+values for the rows /
+range fields are cached on the same cache key, to the extent that the
+underlying SQL does not actually change (i.e. “unbounded”, “current row”,
+negative/positive status will still change the cache key).  This prevents
+the use of many different numerical range/rows value for a query that is
+otherwise identical from filling up the SQL cache.</p>
+<p>Note that the semi-private compiler method <code class="docutils literal notranslate"><span class="pre">_format_frame_clause()</span></code>
+is removed by this fix, replaced with a new method
+<code class="docutils literal notranslate"><span class="pre">visit_frame_clause()</span></code>.  Third party dialects which may have referred
+to this method will need to change the name and revise the approach to
+rendering the correct SQL for that dialect.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/11515">#11515</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-21"><span class="target" id="change-1d834cb2805f6955890c008f81832642"><strong>[sql]</strong> <a class="changelog-reference headerlink reference internal" href="#change-1d834cb2805f6955890c008f81832642">¶</a></span><p>Removed the automatic coercion of executable objects, such as
+<a class="reference internal" href="../orm/queryguide/query.html#sqlalchemy.orm.Query" title="sqlalchemy.orm.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>, when passed into <a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session.execute" title="sqlalchemy.orm.Session.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.execute()</span></code></a>.
+This usage raised a deprecation warning since the 1.4 series.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12218">#12218</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-schema">
+<h3>schema<a class="headerlink" href="#change-2.1.0b1-schema" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-22"><span class="target" id="change-8840f07ad6bcb7f1e09bc0af639d8aa1"><strong>[schema] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-8840f07ad6bcb7f1e09bc0af639d8aa1">¶</a></span><p>The <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Float" title="sqlalchemy.types.Float"><code class="xref py py-class docutils literal notranslate"><span class="pre">Float</span></code></a> and <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Numeric" title="sqlalchemy.types.Numeric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Numeric</span></code></a> types are no longer automatically
+considered as auto-incrementing columns when the
+<a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column.params.autoincrement" title="sqlalchemy.schema.Column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Column.autoincrement</span></code></a> parameter is left at its default
+of <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> on a <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a> that is part of the primary key.
+When the parameter is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, a <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Numeric" title="sqlalchemy.types.Numeric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Numeric</span></code></a> type will be
+accepted as an auto-incrementing datatype for primary key columns, but only
+if its scale is explicitly given as zero; otherwise, an error is raised.
+This is a change from 2.0 where all numeric types including floats were
+automatically considered as “autoincrement” for primary key columns.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/11811">#11811</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-23"><span class="target" id="change-1a6404a1e2dd78f050a956f73d3e0439"><strong>[schema]</strong> <a class="changelog-reference headerlink reference internal" href="#change-1a6404a1e2dd78f050a956f73d3e0439">¶</a></span><p>Deprecate Oracle only parameters <a class="reference internal" href="../core/defaults.html#sqlalchemy.schema.Sequence.params.order" title="sqlalchemy.schema.Sequence"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Sequence.order</span></code></a>,
+<a class="reference internal" href="../core/defaults.html#sqlalchemy.schema.Identity.params.order" title="sqlalchemy.schema.Identity"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Identity.order</span></code></a> and <a class="reference internal" href="../core/defaults.html#sqlalchemy.schema.Identity.params.on_null" title="sqlalchemy.schema.Identity"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Identity.on_null</span></code></a>.
+They should be configured using the dialect kwargs <code class="docutils literal notranslate"><span class="pre">oracle_order</span></code> and
+<code class="docutils literal notranslate"><span class="pre">oracle_on_null</span></code>.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10247">#10247</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-typing">
+<h3>typing<a class="headerlink" href="#change-2.1.0b1-typing" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-24"><span class="target" id="change-6a326a06ef003c78cf401b8c3b755e45"><strong>[typing] [feature]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6a326a06ef003c78cf401b8c3b755e45">¶</a></span><p>The <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Row" title="sqlalchemy.engine.Row"><code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code></a> object now no longer makes use of an intermediary
+<code class="docutils literal notranslate"><span class="pre">Tuple</span></code> in order to represent its individual element types; instead,
+the individual element types are present directly, via new <span class="target" id="index-1"></span><a class="pep reference external" href="https://peps.python.org/pep-0646/"><strong>PEP 646</strong></a>
+integration, now available in more recent versions of Mypy.  Mypy
+1.7 or greater is now required for statements, results and rows
+to be correctly typed.   Pull request courtesy Yurii Karabas.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="migration_21.html#change-10635"><span class="std std-ref">Row 现在直接表示单个列类型，无需 Tuple</span></a></p>
+</div>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10635">#10635</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-25"><span class="target" id="change-0fc22c268bd3c324d8cdacb7f38a73f4"><strong>[typing]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0fc22c268bd3c324d8cdacb7f38a73f4">¶</a></span><p>The default implementation of <code class="xref py py-attr docutils literal notranslate"><span class="pre">TypeEngine.python_type</span></code> now
+returns <code class="docutils literal notranslate"><span class="pre">object</span></code> instead of <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>, since that’s the
+base for all types in Python3.
+The <code class="docutils literal notranslate"><span class="pre">python_type</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">JSON</span></code> no longer returns <code class="docutils literal notranslate"><span class="pre">dict</span></code>,
+but instead fallbacks to the generic implementation.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10646">#10646</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-26"><span class="target" id="change-85258419a4408c1d4daa82355a1bd2c0"><strong>[typing] [orm]</strong> <a class="changelog-reference headerlink reference internal" href="#change-85258419a4408c1d4daa82355a1bd2c0">¶</a></span><p>Removed the deprecated mypy plugin.
+The plugin was non-functional with newer version of mypy and it’s no
+longer needed with modern SQLAlchemy declarative style.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12293">#12293</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-asyncio">
+<h3>asyncio<a class="headerlink" href="#change-2.1.0b1-asyncio" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-27"><span class="target" id="change-66bde029a3118ceaf8fb6336378002bf"><strong>[asyncio] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-66bde029a3118ceaf8fb6336378002bf">¶</a></span><p>Added an initialize step to the import of
+<code class="docutils literal notranslate"><span class="pre">sqlalchemy.ext.asyncio</span></code> so that <code class="docutils literal notranslate"><span class="pre">greenlet</span></code> will
+be imported only when the asyncio extension is first imported.
+Alternatively, the <code class="docutils literal notranslate"><span class="pre">greenlet</span></code> library is still imported lazily on
+first use to support use case that don’t make direct use of the
+SQLAlchemy asyncio extension.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10296">#10296</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-28"><span class="target" id="change-acde0657e22ad9a9197550370544f762"><strong>[asyncio] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-acde0657e22ad9a9197550370544f762">¶</a></span><p>Adapted all asyncio dialects, including aiosqlite, aiomysql, asyncmy,
+psycopg, asyncpg to use the generic asyncio connection adapter first added
+in <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/6521">#6521</a> for the aioodbc DBAPI, allowing these dialects to take
+advantage of a common framework.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10415">#10415</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-29"><span class="target" id="change-eecc6b085d3127211206517b3dc97750"><strong>[asyncio] [change]</strong> <a class="changelog-reference headerlink reference internal" href="#change-eecc6b085d3127211206517b3dc97750">¶</a></span><p>Removed the compatibility <code class="docutils literal notranslate"><span class="pre">async_fallback</span></code> mode for async dialects,
+since it’s no longer used by SQLAlchemy tests.
+Also removed the internal function <code class="docutils literal notranslate"><span class="pre">await_fallback()</span></code> and renamed
+the internal function <code class="docutils literal notranslate"><span class="pre">await_only()</span></code> to <code class="docutils literal notranslate"><span class="pre">await_()</span></code>.
+No change is expected to user code.</p>
+<p></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-postgresql">
+<h3>postgresql<a class="headerlink" href="#change-2.1.0b1-postgresql" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-30"><span class="target" id="change-0b4ec646d25686a1089e4bd6bf9552cc"><strong>[postgresql] [feature]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0b4ec646d25686a1089e4bd6bf9552cc">¶</a></span><p>Added syntax extension <a class="reference internal" href="../dialects/postgresql.html#sqlalchemy.dialects.postgresql.distinct_on" title="sqlalchemy.dialects.postgresql.distinct_on"><code class="xref py py-func docutils literal notranslate"><span class="pre">distinct_on()</span></code></a> to build <code class="docutils literal notranslate"><span class="pre">DISTINCT</span>
+<span class="pre">ON</span></code> clauses. The old api, that passed columns to
+<a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select.distinct" title="sqlalchemy.sql.expression.Select.distinct"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Select.distinct()</span></code></a>, is now deprecated.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12342">#12342</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-mysql">
+<h3>mysql<a class="headerlink" href="#change-2.1.0b1-mysql" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-31"><span class="target" id="change-5ef7d7ab273f520a576a4d0184afadb4"><strong>[mysql] [feature]</strong> <a class="changelog-reference headerlink reference internal" href="#change-5ef7d7ab273f520a576a4d0184afadb4">¶</a></span><p>Added new construct <a class="reference internal" href="../dialects/mysql.html#sqlalchemy.dialects.mysql.limit" title="sqlalchemy.dialects.mysql.limit"><code class="xref py py-func docutils literal notranslate"><span class="pre">limit()</span></code></a> which can be applied to any
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.update" title="sqlalchemy.sql.expression.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">update()</span></code></a> or <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.delete" title="sqlalchemy.sql.expression.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">delete()</span></code></a> to provide the LIMIT keyword to
+UPDATE and DELETE.  This new construct supersedes the use of the
+“mysql_limit” dialect keyword argument.</p>
+<p></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-mariadb">
+<h3>mariadb<a class="headerlink" href="#change-2.1.0b1-mariadb" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-32"><span class="target" id="change-afb8877dd36a207f40855db603bd843f"><strong>[mariadb] [usecase]</strong> <a class="changelog-reference headerlink reference internal" href="#change-afb8877dd36a207f40855db603bd843f">¶</a></span><p>Modified the MariaDB dialect so that when using the <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Uuid" title="sqlalchemy.types.Uuid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Uuid</span></code></a>
+datatype with  MariaDB &gt;= 10.7, leaving the
+<a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Uuid.params.native_uuid" title="sqlalchemy.types.Uuid"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Uuid.native_uuid</span></code></a> parameter at its default of True,
+the native <code class="docutils literal notranslate"><span class="pre">UUID</span></code> datatype will be rendered in DDL and used for database
+communication, rather than <code class="docutils literal notranslate"><span class="pre">CHAR(32)</span></code> (the non-native UUID type) as was
+the case previously.   This is a behavioral change since 2.0, where the
+generic <a class="reference internal" href="../core/type_basics.html#sqlalchemy.types.Uuid" title="sqlalchemy.types.Uuid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Uuid</span></code></a> datatype delivered <code class="docutils literal notranslate"><span class="pre">CHAR(32)</span></code> for all
+MySQL and MariaDB variants.   Support for all major DBAPIs is implemented
+including support for less common “insertmanyvalues” scenarios where UUID
+values are generated in different ways for primary keys.   Thanks much to
+Volodymyr Kochetkov for delivering the PR.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10339">#10339</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-mssql">
+<h3>mssql<a class="headerlink" href="#change-2.1.0b1-mssql" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-33"><span class="target" id="change-b1141414aa538af2420a5ea07452f598"><strong>[mssql] [bug]</strong> <a class="changelog-reference headerlink reference internal" href="#change-b1141414aa538af2420a5ea07452f598">¶</a></span><p>Fix mssql+pyodbc issue where valid plus signs in an already-unquoted
+<code class="docutils literal notranslate"><span class="pre">odbc_connect=</span></code> (raw DBAPI) connection string are replaced with spaces.</p>
+<p>The pyodbc connector would unconditionally pass the odbc_connect value
+to unquote_plus(), even if it was not required. So, if the (unquoted)
+odbc_connect value contained <code class="docutils literal notranslate"><span class="pre">PWD=pass+word</span></code> that would get changed to
+<code class="docutils literal notranslate"><span class="pre">PWD=pass</span> <span class="pre">word</span></code>, and the login would fail. One workaround was to quote
+just the plus sign — <code class="docutils literal notranslate"><span class="pre">PWD=pass%2Bword</span></code> — which would then get unquoted
+to <code class="docutils literal notranslate"><span class="pre">PWD=pass+word</span></code>.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/11250">#11250</a></p>
+</p>
+</li>
+</ul>
+</section>
+<section id="change-2.1.0b1-misc">
+<h3>misc<a class="headerlink" href="#change-2.1.0b1-misc" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="caption" id="change-2.1.0b1-34"><span class="target" id="change-e17380eeb0867ea99a610c47958edfb7"><strong>[change] [installation]</strong> <a class="changelog-reference headerlink reference internal" href="#change-e17380eeb0867ea99a610c47958edfb7">¶</a></span><p>Python 3.9 or above is now required; support for Python 3.8 and 3.7 is
+dropped as these versions are EOL.</p>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10357">#10357</a>, <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12029">#12029</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-35"><span class="target" id="change-4029a06c8051bc6834866a744a49fcec"><strong>[change] [setup]</strong> <a class="changelog-reference headerlink reference internal" href="#change-4029a06c8051bc6834866a744a49fcec">¶</a></span><p>Updated the setup manifest definition to use PEP 621-compliant
+pyproject.toml.
+Also updated the extra install dependency to comply with PEP-685.
+Thanks for the help of Matt Oberle and KOLANICH on this change.</p>
+<p></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-36"><span class="target" id="change-6b4efde26419ca4f278e06deb110086c"><strong>[change] [installation]</strong> <a class="changelog-reference headerlink reference internal" href="#change-6b4efde26419ca4f278e06deb110086c">¶</a></span><p>The <code class="docutils literal notranslate"><span class="pre">greenlet</span></code> dependency used for asyncio support no longer installs
+by default.  This dependency does not publish wheel files for every architecture
+and is not needed for applications that aren’t using asyncio features.
+Use the <code class="docutils literal notranslate"><span class="pre">sqlalchemy[asyncio]</span></code> install target to include this dependency.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="migration_21.html#change-10197"><span class="std std-ref">Asyncio“greenlet”依赖项不再默认安装</span></a></p>
+</div>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/10197">#10197</a></p>
+</p>
+</li>
+<li><p class="caption" id="change-2.1.0b1-37"><span class="target" id="change-0105c94d7a13190750bdaa4844b4a87b"><strong>[misc] [changed]</strong> <a class="changelog-reference headerlink reference internal" href="#change-0105c94d7a13190750bdaa4844b4a87b">¶</a></span><p>Removed multiple api that were deprecated in the 1.3 series and earlier.
+The list of removed features includes:</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">force</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">IdentifierPreparer.quote</span></code> and
+<code class="docutils literal notranslate"><span class="pre">IdentifierPreparer.quote_schema</span></code>;</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">threaded</span></code> parameter of the cx-Oracle dialect;</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">_json_serializer</span></code> and <code class="docutils literal notranslate"><span class="pre">_json_deserializer</span></code> parameters of the
+SQLite dialect;</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">collection.converter</span></code> decorator;</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Mapper.mapped_table</span></code> property;</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Session.close_all</span></code> method;</p></li>
+<li><p>Support for multiple arguments in <a class="reference internal" href="../orm/queryguide/columns.html#sqlalchemy.orm.defer" title="sqlalchemy.orm.defer"><code class="xref py py-func docutils literal notranslate"><span class="pre">defer()</span></code></a> and
+<a class="reference internal" href="../orm/queryguide/columns.html#sqlalchemy.orm.undefer" title="sqlalchemy.orm.undefer"><code class="xref py py-func docutils literal notranslate"><span class="pre">undefer()</span></code></a>.</p></li>
+</ul>
+<p>References: <a class="reference external" href="https://www.sqlalchemy.org/trac/ticket/12441">#12441</a></p>
+</p>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="changelog_20.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">2.0 Changelog</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="migration_21.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">SQLAlchemy 2.1 有什么新功能？</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">2.1 Changelog</a><ul>
+<li><a class="reference internal" href="#change-2.1.0b1">2.1.0b1</a><ul>
+<li><a class="reference internal" href="#change-2.1.0b1-orm">orm</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-engine">engine</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-sql">sql</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-schema">schema</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-typing">typing</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-asyncio">asyncio</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-postgresql">postgresql</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-mysql">mysql</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-mariadb">mariadb</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-mssql">mssql</a></li>
+<li><a class="reference internal" href="#change-2.1.0b1-misc">misc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

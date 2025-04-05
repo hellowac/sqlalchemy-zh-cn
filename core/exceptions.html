@@ -1,0 +1,1312 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="copyright" title="版权所有" href="../copyright.html" /><link rel="next" title="Core 内部" href="internals.html" /><link rel="prev" title="运行时审查 API" href="inspection.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>Core 异常 - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">概述</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">SQLAlchemy 统一教程</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/data.html">处理数据</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_insert.html">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../orm/index.html">SQLAlchemy ORM</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../orm/quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/queryguide/index.html">ORM 查询指南</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../orm/examples.html">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">SQLAlchemy Core</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="schema.html">Schema 定义语言</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ddl.html">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="api_basics.html">Core API 基础</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">常见问题</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/installation.html">安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/connections.html">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/ormconfiguration.html">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">错误消息</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../changelog/index.html">变更和迁移</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_21.html">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_02.html">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="core">
+<span id="core-exceptions-toplevel"></span><h1>Core 异常<a class="headerlink" href="#core" title="Link to this heading">¶</a></h1>
+<p>Core Exceptions</p>
+<p id="module-sqlalchemy.exc">Exceptions used with SQLAlchemy.</p>
+<p>The base exception class is <a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SQLAlchemyError</span></code></a>.  Exceptions which are
+raised as a result of DBAPI exceptions are all subclasses of
+<a class="reference internal" href="#sqlalchemy.exc.DBAPIError" title="sqlalchemy.exc.DBAPIError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DBAPIError</span></code></a>.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.AmbiguousForeignKeysError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">AmbiguousForeignKeysError</span></span><a class="headerlink" href="#sqlalchemy.exc.AmbiguousForeignKeysError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when more than one foreign key matching can be located
+between two selectables during a join.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.AmbiguousForeignKeysError" title="sqlalchemy.exc.AmbiguousForeignKeysError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.AmbiguousForeignKeysError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.ArgumentError" title="sqlalchemy.exc.ArgumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ArgumentError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.ArgumentError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">ArgumentError</span></span><a class="headerlink" href="#sqlalchemy.exc.ArgumentError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when an invalid or conflicting function argument is supplied.</p>
+<p>This error generally corresponds to construction time state errors.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.ArgumentError" title="sqlalchemy.exc.ArgumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ArgumentError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.AwaitRequired">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">AwaitRequired</span></span><a class="headerlink" href="#sqlalchemy.exc.AwaitRequired" title="Link to this definition">¶</a></dt>
+<dd><p>Error raised by the async greenlet spawn if no async operation
+was awaited when it required one.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.AwaitRequired" title="sqlalchemy.exc.AwaitRequired"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.AwaitRequired</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.Base20DeprecationWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">Base20DeprecationWarning</span></span><a class="headerlink" href="#sqlalchemy.exc.Base20DeprecationWarning" title="Link to this definition">¶</a></dt>
+<dd><p>Issued for usage of APIs specifically deprecated or legacy in
+SQLAlchemy 2.0.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../errors.html#error-b8d9"><span class="std std-ref">SQLAlchemy 2.0 中的 &lt;some function&gt; 将不再是 &lt;something&gt;</span></a>.</p>
+<p><a class="reference internal" href="../changelog/migration_14.html#deprecation-20-mode"><span class="std std-ref">SQLAlchemy 2.0 Deprecations Mode</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.Base20DeprecationWarning" title="sqlalchemy.exc.Base20DeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.Base20DeprecationWarning</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SADeprecationWarning" title="sqlalchemy.exc.SADeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SADeprecationWarning</span></code></a>)</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sqlalchemy.exc.Base20DeprecationWarning.deprecated_since">
+<em class="property"><span class="pre">attribute</span> </em><a class="reference internal" href="#sqlalchemy.exc.Base20DeprecationWarning"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.Base20DeprecationWarning.</span></code></a><span class="sig-name descname"><span class="pre">deprecated_since</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1.4'</span></em><a class="headerlink" href="#sqlalchemy.exc.Base20DeprecationWarning.deprecated_since" title="Link to this definition">¶</a></dt>
+<dd><p>Indicates the version that started raising this deprecation warning</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.CircularDependencyError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">CircularDependencyError</span></span><a class="headerlink" href="#sqlalchemy.exc.CircularDependencyError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised by topological sorts when a circular dependency is detected.</p>
+<p>There are two scenarios where this error occurs:</p>
+<ul class="simple">
+<li><p>In a Session flush operation, if two objects are mutually dependent
+on each other, they can not be inserted or deleted via INSERT or
+DELETE statements alone; an UPDATE will be needed to post-associate
+or pre-deassociate one of the foreign key constrained values.
+The <code class="docutils literal notranslate"><span class="pre">post_update</span></code> flag described at <a class="reference internal" href="../orm/relationship_persistence.html#post-update"><span class="std std-ref">指向自身的行/相互依赖的行</span></a> can resolve
+this cycle.</p></li>
+<li><p>In a <a class="reference internal" href="metadata.html#sqlalchemy.schema.MetaData.sorted_tables" title="sqlalchemy.schema.MetaData.sorted_tables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MetaData.sorted_tables</span></code></a> operation, two
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKey" title="sqlalchemy.schema.ForeignKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKey</span></code></a>
+or <a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a> objects mutually refer to each
+other.  Apply the <code class="docutils literal notranslate"><span class="pre">use_alter=True</span></code> flag to one or both,
+see <a class="reference internal" href="constraints.html#use-alter"><span class="std std-ref">通过 ALTER 创建/删除外键约束</span></a>.</p></li>
+</ul>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.CircularDependencyError" title="sqlalchemy.exc.CircularDependencyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.CircularDependencyError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.exc.CircularDependencyError.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.exc.CircularDependencyError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.CircularDependencyError.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.exc.CircularDependencyError.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.CompileError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">CompileError</span></span><a class="headerlink" href="#sqlalchemy.exc.CompileError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when an error occurs during SQL compilation</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.CompileError" title="sqlalchemy.exc.CompileError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.CompileError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.ConstraintColumnNotFoundError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">ConstraintColumnNotFoundError</span></span><a class="headerlink" href="#sqlalchemy.exc.ConstraintColumnNotFoundError" title="Link to this definition">¶</a></dt>
+<dd><p>raised when a constraint refers to a string column name that
+is not present in the table being constrained.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 2.0 版本加入.</span></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.ConstraintColumnNotFoundError" title="sqlalchemy.exc.ConstraintColumnNotFoundError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ConstraintColumnNotFoundError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.ArgumentError" title="sqlalchemy.exc.ArgumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ArgumentError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.DBAPIError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">DBAPIError</span></span><a class="headerlink" href="#sqlalchemy.exc.DBAPIError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when the execution of a database operation fails.</p>
+<p>Wraps exceptions raised by the DB-API underlying the
+database operation.  Driver-specific implementations of the standard
+DB-API exception types are wrapped by matching sub-types of SQLAlchemy’s
+<a class="reference internal" href="#sqlalchemy.exc.DBAPIError" title="sqlalchemy.exc.DBAPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBAPIError</span></code></a> when possible.  DB-API’s <code class="docutils literal notranslate"><span class="pre">Error</span></code> type maps to
+<a class="reference internal" href="#sqlalchemy.exc.DBAPIError" title="sqlalchemy.exc.DBAPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBAPIError</span></code></a> in SQLAlchemy, otherwise the names are identical.  Note
+that there is no guarantee that different DB-API implementations will
+raise the same exception type for any given error condition.</p>
+<p><a class="reference internal" href="#sqlalchemy.exc.DBAPIError" title="sqlalchemy.exc.DBAPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBAPIError</span></code></a> features <a class="reference internal" href="#sqlalchemy.exc.StatementError.statement" title="sqlalchemy.exc.StatementError.statement"><code class="xref py py-attr docutils literal notranslate"><span class="pre">StatementError.statement</span></code></a>
+and <a class="reference internal" href="#sqlalchemy.exc.StatementError.params" title="sqlalchemy.exc.StatementError.params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">StatementError.params</span></code></a> attributes which supply context
+regarding the specifics of the statement which had an issue, for the
+typical case when the error was raised within the context of
+emitting a SQL statement.</p>
+<p>The wrapped exception object is available in the
+<a class="reference internal" href="#sqlalchemy.exc.StatementError.orig" title="sqlalchemy.exc.StatementError.orig"><code class="xref py py-attr docutils literal notranslate"><span class="pre">StatementError.orig</span></code></a> attribute. Its type and properties are
+DB-API implementation specific.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.DBAPIError" title="sqlalchemy.exc.DBAPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DBAPIError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.StatementError" title="sqlalchemy.exc.StatementError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.StatementError</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.exc.DBAPIError.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.exc.DBAPIError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.DBAPIError.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_AnyExecuteParams</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseException</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hide_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_invalidated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ismulti</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.exc.DBAPIError.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.DataError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">DataError</span></span><a class="headerlink" href="#sqlalchemy.exc.DataError" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a DB-API DataError.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.DataError" title="sqlalchemy.exc.DataError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DataError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DatabaseError" title="sqlalchemy.exc.DatabaseError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DatabaseError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.DatabaseError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">DatabaseError</span></span><a class="headerlink" href="#sqlalchemy.exc.DatabaseError" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a DB-API DatabaseError.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.DatabaseError" title="sqlalchemy.exc.DatabaseError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DatabaseError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DBAPIError" title="sqlalchemy.exc.DBAPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DBAPIError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.DisconnectionError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">DisconnectionError</span></span><a class="headerlink" href="#sqlalchemy.exc.DisconnectionError" title="Link to this definition">¶</a></dt>
+<dd><p>A disconnect is detected on a raw DB-API connection.</p>
+<p>This error is raised and consumed internally by a connection pool.  It can
+be raised by the <a class="reference internal" href="events.html#sqlalchemy.events.PoolEvents.checkout" title="sqlalchemy.events.PoolEvents.checkout"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PoolEvents.checkout()</span></code></a>
+event so that the host pool
+forces a retry; the exception will be caught three times in a row before
+the pool gives up and raises <a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvalidRequestError</span></code></a>
+regarding the connection attempt.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.DisconnectionError" title="sqlalchemy.exc.DisconnectionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DisconnectionError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<div class="table-wrapper longtable docutils container">
+<table class="longtable docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head">Object Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.exc.DontWrapMixin"><span class="sig-name descname">DontWrapMixin</span></a></p></td>
+<td><p>A mixin class which, when applied to a user-defined Exception class,
+will not be wrapped inside of <a class="reference internal" href="#sqlalchemy.exc.StatementError" title="sqlalchemy.exc.StatementError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">StatementError</span></code></a> if the error is
+emitted within the process of executing a statement.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.exc.HasDescriptionCode"><span class="sig-name descname">HasDescriptionCode</span></a></p></td>
+<td><p>helper which adds ‘code’ as an attribute and ‘_code_str’ as a method</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.exc.DontWrapMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">DontWrapMixin</span></span><a class="headerlink" href="#sqlalchemy.exc.DontWrapMixin" title="Link to this definition">¶</a></dt>
+<dd><p>A mixin class which, when applied to a user-defined Exception class,
+will not be wrapped inside of <a class="reference internal" href="#sqlalchemy.exc.StatementError" title="sqlalchemy.exc.StatementError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">StatementError</span></code></a> if the error is
+emitted within the process of executing a statement.</p>
+<p>E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">DontWrapMixin</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCustomException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">DontWrapMixin</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySpecialType</span><span class="p">(</span><span class="n">TypeDecorator</span><span class="p">):</span>
+    <span class="n">impl</span> <span class="o">=</span> <span class="n">String</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_bind_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dialect</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;invalid&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MyCustomException</span><span class="p">(</span><span class="s2">&quot;invalid!&quot;</span><span class="p">)</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.DuplicateColumnError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">DuplicateColumnError</span></span><a class="headerlink" href="#sqlalchemy.exc.DuplicateColumnError" title="Link to this definition">¶</a></dt>
+<dd><p>a Column is being added to a Table that would replace another
+Column, without appropriate parameters to allow this in place.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 2.0.0b4 版本加入.</span></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.DuplicateColumnError" title="sqlalchemy.exc.DuplicateColumnError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DuplicateColumnError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.ArgumentError" title="sqlalchemy.exc.ArgumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ArgumentError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.exc.HasDescriptionCode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">HasDescriptionCode</span></span><a class="headerlink" href="#sqlalchemy.exc.HasDescriptionCode" title="Link to this definition">¶</a></dt>
+<dd><p>helper which adds ‘code’ as an attribute and ‘_code_str’ as a method</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.IdentifierError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">IdentifierError</span></span><a class="headerlink" href="#sqlalchemy.exc.IdentifierError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when a schema name is beyond the max character limit</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.IdentifierError" title="sqlalchemy.exc.IdentifierError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.IdentifierError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.IllegalStateChangeError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">IllegalStateChangeError</span></span><a class="headerlink" href="#sqlalchemy.exc.IllegalStateChangeError" title="Link to this definition">¶</a></dt>
+<dd><p>An object that tracks state encountered an illegal state change
+of some kind.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 2.0 版本加入.</span></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.IllegalStateChangeError" title="sqlalchemy.exc.IllegalStateChangeError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.IllegalStateChangeError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.IntegrityError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">IntegrityError</span></span><a class="headerlink" href="#sqlalchemy.exc.IntegrityError" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a DB-API IntegrityError.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.IntegrityError" title="sqlalchemy.exc.IntegrityError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.IntegrityError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DatabaseError" title="sqlalchemy.exc.DatabaseError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DatabaseError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.InterfaceError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">InterfaceError</span></span><a class="headerlink" href="#sqlalchemy.exc.InterfaceError" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a DB-API InterfaceError.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.InterfaceError" title="sqlalchemy.exc.InterfaceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InterfaceError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DBAPIError" title="sqlalchemy.exc.DBAPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DBAPIError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.InternalError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">InternalError</span></span><a class="headerlink" href="#sqlalchemy.exc.InternalError" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a DB-API InternalError.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.InternalError" title="sqlalchemy.exc.InternalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InternalError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DatabaseError" title="sqlalchemy.exc.DatabaseError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DatabaseError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.InvalidRequestError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">InvalidRequestError</span></span><a class="headerlink" href="#sqlalchemy.exc.InvalidRequestError" title="Link to this definition">¶</a></dt>
+<dd><p>SQLAlchemy was asked to do something it can’t do.</p>
+<p>This error generally corresponds to runtime state errors.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.InvalidatePoolError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">InvalidatePoolError</span></span><a class="headerlink" href="#sqlalchemy.exc.InvalidatePoolError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when the connection pool should invalidate all stale connections.</p>
+<p>A subclass of <a class="reference internal" href="#sqlalchemy.exc.DisconnectionError" title="sqlalchemy.exc.DisconnectionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DisconnectionError</span></code></a> that indicates that the
+disconnect situation encountered on the connection probably means the
+entire pool should be invalidated, as the database has been restarted.</p>
+<p>This exception will be handled otherwise the same way as
+<a class="reference internal" href="#sqlalchemy.exc.DisconnectionError" title="sqlalchemy.exc.DisconnectionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DisconnectionError</span></code></a>, allowing three attempts to reconnect
+before giving up.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.InvalidatePoolError" title="sqlalchemy.exc.InvalidatePoolError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidatePoolError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DisconnectionError" title="sqlalchemy.exc.DisconnectionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DisconnectionError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.LegacyAPIWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">LegacyAPIWarning</span></span><a class="headerlink" href="#sqlalchemy.exc.LegacyAPIWarning" title="Link to this definition">¶</a></dt>
+<dd><p>indicates an API that is in ‘legacy’ status, a long term deprecation.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.LegacyAPIWarning" title="sqlalchemy.exc.LegacyAPIWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.LegacyAPIWarning</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.Base20DeprecationWarning" title="sqlalchemy.exc.Base20DeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.Base20DeprecationWarning</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.MissingGreenlet">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">MissingGreenlet</span></span><a class="headerlink" href="#sqlalchemy.exc.MissingGreenlet" title="Link to this definition">¶</a></dt>
+<dd><p>Error raised by the async greenlet await_ if called while not inside
+the greenlet spawn context.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.MissingGreenlet" title="sqlalchemy.exc.MissingGreenlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.MissingGreenlet</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.MovedIn20Warning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">MovedIn20Warning</span></span><a class="headerlink" href="#sqlalchemy.exc.MovedIn20Warning" title="Link to this definition">¶</a></dt>
+<dd><p>Subtype of Base20DeprecationWarning to indicate an API that moved
+only.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.MovedIn20Warning" title="sqlalchemy.exc.MovedIn20Warning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.MovedIn20Warning</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.Base20DeprecationWarning" title="sqlalchemy.exc.Base20DeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.Base20DeprecationWarning</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.MultipleResultsFound">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">MultipleResultsFound</span></span><a class="headerlink" href="#sqlalchemy.exc.MultipleResultsFound" title="Link to this definition">¶</a></dt>
+<dd><p>A single database result was required but more than one were found.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">在 1.4 版本发生变更: </span>This exception is now part of the
+<code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc</span></code> module in Core, moved from the ORM.  The symbol
+remains importable from <code class="docutils literal notranslate"><span class="pre">sqlalchemy.orm.exc</span></code>.</p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.MultipleResultsFound" title="sqlalchemy.exc.MultipleResultsFound"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.MultipleResultsFound</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoForeignKeysError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoForeignKeysError</span></span><a class="headerlink" href="#sqlalchemy.exc.NoForeignKeysError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when no foreign keys can be located between two selectables
+during a join.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoForeignKeysError" title="sqlalchemy.exc.NoForeignKeysError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoForeignKeysError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.ArgumentError" title="sqlalchemy.exc.ArgumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ArgumentError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoInspectionAvailable">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoInspectionAvailable</span></span><a class="headerlink" href="#sqlalchemy.exc.NoInspectionAvailable" title="Link to this definition">¶</a></dt>
+<dd><p>A subject passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">sqlalchemy.inspection.inspect()</span></code> produced
+no context for inspection.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoInspectionAvailable" title="sqlalchemy.exc.NoInspectionAvailable"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoInspectionAvailable</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoReferenceError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoReferenceError</span></span><a class="headerlink" href="#sqlalchemy.exc.NoReferenceError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised by <code class="docutils literal notranslate"><span class="pre">ForeignKey</span></code> to indicate a reference cannot be resolved.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoReferenceError" title="sqlalchemy.exc.NoReferenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoReferenceError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoReferencedColumnError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoReferencedColumnError</span></span><a class="headerlink" href="#sqlalchemy.exc.NoReferencedColumnError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised by <code class="docutils literal notranslate"><span class="pre">ForeignKey</span></code> when the referred <code class="docutils literal notranslate"><span class="pre">Column</span></code> cannot be
+located.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoReferencedColumnError" title="sqlalchemy.exc.NoReferencedColumnError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoReferencedColumnError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.NoReferenceError" title="sqlalchemy.exc.NoReferenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoReferenceError</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoReferencedColumnError.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.exc.NoReferencedColumnError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoReferencedColumnError.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.exc.NoReferencedColumnError.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoReferencedTableError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoReferencedTableError</span></span><a class="headerlink" href="#sqlalchemy.exc.NoReferencedTableError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised by <code class="docutils literal notranslate"><span class="pre">ForeignKey</span></code> when the referred <code class="docutils literal notranslate"><span class="pre">Table</span></code> cannot be
+located.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoReferencedTableError" title="sqlalchemy.exc.NoReferencedTableError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoReferencedTableError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.NoReferenceError" title="sqlalchemy.exc.NoReferenceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoReferenceError</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoReferencedTableError.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.exc.NoReferencedTableError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoReferencedTableError.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.exc.NoReferencedTableError.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoResultFound">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoResultFound</span></span><a class="headerlink" href="#sqlalchemy.exc.NoResultFound" title="Link to this definition">¶</a></dt>
+<dd><p>A database result was required but none was found.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">在 1.4 版本发生变更: </span>This exception is now part of the
+<code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc</span></code> module in Core, moved from the ORM.  The symbol
+remains importable from <code class="docutils literal notranslate"><span class="pre">sqlalchemy.orm.exc</span></code>.</p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoResultFound" title="sqlalchemy.exc.NoResultFound"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoResultFound</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoSuchColumnError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoSuchColumnError</span></span><a class="headerlink" href="#sqlalchemy.exc.NoSuchColumnError" title="Link to this definition">¶</a></dt>
+<dd><p>A nonexistent column is requested from a <code class="docutils literal notranslate"><span class="pre">Row</span></code>.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoSuchColumnError" title="sqlalchemy.exc.NoSuchColumnError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoSuchColumnError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>, <code class="docutils literal notranslate"><span class="pre">builtins.KeyError</span></code>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoSuchModuleError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoSuchModuleError</span></span><a class="headerlink" href="#sqlalchemy.exc.NoSuchModuleError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when a dynamically-loaded module (usually a database dialect)
+of a particular name cannot be located.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoSuchModuleError" title="sqlalchemy.exc.NoSuchModuleError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoSuchModuleError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.ArgumentError" title="sqlalchemy.exc.ArgumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ArgumentError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NoSuchTableError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NoSuchTableError</span></span><a class="headerlink" href="#sqlalchemy.exc.NoSuchTableError" title="Link to this definition">¶</a></dt>
+<dd><p>Table does not exist or is not visible to a connection.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NoSuchTableError" title="sqlalchemy.exc.NoSuchTableError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NoSuchTableError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.NotSupportedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">NotSupportedError</span></span><a class="headerlink" href="#sqlalchemy.exc.NotSupportedError" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a DB-API NotSupportedError.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.NotSupportedError" title="sqlalchemy.exc.NotSupportedError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.NotSupportedError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DatabaseError" title="sqlalchemy.exc.DatabaseError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DatabaseError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.ObjectNotExecutableError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">ObjectNotExecutableError</span></span><a class="headerlink" href="#sqlalchemy.exc.ObjectNotExecutableError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when an object is passed to .execute() that can’t be
+executed as SQL.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.ObjectNotExecutableError" title="sqlalchemy.exc.ObjectNotExecutableError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ObjectNotExecutableError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.ArgumentError" title="sqlalchemy.exc.ArgumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ArgumentError</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.exc.ObjectNotExecutableError.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.exc.ObjectNotExecutableError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.ObjectNotExecutableError.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.exc.ObjectNotExecutableError.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.OperationalError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">OperationalError</span></span><a class="headerlink" href="#sqlalchemy.exc.OperationalError" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a DB-API OperationalError.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.OperationalError" title="sqlalchemy.exc.OperationalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.OperationalError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DatabaseError" title="sqlalchemy.exc.DatabaseError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DatabaseError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.PendingRollbackError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">PendingRollbackError</span></span><a class="headerlink" href="#sqlalchemy.exc.PendingRollbackError" title="Link to this definition">¶</a></dt>
+<dd><p>A transaction has failed and needs to be rolled back before
+continuing.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 1.4 版本加入.</span></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.PendingRollbackError" title="sqlalchemy.exc.PendingRollbackError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.PendingRollbackError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.ProgrammingError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">ProgrammingError</span></span><a class="headerlink" href="#sqlalchemy.exc.ProgrammingError" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps a DB-API ProgrammingError.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.ProgrammingError" title="sqlalchemy.exc.ProgrammingError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ProgrammingError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.DatabaseError" title="sqlalchemy.exc.DatabaseError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.DatabaseError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.ResourceClosedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">ResourceClosedError</span></span><a class="headerlink" href="#sqlalchemy.exc.ResourceClosedError" title="Link to this definition">¶</a></dt>
+<dd><p>An operation was requested from a connection, cursor, or other
+object that’s in a closed state.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.ResourceClosedError" title="sqlalchemy.exc.ResourceClosedError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.ResourceClosedError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.SADeprecationWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">SADeprecationWarning</span></span><a class="headerlink" href="#sqlalchemy.exc.SADeprecationWarning" title="Link to this definition">¶</a></dt>
+<dd><p>Issued for usage of deprecated APIs.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.SADeprecationWarning" title="sqlalchemy.exc.SADeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SADeprecationWarning</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.HasDescriptionCode" title="sqlalchemy.exc.HasDescriptionCode"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.HasDescriptionCode</span></code></a>, <code class="docutils literal notranslate"><span class="pre">builtins.DeprecationWarning</span></code>)</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sqlalchemy.exc.SADeprecationWarning.deprecated_since">
+<em class="property"><span class="pre">attribute</span> </em><a class="reference internal" href="#sqlalchemy.exc.SADeprecationWarning"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.SADeprecationWarning.</span></code></a><span class="sig-name descname"><span class="pre">deprecated_since</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sqlalchemy.exc.SADeprecationWarning.deprecated_since" title="Link to this definition">¶</a></dt>
+<dd><p>Indicates the version that started raising this deprecation warning</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.SAPendingDeprecationWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">SAPendingDeprecationWarning</span></span><a class="headerlink" href="#sqlalchemy.exc.SAPendingDeprecationWarning" title="Link to this definition">¶</a></dt>
+<dd><p>A similar warning as <a class="reference internal" href="#sqlalchemy.exc.SADeprecationWarning" title="sqlalchemy.exc.SADeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">SADeprecationWarning</span></code></a>, this warning
+is not used in modern versions of SQLAlchemy.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.SAPendingDeprecationWarning" title="sqlalchemy.exc.SAPendingDeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SAPendingDeprecationWarning</span></code></a> (<code class="docutils literal notranslate"><span class="pre">builtins.PendingDeprecationWarning</span></code>)</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sqlalchemy.exc.SAPendingDeprecationWarning.deprecated_since">
+<em class="property"><span class="pre">attribute</span> </em><a class="reference internal" href="#sqlalchemy.exc.SAPendingDeprecationWarning"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.SAPendingDeprecationWarning.</span></code></a><span class="sig-name descname"><span class="pre">deprecated_since</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sqlalchemy.exc.SAPendingDeprecationWarning.deprecated_since" title="Link to this definition">¶</a></dt>
+<dd><p>Indicates the version that started raising this deprecation warning</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.SATestSuiteWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">SATestSuiteWarning</span></span><a class="headerlink" href="#sqlalchemy.exc.SATestSuiteWarning" title="Link to this definition">¶</a></dt>
+<dd><p>warning for a condition detected during tests that is non-fatal</p>
+<p>Currently outside of SAWarning so that we can work around tools like
+Alembic doing the wrong thing with warnings.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.SATestSuiteWarning" title="sqlalchemy.exc.SATestSuiteWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SATestSuiteWarning</span></code></a> (<code class="docutils literal notranslate"><span class="pre">builtins.Warning</span></code>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.SAWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">SAWarning</span></span><a class="headerlink" href="#sqlalchemy.exc.SAWarning" title="Link to this definition">¶</a></dt>
+<dd><p>Issued at runtime.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.SAWarning" title="sqlalchemy.exc.SAWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SAWarning</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.HasDescriptionCode" title="sqlalchemy.exc.HasDescriptionCode"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.HasDescriptionCode</span></code></a>, <code class="docutils literal notranslate"><span class="pre">builtins.RuntimeWarning</span></code>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.SQLAlchemyError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyError</span></span><a class="headerlink" href="#sqlalchemy.exc.SQLAlchemyError" title="Link to this definition">¶</a></dt>
+<dd><p>Generic error class.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.HasDescriptionCode" title="sqlalchemy.exc.HasDescriptionCode"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.HasDescriptionCode</span></code></a>, <code class="docutils literal notranslate"><span class="pre">builtins.Exception</span></code>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.StatementError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">StatementError</span></span><a class="headerlink" href="#sqlalchemy.exc.StatementError" title="Link to this definition">¶</a></dt>
+<dd><p>An error occurred during execution of a SQL statement.</p>
+<p><a class="reference internal" href="#sqlalchemy.exc.StatementError" title="sqlalchemy.exc.StatementError"><code class="xref py py-class docutils literal notranslate"><span class="pre">StatementError</span></code></a> wraps the exception raised
+during execution, and features <a class="reference internal" href="#sqlalchemy.exc.StatementError.statement" title="sqlalchemy.exc.StatementError.statement"><code class="xref py py-attr docutils literal notranslate"><span class="pre">statement</span></code></a>
+and <a class="reference internal" href="#sqlalchemy.exc.StatementError.params" title="sqlalchemy.exc.StatementError.params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params</span></code></a> attributes which supply context regarding
+the specifics of the statement which had an issue.</p>
+<p>The wrapped exception object is available in
+the <a class="reference internal" href="#sqlalchemy.exc.StatementError.orig" title="sqlalchemy.exc.StatementError.orig"><code class="xref py py-attr docutils literal notranslate"><span class="pre">orig</span></code></a> attribute.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.StatementError" title="sqlalchemy.exc.StatementError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.StatementError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.exc.StatementError.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.exc.StatementError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.StatementError.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_AnyExecuteParams</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseException</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hide_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ismulti</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.exc.StatementError.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sqlalchemy.exc.StatementError.ismulti">
+<em class="property"><span class="pre">attribute</span> </em><a class="reference internal" href="#sqlalchemy.exc.StatementError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.StatementError.</span></code></a><span class="sig-name descname"><span class="pre">ismulti</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sqlalchemy.exc.StatementError.ismulti" title="Link to this definition">¶</a></dt>
+<dd><p>multi parameter passed to repr_params().  None is meaningful.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sqlalchemy.exc.StatementError.orig">
+<em class="property"><span class="pre">attribute</span> </em><a class="reference internal" href="#sqlalchemy.exc.StatementError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.StatementError.</span></code></a><span class="sig-name descname"><span class="pre">orig</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseException</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sqlalchemy.exc.StatementError.orig" title="Link to this definition">¶</a></dt>
+<dd><p>The original exception that was thrown.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sqlalchemy.exc.StatementError.params">
+<em class="property"><span class="pre">attribute</span> </em><a class="reference internal" href="#sqlalchemy.exc.StatementError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.StatementError.</span></code></a><span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_AnyExecuteParams</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sqlalchemy.exc.StatementError.params" title="Link to this definition">¶</a></dt>
+<dd><p>The parameter list being used when this exception occurred.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sqlalchemy.exc.StatementError.statement">
+<em class="property"><span class="pre">attribute</span> </em><a class="reference internal" href="#sqlalchemy.exc.StatementError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.StatementError.</span></code></a><span class="sig-name descname"><span class="pre">statement</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sqlalchemy.exc.StatementError.statement" title="Link to this definition">¶</a></dt>
+<dd><p>The string SQL statement being invoked when this exception occurred.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.TimeoutError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">TimeoutError</span></span><a class="headerlink" href="#sqlalchemy.exc.TimeoutError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when a connection pool times out on getting a connection.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.TimeoutError" title="sqlalchemy.exc.TimeoutError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.TimeoutError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError" title="sqlalchemy.exc.SQLAlchemyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.SQLAlchemyError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.UnboundExecutionError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">UnboundExecutionError</span></span><a class="headerlink" href="#sqlalchemy.exc.UnboundExecutionError" title="Link to this definition">¶</a></dt>
+<dd><p>SQL was attempted without a database connection to execute it on.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.UnboundExecutionError" title="sqlalchemy.exc.UnboundExecutionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.UnboundExecutionError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.UnreflectableTableError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">UnreflectableTableError</span></span><a class="headerlink" href="#sqlalchemy.exc.UnreflectableTableError" title="Link to this definition">¶</a></dt>
+<dd><p>Table exists but can’t be reflected for some reason.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.UnreflectableTableError" title="sqlalchemy.exc.UnreflectableTableError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.UnreflectableTableError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError" title="sqlalchemy.exc.InvalidRequestError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.InvalidRequestError</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="sqlalchemy.exc.UnsupportedCompilationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.exc.</span></span><span class="sig-name descname"><span class="pre">UnsupportedCompilationError</span></span><a class="headerlink" href="#sqlalchemy.exc.UnsupportedCompilationError" title="Link to this definition">¶</a></dt>
+<dd><p>Raised when an operation is not supported by the given compiler.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../faq/sqlexpressions.html#faq-sql-expression-string"><span class="std std-ref">如何将 SQL 表达式呈现为字符串，可能内联绑定参数？</span></a></p>
+<p><a class="reference internal" href="../errors.html#error-l7de"><span class="std std-ref">编译器 StrSQLCompiler 无法呈现类型为 &lt;element type&gt; 的元素</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.exc.UnsupportedCompilationError" title="sqlalchemy.exc.UnsupportedCompilationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.UnsupportedCompilationError</span></code></a> (<a class="reference internal" href="#sqlalchemy.exc.CompileError" title="sqlalchemy.exc.CompileError"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.CompileError</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.exc.UnsupportedCompilationError.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.exc.UnsupportedCompilationError"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.exc.UnsupportedCompilationError.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compiler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="internals.html#sqlalchemy.engine.Compiled" title="sqlalchemy.engine.Compiled"><span class="pre">Compiled</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">TypeCompiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="foundation.html#sqlalchemy.sql.expression.ClauseElement" title="sqlalchemy.sql.expression.ClauseElement"><span class="pre">ClauseElement</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.exc.UnsupportedCompilationError.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="internals.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Core 内部</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="inspection.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">运行时审查 API</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Core 异常</a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.AmbiguousForeignKeysError"><code class="docutils literal notranslate"><span class="pre">AmbiguousForeignKeysError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.ArgumentError"><code class="docutils literal notranslate"><span class="pre">ArgumentError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.AwaitRequired"><code class="docutils literal notranslate"><span class="pre">AwaitRequired</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.Base20DeprecationWarning"><code class="docutils literal notranslate"><span class="pre">Base20DeprecationWarning</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.Base20DeprecationWarning.deprecated_since"><code class="docutils literal notranslate"><span class="pre">Base20DeprecationWarning.deprecated_since</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.CircularDependencyError"><code class="docutils literal notranslate"><span class="pre">CircularDependencyError</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.CircularDependencyError.__init__"><code class="docutils literal notranslate"><span class="pre">CircularDependencyError.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.CompileError"><code class="docutils literal notranslate"><span class="pre">CompileError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.ConstraintColumnNotFoundError"><code class="docutils literal notranslate"><span class="pre">ConstraintColumnNotFoundError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.DBAPIError"><code class="docutils literal notranslate"><span class="pre">DBAPIError</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.DBAPIError.__init__"><code class="docutils literal notranslate"><span class="pre">DBAPIError.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.DataError"><code class="docutils literal notranslate"><span class="pre">DataError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.DatabaseError"><code class="docutils literal notranslate"><span class="pre">DatabaseError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.DisconnectionError"><code class="docutils literal notranslate"><span class="pre">DisconnectionError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.DontWrapMixin"><code class="docutils literal notranslate"><span class="pre">DontWrapMixin</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.DuplicateColumnError"><code class="docutils literal notranslate"><span class="pre">DuplicateColumnError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.HasDescriptionCode"><code class="docutils literal notranslate"><span class="pre">HasDescriptionCode</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.IdentifierError"><code class="docutils literal notranslate"><span class="pre">IdentifierError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.IllegalStateChangeError"><code class="docutils literal notranslate"><span class="pre">IllegalStateChangeError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.IntegrityError"><code class="docutils literal notranslate"><span class="pre">IntegrityError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.InterfaceError"><code class="docutils literal notranslate"><span class="pre">InterfaceError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.InternalError"><code class="docutils literal notranslate"><span class="pre">InternalError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.InvalidRequestError"><code class="docutils literal notranslate"><span class="pre">InvalidRequestError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.InvalidatePoolError"><code class="docutils literal notranslate"><span class="pre">InvalidatePoolError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.LegacyAPIWarning"><code class="docutils literal notranslate"><span class="pre">LegacyAPIWarning</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.MissingGreenlet"><code class="docutils literal notranslate"><span class="pre">MissingGreenlet</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.MovedIn20Warning"><code class="docutils literal notranslate"><span class="pre">MovedIn20Warning</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.MultipleResultsFound"><code class="docutils literal notranslate"><span class="pre">MultipleResultsFound</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoForeignKeysError"><code class="docutils literal notranslate"><span class="pre">NoForeignKeysError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoInspectionAvailable"><code class="docutils literal notranslate"><span class="pre">NoInspectionAvailable</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoReferenceError"><code class="docutils literal notranslate"><span class="pre">NoReferenceError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoReferencedColumnError"><code class="docutils literal notranslate"><span class="pre">NoReferencedColumnError</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoReferencedColumnError.__init__"><code class="docutils literal notranslate"><span class="pre">NoReferencedColumnError.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoReferencedTableError"><code class="docutils literal notranslate"><span class="pre">NoReferencedTableError</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoReferencedTableError.__init__"><code class="docutils literal notranslate"><span class="pre">NoReferencedTableError.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoResultFound"><code class="docutils literal notranslate"><span class="pre">NoResultFound</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoSuchColumnError"><code class="docutils literal notranslate"><span class="pre">NoSuchColumnError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoSuchModuleError"><code class="docutils literal notranslate"><span class="pre">NoSuchModuleError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NoSuchTableError"><code class="docutils literal notranslate"><span class="pre">NoSuchTableError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.NotSupportedError"><code class="docutils literal notranslate"><span class="pre">NotSupportedError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.ObjectNotExecutableError"><code class="docutils literal notranslate"><span class="pre">ObjectNotExecutableError</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.ObjectNotExecutableError.__init__"><code class="docutils literal notranslate"><span class="pre">ObjectNotExecutableError.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.OperationalError"><code class="docutils literal notranslate"><span class="pre">OperationalError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.PendingRollbackError"><code class="docutils literal notranslate"><span class="pre">PendingRollbackError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.ProgrammingError"><code class="docutils literal notranslate"><span class="pre">ProgrammingError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.ResourceClosedError"><code class="docutils literal notranslate"><span class="pre">ResourceClosedError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.SADeprecationWarning"><code class="docutils literal notranslate"><span class="pre">SADeprecationWarning</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.SADeprecationWarning.deprecated_since"><code class="docutils literal notranslate"><span class="pre">SADeprecationWarning.deprecated_since</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.SAPendingDeprecationWarning"><code class="docutils literal notranslate"><span class="pre">SAPendingDeprecationWarning</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.SAPendingDeprecationWarning.deprecated_since"><code class="docutils literal notranslate"><span class="pre">SAPendingDeprecationWarning.deprecated_since</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.SATestSuiteWarning"><code class="docutils literal notranslate"><span class="pre">SATestSuiteWarning</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.SAWarning"><code class="docutils literal notranslate"><span class="pre">SAWarning</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.SQLAlchemyError"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.StatementError"><code class="docutils literal notranslate"><span class="pre">StatementError</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.StatementError.__init__"><code class="docutils literal notranslate"><span class="pre">StatementError.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.StatementError.ismulti"><code class="docutils literal notranslate"><span class="pre">StatementError.ismulti</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.StatementError.orig"><code class="docutils literal notranslate"><span class="pre">StatementError.orig</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.StatementError.params"><code class="docutils literal notranslate"><span class="pre">StatementError.params</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.StatementError.statement"><code class="docutils literal notranslate"><span class="pre">StatementError.statement</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.exc.TimeoutError"><code class="docutils literal notranslate"><span class="pre">TimeoutError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.UnboundExecutionError"><code class="docutils literal notranslate"><span class="pre">UnboundExecutionError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.UnreflectableTableError"><code class="docutils literal notranslate"><span class="pre">UnreflectableTableError</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.exc.UnsupportedCompilationError"><code class="docutils literal notranslate"><span class="pre">UnsupportedCompilationError</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.exc.UnsupportedCompilationError.__init__"><code class="docutils literal notranslate"><span class="pre">UnsupportedCompilationError.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

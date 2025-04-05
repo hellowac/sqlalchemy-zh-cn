@@ -1,0 +1,959 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="copyright" title="版权所有" href="../copyright.html" /><link rel="next" title="性能" href="performance.html" /><link rel="prev" title="SQL 表达式" href="sqlexpressions.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>ORM 配置 - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">概述</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">SQLAlchemy 统一教程</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/data.html">处理数据</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_insert.html">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../orm/index.html">SQLAlchemy ORM</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../orm/quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/queryguide/index.html">ORM 查询指南</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../orm/examples.html">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">SQLAlchemy Core</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/schema.html">Schema 定义语言</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/ddl.html">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../core/api_basics.html">Core API 基础</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../core/event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/exceptions.html">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">常见问题</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connections.html">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">错误消息</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../changelog/index.html">变更和迁移</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_21.html">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_02.html">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="orm">
+<h1>ORM 配置<a class="headerlink" href="#orm" title="Link to this heading">¶</a></h1>
+<p>ORM Configuration</p>
+<nav class="contents faq local" id="id1">
+<ul class="simple">
+<li><p><a class="reference internal" href="#faq-mapper-primary-key" id="id5">如何映射没有主键的表？</a></p></li>
+<li><p><a class="reference internal" href="#python" id="id6">如何配置 Python 保留字或类似字的列？</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id7">给定映射类，如何获取所有列、关系、映射属性等的列表？</a></p></li>
+<li><p><a class="reference internal" href="#y-x" id="id8">我收到有关“在属性 Y 下隐式组合列 X”的警告或错误</a></p></li>
+<li><p><a class="reference internal" href="#declarative-and-or-primaryjoin-secondaryjoin" id="id9">我正在使用 Declarative 并使用 <code class="docutils literal notranslate"><span class="pre">and_()</span></code> 或 <code class="docutils literal notranslate"><span class="pre">or_()</span></code> 设置 primaryjoin/secondaryjoin，并且收到有关外键的错误消息。</a></p></li>
+<li><p><a class="reference internal" href="#order-by-limit-subqueryload" id="id10">为什么建议将 <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> 与 <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> 一起使用（尤其是与 <code class="docutils literal notranslate"><span class="pre">subqueryload()</span></code> 一起使用）？</a></p></li>
+<li><p><a class="reference internal" href="#defaultdefault-factory-insert-default" id="id11">什么是 <code class="docutils literal notranslate"><span class="pre">default</span></code>、<code class="docutils literal notranslate"><span class="pre">default_factory</span></code> 和 <code class="docutils literal notranslate"><span class="pre">insert_default</span></code>，我应该使用哪个？</a></p>
+<ul>
+<li><p><a class="reference internal" href="#sqlalchemy" id="id12">第一部分 - 不使用数据类的经典 SQLAlchemy</a></p></li>
+<li><p><a class="reference internal" href="#mappedasdataclass" id="id13">第二部分 - 使用 MappedAsDataclass 的数据类支持</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="faq-mapper-primary-key">
+<span id="id2"></span><h2>如何映射没有主键的表？<a class="headerlink" href="#faq-mapper-primary-key" title="Link to this heading">¶</a></h2>
+<p>How do I map a table that has no primary key?</p>
+<p>The SQLAlchemy ORM, in order to map to a particular table, needs there to be
+at least one column denoted as a primary key column; multiple-column,
+i.e. composite, primary keys are of course entirely feasible as well.  These
+columns do <strong>not</strong> need to be actually known to the database as primary key
+columns, though it’s a good idea that they are.  It’s only necessary that the columns
+<em>behave</em> as a primary key does, e.g. as a unique and not nullable identifier
+for a row.</p>
+<p>Most ORMs require that objects have some kind of primary key defined
+because the object in memory must correspond to a uniquely identifiable
+row in the database table; at the very least, this allows the
+object can be targeted for UPDATE and DELETE statements which will affect only
+that object’s row and no other.   However, the importance of the primary key
+goes far beyond that.  In SQLAlchemy, all ORM-mapped objects are at all times
+linked uniquely within a <a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session" title="sqlalchemy.orm.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a>
+to their specific database row using a pattern called the <a class="reference internal" href="../glossary.html#term-identity-map"><span class="xref std std-term">identity map</span></a>,
+a pattern that’s central to the unit of work system employed by SQLAlchemy,
+and is also key to the most common (and not-so-common) patterns of ORM usage.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>It’s important to note that we’re only talking about the SQLAlchemy ORM; an
+application which builds on Core and deals only with <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> objects,
+<a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.select" title="sqlalchemy.sql.expression.select"><code class="xref py py-func docutils literal notranslate"><span class="pre">select()</span></code></a> constructs and the like, <strong>does not</strong> need any primary key
+to be present on or associated with a table in any way (though again, in SQL, all tables
+should really have some kind of primary key, lest you need to actually
+update or delete specific rows).</p>
+</div>
+<p>In almost all cases, a table does have a so-called <a class="reference internal" href="../glossary.html#term-candidate-key"><span class="xref std std-term">candidate key</span></a>, which is a column or series
+of columns that uniquely identify a row.  If a table truly doesn’t have this, and has actual
+fully duplicate rows, the table is not corresponding to <a class="reference external" href="https://en.wikipedia.org/wiki/First_normal_form">first normal form</a> and cannot be mapped.   Otherwise, whatever columns comprise the best candidate key can be
+applied directly to the mapper:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SomeClass</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__table__</span> <span class="o">=</span> <span class="n">some_table_with_no_pk</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;primary_key&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">some_table_with_no_pk</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span> <span class="n">some_table_with_no_pk</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">bar</span><span class="p">]</span>
+    <span class="p">}</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>Better yet is when using fully declared table metadata, use the <code class="docutils literal notranslate"><span class="pre">primary_key=True</span></code>
+flag on those columns:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SomeClass</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;some_table_with_no_pk&quot;</span>
+
+    <span class="n">uid</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>All tables in a relational database should have primary keys.   Even a many-to-many
+association table - the primary key would be the composite of the two association
+columns:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">my_association</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">user_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="k">user</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">  </span><span class="n">account_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">account</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">account_id</span><span class="p">)</span>
+<span class="p">)</span></pre></div>
+</div>
+</section>
+<section id="python">
+<h2>如何配置 Python 保留字或类似字的列？<a class="headerlink" href="#python" title="Link to this heading">¶</a></h2>
+<p>How do I configure a Column that is a Python reserved word or similar?</p>
+<p>Column-based attributes can be given any name desired in the mapping. See
+<a class="reference internal" href="../orm/declarative_tables.html#mapper-column-distinct-names"><span class="std std-ref">显式命名声明性映射列</span></a>.</p>
+</section>
+<section id="id3">
+<h2>给定映射类，如何获取所有列、关系、映射属性等的列表？<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p>How do I get a list of all columns, relationships, mapped attributes, etc. given a mapped class?</p>
+<p>This information is all available from the <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper" title="sqlalchemy.orm.Mapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapper</span></code></a> object.</p>
+<p>To get at the <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper" title="sqlalchemy.orm.Mapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapper</span></code></a> for a particular mapped class, call the
+<a class="reference internal" href="../core/inspection.html#sqlalchemy.inspect" title="sqlalchemy.inspect"><code class="xref py py-func docutils literal notranslate"><span class="pre">inspect()</span></code></a> function on it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">inspect</span>
+
+<span class="n">mapper</span> <span class="o">=</span> <span class="n">inspect</span><span class="p">(</span><span class="n">MyClass</span><span class="p">)</span></pre></div>
+</div>
+<p>From there, all information about the class can be accessed through properties
+such as:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.attrs" title="sqlalchemy.orm.Mapper.attrs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.attrs</span></code></a> - a namespace of all mapped attributes.  The attributes
+themselves are instances of <a class="reference internal" href="../orm/internals.html#sqlalchemy.orm.MapperProperty" title="sqlalchemy.orm.MapperProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapperProperty</span></code></a>, which contain additional
+attributes that can lead to the mapped SQL expression or column, if applicable.</p></li>
+<li><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.column_attrs" title="sqlalchemy.orm.Mapper.column_attrs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.column_attrs</span></code></a> - the mapped attribute namespace
+limited to column and SQL expression attributes.   You might want to use
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.columns" title="sqlalchemy.orm.Mapper.columns"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.columns</span></code></a> to get at the <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a> objects directly.</p></li>
+<li><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.relationships" title="sqlalchemy.orm.Mapper.relationships"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.relationships</span></code></a> - namespace of all <a class="reference internal" href="../orm/internals.html#sqlalchemy.orm.RelationshipProperty" title="sqlalchemy.orm.RelationshipProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">RelationshipProperty</span></code></a> attributes.</p></li>
+<li><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.all_orm_descriptors" title="sqlalchemy.orm.Mapper.all_orm_descriptors"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.all_orm_descriptors</span></code></a> - namespace of all mapped attributes, plus user-defined
+attributes defined using systems such as <a class="reference internal" href="../orm/extensions/hybrid.html#sqlalchemy.ext.hybrid.hybrid_property" title="sqlalchemy.ext.hybrid.hybrid_property"><code class="xref py py-class docutils literal notranslate"><span class="pre">hybrid_property</span></code></a>, <a class="reference internal" href="../orm/extensions/associationproxy.html#sqlalchemy.ext.associationproxy.AssociationProxy" title="sqlalchemy.ext.associationproxy.AssociationProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">AssociationProxy</span></code></a> and others.</p></li>
+<li><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.columns" title="sqlalchemy.orm.Mapper.columns"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.columns</span></code></a> - A namespace of <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a> objects and other named
+SQL expressions associated with the mapping.</p></li>
+<li><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.persist_selectable" title="sqlalchemy.orm.Mapper.persist_selectable"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.persist_selectable</span></code></a> - The <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> or other selectable to which
+this mapper is mapped.</p></li>
+<li><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.local_table" title="sqlalchemy.orm.Mapper.local_table"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.local_table</span></code></a> - The <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> that is “local” to this mapper;
+this differs from <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.Mapper.persist_selectable" title="sqlalchemy.orm.Mapper.persist_selectable"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Mapper.persist_selectable</span></code></a> in the case of a mapper mapped
+using inheritance to a composed selectable.</p></li>
+</ul>
+</section>
+<section id="y-x">
+<span id="faq-combining-columns"></span><h2>我收到有关“在属性 Y 下隐式组合列 X”的警告或错误<a class="headerlink" href="#y-x" title="Link to this heading">¶</a></h2>
+<p>I’m getting a warning or error about “Implicitly combining column X under attribute Y”</p>
+<p>This condition refers to when a mapping contains two columns that are being
+mapped under the same attribute name due to their name, but there’s no indication
+that this is intentional.  A mapped class needs to have explicit names for
+every attribute that is to store an independent value; when two columns have the
+same name and aren’t disambiguated, they fall under the same attribute and
+the effect is that the value from one column is <strong>copied</strong> into the other, based
+on which column was assigned to the attribute first.</p>
+<p>This behavior is often desirable and is allowed without warning in the case
+where the two columns are linked together via a foreign key relationship
+within an inheritance mapping.   When the warning or exception occurs, the
+issue can be resolved by either assigning the columns to differently-named
+attributes, or if combining them together is desired, by using
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.column_property" title="sqlalchemy.orm.column_property"><code class="xref py py-func docutils literal notranslate"><span class="pre">column_property()</span></code></a> to make this explicit.</p>
+<p>Given the example as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">ForeignKey</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.declarative</span><span class="w"> </span><span class="kn">import</span> <span class="n">declarative_base</span>
+
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">A</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">B</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">a_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;a.id&quot;</span><span class="p">))</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>As of SQLAlchemy version 0.9.5, the above condition is detected, and will
+warn that the <code class="docutils literal notranslate"><span class="pre">id</span></code> column of <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> is being combined under
+the same-named attribute <code class="docutils literal notranslate"><span class="pre">id</span></code>, which above is a serious issue since it means
+that a <code class="docutils literal notranslate"><span class="pre">B</span></code> object’s primary key will always mirror that of its <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p>
+<p>A mapping which resolves this is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">A</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">B</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+
+    <span class="n">b_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">a_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;a.id&quot;</span><span class="p">))</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>Suppose we did want <code class="docutils literal notranslate"><span class="pre">A.id</span></code> and <code class="docutils literal notranslate"><span class="pre">B.id</span></code> to be mirrors of each other, despite
+the fact that <code class="docutils literal notranslate"><span class="pre">B.a_id</span></code> is where <code class="docutils literal notranslate"><span class="pre">A.id</span></code> is related.  We could combine
+them together using <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.column_property" title="sqlalchemy.orm.column_property"><code class="xref py py-func docutils literal notranslate"><span class="pre">column_property()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">A</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">B</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+
+    <span class="c1"># probably not what you want, but this is a demonstration</span>
+    <span class="n">id</span> <span class="o">=</span> <span class="n">column_property</span><span class="p">(</span><span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">A</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="n">a_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;a.id&quot;</span><span class="p">))</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+</section>
+<section id="declarative-and-or-primaryjoin-secondaryjoin">
+<h2>我正在使用 Declarative 并使用 <code class="docutils literal notranslate"><span class="pre">and_()</span></code> 或 <code class="docutils literal notranslate"><span class="pre">or_()</span></code> 设置 primaryjoin/secondaryjoin，并且收到有关外键的错误消息。<a class="headerlink" href="#declarative-and-or-primaryjoin-secondaryjoin" title="Link to this heading">¶</a></h2>
+<p>I’m using Declarative and setting primaryjoin/secondaryjoin using an <code class="docutils literal notranslate"><span class="pre">and_()</span></code> or <code class="docutils literal notranslate"><span class="pre">or_()</span></code>, and I am getting an error message about foreign keys.</p>
+<p>Are you doing this?:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="c1"># ....</span>
+
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>
+        <span class="s2">&quot;Dest&quot;</span><span class="p">,</span> <span class="n">primaryjoin</span><span class="o">=</span><span class="n">and_</span><span class="p">(</span><span class="s2">&quot;MyClass.id==Dest.foo_id&quot;</span><span class="p">,</span> <span class="s2">&quot;MyClass.foo==Dest.bar&quot;</span><span class="p">)</span>
+    <span class="p">)</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>That’s an <code class="docutils literal notranslate"><span class="pre">and_()</span></code> of two string expressions, which SQLAlchemy cannot apply any mapping towards.  Declarative allows <a class="reference internal" href="../orm/relationship_api.html#sqlalchemy.orm.relationship" title="sqlalchemy.orm.relationship"><code class="xref py py-func docutils literal notranslate"><span class="pre">relationship()</span></code></a> arguments to be specified as strings, which are converted into expression objects using <code class="docutils literal notranslate"><span class="pre">eval()</span></code>.   But this doesn’t occur inside of an <code class="docutils literal notranslate"><span class="pre">and_()</span></code> expression - it’s a special operation declarative applies only to the <em>entirety</em> of what’s passed to primaryjoin or other arguments as a string:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="c1"># ....</span>
+
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>
+        <span class="s2">&quot;Dest&quot;</span><span class="p">,</span> <span class="n">primaryjoin</span><span class="o">=</span><span class="s2">&quot;and_(MyClass.id==Dest.foo_id, MyClass.foo==Dest.bar)&quot;</span>
+    <span class="p">)</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>Or if the objects you need are already available, skip the strings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="c1"># ....</span>
+
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>
+        <span class="n">Dest</span><span class="p">,</span> <span class="n">primaryjoin</span><span class="o">=</span><span class="n">and_</span><span class="p">(</span><span class="n">MyClass</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Dest</span><span class="o">.</span><span class="n">foo_id</span><span class="p">,</span> <span class="n">MyClass</span><span class="o">.</span><span class="n">foo</span> <span class="o">==</span> <span class="n">Dest</span><span class="o">.</span><span class="n">bar</span><span class="p">)</span>
+    <span class="p">)</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>The same idea applies to all the other arguments, such as <code class="docutils literal notranslate"><span class="pre">foreign_keys</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># wrong !</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Dest</span><span class="p">,</span> <span class="n">foreign_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Dest.foo_id&quot;</span><span class="p">,</span> <span class="s2">&quot;Dest.bar_id&quot;</span><span class="p">])</span>
+
+<span class="c1"># correct !</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Dest</span><span class="p">,</span> <span class="n">foreign_keys</span><span class="o">=</span><span class="s2">&quot;[Dest.foo_id, Dest.bar_id]&quot;</span><span class="p">)</span>
+
+<span class="c1"># also correct !</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Dest</span><span class="p">,</span> <span class="n">foreign_keys</span><span class="o">=</span><span class="p">[</span><span class="n">Dest</span><span class="o">.</span><span class="n">foo_id</span><span class="p">,</span> <span class="n">Dest</span><span class="o">.</span><span class="n">bar_id</span><span class="p">])</span>
+
+
+<span class="c1"># if you&#39;re using columns from the class that you&#39;re inside of, just use the column objects !</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">foo_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">bar_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="c1"># ...</span>
+
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">Dest</span><span class="p">,</span> <span class="n">foreign_keys</span><span class="o">=</span><span class="p">[</span><span class="n">foo_id</span><span class="p">,</span> <span class="n">bar_id</span><span class="p">])</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+</section>
+<section id="order-by-limit-subqueryload">
+<span id="faq-subqueryload-limit-sort"></span><h2>为什么建议将 <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> 与 <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> 一起使用（尤其是与 <code class="docutils literal notranslate"><span class="pre">subqueryload()</span></code> 一起使用）？<a class="headerlink" href="#order-by-limit-subqueryload" title="Link to this heading">¶</a></h2>
+<p>Why is <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> recommended with <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> (especially with <code class="docutils literal notranslate"><span class="pre">subqueryload()</span></code>)?</p>
+<p>When ORDER BY is not used for a SELECT statement that returns rows, the
+relational database is free to returned matched rows in any arbitrary
+order.  While this ordering very often corresponds to the natural
+order of rows within a table, this is not the case for all databases and all
+queries. The consequence of this is that any query that limits rows using
+<code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> or <code class="docutils literal notranslate"><span class="pre">OFFSET</span></code>, or which merely selects the first row of the result,
+discarding the rest, will not be deterministic in terms of what result row is
+returned, assuming there’s more than one row that matches the query’s criteria.</p>
+<p>While we may not notice this for simple queries on databases that usually
+returns rows in their natural order, it becomes more of an issue if we
+also use <a class="reference internal" href="../orm/queryguide/relationships.html#sqlalchemy.orm.subqueryload" title="sqlalchemy.orm.subqueryload"><code class="xref py py-func docutils literal notranslate"><span class="pre">subqueryload()</span></code></a> to load related collections, and we may not
+be loading the collections as intended.</p>
+<p>SQLAlchemy implements <a class="reference internal" href="../orm/queryguide/relationships.html#sqlalchemy.orm.subqueryload" title="sqlalchemy.orm.subqueryload"><code class="xref py py-func docutils literal notranslate"><span class="pre">subqueryload()</span></code></a> by issuing a separate query,
+the results of which are matched up to the results from the first query.
+We see two queries emitted like this:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">subqueryload</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">addresses</span><span class="p">)))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<div class='show_sql'><span class="c1">-- the &quot;main&quot; query</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">users</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">users_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">users</span>
+</div><div class='show_sql'><span class="c1">-- the &quot;load&quot; query issued by subqueryload</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">addresses</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">addresses_id</span><span class="p">,</span>
+<span class="w">       </span><span class="n">addresses</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">addresses_user_id</span><span class="p">,</span>
+<span class="w">       </span><span class="n">anon_1</span><span class="p">.</span><span class="n">users_id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">anon_1_users_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">users</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">users_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">anon_1</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">addresses</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">anon_1</span><span class="p">.</span><span class="n">users_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">addresses</span><span class="p">.</span><span class="n">user_id</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">anon_1</span><span class="p">.</span><span class="n">users_id</span>
+</div></pre></div>
+</div>
+<p>The second query embeds the first query as a source of rows.
+When the inner query uses <code class="docutils literal notranslate"><span class="pre">OFFSET</span></code> and/or <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> without ordering,
+the two queries may not see the same results:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span>
+<span class="go">...     select(User).options(subqueryload(User.addresses)).limit(1)</span>
+<span class="go">... ).first()</span>
+<div class='show_sql'><span class="c1">-- the &quot;main&quot; query</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">users</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">users_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">users</span>
+<span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">1</span>
+</div><div class='show_sql'><span class="c1">-- the &quot;load&quot; query issued by subqueryload</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">addresses</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">addresses_id</span><span class="p">,</span>
+<span class="w">       </span><span class="n">addresses</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">addresses_user_id</span><span class="p">,</span>
+<span class="w">       </span><span class="n">anon_1</span><span class="p">.</span><span class="n">users_id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">anon_1_users_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">users</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">users_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">anon_1</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">addresses</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">anon_1</span><span class="p">.</span><span class="n">users_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">addresses</span><span class="p">.</span><span class="n">user_id</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">anon_1</span><span class="p">.</span><span class="n">users_id</span>
+</div></pre></div>
+</div>
+<p>Depending on database specifics, there is
+a chance we may get a result like the following for the two queries:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-- query #1
++--------+
+|users_id|
++--------+
+|       1|
++--------+
+
+-- query #2
++------------+-----------------+---------------+
+|addresses_id|addresses_user_id|anon_1_users_id|
++------------+-----------------+---------------+
+|           3|                2|              2|
++------------+-----------------+---------------+
+|           4|                2|              2|
++------------+-----------------+---------------+</pre></div>
+</div>
+<p>Above, we receive two <code class="docutils literal notranslate"><span class="pre">addresses</span></code> rows for <code class="docutils literal notranslate"><span class="pre">user.id</span></code> of 2, and none for
+1.  We’ve wasted two rows and failed to actually load the collection.  This
+is an insidious error because without looking at the SQL and the results, the
+ORM will not show that there’s any issue; if we access the <code class="docutils literal notranslate"><span class="pre">addresses</span></code>
+for the <code class="docutils literal notranslate"><span class="pre">User</span></code> we have, it will emit a lazy load for the collection and we
+won’t see that anything actually went wrong.</p>
+<p>The solution to this problem is to always specify a deterministic sort order,
+so that the main query always returns the same set of rows. This generally
+means that you should <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select.order_by" title="sqlalchemy.sql.expression.Select.order_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Select.order_by()</span></code></a> on a unique column on the table.
+The primary key is a good choice for this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span>
+    <span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">subqueryload</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">addresses</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></pre></div>
+</div>
+<p>Note that the <a class="reference internal" href="../orm/queryguide/relationships.html#sqlalchemy.orm.joinedload" title="sqlalchemy.orm.joinedload"><code class="xref py py-func docutils literal notranslate"><span class="pre">joinedload()</span></code></a> eager loader strategy does not suffer from
+the same problem because only one query is ever issued, so the load query
+cannot be different from the main query.  Similarly, the <a class="reference internal" href="../orm/queryguide/relationships.html#sqlalchemy.orm.selectinload" title="sqlalchemy.orm.selectinload"><code class="xref py py-func docutils literal notranslate"><span class="pre">selectinload()</span></code></a>
+eager loader strategy also does not have this issue as it links its collection
+loads directly to primary key values just loaded.</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="../orm/queryguide/relationships.html#subquery-eager-loading"><span class="std std-ref">子查询预/急加载</span></a></p>
+</div>
+</section>
+<section id="defaultdefault-factory-insert-default">
+<span id="defaults-default-factory-insert-default"></span><h2>什么是 <code class="docutils literal notranslate"><span class="pre">default</span></code>、<code class="docutils literal notranslate"><span class="pre">default_factory</span></code> 和 <code class="docutils literal notranslate"><span class="pre">insert_default</span></code>，我应该使用哪个？<a class="headerlink" href="#defaultdefault-factory-insert-default" title="Link to this heading">¶</a></h2>
+<p>What are <code class="docutils literal notranslate"><span class="pre">default</span></code>, <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> and <code class="docutils literal notranslate"><span class="pre">insert_default</span></code> and what should I use?</p>
+<p>There’s a bit of a clash in SQLAlchemy’s API here due to the addition of PEP-681
+dataclass transforms, which is strict about its naming conventions. PEP-681 comes
+into play if you are using <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.MappedAsDataclass" title="sqlalchemy.orm.MappedAsDataclass"><code class="xref py py-class docutils literal notranslate"><span class="pre">MappedAsDataclass</span></code></a> as shown in <a class="reference internal" href="../orm/dataclasses.html#orm-declarative-native-dataclasses"><span class="std std-ref">声明式Dataclass映射</span></a>.
+If you are not using MappedAsDataclass, then it does not apply.</p>
+<section id="sqlalchemy">
+<h3>第一部分 - 不使用数据类的经典 SQLAlchemy<a class="headerlink" href="#sqlalchemy" title="Link to this heading">¶</a></h3>
+<p>Part One - Classic SQLAlchemy that is not using dataclasses</p>
+<p>When <strong>not</strong> using <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.MappedAsDataclass" title="sqlalchemy.orm.MappedAsDataclass"><code class="xref py py-class docutils literal notranslate"><span class="pre">MappedAsDataclass</span></code></a>, as has been the case for many years
+in SQLAlchemy, the <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column" title="sqlalchemy.orm.mapped_column"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapped_column()</span></code></a> (and <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a>)
+construct supports a parameter <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a>.
+This indicates a Python-side default (as opposed to a server side default that
+would be part of your database’s schema definition) that will take place when
+an <code class="docutils literal notranslate"><span class="pre">INSERT</span></code> statement is emitted. This default can be <strong>any</strong> of a static Python value
+like a string, <strong>or</strong> a Python callable function, <strong>or</strong> a SQLAlchemy SQL construct.
+Full documentation for <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> is at
+<a class="reference internal" href="../core/defaults.html#defaults-client-invoked-sql"><span class="std std-ref">客户端调用的 SQL 表达式</span></a>.</p>
+<p>When using <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> with an ORM mapping that is <strong>not</strong>
+using <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.MappedAsDataclass" title="sqlalchemy.orm.MappedAsDataclass"><code class="xref py py-class docutils literal notranslate"><span class="pre">MappedAsDataclass</span></code></a>, this default value /callable <strong>does not show
+up on your object when you first construct it</strong>. It only takes place when SQLAlchemy
+works up an <code class="docutils literal notranslate"><span class="pre">INSERT</span></code> statement for your object.</p>
+<p>A very important thing to note is that when using <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column" title="sqlalchemy.orm.mapped_column"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapped_column()</span></code></a>
+(and <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a>), the classic <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a>
+parameter is also available under a new name, called
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.insert_default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.insert_default</span></code></a>. If you build a
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column" title="sqlalchemy.orm.mapped_column"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapped_column()</span></code></a> and you are <strong>not</strong> using <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.MappedAsDataclass" title="sqlalchemy.orm.MappedAsDataclass"><code class="xref py py-class docutils literal notranslate"><span class="pre">MappedAsDataclass</span></code></a>, the
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> and <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.insert_default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.insert_default</span></code></a>
+parameters are <strong>synonymous</strong>.</p>
+</section>
+<section id="mappedasdataclass">
+<h3>第二部分 - 使用 MappedAsDataclass 的数据类支持<a class="headerlink" href="#mappedasdataclass" title="Link to this heading">¶</a></h3>
+<p>Part Two - Using Dataclasses support with MappedAsDataclass</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">在 2.1 版本发生变更: </span>The behavior of column level defaults when using
+dataclasses has changed to use an approach that uses class-level descriptors
+to provide class behavior, in conjunction with Core-level column defaults
+to provide the correct INSERT behavior. See <a class="reference internal" href="../changelog/migration_21.html#change-12168"><span class="std std-ref">ORM 映射数据类不再在 __dict__ 中填充隐式 default</span></a> for
+background.</p>
+</div>
+<p>When you <strong>are</strong> using <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.MappedAsDataclass" title="sqlalchemy.orm.MappedAsDataclass"><code class="xref py py-class docutils literal notranslate"><span class="pre">MappedAsDataclass</span></code></a>, that is, the specific form
+of mapping used at <a class="reference internal" href="../orm/dataclasses.html#orm-declarative-native-dataclasses"><span class="std std-ref">声明式Dataclass映射</span></a>, the meaning of the
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> keyword changes. We recognize that it’s not
+ideal that this name changes its behavior, however there was no alternative as
+PEP-681 requires <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> to take on this meaning.</p>
+<p>When dataclasses are used, the <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> parameter
+must be used the way it’s described at <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">Python Dataclasses</a> - it refers to a
+constant value like a string or a number, and <strong>is available on your object
+immediately when constructed</strong>.  As of SQLAlchemy 2.1, the value is delivered
+using a descriptor if not otherwise set, without the value actually being
+placed in <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> unless it were passed to the constructor explicitly.</p>
+<p>The value used for <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> is also applied to the
+<a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column.params.default" title="sqlalchemy.schema.Column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Column.default</span></code></a> parameter of <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a>.
+This is so that the value used as the dataclass default is also applied in
+an ORM INSERT statement for a mapped object where the value was not
+explicitly passed.  Using this parameter is <strong>mutually exclusive</strong> against the
+<a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column.params.insert_default" title="sqlalchemy.schema.Column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Column.insert_default</span></code></a> parameter, meaning that both cannot
+be used at the same time.</p>
+<p>The <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> and
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.insert_default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.insert_default</span></code></a> parameters may also be used
+(one or the other, not both)
+for a SQLAlchemy-mapped dataclass field, or for a dataclass overall,
+that indicates <code class="docutils literal notranslate"><span class="pre">init=False</span></code>.
+In this usage, if <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a> is used, the default
+value will be available on the constructed object immediately as well as
+used within the INSERT statement.  If <a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.insert_default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.insert_default</span></code></a>
+is used, the constructed object will return <code class="docutils literal notranslate"><span class="pre">None</span></code> for the attribute value,
+but the default value will still be used for the INSERT statement.</p>
+<p>To use a callable to generate defaults for the dataclass, which would be
+applied to the object when constructed by populating it into <code class="docutils literal notranslate"><span class="pre">__dict__</span></code>,
+<a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default_factory" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default_factory</span></code></a> may be used instead.</p>
+<div class="table-wrapper docutils container" id="id4">
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Summary Chart</span><a class="headerlink" href="#id4" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Construct</p></th>
+<th class="head"><p>Works with dataclasses?</p></th>
+<th class="head"><p>Works without dataclasses?</p></th>
+<th class="head"><p>Accepts scalar?</p></th>
+<th class="head"><p>Accepts callable?</p></th>
+<th class="head"><p>Available on object immediately?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default</span></code></a></p></td>
+<td><p>✔</p></td>
+<td><p>✔</p></td>
+<td><p>✔</p></td>
+<td><p>Only if no dataclasses</p></td>
+<td><p>Only if dataclasses</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.insert_default" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.insert_default</span></code></a></p></td>
+<td><p>✔ (only if no <code class="docutils literal notranslate"><span class="pre">default</span></code>)</p></td>
+<td><p>✔</p></td>
+<td><p>✔</p></td>
+<td><p>✔</p></td>
+<td><p>✖</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../orm/mapping_api.html#sqlalchemy.orm.mapped_column.params.default_factory" title="sqlalchemy.orm.mapped_column"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mapped_column.default_factory</span></code></a></p></td>
+<td><p>✔</p></td>
+<td><p>✖</p></td>
+<td><p>✖</p></td>
+<td><p>✔</p></td>
+<td><p>Only if dataclasses</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="performance.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">性能</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="sqlexpressions.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">SQL 表达式</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">ORM 配置</a><ul>
+<li><a class="reference internal" href="#faq-mapper-primary-key">如何映射没有主键的表？</a></li>
+<li><a class="reference internal" href="#python">如何配置 Python 保留字或类似字的列？</a></li>
+<li><a class="reference internal" href="#id3">给定映射类，如何获取所有列、关系、映射属性等的列表？</a></li>
+<li><a class="reference internal" href="#y-x">我收到有关“在属性 Y 下隐式组合列 X”的警告或错误</a></li>
+<li><a class="reference internal" href="#declarative-and-or-primaryjoin-secondaryjoin">我正在使用 Declarative 并使用 <code class="docutils literal notranslate"><span class="pre">and_()</span></code> 或 <code class="docutils literal notranslate"><span class="pre">or_()</span></code> 设置 primaryjoin/secondaryjoin，并且收到有关外键的错误消息。</a></li>
+<li><a class="reference internal" href="#order-by-limit-subqueryload">为什么建议将 <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> 与 <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> 一起使用（尤其是与 <code class="docutils literal notranslate"><span class="pre">subqueryload()</span></code> 一起使用）？</a></li>
+<li><a class="reference internal" href="#defaultdefault-factory-insert-default">什么是 <code class="docutils literal notranslate"><span class="pre">default</span></code>、<code class="docutils literal notranslate"><span class="pre">default_factory</span></code> 和 <code class="docutils literal notranslate"><span class="pre">insert_default</span></code>，我应该使用哪个？</a><ul>
+<li><a class="reference internal" href="#sqlalchemy">第一部分 - 不使用数据类的经典 SQLAlchemy</a></li>
+<li><a class="reference internal" href="#mappedasdataclass">第二部分 - 使用 MappedAsDataclass 的数据类支持</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

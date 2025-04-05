@@ -1,0 +1,1676 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="copyright" title="版权所有" href="../copyright.html" /><link rel="next" title="SQL 数据类型对象" href="types.html" /><link rel="prev" title="定义约束和索引" href="constraints.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>自定义 DDL - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">概述</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">SQLAlchemy 统一教程</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/data.html">处理数据</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_insert.html">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../orm/index.html">SQLAlchemy ORM</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../orm/quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orm/declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../orm/scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../orm/mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/queryguide/index.html">ORM 查询指南</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/queryguide/query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../orm/extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../orm/extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../orm/examples.html">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">SQLAlchemy Core</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="schema.html">Schema 定义语言</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api_basics.html">Core API 基础</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">常见问题</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/installation.html">安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/connections.html">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/ormconfiguration.html">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">错误消息</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../changelog/index.html">变更和迁移</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_21.html">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_02.html">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog/migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="ddl">
+<span id="metadata-ddl"></span><span id="metadata-ddl-toplevel"></span><h1>自定义 DDL<a class="headerlink" href="#ddl" title="Link to this heading">¶</a></h1>
+<p>Customizing DDL</p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>在前面的章节中，我们讨论了各种模式构造，包括 <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>，<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a>，<a class="reference internal" href="constraints.html#sqlalchemy.schema.CheckConstraint" title="sqlalchemy.schema.CheckConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">CheckConstraint</span></code></a> 和 <a class="reference internal" href="defaults.html#sqlalchemy.schema.Sequence" title="sqlalchemy.schema.Sequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>。在整个过程中，我们依赖于 <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> 和 <a class="reference internal" href="metadata.html#sqlalchemy.schema.MetaData" title="sqlalchemy.schema.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetaData</span></code></a> 的 <code class="docutils literal notranslate"><span class="pre">create()</span></code> 和 <a class="reference internal" href="metadata.html#sqlalchemy.schema.MetaData.create_all" title="sqlalchemy.schema.MetaData.create_all"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_all()</span></code></a> 方法来发出所有构造的数据定义语言（DDL）。当发出时，会调用预定的操作顺序，并无条件地创建每个表的DDL，包括与其相关的所有约束和其他对象。对于需要数据库特定DDL的更复杂场景，SQLAlchemy提供了两种技术，可以根据任何条件添加任何DDL，无论是伴随标准的表生成还是单独生成。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>In the preceding sections we’ve discussed a variety of schema constructs
+including <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>,
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a>,
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.CheckConstraint" title="sqlalchemy.schema.CheckConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">CheckConstraint</span></code></a>, and
+<a class="reference internal" href="defaults.html#sqlalchemy.schema.Sequence" title="sqlalchemy.schema.Sequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>. Throughout, we’ve relied upon the
+<code class="docutils literal notranslate"><span class="pre">create()</span></code> and <a class="reference internal" href="metadata.html#sqlalchemy.schema.MetaData.create_all" title="sqlalchemy.schema.MetaData.create_all"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_all()</span></code></a> methods of
+<a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> and <a class="reference internal" href="metadata.html#sqlalchemy.schema.MetaData" title="sqlalchemy.schema.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetaData</span></code></a> in
+order to issue data definition language (DDL) for all constructs. When issued,
+a pre-determined order of operations is invoked, and DDL to create each table
+is created unconditionally including all constraints and other objects
+associated with it. For more complex scenarios where database-specific DDL is
+required, SQLAlchemy offers two techniques which can be used to add any DDL
+based on any condition, either accompanying the standard generation of tables
+or by itself.</p>
+</div>
+</div>
+<section id="id1">
+<h2>自定义 DDL<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p>Custom DDL</p>
+<p>Custom DDL phrases are most easily achieved using the
+<a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a> construct. This construct works like all the
+other DDL elements except it accepts a string which is the text to be emitted:</p>
+<div class="highlight-python+sql notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+    <span class="n">metadata</span><span class="p">,</span>
+    <span class="s2">&quot;after_create&quot;</span><span class="p">,</span>
+    <span class="n">DDL</span><span class="p">(</span>
+        <span class="s2">&quot;ALTER TABLE users ADD CONSTRAINT &quot;</span>
+        <span class="s2">&quot;cst_user_name_length &quot;</span>
+        <span class="s2">&quot; CHECK (length(user_name) &gt;= 8)&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span></pre></div>
+</div>
+<p>A more comprehensive method of creating libraries of DDL constructs is to use
+custom compilation - see <a class="reference internal" href="compiler.html#sqlalchemy-ext-compiler-toplevel"><span class="std std-ref">自定义 SQL 构造和编译扩展</span></a> for
+details.</p>
+</section>
+<section id="schema-ddl-sequences">
+<span id="id2"></span><h2>控制 DDL 序列<a class="headerlink" href="#schema-ddl-sequences" title="Link to this heading">¶</a></h2>
+<p>Controlling DDL Sequences</p>
+<p>The <a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a> construct introduced previously also has the
+ability to be invoked conditionally based on inspection of the
+database.  This feature is available using the <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if" title="sqlalchemy.schema.ExecutableDDLElement.execute_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExecutableDDLElement.execute_if()</span></code></a>
+method.  For example, if we wanted to create a trigger but only on
+the PostgreSQL backend, we could invoke this as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mytable</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s2">&quot;mytable&quot;</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">)),</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="o">=</span> <span class="n">DDL</span><span class="p">(</span>
+    <span class="s2">&quot;CREATE FUNCTION my_func() &quot;</span>
+    <span class="s2">&quot;RETURNS TRIGGER AS $$ &quot;</span>
+    <span class="s2">&quot;BEGIN &quot;</span>
+    <span class="s2">&quot;NEW.data := &#39;ins&#39;; &quot;</span>
+    <span class="s2">&quot;RETURN NEW; &quot;</span>
+    <span class="s2">&quot;END; $$ LANGUAGE PLPGSQL&quot;</span>
+<span class="p">)</span>
+
+<span class="n">trigger</span> <span class="o">=</span> <span class="n">DDL</span><span class="p">(</span>
+    <span class="s2">&quot;CREATE TRIGGER dt_ins BEFORE INSERT ON mytable &quot;</span>
+    <span class="s2">&quot;FOR EACH ROW EXECUTE PROCEDURE my_func();&quot;</span>
+<span class="p">)</span>
+
+<span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">mytable</span><span class="p">,</span> <span class="s2">&quot;after_create&quot;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;postgresql&quot;</span><span class="p">))</span>
+
+<span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">mytable</span><span class="p">,</span> <span class="s2">&quot;after_create&quot;</span><span class="p">,</span> <span class="n">trigger</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;postgresql&quot;</span><span class="p">))</span></pre></div>
+</div>
+<p>The <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if.params.dialect" title="sqlalchemy.schema.ExecutableDDLElement.execute_if"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">ExecutableDDLElement.execute_if.dialect</span></code></a> keyword also accepts a tuple
+of string dialect names:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+    <span class="n">mytable</span><span class="p">,</span> <span class="s2">&quot;after_create&quot;</span><span class="p">,</span> <span class="n">trigger</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;postgresql&quot;</span><span class="p">,</span> <span class="s2">&quot;mysql&quot;</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+    <span class="n">mytable</span><span class="p">,</span> <span class="s2">&quot;before_drop&quot;</span><span class="p">,</span> <span class="n">trigger</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;postgresql&quot;</span><span class="p">,</span> <span class="s2">&quot;mysql&quot;</span><span class="p">))</span>
+<span class="p">)</span></pre></div>
+</div>
+<p>The <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if" title="sqlalchemy.schema.ExecutableDDLElement.execute_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExecutableDDLElement.execute_if()</span></code></a> method can also work against a callable
+function that will receive the database connection in use.  In the
+example below, we use this to conditionally create a CHECK constraint,
+first looking within the PostgreSQL catalogs to see if it exists:</p>
+<div class="highlight-python+sql notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">should_create</span><span class="p">(</span><span class="n">ddl</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;select conname from pg_constraint where conname=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">ddl</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">name</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">bool</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">should_drop</span><span class="p">(</span><span class="n">ddl</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">should_create</span><span class="p">(</span><span class="n">ddl</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+
+<span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+    <span class="n">users</span><span class="p">,</span>
+    <span class="s2">&quot;after_create&quot;</span><span class="p">,</span>
+    <span class="n">DDL</span><span class="p">(</span>
+        <span class="s2">&quot;ALTER TABLE users ADD CONSTRAINT &quot;</span>
+        <span class="s2">&quot;cst_user_name_length CHECK (length(user_name) &gt;= 8)&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">callable_</span><span class="o">=</span><span class="n">should_create</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+    <span class="n">users</span><span class="p">,</span>
+    <span class="s2">&quot;before_drop&quot;</span><span class="p">,</span>
+    <span class="n">DDL</span><span class="p">(</span><span class="s2">&quot;ALTER TABLE users DROP CONSTRAINT cst_user_name_length&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span>
+        <span class="n">callable_</span><span class="o">=</span><span class="n">should_drop</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">users</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+<div class='show_sql'><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">user_id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">user_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">conname</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_constraint</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">conname</span><span class="o">=</span><span class="s1">&#39;cst_user_name_length&#39;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">cst_user_name_length</span><span class="w">  </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">length</span><span class="p">(</span><span class="n">user_name</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+</div><span class="n">users</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+<div class='show_sql'><span class="k">SELECT</span><span class="w"> </span><span class="n">conname</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_constraint</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">conname</span><span class="o">=</span><span class="s1">&#39;cst_user_name_length&#39;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">DROP</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">cst_user_name_length</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span>
+</div></pre></div>
+</div>
+</section>
+<section id="ddlelement">
+<h2>使用内置 DDLElement 类<a class="headerlink" href="#ddlelement" title="Link to this heading">¶</a></h2>
+<p>Using the built-in DDLElement Classes</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema</span></code> package contains SQL expression constructs that
+provide DDL expressions, all of which extend from the common base
+<a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a>. For example, to produce a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> statement,
+one can use the <a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateTable</span></code></a> construct:</p>
+<div class="highlight-python+sql notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateTable</span>
+
+<span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">CreateTable</span><span class="p">(</span><span class="n">mytable</span><span class="p">))</span>
+<div class='show_sql'><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">mytable</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">col1</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">    </span><span class="n">col2</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">    </span><span class="n">col3</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">    </span><span class="n">col4</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">    </span><span class="n">col5</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">    </span><span class="n">col6</span><span class="w"> </span><span class="nb">INTEGER</span>
+<span class="p">)</span>
+</div></pre></div>
+</div>
+<p>Above, the <a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateTable</span></code></a> construct works like any
+other expression construct (such as <code class="docutils literal notranslate"><span class="pre">select()</span></code>, <code class="docutils literal notranslate"><span class="pre">table.insert()</span></code>, etc.).
+All of SQLAlchemy’s DDL oriented constructs are subclasses of
+the <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> base class; this is the base of all the
+objects corresponding to CREATE and DROP as well as ALTER,
+not only in SQLAlchemy but in Alembic Migrations as well.
+A full reference of available constructs is in <a class="reference internal" href="#schema-api-ddl"><span class="std std-ref">DDL 表达式构造 API</span></a>.</p>
+<p>User-defined DDL constructs may also be created as subclasses of
+<a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> itself.   The documentation in
+<a class="reference internal" href="compiler.html#sqlalchemy-ext-compiler-toplevel"><span class="std std-ref">自定义 SQL 构造和编译扩展</span></a> has several examples of this.</p>
+</section>
+<section id="schema-ddl-ddl-if">
+<span id="id3"></span><h2>控制 DDL 约束和索引的生成<a class="headerlink" href="#schema-ddl-ddl-if" title="Link to this heading">¶</a></h2>
+<p>Controlling DDL Generation of Constraints and Indexes</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 2.0 版本加入.</span></p>
+</div>
+<p>While the previously mentioned <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if" title="sqlalchemy.schema.ExecutableDDLElement.execute_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExecutableDDLElement.execute_if()</span></code></a> method is
+useful for custom <a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a> classes which need to invoke conditionally,
+there is also a common need for elements that are typically related to a
+particular <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>, namely constraints and indexes, to also be
+subject to “conditional” rules, such as an index that includes features
+that are specific to a particular backend such as PostgreSQL or SQL Server.
+For this use case, the <a class="reference internal" href="constraints.html#sqlalchemy.schema.Constraint.ddl_if" title="sqlalchemy.schema.Constraint.ddl_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Constraint.ddl_if()</span></code></a> and <a class="reference internal" href="constraints.html#sqlalchemy.schema.Index.ddl_if" title="sqlalchemy.schema.Index.ddl_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Index.ddl_if()</span></code></a>
+methods may be used against constructs such as <a class="reference internal" href="constraints.html#sqlalchemy.schema.CheckConstraint" title="sqlalchemy.schema.CheckConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">CheckConstraint</span></code></a>,
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.UniqueConstraint" title="sqlalchemy.schema.UniqueConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">UniqueConstraint</span></code></a> and <a class="reference internal" href="constraints.html#sqlalchemy.schema.Index" title="sqlalchemy.schema.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a>, accepting the same
+arguments as the <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if" title="sqlalchemy.schema.ExecutableDDLElement.execute_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExecutableDDLElement.execute_if()</span></code></a> method in order to control
+whether or not their DDL will be emitted in terms of their parent
+<a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> object.  These methods may be used inline when
+creating the definition for a <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>
+(or similarly, when using the <code class="docutils literal notranslate"><span class="pre">__table_args__</span></code> collection in an ORM
+declarative mapping), such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">CheckConstraint</span><span class="p">,</span> <span class="n">Index</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetaData</span><span class="p">,</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+
+<span class="n">meta</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
+
+<span class="n">my_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s2">&quot;my_table&quot;</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">,</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">),</span>
+    <span class="n">Index</span><span class="p">(</span><span class="s2">&quot;my_pg_index&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">ddl_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;postgresql&quot;</span><span class="p">),</span>
+    <span class="n">CheckConstraint</span><span class="p">(</span><span class="s2">&quot;num &gt; 5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">ddl_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;postgresql&quot;</span><span class="p">),</span>
+<span class="p">)</span></pre></div>
+</div>
+<p>In the above example, the <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> construct refers to both an
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.Index" title="sqlalchemy.schema.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a> and a <a class="reference internal" href="constraints.html#sqlalchemy.schema.CheckConstraint" title="sqlalchemy.schema.CheckConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">CheckConstraint</span></code></a> construct, both which
+indicate <code class="docutils literal notranslate"><span class="pre">.ddl_if(dialect=&quot;postgresql&quot;)</span></code>, which indicates that these
+elements will be included in the CREATE TABLE sequence only against the
+PostgreSQL dialect.  If we run <code class="docutils literal notranslate"><span class="pre">meta.create_all()</span></code> against the SQLite
+dialect, for example, neither construct will be included:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sqlite_engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;sqlite+pysqlite://&quot;</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">sqlite_engine</span><span class="p">)</span>
+<div class='show_sql'><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="n">PRAGMA</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">table_info</span><span class="p">(</span><span class="ss">&quot;my_table&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">raw</span><span class="w"> </span><span class="k">sql</span><span class="p">]</span><span class="w"> </span><span class="p">()</span>
+<span class="n">PRAGMA</span><span class="w"> </span><span class="n">temp</span><span class="p">.</span><span class="n">table_info</span><span class="p">(</span><span class="ss">&quot;my_table&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">raw</span><span class="w"> </span><span class="k">sql</span><span class="p">]</span><span class="w"> </span><span class="p">()</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">my_table</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">num</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">    </span><span class="k">data</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span>
+</div></pre></div>
+</div>
+<p>However, if we run the same commands against a PostgreSQL database, we will
+see inline DDL for the CHECK constraint as well as a separate CREATE
+statement emitted for the index:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">postgresql_engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+<span class="go">...     &quot;postgresql+psycopg2://scott:tiger@localhost/test&quot;, echo=True</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">postgresql_engine</span><span class="p">)</span>
+<div class='show_sql'><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">select</span><span class="w"> </span><span class="n">relname</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pg_class</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="n">pg_namespace</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">oid</span><span class="o">=</span><span class="k">c</span><span class="p">.</span><span class="n">relnamespace</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">pg_catalog</span><span class="p">.</span><span class="n">pg_table_is_visible</span><span class="p">(</span><span class="k">c</span><span class="p">.</span><span class="n">oid</span><span class="p">)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">relname</span><span class="o">=%</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="n">s</span>
+<span class="p">[</span><span class="k">generated</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">00009</span><span class="n">s</span><span class="p">]</span><span class="w"> </span><span class="err">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;my_table&#39;</span><span class="err">}</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">my_table</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">num</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">    </span><span class="k">data</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">    </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">num</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="p">[</span><span class="k">no</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">00007</span><span class="n">s</span><span class="p">]</span><span class="w"> </span><span class="err">{}</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">my_pg_index</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">my_table</span><span class="w"> </span><span class="p">(</span><span class="k">data</span><span class="p">)</span>
+<span class="p">[</span><span class="k">no</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">00013</span><span class="n">s</span><span class="p">]</span><span class="w"> </span><span class="err">{}</span>
+<span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<p>The <a class="reference internal" href="constraints.html#sqlalchemy.schema.Constraint.ddl_if" title="sqlalchemy.schema.Constraint.ddl_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Constraint.ddl_if()</span></code></a> and <a class="reference internal" href="constraints.html#sqlalchemy.schema.Index.ddl_if" title="sqlalchemy.schema.Index.ddl_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Index.ddl_if()</span></code></a> methods create
+an event hook that may be consulted not just at DDL execution time, as is the
+behavior with <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if" title="sqlalchemy.schema.ExecutableDDLElement.execute_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExecutableDDLElement.execute_if()</span></code></a>, but also within the SQL compilation
+phase of the <a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateTable</span></code></a> object, which is responsible for rendering
+the <code class="docutils literal notranslate"><span class="pre">CHECK</span> <span class="pre">(num</span> <span class="pre">&gt;</span> <span class="pre">5)</span></code> DDL inline within the CREATE TABLE statement.
+As such, the event hook that is received by the <code class="xref py py-meth docutils literal notranslate"><span class="pre">ddl_if.callable_()</span></code>
+parameter has a richer argument set present, including that there is
+a <code class="docutils literal notranslate"><span class="pre">dialect</span></code> keyword argument passed, as well as an instance of <a class="reference internal" href="internals.html#sqlalchemy.sql.compiler.DDLCompiler" title="sqlalchemy.sql.compiler.DDLCompiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLCompiler</span></code></a>
+via the <code class="docutils literal notranslate"><span class="pre">compiler</span></code> keyword argument for the “inline rendering” portion of the
+sequence.  The <code class="docutils literal notranslate"><span class="pre">bind</span></code> argument is <strong>not</strong> present when the event is triggered
+within the <a class="reference internal" href="internals.html#sqlalchemy.sql.compiler.DDLCompiler" title="sqlalchemy.sql.compiler.DDLCompiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLCompiler</span></code></a> sequence, so a modern event hook that wishes
+to inspect the database versioning information would best use the given
+<a class="reference internal" href="internals.html#sqlalchemy.engine.Dialect" title="sqlalchemy.engine.Dialect"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dialect</span></code></a> object, such as to test PostgreSQL versioning:</p>
+<div class="highlight-python+sql notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">only_pg_14</span><span class="p">(</span><span class="n">ddl_element</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">bind</span><span class="p">,</span> <span class="n">dialect</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">dialect</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;postgresql&quot;</span> <span class="ow">and</span> <span class="n">dialect</span><span class="o">.</span><span class="n">server_version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">14</span><span class="p">,)</span>
+
+
+<span class="n">my_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s2">&quot;my_table&quot;</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">,</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">),</span>
+    <span class="n">Index</span><span class="p">(</span><span class="s2">&quot;my_pg_index&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">ddl_if</span><span class="p">(</span><span class="n">callable_</span><span class="o">=</span><span class="n">only_pg_14</span><span class="p">),</span>
+<span class="p">)</span></pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="constraints.html#sqlalchemy.schema.Constraint.ddl_if" title="sqlalchemy.schema.Constraint.ddl_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Constraint.ddl_if()</span></code></a></p>
+<p><a class="reference internal" href="constraints.html#sqlalchemy.schema.Index.ddl_if" title="sqlalchemy.schema.Index.ddl_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Index.ddl_if()</span></code></a></p>
+</div>
+</section>
+<section id="ddl-api">
+<span id="schema-api-ddl"></span><h2>DDL 表达式构造 API<a class="headerlink" href="#ddl-api" title="Link to this heading">¶</a></h2>
+<p>DDL Expression Constructs API</p>
+<div class="table-wrapper longtable docutils container">
+<table class="longtable docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head">Object Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema._CreateDropBase"><span class="sig-name descname">_CreateDropBase</span></a></p></td>
+<td><p>Base class for DDL constructs that represent CREATE and DROP or
+equivalents.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.AddConstraint"><span class="sig-name descname">AddConstraint</span></a></p></td>
+<td><p>Represent an ALTER TABLE ADD CONSTRAINT statement.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.BaseDDLElement"><span class="sig-name descname">BaseDDLElement</span></a></p></td>
+<td><p>The root of DDL constructs, including those that are sub-elements
+within the “create table” and other processes.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.CreateColumn"><span class="sig-name descname">CreateColumn</span></a></p></td>
+<td><p>Represent a <a class="reference internal" href="metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a>
+as rendered in a CREATE TABLE statement,
+via the <a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateTable</span></code></a> construct.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.CreateIndex"><span class="sig-name descname">CreateIndex</span></a></p></td>
+<td><p>Represent a CREATE INDEX statement.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.CreateSchema"><span class="sig-name descname">CreateSchema</span></a></p></td>
+<td><p>Represent a CREATE SCHEMA statement.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.CreateSequence"><span class="sig-name descname">CreateSequence</span></a></p></td>
+<td><p>Represent a CREATE SEQUENCE statement.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.CreateTable"><span class="sig-name descname">CreateTable</span></a></p></td>
+<td><p>Represent a CREATE TABLE statement.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.DDL"><span class="sig-name descname">DDL</span></a></p></td>
+<td><p>A literal DDL statement.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.DropConstraint"><span class="sig-name descname">DropConstraint</span></a></p></td>
+<td><p>Represent an ALTER TABLE DROP CONSTRAINT statement.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.DropIndex"><span class="sig-name descname">DropIndex</span></a></p></td>
+<td><p>Represent a DROP INDEX statement.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.DropSchema"><span class="sig-name descname">DropSchema</span></a></p></td>
+<td><p>Represent a DROP SCHEMA statement.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.DropSequence"><span class="sig-name descname">DropSequence</span></a></p></td>
+<td><p>Represent a DROP SEQUENCE statement.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.DropTable"><span class="sig-name descname">DropTable</span></a></p></td>
+<td><p>Represent a DROP TABLE statement.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement"><span class="sig-name descname">ExecutableDDLElement</span></a></p></td>
+<td><p>Base class for standalone executable DDL expression constructs.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.sort_tables"><span class="sig-name descname">sort_tables</span></a>(tables[, skip_fn, extra_dependencies])</p></td>
+<td><p>Sort a collection of <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> objects based on
+dependency.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints"><span class="sig-name descname">sort_tables_and_constraints</span></a>(tables[, filter_fn, extra_dependencies, _warn_for_cycles])</p></td>
+<td><p>Sort a collection of <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>  /
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a>
+objects.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="sqlalchemy.schema.sort_tables">
+<em class="property"><span class="pre">function</span> </em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">sort_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="selectable.html#sqlalchemy.sql.expression.TableClause" title="sqlalchemy.sql.expression.TableClause"><span class="pre">TableClause</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><span class="pre">ForeignKeyConstraint</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_dependencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">typing_Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="sqlelement.html#sqlalchemy.sql.expression.Tuple" title="sqlalchemy.sql.expression.Tuple"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="selectable.html#sqlalchemy.sql.expression.TableClause" title="sqlalchemy.sql.expression.TableClause"><span class="pre">TableClause</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="selectable.html#sqlalchemy.sql.expression.TableClause" title="sqlalchemy.sql.expression.TableClause"><span class="pre">TableClause</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><span class="pre">Table</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sqlalchemy.schema.sort_tables" title="Link to this definition">¶</a></dt>
+<dd><p>Sort a collection of <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> objects based on
+dependency.</p>
+<p>This is a dependency-ordered sort which will emit <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>
+objects such that they will follow their dependent <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>
+objects.
+Tables are dependent on another based on the presence of
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a>
+objects as well as explicit dependencies
+added by <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table.add_is_dependent_on" title="sqlalchemy.schema.Table.add_is_dependent_on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Table.add_is_dependent_on()</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The <a class="reference internal" href="#sqlalchemy.schema.sort_tables" title="sqlalchemy.schema.sort_tables"><code class="xref py py-func docutils literal notranslate"><span class="pre">sort_tables()</span></code></a> function cannot by itself
+accommodate automatic resolution of dependency cycles between
+tables, which are usually caused by mutually dependent foreign key
+constraints. When these cycles are detected, the foreign keys
+of these tables are omitted from consideration in the sort.
+A warning is emitted when this condition occurs, which will be an
+exception raise in a future release.   Tables which are not part
+of the cycle will still be returned in dependency order.</p>
+<p>To resolve these cycles, the
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint.params.use_alter" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">ForeignKeyConstraint.use_alter</span></code></a> parameter may be
+applied to those constraints which create a cycle.  Alternatively,
+the <a class="reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints" title="sqlalchemy.schema.sort_tables_and_constraints"><code class="xref py py-func docutils literal notranslate"><span class="pre">sort_tables_and_constraints()</span></code></a> function will
+automatically return foreign key constraints in a separate
+collection when cycles are detected so that they may be applied
+to a schema separately.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.sort_tables.params.tables"></span><strong>tables</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.sort_tables.params.tables">¶</a> – a sequence of <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> objects.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.sort_tables.params.skip_fn"></span><strong>skip_fn</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.sort_tables.params.skip_fn">¶</a> – optional callable which will be passed a
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a> object; if it returns True, this
+constraint will not be considered as a dependency.  Note this is
+<strong>different</strong> from the same parameter in
+<a class="reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints" title="sqlalchemy.schema.sort_tables_and_constraints"><code class="xref py py-func docutils literal notranslate"><span class="pre">sort_tables_and_constraints()</span></code></a>, which is
+instead passed the owning <a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a> object.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.sort_tables.params.extra_dependencies"></span><strong>extra_dependencies</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.sort_tables.params.extra_dependencies">¶</a> – a sequence of 2-tuples of tables which will
+also be considered as dependent on each other.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints" title="sqlalchemy.schema.sort_tables_and_constraints"><code class="xref py py-func docutils literal notranslate"><span class="pre">sort_tables_and_constraints()</span></code></a></p>
+<p><a class="reference internal" href="metadata.html#sqlalchemy.schema.MetaData.sorted_tables" title="sqlalchemy.schema.MetaData.sorted_tables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MetaData.sorted_tables</span></code></a> - uses this function to sort</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sqlalchemy.schema.sort_tables_and_constraints">
+<em class="property"><span class="pre">function</span> </em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">sort_tables_and_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_warn_for_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.schema.sort_tables_and_constraints" title="Link to this definition">¶</a></dt>
+<dd><p>Sort a collection of <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>  /
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a>
+objects.</p>
+<p>This is a dependency-ordered sort which will emit tuples of
+<code class="docutils literal notranslate"><span class="pre">(Table,</span> <span class="pre">[ForeignKeyConstraint,</span> <span class="pre">...])</span></code> such that each
+<a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> follows its dependent <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>
+objects.
+Remaining <a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a>
+objects that are separate due to
+dependency rules not satisfied by the sort are emitted afterwards
+as <code class="docutils literal notranslate"><span class="pre">(None,</span> <span class="pre">[ForeignKeyConstraint</span> <span class="pre">...])</span></code>.</p>
+<p>Tables are dependent on another based on the presence of
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a> objects, explicit dependencies
+added by <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table.add_is_dependent_on" title="sqlalchemy.schema.Table.add_is_dependent_on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Table.add_is_dependent_on()</span></code></a>,
+as well as dependencies
+stated here using the <a class="reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints.params.skip_fn" title="sqlalchemy.schema.sort_tables_and_constraints"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">sort_tables_and_constraints.skip_fn</span></code></a>
+and/or <a class="reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints.params.extra_dependencies" title="sqlalchemy.schema.sort_tables_and_constraints"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">sort_tables_and_constraints.extra_dependencies</span></code></a>
+parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.sort_tables_and_constraints.params.tables"></span><strong>tables</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints.params.tables">¶</a> – a sequence of <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> objects.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.sort_tables_and_constraints.params.filter_fn"></span><strong>filter_fn</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints.params.filter_fn">¶</a> – optional callable which will be passed a
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a> object,
+and returns a value based on
+whether this constraint should definitely be included or excluded as
+an inline constraint, or neither.   If it returns False, the constraint
+will definitely be included as a dependency that cannot be subject
+to ALTER; if True, it will <strong>only</strong> be included as an ALTER result at
+the end.   Returning None means the constraint is included in the
+table-based result unless it is detected as part of a dependency cycle.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.sort_tables_and_constraints.params.extra_dependencies"></span><strong>extra_dependencies</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints.params.extra_dependencies">¶</a> – a sequence of 2-tuples of tables which will
+also be considered as dependent on each other.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="#sqlalchemy.schema.sort_tables" title="sqlalchemy.schema.sort_tables"><code class="xref py py-func docutils literal notranslate"><span class="pre">sort_tables()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.BaseDDLElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">BaseDDLElement</span></span><a class="headerlink" href="#sqlalchemy.schema.BaseDDLElement" title="Link to this definition">¶</a></dt>
+<dd><p>The root of DDL constructs, including those that are sub-elements
+within the “create table” and other processes.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 2.0 版本加入.</span></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.BaseDDLElement" title="sqlalchemy.schema.BaseDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.BaseDDLElement</span></code></a> (<a class="reference internal" href="foundation.html#sqlalchemy.sql.expression.ClauseElement" title="sqlalchemy.sql.expression.ClauseElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.sql.expression.ClauseElement</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.ExecutableDDLElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">ExecutableDDLElement</span></span><a class="headerlink" href="#sqlalchemy.schema.ExecutableDDLElement" title="Link to this definition">¶</a></dt>
+<dd><p>Base class for standalone executable DDL expression constructs.</p>
+<p>This class is the base for the general purpose <a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a> class,
+as well as the various create/drop clause constructs such as
+<a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateTable</span></code></a>, <a class="reference internal" href="#sqlalchemy.schema.DropTable" title="sqlalchemy.schema.DropTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">DropTable</span></code></a>, <a class="reference internal" href="#sqlalchemy.schema.AddConstraint" title="sqlalchemy.schema.AddConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddConstraint</span></code></a>,
+etc.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">在 2.0 版本发生变更: </span><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> is renamed from
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DDLElement</span></code>, which still exists for backwards compatibility.</p>
+</div>
+<p><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> integrates closely with SQLAlchemy events,
+introduced in <a class="reference internal" href="event.html#event-toplevel"><span class="std std-ref">事件</span></a>.  An instance of one is
+itself an event receiving callable:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+    <span class="n">users</span><span class="p">,</span>
+    <span class="s2">&quot;after_create&quot;</span><span class="p">,</span>
+    <span class="n">AddConstraint</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;postgresql&quot;</span><span class="p">),</span>
+<span class="p">)</span></pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a></p>
+<p><a class="reference internal" href="events.html#sqlalchemy.events.DDLEvents" title="sqlalchemy.events.DDLEvents"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLEvents</span></code></a></p>
+<p><a class="reference internal" href="event.html#event-toplevel"><span class="std std-ref">事件</span></a></p>
+<p><a class="reference internal" href="#schema-ddl-sequences"><span class="std std-ref">控制 DDL 序列</span></a></p>
+</div>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.__call__"><span class="sig-name descname">__call__()</span></a>, <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.against"><span class="sig-name descname">against()</span></a>, <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if"><span class="sig-name descname">execute_if()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.ExecutableDDLElement</span></code></a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.sql.roles.DDLRole</span></code>, <a class="reference internal" href="selectable.html#sqlalchemy.sql.expression.Executable" title="sqlalchemy.sql.expression.Executable"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.sql.expression.Executable</span></code></a>, <a class="reference internal" href="#sqlalchemy.schema.BaseDDLElement" title="sqlalchemy.schema.BaseDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.BaseDDLElement</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.ExecutableDDLElement.__call__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.ExecutableDDLElement.</span></code></a><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.schema.ExecutableDDLElement.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Execute the DDL as a ddl_listener.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.ExecutableDDLElement.against">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.ExecutableDDLElement.</span></code></a><span class="sig-name descname"><span class="pre">against</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metadata.html#sqlalchemy.schema.SchemaItem" title="sqlalchemy.schema.SchemaItem"><span class="pre">SchemaItem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#sqlalchemy.schema.ExecutableDDLElement.against" title="Link to this definition">¶</a></dt>
+<dd><p>Return a copy of this <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> which
+will include the given target.</p>
+<p>This essentially applies the given item to the <code class="docutils literal notranslate"><span class="pre">.target</span></code> attribute of
+the returned <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> object. This target
+is then usable by event handlers and compilation routines in order to
+provide services such as tokenization of a DDL string in terms of a
+particular <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>.</p>
+<p>When a <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> object is established as
+an event handler for the <a class="reference internal" href="events.html#sqlalchemy.events.DDLEvents.before_create" title="sqlalchemy.events.DDLEvents.before_create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DDLEvents.before_create()</span></code></a> or
+<a class="reference internal" href="events.html#sqlalchemy.events.DDLEvents.after_create" title="sqlalchemy.events.DDLEvents.after_create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DDLEvents.after_create()</span></code></a> events, and the event then
+occurs for a given target such as a <a class="reference internal" href="constraints.html#sqlalchemy.schema.Constraint" title="sqlalchemy.schema.Constraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code></a> or
+<a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>, that target is established with a copy of the
+<a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> object using this method, which
+then proceeds to the <code class="xref py py-meth docutils literal notranslate"><span class="pre">ExecutableDDLElement.execute()</span></code>
+method in order to invoke the actual DDL instruction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="sqlalchemy.schema.ExecutableDDLElement.against.params.target"></span><strong>target</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.against.params.target">¶</a> – a <a class="reference internal" href="metadata.html#sqlalchemy.schema.SchemaItem" title="sqlalchemy.schema.SchemaItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaItem</span></code></a> that will be the subject
+of a DDL operation.</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>a copy of this <a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> with the
+<code class="docutils literal notranslate"><span class="pre">.target</span></code> attribute assigned to the given
+<a class="reference internal" href="metadata.html#sqlalchemy.schema.SchemaItem" title="sqlalchemy.schema.SchemaItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaItem</span></code></a>.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a> - uses tokenization against the “target” when
+processing the DDL string.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.ExecutableDDLElement.execute_if">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.ExecutableDDLElement.</span></code></a><span class="sig-name descname"><span class="pre">execute_if</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dialect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callable_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DDLIfCallable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if" title="Link to this definition">¶</a></dt>
+<dd><p>Return a callable that will execute this
+<a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a> conditionally within an event
+handler.</p>
+<p>Used to provide a wrapper for event listening:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+    <span class="n">metadata</span><span class="p">,</span>
+    <span class="s2">&quot;before_create&quot;</span><span class="p">,</span>
+    <span class="n">DDL</span><span class="p">(</span><span class="s2">&quot;my_ddl&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;postgresql&quot;</span><span class="p">),</span>
+<span class="p">)</span></pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.ExecutableDDLElement.execute_if.params.dialect"></span><strong>dialect</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if.params.dialect">¶</a> – <p>May be a string or tuple of strings.
+If a string, it will be compared to the name of the
+executing database dialect:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DDL</span><span class="p">(</span><span class="s2">&quot;something&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;postgresql&quot;</span><span class="p">)</span></pre></div>
+</div>
+<p>If a tuple, specifies multiple dialect names:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DDL</span><span class="p">(</span><span class="s2">&quot;something&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;postgresql&quot;</span><span class="p">,</span> <span class="s2">&quot;mysql&quot;</span><span class="p">))</span></pre></div>
+</div>
+</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.ExecutableDDLElement.execute_if.params.callable_"></span><strong>callable_</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if.params.callable_">¶</a> – <p>A callable, which will be invoked with
+three positional arguments as well as optional keyword
+arguments:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">ddl<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This DDL element.</p>
+</dd>
+<dt class="field-even">target<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> or <a class="reference internal" href="metadata.html#sqlalchemy.schema.MetaData" title="sqlalchemy.schema.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetaData</span></code></a>
+object which is the
+target of this event. May be None if the DDL is executed
+explicitly.</p>
+</dd>
+<dt class="field-odd">bind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The <a class="reference internal" href="connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> being used for DDL execution.
+May be None if this construct is being created inline within
+a table, in which case <code class="docutils literal notranslate"><span class="pre">compiler</span></code> will be present.</p>
+</dd>
+<dt class="field-even">tables<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional keyword argument - a list of Table objects which are to
+be created/ dropped within a MetaData.create_all() or drop_all()
+method call.</p>
+</dd>
+<dt class="field-odd">dialect<span class="colon">:</span></dt>
+<dd class="field-odd"><p>keyword argument, but always present - the
+<a class="reference internal" href="internals.html#sqlalchemy.engine.Dialect" title="sqlalchemy.engine.Dialect"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dialect</span></code></a> involved in the operation.</p>
+</dd>
+<dt class="field-even">compiler<span class="colon">:</span></dt>
+<dd class="field-even"><p>keyword argument.  Will be <code class="docutils literal notranslate"><span class="pre">None</span></code> for an engine
+level DDL invocation, but will refer to a <a class="reference internal" href="internals.html#sqlalchemy.sql.compiler.DDLCompiler" title="sqlalchemy.sql.compiler.DDLCompiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLCompiler</span></code></a>
+if this DDL element is being created inline within a table.</p>
+</dd>
+<dt class="field-odd">state<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional keyword argument - will be the <code class="docutils literal notranslate"><span class="pre">state</span></code> argument
+passed to this function.</p>
+</dd>
+<dt class="field-even">checkfirst<span class="colon">:</span></dt>
+<dd class="field-even"><p>Keyword argument, will be True if the ‘checkfirst’ flag was
+set during the call to <code class="docutils literal notranslate"><span class="pre">create()</span></code>, <code class="docutils literal notranslate"><span class="pre">create_all()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">drop()</span></code>, <code class="docutils literal notranslate"><span class="pre">drop_all()</span></code>.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>If the callable returns a True value, the DDL statement will be
+executed.</p>
+</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.ExecutableDDLElement.execute_if.params.state"></span><strong>state</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if.params.state">¶</a> – any value which will be passed to the callable_
+as the <code class="docutils literal notranslate"><span class="pre">state</span></code> keyword argument.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SchemaItem.ddl_if()</span></code></p>
+<p><a class="reference internal" href="events.html#sqlalchemy.events.DDLEvents" title="sqlalchemy.events.DDLEvents"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLEvents</span></code></a></p>
+<p><a class="reference internal" href="event.html#event-toplevel"><span class="std std-ref">事件</span></a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DDL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">DDL</span></span><a class="headerlink" href="#sqlalchemy.schema.DDL" title="Link to this definition">¶</a></dt>
+<dd><p>A literal DDL statement.</p>
+<p>Specifies literal SQL DDL to be executed by the database.  DDL objects
+function as DDL event listeners, and can be subscribed to those events
+listed in <a class="reference internal" href="events.html#sqlalchemy.events.DDLEvents" title="sqlalchemy.events.DDLEvents"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLEvents</span></code></a>, using either <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> or
+<a class="reference internal" href="metadata.html#sqlalchemy.schema.MetaData" title="sqlalchemy.schema.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetaData</span></code></a> objects as targets.
+Basic templating support allows
+a single DDL instance to handle repetitive tasks for multiple tables.</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span><span class="p">,</span> <span class="n">DDL</span>
+
+<span class="n">tbl</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">))</span>
+<span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="s2">&quot;before_create&quot;</span><span class="p">,</span> <span class="n">DDL</span><span class="p">(</span><span class="s2">&quot;DROP TRIGGER users_trigger&quot;</span><span class="p">))</span>
+
+<span class="n">spow</span> <span class="o">=</span> <span class="n">DDL</span><span class="p">(</span><span class="s2">&quot;ALTER TABLE </span><span class="si">%(table)s</span><span class="s2"> SET secretpowers TRUE&quot;</span><span class="p">)</span>
+<span class="n">event</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="s2">&quot;after_create&quot;</span><span class="p">,</span> <span class="n">spow</span><span class="o">.</span><span class="n">execute_if</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;somedb&quot;</span><span class="p">))</span>
+
+<span class="n">drop_spow</span> <span class="o">=</span> <span class="n">DDL</span><span class="p">(</span><span class="s2">&quot;ALTER TABLE users SET secretpowers FALSE&quot;</span><span class="p">)</span>
+<span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">drop_spow</span><span class="p">)</span></pre></div>
+</div>
+<p>When operating on Table events, the following <code class="docutils literal notranslate"><span class="pre">statement</span></code>
+string substitutions are available:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>%(table)s  - the Table name, with any required quoting applied
+%(schema)s - the schema name, with any required quoting applied
+%(fullname)s - the Table name including schema, quoted if needed</pre></div>
+</div>
+<p>The DDL’s “context”, if any, will be combined with the standard
+substitutions noted above.  Keys present in the context will override
+the standard substitutions.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.DDL.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.DDL</span></code></a> (<a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.ExecutableDDLElement</span></code></a>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DDL.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.DDL"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.DDL.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sqlalchemy.schema.DDL.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a DDL statement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.DDL.params.statement"></span><strong>statement</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DDL.params.statement">¶</a> – <p>A string or unicode string to be executed.  Statements will be
+processed with Python’s string formatting operator using
+a fixed set of string substitutions, as well as additional
+substitutions provided by the optional <a class="reference internal" href="#sqlalchemy.schema.DDL.params.context" title="sqlalchemy.schema.DDL"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">DDL.context</span></code></a>
+parameter.</p>
+<p>A literal ‘%’ in a statement must be escaped as ‘%%’.</p>
+<p>SQL bind parameters are not available in DDL statements.</p>
+</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.DDL.params.context"></span><strong>context</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DDL.params.context">¶</a> – Optional dictionary, defaults to None.  These values will be
+available for use in string substitutions on the DDL statement.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="events.html#sqlalchemy.events.DDLEvents" title="sqlalchemy.events.DDLEvents"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLEvents</span></code></a></p>
+<p><a class="reference internal" href="event.html#event-toplevel"><span class="std std-ref">事件</span></a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema._CreateDropBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">_CreateDropBase</span></span><a class="headerlink" href="#sqlalchemy.schema._CreateDropBase" title="Link to this definition">¶</a></dt>
+<dd><p>Base class for DDL constructs that represent CREATE and DROP or
+equivalents.</p>
+<p>The common theme of _CreateDropBase is a single
+<code class="docutils literal notranslate"><span class="pre">element</span></code> attribute which refers to the element
+to be created or dropped.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._CreateDropBase</span></code> (<a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement" title="sqlalchemy.schema.ExecutableDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.ExecutableDDLElement</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code>)</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.CreateTable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">CreateTable</span></span><a class="headerlink" href="#sqlalchemy.schema.CreateTable" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a CREATE TABLE statement.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.CreateTable.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.CreateTable</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._CreateBase</span></code>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.CreateTable.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.CreateTable"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.CreateTable.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><span class="pre">Table</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_foreign_key_constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">typing_Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><span class="pre">ForeignKeyConstraint</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_not_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.schema.CreateTable.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateTable</span></code></a> construct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.CreateTable.params.element"></span><strong>element</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.CreateTable.params.element">¶</a> – a <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> that’s the subject
+of the CREATE</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.CreateTable.params.on"></span><strong>on</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.CreateTable.params.on">¶</a> – See the description for ‘on’ in <a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a>.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.CreateTable.params.include_foreign_key_constraints"></span><strong>include_foreign_key_constraints</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.CreateTable.params.include_foreign_key_constraints">¶</a> – optional sequence of
+<a class="reference internal" href="constraints.html#sqlalchemy.schema.ForeignKeyConstraint" title="sqlalchemy.schema.ForeignKeyConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyConstraint</span></code></a> objects that will be included
+inline within the CREATE construct; if omitted, all foreign key
+constraints that do not specify use_alter=True are included.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.CreateTable.params.if_not_exists"></span><strong>if_not_exists</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.CreateTable.params.if_not_exists">¶</a> – <p>if True, an IF NOT EXISTS operator will be
+applied to the construct.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 1.4.0b2 版本加入.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropTable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">DropTable</span></span><a class="headerlink" href="#sqlalchemy.schema.DropTable" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a DROP TABLE statement.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.DropTable.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.DropTable" title="sqlalchemy.schema.DropTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropTable</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._DropBase</span></code>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropTable.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.DropTable"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropTable.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><span class="pre">Table</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.schema.DropTable.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="#sqlalchemy.schema.DropTable" title="sqlalchemy.schema.DropTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">DropTable</span></code></a> construct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.DropTable.params.element"></span><strong>element</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropTable.params.element">¶</a> – a <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> that’s the subject
+of the DROP.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.DropTable.params.on"></span><strong>on</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropTable.params.on">¶</a> – See the description for ‘on’ in <a class="reference internal" href="#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a>.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.DropTable.params.if_exists"></span><strong>if_exists</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropTable.params.if_exists">¶</a> – <p>if True, an IF EXISTS operator will be applied to the
+construct.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 1.4.0b2 版本加入.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.CreateColumn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">CreateColumn</span></span><a class="headerlink" href="#sqlalchemy.schema.CreateColumn" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a <a class="reference internal" href="metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a>
+as rendered in a CREATE TABLE statement,
+via the <a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateTable</span></code></a> construct.</p>
+<p>This is provided to support custom column DDL within the generation
+of CREATE TABLE statements, by using the
+compiler extension documented in <a class="reference internal" href="compiler.html#sqlalchemy-ext-compiler-toplevel"><span class="std std-ref">自定义 SQL 构造和编译扩展</span></a>
+to extend <a class="reference internal" href="#sqlalchemy.schema.CreateColumn" title="sqlalchemy.schema.CreateColumn"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateColumn</span></code></a>.</p>
+<p>Typical integration is to examine the incoming <a class="reference internal" href="metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a>
+object, and to redirect compilation if a particular flag or condition
+is found:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">schema</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.compiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">compiles</span>
+
+
+<span class="nd">@compiles</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">CreateColumn</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="n">column</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">element</span>
+
+    <span class="k">if</span> <span class="s2">&quot;special&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">column</span><span class="o">.</span><span class="n">info</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">compiler</span><span class="o">.</span><span class="n">visit_create_column</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> SPECIAL DIRECTIVE </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">compiler</span><span class="o">.</span><span class="n">type_compiler</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">type</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">default</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">.</span><span class="n">get_column_default_string</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; DEFAULT &quot;</span> <span class="o">+</span> <span class="n">default</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">column</span><span class="o">.</span><span class="n">nullable</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; NOT NULL&quot;</span>
+
+    <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">const</span><span class="p">)</span> <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="n">column</span><span class="o">.</span><span class="n">constraints</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span></pre></div>
+</div>
+<p>The above construct can be applied to a <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>
+as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">schema</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s2">&quot;mytable&quot;</span><span class="p">,</span>
+    <span class="n">MetaData</span><span class="p">(),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;special&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">)),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">info</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;special&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span>
+<span class="p">)</span>
+
+<span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span></pre></div>
+</div>
+<p>Above, the directives we’ve added to the <a class="reference internal" href="metadata.html#sqlalchemy.schema.Column.info" title="sqlalchemy.schema.Column.info"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Column.info</span></code></a>
+collection
+will be detected by our custom compilation scheme:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">mytable</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="n">SPECIAL</span><span class="w"> </span><span class="n">DIRECTIVE</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">        </span><span class="n">y</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span>
+<span class="w">        </span><span class="n">z</span><span class="w"> </span><span class="n">SPECIAL</span><span class="w"> </span><span class="n">DIRECTIVE</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="p">)</span></pre></div>
+</div>
+<p>The <a class="reference internal" href="#sqlalchemy.schema.CreateColumn" title="sqlalchemy.schema.CreateColumn"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateColumn</span></code></a> construct can also be used to skip certain
+columns when producing a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code>.  This is accomplished by
+creating a compilation rule that conditionally returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+This is essentially how to produce the same effect as using the
+<code class="docutils literal notranslate"><span class="pre">system=True</span></code> argument on <a class="reference internal" href="metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a>, which marks a column
+as an implicitly-present “system” column.</p>
+<p>For example, suppose we wish to produce a <a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>
+which skips
+rendering of the PostgreSQL <code class="docutils literal notranslate"><span class="pre">xmin</span></code> column against the PostgreSQL
+backend, but on other backends does render it, in anticipation of a
+triggered rule.  A conditional compilation rule could skip this name only
+on PostgreSQL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateColumn</span>
+
+
+<span class="nd">@compiles</span><span class="p">(</span><span class="n">CreateColumn</span><span class="p">,</span> <span class="s2">&quot;postgresql&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">skip_xmin</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;xmin&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">compiler</span><span class="o">.</span><span class="n">visit_create_column</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+
+<span class="n">my_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s2">&quot;mytable&quot;</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">),</span>
+<span class="p">)</span></pre></div>
+</div>
+<p>Above, a <a class="reference internal" href="#sqlalchemy.schema.CreateTable" title="sqlalchemy.schema.CreateTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateTable</span></code></a> construct will generate a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code>
+which only includes the <code class="docutils literal notranslate"><span class="pre">id</span></code> column in the string; the <code class="docutils literal notranslate"><span class="pre">xmin</span></code> column
+will be omitted, but only against the PostgreSQL backend.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.CreateColumn" title="sqlalchemy.schema.CreateColumn"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.CreateColumn</span></code></a> (<a class="reference internal" href="#sqlalchemy.schema.BaseDDLElement" title="sqlalchemy.schema.BaseDDLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.BaseDDLElement</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.CreateSequence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">CreateSequence</span></span><a class="headerlink" href="#sqlalchemy.schema.CreateSequence" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a CREATE SEQUENCE statement.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.CreateSequence" title="sqlalchemy.schema.CreateSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.CreateSequence</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._CreateBase</span></code>)</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropSequence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">DropSequence</span></span><a class="headerlink" href="#sqlalchemy.schema.DropSequence" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a DROP SEQUENCE statement.</p>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.DropSequence" title="sqlalchemy.schema.DropSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropSequence</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._DropBase</span></code>)</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.CreateIndex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">CreateIndex</span></span><a class="headerlink" href="#sqlalchemy.schema.CreateIndex" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a CREATE INDEX statement.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.CreateIndex.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.CreateIndex" title="sqlalchemy.schema.CreateIndex"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.CreateIndex</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._CreateBase</span></code>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.CreateIndex.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.CreateIndex"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.CreateIndex.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="constraints.html#sqlalchemy.schema.Index" title="sqlalchemy.schema.Index"><span class="pre">Index</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_not_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.schema.CreateIndex.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a <code class="xref py py-class docutils literal notranslate"><span class="pre">Createindex</span></code> construct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.CreateIndex.params.element"></span><strong>element</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.CreateIndex.params.element">¶</a> – a <a class="reference internal" href="constraints.html#sqlalchemy.schema.Index" title="sqlalchemy.schema.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a> that’s the subject
+of the CREATE.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.CreateIndex.params.if_not_exists"></span><strong>if_not_exists</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.CreateIndex.params.if_not_exists">¶</a> – <p>if True, an IF NOT EXISTS operator will be
+applied to the construct.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 1.4.0b2 版本加入.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropIndex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">DropIndex</span></span><a class="headerlink" href="#sqlalchemy.schema.DropIndex" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a DROP INDEX statement.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.DropIndex.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.DropIndex" title="sqlalchemy.schema.DropIndex"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropIndex</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._DropBase</span></code>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropIndex.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.DropIndex"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropIndex.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="constraints.html#sqlalchemy.schema.Index" title="sqlalchemy.schema.Index"><span class="pre">Index</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.schema.DropIndex.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="#sqlalchemy.schema.DropIndex" title="sqlalchemy.schema.DropIndex"><code class="xref py py-class docutils literal notranslate"><span class="pre">DropIndex</span></code></a> construct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.DropIndex.params.element"></span><strong>element</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropIndex.params.element">¶</a> – a <a class="reference internal" href="constraints.html#sqlalchemy.schema.Index" title="sqlalchemy.schema.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a> that’s the subject
+of the DROP.</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.DropIndex.params.if_exists"></span><strong>if_exists</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropIndex.params.if_exists">¶</a> – <p>if True, an IF EXISTS operator will be applied to the
+construct.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 1.4.0b2 版本加入.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.AddConstraint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">AddConstraint</span></span><a class="headerlink" href="#sqlalchemy.schema.AddConstraint" title="Link to this definition">¶</a></dt>
+<dd><p>Represent an ALTER TABLE ADD CONSTRAINT statement.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.AddConstraint.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.AddConstraint" title="sqlalchemy.schema.AddConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.AddConstraint</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._CreateBase</span></code>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.AddConstraint.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.AddConstraint"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.AddConstraint.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="constraints.html#sqlalchemy.schema.Constraint" title="sqlalchemy.schema.Constraint"><span class="pre">Constraint</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isolate_from_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.schema.AddConstraint.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Construct a new <a class="reference internal" href="#sqlalchemy.schema.AddConstraint" title="sqlalchemy.schema.AddConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddConstraint</span></code></a> construct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.AddConstraint.params.element"></span><strong>element</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.AddConstraint.params.element">¶</a> – a <a class="reference internal" href="constraints.html#sqlalchemy.schema.Constraint" title="sqlalchemy.schema.Constraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code></a> object</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.AddConstraint.params.isolate_from_table"></span><strong>isolate_from_table</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.AddConstraint.params.isolate_from_table">¶</a> – <p>optional boolean, defaults to True.  Has
+the effect of the incoming constraint being isolated from being
+included in a CREATE TABLE sequence when associated with a
+<a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 2.0.39 版本加入: </span>- added
+<a class="reference internal" href="#sqlalchemy.schema.AddConstraint.params.isolate_from_table" title="sqlalchemy.schema.AddConstraint"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">AddConstraint.isolate_from_table</span></code></a>, defaulting
+to True.  Previously, the behavior of this parameter was implicitly
+turned on in all cases.</p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropConstraint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">DropConstraint</span></span><a class="headerlink" href="#sqlalchemy.schema.DropConstraint" title="Link to this definition">¶</a></dt>
+<dd><p>Represent an ALTER TABLE DROP CONSTRAINT statement.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.DropConstraint.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.DropConstraint" title="sqlalchemy.schema.DropConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropConstraint</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._DropBase</span></code>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropConstraint.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.DropConstraint"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropConstraint.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="constraints.html#sqlalchemy.schema.Constraint" title="sqlalchemy.schema.Constraint"><span class="pre">Constraint</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cascade</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isolate_from_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.schema.DropConstraint.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Construct a new <a class="reference internal" href="#sqlalchemy.schema.DropConstraint" title="sqlalchemy.schema.DropConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DropConstraint</span></code></a> construct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="sqlalchemy.schema.DropConstraint.params.element"></span><strong>element</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropConstraint.params.element">¶</a> – a <a class="reference internal" href="constraints.html#sqlalchemy.schema.Constraint" title="sqlalchemy.schema.Constraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code></a> object</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.DropConstraint.params.cascade"></span><strong>cascade</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropConstraint.params.cascade">¶</a> – optional boolean, indicates backend-specific
+“CASCADE CONSTRAINT” directive should be rendered if available</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.DropConstraint.params.if_exists"></span><strong>if_exists</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropConstraint.params.if_exists">¶</a> – optional boolean, indicates backend-specific
+“IF EXISTS” directive should be rendered if available</p></li>
+<li><p><span class="target" id="sqlalchemy.schema.DropConstraint.params.isolate_from_table"></span><strong>isolate_from_table</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.schema.DropConstraint.params.isolate_from_table">¶</a> – <p>optional boolean, defaults to True.  Has
+the effect of the incoming constraint being isolated from being
+included in a CREATE TABLE sequence when associated with a
+<a class="reference internal" href="metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">在 2.0.39 版本加入: </span>- added
+<a class="reference internal" href="#sqlalchemy.schema.DropConstraint.params.isolate_from_table" title="sqlalchemy.schema.DropConstraint"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">DropConstraint.isolate_from_table</span></code></a>, defaulting
+to True.  Previously, the behavior of this parameter was implicitly
+turned on in all cases.</p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.CreateSchema">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">CreateSchema</span></span><a class="headerlink" href="#sqlalchemy.schema.CreateSchema" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a CREATE SCHEMA statement.</p>
+<p>The argument here is the string name of the schema.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.CreateSchema.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.CreateSchema" title="sqlalchemy.schema.CreateSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.CreateSchema</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._CreateBase</span></code>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.CreateSchema.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.CreateSchema"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.CreateSchema.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_not_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.schema.CreateSchema.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new <a class="reference internal" href="#sqlalchemy.schema.CreateSchema" title="sqlalchemy.schema.CreateSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateSchema</span></code></a> construct.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropSchema">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.schema.</span></span><span class="sig-name descname"><span class="pre">DropSchema</span></span><a class="headerlink" href="#sqlalchemy.schema.DropSchema" title="Link to this definition">¶</a></dt>
+<dd><p>Represent a DROP SCHEMA statement.</p>
+<p>The argument here is the string name of the schema.</p>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.schema.DropSchema.__init__"><span class="sig-name descname">__init__()</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.schema.DropSchema" title="sqlalchemy.schema.DropSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropSchema</span></code></a> (<code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema._DropBase</span></code>)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sqlalchemy.schema.DropSchema.__init__">
+<em class="property"><span class="pre">method</span> </em><a class="reference internal" href="#sqlalchemy.schema.DropSchema"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.schema.DropSchema.</span></code></a><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cascade</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.schema.DropSchema.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new <a class="reference internal" href="#sqlalchemy.schema.DropSchema" title="sqlalchemy.schema.DropSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">DropSchema</span></code></a> construct.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="types.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">SQL 数据类型对象</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="constraints.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">定义约束和索引</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">自定义 DDL</a><ul>
+<li><a class="reference internal" href="#id1">自定义 DDL</a></li>
+<li><a class="reference internal" href="#schema-ddl-sequences">控制 DDL 序列</a></li>
+<li><a class="reference internal" href="#ddlelement">使用内置 DDLElement 类</a></li>
+<li><a class="reference internal" href="#schema-ddl-ddl-if">控制 DDL 约束和索引的生成</a></li>
+<li><a class="reference internal" href="#ddl-api">DDL 表达式构造 API</a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.sort_tables"><code class="docutils literal notranslate"><span class="pre">sort_tables()</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.sort_tables_and_constraints"><code class="docutils literal notranslate"><span class="pre">sort_tables_and_constraints()</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.BaseDDLElement"><code class="docutils literal notranslate"><span class="pre">BaseDDLElement</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement"><code class="docutils literal notranslate"><span class="pre">ExecutableDDLElement</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.__call__"><code class="docutils literal notranslate"><span class="pre">ExecutableDDLElement.__call__()</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.against"><code class="docutils literal notranslate"><span class="pre">ExecutableDDLElement.against()</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.ExecutableDDLElement.execute_if"><code class="docutils literal notranslate"><span class="pre">ExecutableDDLElement.execute_if()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema.DDL"><code class="docutils literal notranslate"><span class="pre">DDL</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.DDL.__init__"><code class="docutils literal notranslate"><span class="pre">DDL.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema._CreateDropBase"><code class="docutils literal notranslate"><span class="pre">_CreateDropBase</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.CreateTable"><code class="docutils literal notranslate"><span class="pre">CreateTable</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.CreateTable.__init__"><code class="docutils literal notranslate"><span class="pre">CreateTable.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropTable"><code class="docutils literal notranslate"><span class="pre">DropTable</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropTable.__init__"><code class="docutils literal notranslate"><span class="pre">DropTable.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema.CreateColumn"><code class="docutils literal notranslate"><span class="pre">CreateColumn</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.CreateSequence"><code class="docutils literal notranslate"><span class="pre">CreateSequence</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropSequence"><code class="docutils literal notranslate"><span class="pre">DropSequence</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.schema.CreateIndex"><code class="docutils literal notranslate"><span class="pre">CreateIndex</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.CreateIndex.__init__"><code class="docutils literal notranslate"><span class="pre">CreateIndex.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropIndex"><code class="docutils literal notranslate"><span class="pre">DropIndex</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropIndex.__init__"><code class="docutils literal notranslate"><span class="pre">DropIndex.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema.AddConstraint"><code class="docutils literal notranslate"><span class="pre">AddConstraint</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.AddConstraint.__init__"><code class="docutils literal notranslate"><span class="pre">AddConstraint.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropConstraint"><code class="docutils literal notranslate"><span class="pre">DropConstraint</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropConstraint.__init__"><code class="docutils literal notranslate"><span class="pre">DropConstraint.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema.CreateSchema"><code class="docutils literal notranslate"><span class="pre">CreateSchema</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.CreateSchema.__init__"><code class="docutils literal notranslate"><span class="pre">CreateSchema.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropSchema"><code class="docutils literal notranslate"><span class="pre">DropSchema</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.schema.DropSchema.__init__"><code class="docutils literal notranslate"><span class="pre">DropSchema.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

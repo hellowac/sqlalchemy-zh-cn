@@ -1,0 +1,718 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="搜索" href="../../search.html" /><link rel="copyright" title="版权所有" href="../../copyright.html" /><link rel="next" title="为 ORM 映射类编写 SELECT 语句" href="select.html" /><link rel="prev" title="关系 API" href="../relationship_api.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.08.06 -->
+        <title>ORM 查询指南 - SQLAlchemy 2.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/changelog.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/docs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">SQLAlchemy 2.1 Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">SQLAlchemy 2.1 Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">概述</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/index.html">SQLAlchemy 统一教程</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of SQLAlchemy 统一教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/engine.html">建立连接 - Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/dbapi_transactions.html">使用事务和DBAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/metadata.html">使用数据库元数据</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/data.html">处理数据</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 处理数据</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/data_insert.html">使用 INSERT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/data_select.html">使用 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/data_update.html">使用 UPDATE 和 DELETE 语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/orm_data_manipulation.html">使用 ORM 进行数据操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/orm_related_objects.html">使用 ORM 相关对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/further_reading.html">进一步阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">SQLAlchemy ORM</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of SQLAlchemy ORM</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html">ORM 快速入门</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../mapper_config.html">ORM 映射类配置</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of ORM 映射类配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../mapping_styles.html">ORM 映射类概述</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../declarative_mapping.html">使用声明式映射类</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 使用声明式映射类</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../declarative_styles.html">声明式映射风格</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../declarative_tables.html">声明式的表配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../declarative_config.html">使用声明式映射器配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../declarative_mixins.html">使用 Mixins 组合映射层次结构</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../dataclasses.html">与dataclass和attrs的集成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mapped_sql_expr.html">SQL 表达式作为映射属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mapped_attributes.html">更改Attribute的行为</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../composites.html">复合列类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../inheritance.html">映射类继承层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../nonstandard_mappings.html">非传统映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../versioning.html">配置版本计数器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mapping_api.html">类映射 API</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../scalar_mapping.html">映射 SQL 表达式</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of 映射 SQL 表达式</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../mapping_columns.html">映射表格列</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../relationships.html">关系配置</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of 关系配置</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../basic_relationships.html">基本关系模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../self_referential.html">邻接表关系</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../join_conditions.html">配置关系连接方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../large_collections.html">使用大型集合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../collection_api.html">集合自定义和 API 详细信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../relationship_persistence.html">特殊关系的持久化模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backref.html">使用旧版“backref”关系参数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../relationship_api.html">关系 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">ORM 查询指南</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of ORM 查询指南</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="select.html">为 ORM 映射类编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html">为继承映射编写 SELECT 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html">列加载选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html">关系加载技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html">用于查询的 ORM API 功能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query.html">旧式查询 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../session.html">使用会话</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of 使用会话</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_basics.html">会话基础知识</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_state_management.html">状态管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cascades.html">级联</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_transaction.html">事务和连接管理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../persistence_techniques.html">附加持久性技术</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contextual.html">上下文/线程本地会话</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_events.html">使用事件跟踪查询、对象和会话更改</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_api.html">会话 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../extending.html">事件和内部</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of 事件和内部</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../events.html">ORM 事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../internals.html">ORM 内部</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html">ORM 异常</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../extensions/index.html">ORM 扩展</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of ORM 扩展</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/asyncio.html">异步 I/O (asyncio)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/associationproxy.html">关联代理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/automap.html">自动映射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/baked.html">烘焙查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/declarative/index.html">声明式扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/mutable.html">突变追踪</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/orderinglist.html">排序列表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/horizontal_shard.html">水平分片</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/hybrid.html">混合属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/indexable.html">Indexable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../extensions/instrumentation.html">替代类检测</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html">核心和 ORM 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../core/index.html">SQLAlchemy Core</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of SQLAlchemy Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../core/expression_api.html">SQL 语句和表达式 API</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of SQL 语句和表达式 API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../core/sqlelement.html">列元素和表达式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/operators.html">操作符参考</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/selectable.html">SELECT 和相关构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/dml.html">插入,更新,删除</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/functions.html">SQL 和 范型函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/compiler.html">自定义 SQL 构造和编译扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/serializer.html">表达式序列化器扩展</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/foundation.html">SQL 表达式语言基础构造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/visitors.html">访问者和遍历实用程序</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../core/schema.html">Schema 定义语言</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Schema 定义语言</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../core/metadata.html">使用元数据描述数据库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/reflection.html">反映数据库对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/defaults.html">列 INSERT/UPDATE 默认值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/constraints.html">定义约束和索引</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/ddl.html">自定义 DDL</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../core/types.html">SQL 数据类型对象</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of SQL 数据类型对象</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../core/type_basics.html">类型层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/custom_types.html">自定义类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/type_api.html">基本类型 API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../core/engines_connections.html">Engine和Connection的使用</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Engine和Connection的使用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../core/engines.html">Engine 配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/connections.html">使用Engines和Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/pooling.html">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/events.html">核心事件</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../core/api_basics.html">Core API 基础</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Core API 基础</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../core/event.html">事件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/inspection.html">运行时审查 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/exceptions.html">Core 异常</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../core/internals.html">Core 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dialects/index.html">Dialects</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Dialects</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dialects/postgresql.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dialects/mysql.html">MySQL 和 MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dialects/sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dialects/oracle.html">Oracle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dialects/mssql.html">Microsoft SQL Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">常见问题</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of 常见问题</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../faq/installation.html">安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../faq/connections.html">连接 / 引擎</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../faq/metadata_schema.html">元数据 / Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../faq/sqlexpressions.html">SQL 表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../faq/ormconfiguration.html">ORM 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../faq/performance.html">性能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../faq/sessions.html">会话 / 查询</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../faq/thirdparty.html">第三方包集成问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../errors.html">错误消息</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../changelog/index.html">变更和迁移</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of 变更和迁移</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_21.html">SQLAlchemy 2.1 有什么新功能？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_21.html">2.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_20.html">2.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_14.html">1.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_13.html">1.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_12.html">1.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_11.html">1.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_10.html">1.0 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_09.html">0.9 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_08.html">0.8 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_07.html">0.7 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_06.html">0.6 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_05.html">0.5 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_04.html">0.4 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_03.html">0.3 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_02.html">0.2 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/changelog_01.html">0.1 Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_20.html">SQLAlchemy 2.0 - Major Migration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/whatsnew_20.html">What’s New in SQLAlchemy 2.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_14.html">What’s New in SQLAlchemy 1.4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_13.html">What’s New in SQLAlchemy 1.3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_12.html">What’s New in SQLAlchemy 1.2?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_11.html">What’s New in SQLAlchemy 1.1?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_10.html">What’s New in SQLAlchemy 1.0?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_09.html">What’s New in SQLAlchemy 0.9?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_08.html">What’s New in SQLAlchemy 0.8?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_07.html">What’s New in SQLAlchemy 0.7?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_06.html">What’s New in SQLAlchemy 0.6?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_05.html">What’s new in SQLAlchemy 0.5?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog/migration_04.html">What’s new in SQLAlchemy 0.4?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="orm">
+<span id="queryguide-toplevel"></span><h1>ORM 查询指南<a class="headerlink" href="#orm" title="Link to this heading">¶</a></h1>
+<p>ORM Querying Guide</p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>本节概述了使用 SQLAlchemy ORM 发出查询的 <cite>2.0 风格</cite> (<a class="reference internal" href="../../glossary.html#term-2.0-style"><span class="xref std std-term">2.0 style</span></a>) 使用方法。</p>
+<p>阅读本节的读者应熟悉 <a class="reference internal" href="../../tutorial/index.html#unified-tutorial"><span class="std std-ref">SQLAlchemy 统一教程</span></a> 中的 SQLAlchemy 概述，特别是这里的大部分内容扩展了 <a class="reference internal" href="../../tutorial/data_select.html#tutorial-selecting-data"><span class="std std-ref">使用 SELECT 语句</span></a> 中的内容。</p>
+<div class="admonition-sqlalchemy-1-x admonition">
+<p class="admonition-title">对于 SQLAlchemy 1.x 用户</p>
+<p>在 SQLAlchemy 2.x 系列中，ORM 的 SQL SELECT 语句使用与 Core 中相同的 <a class="reference internal" href="../../core/selectable.html#sqlalchemy.sql.expression.select" title="sqlalchemy.sql.expression.select"><code class="xref py py-func docutils literal notranslate"><span class="pre">select()</span></code></a> 构造来构建，然后使用 <a class="reference internal" href="../session_api.html#sqlalchemy.orm.Session" title="sqlalchemy.orm.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a> 的 <a class="reference internal" href="../session_api.html#sqlalchemy.orm.Session.execute" title="sqlalchemy.orm.Session.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.execute()</span></code></a> 方法调用（正如现在用于 <a class="reference internal" href="dml.html#orm-expression-update-delete"><span class="std std-ref">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</span></a> 功能的 <a class="reference internal" href="../../core/dml.html#sqlalchemy.sql.expression.update" title="sqlalchemy.sql.expression.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">update()</span></code></a> 和 <a class="reference internal" href="../../core/dml.html#sqlalchemy.sql.expression.delete" title="sqlalchemy.sql.expression.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">delete()</span></code></a> 构造）。然而，遗留的 <a class="reference internal" href="query.html#sqlalchemy.orm.Query" title="sqlalchemy.orm.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> 对象继续作为新系统上的一个薄外观可用，以支持基于 1.x 系列构建的应用程序，无需全面替换所有查询。有关此对象的参考，请参阅 <a class="reference internal" href="query.html#query-api-toplevel"><span class="std std-ref">旧式查询 API</span></a> 部分。</p>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>This section provides an overview of emitting queries with the
+SQLAlchemy ORM using <a class="reference internal" href="../../glossary.html#term-2.0-style"><span class="xref std std-term">2.0 style</span></a> usage.</p>
+<p>Readers of this section should be familiar with the SQLAlchemy overview
+at <a class="reference internal" href="../../tutorial/index.html#unified-tutorial"><span class="std std-ref">SQLAlchemy 统一教程</span></a>, and in particular most of the content here expands
+upon the content at <a class="reference internal" href="../../tutorial/data_select.html#tutorial-selecting-data"><span class="std std-ref">使用 SELECT 语句</span></a>.</p>
+<div class="admonition-for-users-of-sqlalchemy-1-x admonition">
+<p class="admonition-title">For users of SQLAlchemy 1.x</p>
+<p>In the SQLAlchemy 2.x series, SQL SELECT statements for the ORM are
+constructed using the same <a class="reference internal" href="../../core/selectable.html#sqlalchemy.sql.expression.select" title="sqlalchemy.sql.expression.select"><code class="xref py py-func docutils literal notranslate"><span class="pre">select()</span></code></a> construct as is used in
+Core, which is then invoked in terms of a <a class="reference internal" href="../session_api.html#sqlalchemy.orm.Session" title="sqlalchemy.orm.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a> using the
+<a class="reference internal" href="../session_api.html#sqlalchemy.orm.Session.execute" title="sqlalchemy.orm.Session.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.execute()</span></code></a> method (as are the <a class="reference internal" href="../../core/dml.html#sqlalchemy.sql.expression.update" title="sqlalchemy.sql.expression.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">update()</span></code></a> and
+<a class="reference internal" href="../../core/dml.html#sqlalchemy.sql.expression.delete" title="sqlalchemy.sql.expression.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">delete()</span></code></a> constructs now used for the
+<a class="reference internal" href="dml.html#orm-expression-update-delete"><span class="std std-ref">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</span></a> feature). However, the legacy
+<a class="reference internal" href="query.html#sqlalchemy.orm.Query" title="sqlalchemy.orm.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object, which performs these same steps as more of an
+“all-in-one” object, continues to remain available as a thin facade over
+this new system, to support applications that were built on the 1.x series
+without the need for wholesale replacement of all queries. For reference on
+this object, see the section <a class="reference internal" href="query.html#query-api-toplevel"><span class="std std-ref">旧式查询 API</span></a>.</p>
+</div>
+</div>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="select.html">为 ORM 映射类编写 SELECT 语句</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="select.html#orm">选择 ORM 实体和属性</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-select-orm-entities">选择 ORM 实体</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-select-multiple-entities">同时选择多个 ORM 实体</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#id3">选择单个属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#bundles">使用捆绑包对选定属性进行分组</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-orm-aliases">选择 ORM 别名</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-selecting-text">从文本语句获取 ORM 结果</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-subqueries">从子查询中选择实体</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#union">从 UNION 和其他集合操作中选择实体</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#orm-queryguide-joins">连接</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-simple-relationship-join">简单关系连接</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#id10">链接多个连接</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#id11">连接到目标实体</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#on">使用 ON 子句连接到目标</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-join-on-augmented">将关系与自定义 ON 条件相结合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-joining-relationships-aliased">使用关系在别名目标之间进行连接</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-join-subqueries">连接到子查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#id15">沿关系路径连接到子查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#id16">引用多个实体的子查询</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#from">设置连接中最左边的 FROM 子句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#where">关系 WHERE 运算符</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="select.html#exists-has-any">EXISTS 形式：has() / any()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="select.html#orm-queryguide-relationship-common-operators">关系实例比较运算符</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inheritance.html">为继承映射编写 SELECT 语句</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#id1">从基类与特定子类中进行选择</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#selectin-polymorphic">使用 selectin_polymorphic()</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#polymorphic-selectin-as-loader-option-target">将 selectin_polymorphic() 应用于现有的即时加载</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#polymorphic-selectin-w-loader-options">将加载器选项应用于 selectin_polymorphic 加载的子类</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#id7">在映射器上配置 selectin_polymorphic()</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#with-polymorphic">使用 with_polymorphic()</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#with-polymorphic-subclass-attributes">使用 with_polymorphic() 过滤子类属性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#with-polymorphic-aliasing">使用 with_polymorphic 进行别名</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#with-polymorphic-mapper-config">在映射器上配置 with_polymorphic()</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#inheritance-of-type">连接到特定子类型或 with_polymorphic() 实体</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#eagerloading-polymorphic-subtypes">即时加载多态子类型</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#loading-single-inheritance">单一继承映射的 SELECT 语句</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#id15">优化单一继承的属性加载</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#api">继承加载 API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#sqlalchemy.orm.with_polymorphic"><code class="docutils literal notranslate"><span class="pre">with_polymorphic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="inheritance.html#sqlalchemy.orm.selectin_polymorphic"><code class="docutils literal notranslate"><span class="pre">selectin_polymorphic()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dml.html">启用 ORM 的 INSERT、UPDATE 和 DELETE 语句</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dml.html#orm-insert">ORM 批量 INSERT 语句</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#returning">使用 RETURNING 获取新对象</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#orm-queryguide-insert-heterogeneous-params">使用异构参数字典</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#orm-insert-null">在 ORM 批量 INSERT 语句中发送 NULL 值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#insert">用于连接表继承的批量 INSERT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#sql-orm">使用 SQL 表达式的 ORM 批量插入</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#orm-queryguide-legacy-bulk-insert">旧会话批量 INSERT 方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#ormupsert">ORM“upsert”语句</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dml.html#orm-update">ORM 按主键批量 UPDATE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#update-orm">禁用具有多个参数集的 UPDATE 语句的按主键批量 ORM 更新</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#update">用于连接表继承的按主键批量 UPDATE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#orm-queryguide-legacy-bulk-update">旧会话批量 UPDATE 方法</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dml.html#where-orm-update-delete">使用自定义 WHERE 条件的 ORM UPDATE 和 DELETE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#orm">启用 ORM 的更新和删除的重要说明和注意事项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#orm-queryguide-update-delete-sync">选择同步策略</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#returning-update-delete-where">使用 RETURNING 和 UPDATE/DELETE 以及自定义 WHERE 条件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#update-delete-where">使用 UPDATE/DELETE 和自定义 WHERE 条件进行连接表继承</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml.html#id7">旧式查询方法</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="columns.html">列加载选项</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="columns.html#orm-queryguide-column-deferral">使用【列延迟】限制加载哪些列</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#load-only">使用 <code class="docutils literal notranslate"><span class="pre">load_only()</span></code> 减少加载的列</a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#defer">使用 <code class="docutils literal notranslate"><span class="pre">defer()</span></code> 忽略特定列</a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#raiseload">使用 raiseload 防止延迟列加载</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="columns.html#orm-queryguide-deferred-declarative">在映射上配置列延迟</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#sql-deferred">对命令式映射器、映射 SQL 表达式使用 <code class="docutils literal notranslate"><span class="pre">deferred()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#undefer">使用 <code class="docutils literal notranslate"><span class="pre">undefer()</span></code> “急切地” 加载延迟列</a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#orm-queryguide-deferred-group">按组加载延迟列</a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#undefer-group">使用 <code class="docutils literal notranslate"><span class="pre">undefer_group()</span></code> 按组取消延迟</a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#id9">对通配符取消延迟</a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#orm-queryguide-mapper-deferred-raiseload">配置映射器级“raiseload”行为</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="columns.html#sql">将任意 SQL 表达式加载到对象上</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#with-expression-union">使用 <code class="docutils literal notranslate"><span class="pre">with_expression()</span></code> 处理 UNION 和其他子查询</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="columns.html#api">列加载 API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#sqlalchemy.orm.defer"><code class="docutils literal notranslate"><span class="pre">defer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#sqlalchemy.orm.deferred"><code class="docutils literal notranslate"><span class="pre">deferred()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#sqlalchemy.orm.query_expression"><code class="docutils literal notranslate"><span class="pre">query_expression()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#sqlalchemy.orm.load_only"><code class="docutils literal notranslate"><span class="pre">load_only()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#sqlalchemy.orm.undefer"><code class="docutils literal notranslate"><span class="pre">undefer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#sqlalchemy.orm.undefer_group"><code class="docutils literal notranslate"><span class="pre">undefer_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="columns.html#sqlalchemy.orm.with_expression"><code class="docutils literal notranslate"><span class="pre">with_expression()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="relationships.html">关系加载技术</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#id2">关系加载样式摘要</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#relationship-lazy-option">在映射时配置加载器策略</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#relationship-loader-options">使用加载器选项进行关系加载</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#loader-option-criteria">向加载器选项添加条件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#load-options">使用 Load.options() 指定子选项</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#lazy-loading">延迟加载</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#raiseload">使用 raiseload 防止不必要的延迟加载</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#joined-eager-loading">连接预/急加载</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#zen-of-eager-loading">连接预加载的禅宗</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#in">选择 IN 加载</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#subquery-eager-loading">子查询预/急加载</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#what-kind-of-loading">使用哪种加载？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#id11">多态预加载</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#wildcard-loader-strategies">通配符加载策略</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#orm-queryguide-relationship-per-entity-wildcard">每个实体通配符加载策略</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#contains-eager">将显式连接/语句路由到预加载的集合</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#id15">使用 contains_eager() 加载自定义过滤的集合结果</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#api">关系加载器 API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.contains_eager"><code class="docutils literal notranslate"><span class="pre">contains_eager()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.defaultload"><code class="docutils literal notranslate"><span class="pre">defaultload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.immediateload"><code class="docutils literal notranslate"><span class="pre">immediateload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.joinedload"><code class="docutils literal notranslate"><span class="pre">joinedload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.lazyload"><code class="docutils literal notranslate"><span class="pre">lazyload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.Load"><code class="docutils literal notranslate"><span class="pre">Load</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.noload"><code class="docutils literal notranslate"><span class="pre">noload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.raiseload"><code class="docutils literal notranslate"><span class="pre">raiseload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.selectinload"><code class="docutils literal notranslate"><span class="pre">selectinload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="relationships.html#sqlalchemy.orm.subqueryload"><code class="docutils literal notranslate"><span class="pre">subqueryload()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">用于查询的 ORM API 功能</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#orm">ORM 加载器选项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#orm-queryguide-execution-options">ORM 执行选项</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#orm-queryguide-populate-existing">填充现有</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#orm-queryguide-autoflush">自动刷新</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#yield-per">使用 Yield Per 获取大量结果集</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#queryguide-identity-token">身份令牌</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="query.html">旧式查询 API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="query.html#id1">查询对象</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="query.html#sqlalchemy.orm.Query"><code class="docutils literal notranslate"><span class="pre">Query</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="query.html#orm">ORM 特定的查询构造</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="select.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">为 ORM 映射类编写 SELECT 语句</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../relationship_api.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">关系 API</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../../copyright.html">Copyright</a> &#169; 2007-2025, the SQLAlchemy authors and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 04/05/2025 04:00:26</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=2d0eb83f"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=2f3e6152"></script>
+    <script src="../../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>
