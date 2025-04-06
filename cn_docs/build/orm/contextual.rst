@@ -158,26 +158,43 @@ Implicit Method Access
 
 .. tab:: 中文
 
+    :class:`.scoped_session` 的工作非常简单：它会为所有请求者维护一个共享的 :class:`.Session` 实例。  
+    为了让这个 :class:`.Session` 更加便于访问，:class:`.scoped_session` 还实现了 **代理行为（proxy behavior）**，  
+    也就是说，这个注册器本身可以像一个 :class:`.Session` 一样被调用；  
+    当你在这个对象上调用方法时，这些方法会被 **代理（proxied）** 到底层所维护的实际 :class:`.Session` 实例上::
+
+        Session = scoped_session(some_factory)
+
+        # 等价于以下写法：
+        #
+        # session = Session()
+        # print(session.scalars(select(MyClass)).all())
+        #
+        print(Session.scalars(select(MyClass)).all())
+
+    上述代码所执行的逻辑，和先从注册器获取当前 :class:`.Session` 然后再使用它是完全等效的。
+
+
 .. tab:: 英文
 
-The job of the :class:`.scoped_session` is simple; hold onto a :class:`.Session`
-for all who ask for it.  As a means of producing more transparent access to this
-:class:`.Session`, the :class:`.scoped_session` also includes **proxy behavior**,
-meaning that the registry itself can be treated just like a :class:`.Session`
-directly; when methods are called on this object, they are **proxied** to the
-underlying :class:`.Session` being maintained by the registry::
+    The job of the :class:`.scoped_session` is simple; hold onto a :class:`.Session`
+    for all who ask for it.  As a means of producing more transparent access to this
+    :class:`.Session`, the :class:`.scoped_session` also includes **proxy behavior**,
+    meaning that the registry itself can be treated just like a :class:`.Session`
+    directly; when methods are called on this object, they are **proxied** to the
+    underlying :class:`.Session` being maintained by the registry::
 
-    Session = scoped_session(some_factory)
+        Session = scoped_session(some_factory)
 
-    # equivalent to:
-    #
-    # session = Session()
-    # print(session.scalars(select(MyClass)).all())
-    #
-    print(Session.scalars(select(MyClass)).all())
+        # equivalent to:
+        #
+        # session = Session()
+        # print(session.scalars(select(MyClass)).all())
+        #
+        print(Session.scalars(select(MyClass)).all())
 
-The above code accomplishes the same task as that of acquiring the current
-:class:`.Session` by calling upon the registry, then using that :class:`.Session`.
+    The above code accomplishes the same task as that of acquiring the current
+    :class:`.Session` by calling upon the registry, then using that :class:`.Session`.
 
 .. _unitofwork_contextual_threadlocal:
 
@@ -188,41 +205,66 @@ Thread-Local Scope
 
 .. tab:: 中文
 
+    熟悉多线程编程的用户可能会注意到，将某个对象作为全局变量暴露出来通常并不是好主意，  
+    因为这意味着多个线程可能会同时访问同一个全局对象。而 :class:`.Session` 的设计原则就是用于 **非并发** 的场景，  
+    换句话说，它应该“每次只在一个线程中使用”。  
+
+    因此，我们上面展示的 :class:`.scoped_session` 的用法 —— 即在多个调用中维护同一个 :class:`.Session` ——  
+    就必须有某种机制来确保在多线程场景下，不同的线程调用不会获取到相同的会话对象。  
+    我们使用的方案叫做 **线程局部存储（thread local storage）**，  
+    它是一种特殊的对象，每个应用线程中会分别维护各自独立的值。  
+    Python 提供了这种能力，通过 `threading.local() <https://docs.python.org/library/threading.html#threading.local>`_ 构造器实现。  
+
+    :class:`.scoped_session` 默认就使用 `threading.local()` 来作为存储机制，  
+    这意味着对于所有调用注册器的用户来说，虽然拿到的看起来是同一个对象，  
+    但实际上每个线程中维护的是自己独立的 :class:`.Session` 实例。  
+    在另一个线程中调用注册器，会得到另一个线程局部的 :class:`.Session`。
+
+    通过这种技术，:class:`.scoped_session` 提供了一种快捷且相对简单（对于了解线程局部存储的用户来说）  
+    的方法，用于在多线程环境中提供一个“全局”的、线程安全的 :class:`.Session` 实例。
+
+    :meth:`.scoped_session.remove` 方法（如其名所示）用于移除当前线程关联的 :class:`.Session` 实例（如果存在的话）。  
+    但使用 ``threading.local()`` 有一个额外的优势，那就是当应用线程结束时，该线程的“局部存储”也会被自动垃圾回收。  
+    因此，即使不手动调用 :meth:`.scoped_session.remove`，在会话生命周期内使用线程局部作用域也是“安全”的。  
+
+    不过，请注意，事务本身的作用域（例如通过 :meth:`.Session.commit` 或 :meth:`.Session.rollback` 来结束事务）  
+    仍然需要你在适当的时间点显式地进行安排，除非你已经将线程的生命周期与事务的生命周期绑定在一起。
+
 .. tab:: 英文
 
-Users who are familiar with multithreaded programming will note that representing
-anything as a global variable is usually a bad idea, as it implies that the
-global object will be accessed by many threads concurrently.   The :class:`.Session`
-object is entirely designed to be used in a **non-concurrent** fashion, which
-in terms of multithreading means "only in one thread at a time".   So our
-above example of :class:`.scoped_session` usage, where the same :class:`.Session`
-object is maintained across multiple calls, suggests that some process needs
-to be in place such that multiple calls across many threads don't actually get
-a handle to the same session.   We call this notion **thread local storage**,
-which means, a special object is used that will maintain a distinct object
-per each application thread.   Python provides this via the
-`threading.local() <https://docs.python.org/library/threading.html#threading.local>`_
-construct.  The :class:`.scoped_session` object by default uses this object
-as storage, so that a single :class:`.Session` is maintained for all who call
-upon the :class:`.scoped_session` registry, but only within the scope of a single
-thread.   Callers who call upon the registry in a different thread get a
-:class:`.Session` instance that is local to that other thread.
+    Users who are familiar with multithreaded programming will note that representing
+    anything as a global variable is usually a bad idea, as it implies that the
+    global object will be accessed by many threads concurrently.   The :class:`.Session`
+    object is entirely designed to be used in a **non-concurrent** fashion, which
+    in terms of multithreading means "only in one thread at a time".   So our
+    above example of :class:`.scoped_session` usage, where the same :class:`.Session`
+    object is maintained across multiple calls, suggests that some process needs
+    to be in place such that multiple calls across many threads don't actually get
+    a handle to the same session.   We call this notion **thread local storage**,
+    which means, a special object is used that will maintain a distinct object
+    per each application thread.   Python provides this via the
+    `threading.local() <https://docs.python.org/library/threading.html#threading.local>`_
+    construct.  The :class:`.scoped_session` object by default uses this object
+    as storage, so that a single :class:`.Session` is maintained for all who call
+    upon the :class:`.scoped_session` registry, but only within the scope of a single
+    thread.   Callers who call upon the registry in a different thread get a
+    :class:`.Session` instance that is local to that other thread.
 
-Using this technique, the :class:`.scoped_session` provides a quick and relatively
-simple (if one is familiar with thread-local storage) way of providing
-a single, global object in an application that is safe to be called upon
-from multiple threads.
+    Using this technique, the :class:`.scoped_session` provides a quick and relatively
+    simple (if one is familiar with thread-local storage) way of providing
+    a single, global object in an application that is safe to be called upon
+    from multiple threads.
 
-The :meth:`.scoped_session.remove` method, as always, removes the current
-:class:`.Session` associated with the thread, if any.  However, one advantage of the
-``threading.local()`` object is that if the application thread itself ends, the
-"storage" for that thread is also garbage collected.  So it is in fact "safe" to
-use thread local scope with an application that spawns and tears down threads,
-without the need to call :meth:`.scoped_session.remove`.  However, the scope
-of transactions themselves, i.e. ending them via :meth:`.Session.commit` or
-:meth:`.Session.rollback`, will usually still be something that must be explicitly
-arranged for at the appropriate time, unless the application actually ties the
-lifespan of a thread to the lifespan of a transaction.
+    The :meth:`.scoped_session.remove` method, as always, removes the current
+    :class:`.Session` associated with the thread, if any.  However, one advantage of the
+    ``threading.local()`` object is that if the application thread itself ends, the
+    "storage" for that thread is also garbage collected.  So it is in fact "safe" to
+    use thread local scope with an application that spawns and tears down threads,
+    without the need to call :meth:`.scoped_session.remove`.  However, the scope
+    of transactions themselves, i.e. ending them via :meth:`.Session.commit` or
+    :meth:`.Session.rollback`, will usually still be something that must be explicitly
+    arranged for at the appropriate time, unless the application actually ties the
+    lifespan of a thread to the lifespan of a transaction.
 
 .. _session_lifespan:
 
@@ -233,80 +275,130 @@ Using Thread-Local Scope with Web Applications
 
 .. tab:: 中文
 
+    如 :ref:`session_faq_whentocreate` 小节所述，Web 应用的架构围绕着 **Web 请求（web request）** 的概念展开，  
+    将这样的应用与 :class:`.Session` 集成，通常意味着每个请求都会关联一个独立的 :class:`.Session` 实例。  
+    大多数 Python Web 框架（异步框架如 Twisted 和 Tornado 除外）在使用线程方面都较为简单：  
+    每个 Web 请求都会在一个 *工作线程* 中被接收、处理并完成。  
+    当请求结束后，工作线程会被释放到线程池中，供下一个请求使用。
+
+    这种“请求 <=> 线程”的一一对应关系意味着：如果一个 :class:`.Session` 被绑定到某个线程，  
+    那么它也就绑定到了当前运行在该线程中的 Web 请求 —— 反之亦然，  
+    前提是该 :class:`.Session` 是在 Web 请求开始后才创建，并在请求结束前销毁的。
+
+    因此，在 Web 应用中使用 :class:`.scoped_session` 来快速集成 :class:`.Session` 是一种常见的做法。  
+    下方的时序图展示了这一流程：
+
+    .. sourcecode:: text
+
+        Web Server          Web Framework        SQLAlchemy ORM Code
+        --------------      --------------       ------------------------------
+        startup        ->   Web framework        # 会话注册器被初始化
+                            initializes          Session = scoped_session(sessionmaker())
+
+        incoming
+        web request    ->   web request     ->   # 注册器被显式调用
+                            starts               # 创建与当前线程 / 请求绑定的 Session
+                                                Session()
+
+                                                # 在任意时刻访问注册器均可自动创建或复用
+                                                # 当前请求线程的 Session 实例
+                                                Session.execute(select(MyClass)) # ...
+
+                                                Session.add(some_object) # ...
+
+                                                # 若修改了数据，则提交事务
+                                                Session.commit()
+
+                            web request ends  -> # 请求结束时显式清理 Session
+                                                Session.remove()
+
+                            sends output      <-
+        outgoing web    <-
+        response
+
+    根据上述流程，将 :class:`.Session` 与 Web 应用集成时，只需遵守两个要求：
+
+    1. 在 Web 应用启动时创建一个全局唯一的 :class:`.scoped_session` 注册器，确保它能在应用中被访问到。
+    2. 在每个 Web 请求结束时调用 :meth:`.scoped_session.remove`，通常通过 Web 框架提供的事件机制实现（如“请求结束”事件）。
+
+    如前所述，这只是将 :class:`.Session` 集成到 Web 框架中的 **一种可能方案**，  
+    它假设 **Web 请求是与应用线程绑定的**。
+
+    然而， **强烈建议优先使用 Web 框架自身提供的集成机制** （如果有的话），而不是使用 :class:`.scoped_session`，  
+    因为线程局部虽方便，但从架构上看，更推荐将 :class:`.Session` **直接绑定到请求对象**，  
+    而不是绑定到当前线程。
+
+
 .. tab:: 英文
 
-As discussed in the section :ref:`session_faq_whentocreate`, a web application
-is architected around the concept of a **web request**, and integrating
-such an application with the :class:`.Session` usually implies that the :class:`.Session`
-will be associated with that request.  As it turns out, most Python web frameworks,
-with notable exceptions such as the asynchronous frameworks Twisted and
-Tornado, use threads in a simple way, such that a particular web request is received,
-processed, and completed within the scope of a single *worker thread*.  When
-the request ends, the worker thread is released to a pool of workers where it
-is available to handle another request.
+    As discussed in the section :ref:`session_faq_whentocreate`, a web application
+    is architected around the concept of a **web request**, and integrating
+    such an application with the :class:`.Session` usually implies that the :class:`.Session`
+    will be associated with that request.  As it turns out, most Python web frameworks,
+    with notable exceptions such as the asynchronous frameworks Twisted and
+    Tornado, use threads in a simple way, such that a particular web request is received,
+    processed, and completed within the scope of a single *worker thread*.  When
+    the request ends, the worker thread is released to a pool of workers where it
+    is available to handle another request.
 
-This simple correspondence of web request and thread means that to associate a
-:class:`.Session` with a thread implies it is also associated with the web request
-running within that thread, and vice versa, provided that the :class:`.Session` is
-created only after the web request begins and torn down just before the web request ends.
-So it is a common practice to use :class:`.scoped_session` as a quick way
-to integrate the :class:`.Session` with a web application.  The sequence
-diagram below illustrates this flow:
+    This simple correspondence of web request and thread means that to associate a
+    :class:`.Session` with a thread implies it is also associated with the web request
+    running within that thread, and vice versa, provided that the :class:`.Session` is
+    created only after the web request begins and torn down just before the web request ends.
+    So it is a common practice to use :class:`.scoped_session` as a quick way
+    to integrate the :class:`.Session` with a web application.  The sequence
+    diagram below illustrates this flow:
 
-.. sourcecode:: text
+    .. sourcecode:: text
 
-    Web Server          Web Framework        SQLAlchemy ORM Code
-    --------------      --------------       ------------------------------
-    startup        ->   Web framework        # Session registry is established
-                        initializes          Session = scoped_session(sessionmaker())
+        Web Server          Web Framework        SQLAlchemy ORM Code
+        --------------      --------------       ------------------------------
+        startup        ->   Web framework        # Session registry is established
+                            initializes          Session = scoped_session(sessionmaker())
 
-    incoming
-    web request    ->   web request     ->   # The registry is *optionally*
-                        starts               # called upon explicitly to create
-                                             # a Session local to the thread and/or request
-                                             Session()
+        incoming
+        web request    ->   web request     ->   # The registry is *optionally*
+                            starts               # called upon explicitly to create
+                                                # a Session local to the thread and/or request
+                                                Session()
 
-                                             # the Session registry can otherwise
-                                             # be used at any time, creating the
-                                             # request-local Session() if not present,
-                                             # or returning the existing one
-                                             Session.execute(select(MyClass)) # ...
+                                                # the Session registry can otherwise
+                                                # be used at any time, creating the
+                                                # request-local Session() if not present,
+                                                # or returning the existing one
+                                                Session.execute(select(MyClass)) # ...
 
-                                             Session.add(some_object) # ...
+                                                Session.add(some_object) # ...
 
-                                             # if data was modified, commit the
-                                             # transaction
-                                             Session.commit()
+                                                # if data was modified, commit the
+                                                # transaction
+                                                Session.commit()
 
-                        web request ends  -> # the registry is instructed to
-                                             # remove the Session
-                                             Session.remove()
+                            web request ends  -> # the registry is instructed to
+                                                # remove the Session
+                                                Session.remove()
 
-                        sends output      <-
-    outgoing web    <-
-    response
+                            sends output      <-
+        outgoing web    <-
+        response
 
-Using the above flow, the process of integrating the :class:`.Session` with the
-web application has exactly two requirements:
+    Using the above flow, the process of integrating the :class:`.Session` with the
+    web application has exactly two requirements:
 
-1. Create a single :class:`.scoped_session` registry when the web application
-   first starts, ensuring that this object is accessible by the rest of the
-   application.
-2. Ensure that :meth:`.scoped_session.remove` is called when the web request ends,
-   usually by integrating with the web framework's event system to establish
-   an "on request end" event.
+    1. Create a single :class:`.scoped_session` registry when the web application first starts, ensuring that this object is accessible by the rest of the application.
+    2. Ensure that :meth:`.scoped_session.remove` is called when the web request ends, usually by integrating with the web framework's event system to establish an "on request end" event.
 
-As noted earlier, the above pattern is **just one potential way** to integrate a :class:`.Session`
-with a web framework, one which in particular makes the significant assumption
-that the **web framework associates web requests with application threads**.  It is
-however **strongly recommended that the integration tools provided with the web framework
-itself be used, if available**, instead of :class:`.scoped_session`.
+    As noted earlier, the above pattern is **just one potential way** to integrate a :class:`.Session`
+    with a web framework, one which in particular makes the significant assumption
+    that the **web framework associates web requests with application threads**.  It is
+    however **strongly recommended that the integration tools provided with the web framework
+    itself be used, if available**, instead of :class:`.scoped_session`.
 
-In particular, while using a thread local can be convenient, it is preferable that the :class:`.Session` be
-associated **directly with the request**, rather than with
-the current thread.   The next section on custom scopes details a more advanced configuration
-which can combine the usage of :class:`.scoped_session` with direct request based scope, or
-any kind of scope.
+    In particular, while using a thread local can be convenient, it is preferable that the :class:`.Session` be
+    associated **directly with the request**, rather than with
+    the current thread.   The next section on custom scopes details a more advanced configuration
+    which can combine the usage of :class:`.scoped_session` with direct request based scope, or
+    any kind of scope.
 
 使用自定义创建的范围
 ---------------------------
@@ -315,36 +407,68 @@ Using Custom Created Scopes
 
 .. tab:: 中文
 
+    下一节（custom scopes）将介绍一种更高级的配置方法，  
+    它可以结合使用 :class:`.scoped_session` 与“基于请求”的作用域，或任意其他作用域。
+
+    实际上，:class:`.scoped_session` 所使用的“线程局部”仅仅是众多作用域选项中的一种，  
+    你也可以基于其他任何“当前上下文”的识别机制，自定义作用域。
+
+    假设某个 Web 框架提供了一个函数 ``get_current_request()``，  
+    可以在任意时刻调用以获取当前正在处理的 ``Request`` 对象。  
+    若该 ``Request`` 对象是可哈希的，那么它就可以作为字典键，  
+    从而与 :class:`.scoped_session` 结合，实现将 :class:`.Session` 绑定到请求本身。  
+    下面我们展示了一个示例，假设框架还提供了 ``on_request_end`` 事件钩子，  
+    用于在请求结束时触发清理逻辑：
+
+    .. code-block:: python
+
+        from my_web_framework import get_current_request, on_request_end
+        from sqlalchemy.orm import scoped_session, sessionmaker
+
+        Session = scoped_session(sessionmaker(bind=some_engine), scopefunc=get_current_request)
+
+
+        @on_request_end
+        def remove_session(req):
+            Session.remove()
+
+    在这个例子中，我们用常规方式实例化了 :class:`.scoped_session`，  
+    但多传入了 `scopefunc` 参数，它的值是 ``get_current_request`` 函数。  
+    这告诉 :class:`.scoped_session`：每次请求 Session 实例时，使用该函数的返回值作为作用域字典的键。  
+
+    在这种用法中， **确保调用** `remove()` **是非常重要的**，因为 `scoped_session` 依赖的是普通字典，  
+    不会自动清理非活动请求的缓存，因此需确保你有一个可靠的清理机制。
+
 .. tab:: 英文
 
-The :class:`.scoped_session` object's default behavior of "thread local" scope is only
-one of many options on how to "scope" a :class:`.Session`.   A custom scope can be defined
-based on any existing system of getting at "the current thing we are working with".
+    The :class:`.scoped_session` object's default behavior of "thread local" scope is only
+    one of many options on how to "scope" a :class:`.Session`.   A custom scope can be defined
+    based on any existing system of getting at "the current thing we are working with".
 
-Suppose a web framework defines a library function ``get_current_request()``.  An application
-built using this framework can call this function at any time, and the result will be
-some kind of ``Request`` object that represents the current request being processed.
-If the ``Request`` object is hashable, then this function can be easily integrated with
-:class:`.scoped_session` to associate the :class:`.Session` with the request.  Below we illustrate
-this in conjunction with a hypothetical event marker provided by the web framework
-``on_request_end``, which allows code to be invoked whenever a request ends::
+    Suppose a web framework defines a library function ``get_current_request()``.  An application
+    built using this framework can call this function at any time, and the result will be
+    some kind of ``Request`` object that represents the current request being processed.
+    If the ``Request`` object is hashable, then this function can be easily integrated with
+    :class:`.scoped_session` to associate the :class:`.Session` with the request.  Below we illustrate
+    this in conjunction with a hypothetical event marker provided by the web framework
+    ``on_request_end``, which allows code to be invoked whenever a request ends::
 
-    from my_web_framework import get_current_request, on_request_end
-    from sqlalchemy.orm import scoped_session, sessionmaker
+        from my_web_framework import get_current_request, on_request_end
+        from sqlalchemy.orm import scoped_session, sessionmaker
 
-    Session = scoped_session(sessionmaker(bind=some_engine), scopefunc=get_current_request)
+        Session = scoped_session(sessionmaker(bind=some_engine), scopefunc=get_current_request)
 
 
-    @on_request_end
-    def remove_session(req):
-        Session.remove()
+        @on_request_end
+        def remove_session(req):
+            Session.remove()
 
-Above, we instantiate :class:`.scoped_session` in the usual way, except that we pass
-our request-returning function as the "scopefunc".  This instructs :class:`.scoped_session`
-to use this function to generate a dictionary key whenever the registry is called upon
-to return the current :class:`.Session`.   In this case it is particularly important
-that we ensure a reliable "remove" system is implemented, as this dictionary is not
-otherwise self-managed.
+    Above, we instantiate :class:`.scoped_session` in the usual way, except that we pass
+    our request-returning function as the "scopefunc".  This instructs :class:`.scoped_session`
+    to use this function to generate a dictionary key whenever the registry is called upon
+    to return the current :class:`.Session`.   In this case it is particularly important
+    that we ensure a reliable "remove" system is implemented, as this dictionary is not
+    otherwise self-managed.
 
 
 上下文会话 API
