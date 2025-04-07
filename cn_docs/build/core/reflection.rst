@@ -4,7 +4,7 @@
 .. _metadata_reflection:
 
 
-反映数据库对象
+反射数据库对象
 ===========================
 
 Reflecting Database Objects
@@ -80,7 +80,7 @@ Reflecting Database Objects
 
 .. _reflection_overriding_columns:
 
-覆盖反映列
+覆盖反射列
 ----------------------------
 
 Overriding Reflected Columns
@@ -110,7 +110,7 @@ primary keys that may not be configured within the database, etc.::
     column override technique applies to the use of custom datatypes with
     table reflection.
 
-反映视图
+反射视图
 ----------------
 
 Reflecting Views
@@ -143,7 +143,7 @@ which are part of the primary key or have foreign key constraints::
         autoload_with=engine,
     )
 
-一次反映所有表
+一次反射所有表
 -----------------------------
 
 Reflecting All Tables at Once
@@ -173,7 +173,7 @@ object's dictionary of tables::
 
 .. _metadata_reflection_schemas:
 
-反映来自其他架构的表
+反射来自其他架构的表
 ------------------------------------
 
 Reflecting Tables from Other Schemas

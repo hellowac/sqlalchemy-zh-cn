@@ -1,212 +1,429 @@
-"""A performance profiling suite for a variety of SQLAlchemy use cases.
+"""
+.. tab:: 中文
 
-Each suite focuses on a specific use case with a particular performance
-profile and associated implications:
+    一个针对多种 SQLAlchemy 用例的性能分析套件。
+    
+    每个套件侧重于一个具有特定性能特征和相关影响的用例：
+    
+    * 批量插入
+    * 单独插入（带或不带事务）
+    * 获取大量行
+    * 执行大量短查询
+    
+    所有套件都包含各种使用模式，展示了 Core 和 ORM 的用法，通常按性能从差到好排序，
+    这种排序与 SQLAlchemy 所提供功能的多寡成反比，从最多到最少
+    （这两个维度通常是完全对应的）。
+    
+    该包提供了一个命令行工具，可以运行各个测试套件::
+    
+        $ python -m examples.performance --help
+        usage: python -m examples.performance [-h] [--test TEST] [--dburl DBURL]
+                                              [--num NUM] [--profile] [--dump]
+                                              [--echo]
+    
+                                              {bulk_inserts,large_resultsets,single_inserts}
+    
+        位置参数：
+          {bulk_inserts,large_resultsets,single_inserts}
+                                要运行的套件
+    
+        可选参数：
+          -h, --help            显示此帮助信息并退出
+          --test TEST           运行指定测试名称
+          --dburl DBURL         数据库 URL，默认值为 sqlite:///profile.db
+          --num NUM             指定测试的迭代次数/项目数量等；
+                                默认值为各模块特定
+          --profile             运行性能分析并输出调用计数
+          --dump                输出完整调用分析（隐含 --profile）
+          --echo                显示 SQL 输出
+    
+    一个示例运行如下::
+    
+        $ python -m examples.performance bulk_inserts
+    
+    或者带上选项::
+    
+        $ python -m examples.performance bulk_inserts \\
+            --dburl mysql+mysqldb://scott:tiger@localhost/test \\
+            --profile --num 1000
+    
+    .. seealso::
+    
+        :ref:`faq_how_to_profile`
+    
 
-* bulk inserts
-* individual inserts, with or without transactions
-* fetching large numbers of rows
-* running lots of short queries
+.. tab:: 英文
 
-All suites include a variety of use patterns illustrating both Core
-and ORM use, and are generally sorted in order of performance from worst
-to greatest, inversely based on amount of functionality provided by SQLAlchemy,
-greatest to least (these two things generally correspond perfectly).
+    A performance profiling suite for a variety of SQLAlchemy use cases.
+    
+    Each suite focuses on a specific use case with a particular performance
+    profile and associated implications:
+    
+    * bulk inserts
+    * individual inserts, with or without transactions
+    * fetching large numbers of rows
+    * running lots of short queries
+    
+    All suites include a variety of use patterns illustrating both Core
+    and ORM use, and are generally sorted in order of performance from worst
+    to greatest, inversely based on amount of functionality provided by SQLAlchemy,
+    greatest to least (these two things generally correspond perfectly).
+    
+    A command line tool is presented at the package level which allows
+    individual suites to be run::
+    
+        $ python -m examples.performance --help
+        usage: python -m examples.performance [-h] [--test TEST] [--dburl DBURL]
+                                              [--num NUM] [--profile] [--dump]
+                                              [--echo]
+    
+                                              {bulk_inserts,large_resultsets,single_inserts}
+    
+        positional arguments:
+          {bulk_inserts,large_resultsets,single_inserts}
+                                suite to run
+    
+        optional arguments:
+          -h, --help            show this help message and exit
+          --test TEST           run specific test name
+          --dburl DBURL         database URL, default sqlite:///profile.db
+          --num NUM             Number of iterations/items/etc for tests;
+                                default is module-specific
+          --profile             run profiling and dump call counts
+          --dump                dump full call profile (implies --profile)
+          --echo                Echo SQL output
+    
+    An example run looks like::
+    
+        $ python -m examples.performance bulk_inserts
+    
+    Or with options::
+    
+        $ python -m examples.performance bulk_inserts \\
+            --dburl mysql+mysqldb://scott:tiger@localhost/test \\
+            --profile --num 1000
+    
+    .. seealso::
+    
+        :ref:`faq_how_to_profile`
 
-A command line tool is presented at the package level which allows
-individual suites to be run::
-
-    $ python -m examples.performance --help
-    usage: python -m examples.performance [-h] [--test TEST] [--dburl DBURL]
-                                          [--num NUM] [--profile] [--dump]
-                                          [--echo]
-
-                                          {bulk_inserts,large_resultsets,single_inserts}
-
-    positional arguments:
-      {bulk_inserts,large_resultsets,single_inserts}
-                            suite to run
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      --test TEST           run specific test name
-      --dburl DBURL         database URL, default sqlite:///profile.db
-      --num NUM             Number of iterations/items/etc for tests;
-                            default is module-specific
-      --profile             run profiling and dump call counts
-      --dump                dump full call profile (implies --profile)
-      --echo                Echo SQL output
-
-An example run looks like::
-
-    $ python -m examples.performance bulk_inserts
-
-Or with options::
-
-    $ python -m examples.performance bulk_inserts \\
-        --dburl mysql+mysqldb://scott:tiger@localhost/test \\
-        --profile --num 1000
-
-.. seealso::
-
-    :ref:`faq_how_to_profile`
+文件列表
+-------------
 
 File Listing
--------------
 
 .. autosource::
 
 
-Running all tests with time
+随时间运行所有测试
 ---------------------------
 
-This is the default form of run::
+Running all tests with time
 
-    $ python -m examples.performance single_inserts
-    Tests to run: test_orm_commit, test_bulk_save,
-                  test_bulk_insert_dictionaries, test_core,
-                  test_core_query_caching, test_dbapi_raw_w_connect,
-                  test_dbapi_raw_w_pool
+.. tab:: 中文
 
-    test_orm_commit : Individual INSERT/COMMIT pairs via the
-        ORM (10000 iterations); total time 13.690218 sec
-    test_bulk_save : Individual INSERT/COMMIT pairs using
-        the "bulk" API  (10000 iterations); total time 11.290371 sec
-    test_bulk_insert_dictionaries : Individual INSERT/COMMIT pairs using
-        the "bulk" API with dictionaries (10000 iterations);
-        total time 10.814626 sec
-    test_core : Individual INSERT/COMMIT pairs using Core.
-        (10000 iterations); total time 9.665620 sec
-    test_core_query_caching : Individual INSERT/COMMIT pairs using Core
-        with query caching (10000 iterations); total time 9.209010 sec
-    test_dbapi_raw_w_connect : Individual INSERT/COMMIT pairs w/ DBAPI +
-        connection each time (10000 iterations); total time 9.551103 sec
-    test_dbapi_raw_w_pool : Individual INSERT/COMMIT pairs w/ DBAPI +
-        connection pool (10000 iterations); total time 8.001813 sec
 
-Dumping Profiles for Individual Tests
+    这是运行的默认形式::
+    
+        $ python -m examples.performance single_inserts
+        Tests to run: test_orm_commit, test_bulk_save,
+                      test_bulk_insert_dictionaries, test_core,
+                      test_core_query_caching, test_dbapi_raw_w_connect,
+                      test_dbapi_raw_w_pool
+    
+        test_orm_commit : Individual INSERT/COMMIT pairs via the
+            ORM (10000 iterations); total time 13.690218 sec
+        test_bulk_save : Individual INSERT/COMMIT pairs using
+            the "bulk" API  (10000 iterations); total time 11.290371 sec
+        test_bulk_insert_dictionaries : Individual INSERT/COMMIT pairs using
+            the "bulk" API with dictionaries (10000 iterations);
+            total time 10.814626 sec
+        test_core : Individual INSERT/COMMIT pairs using Core.
+            (10000 iterations); total time 9.665620 sec
+        test_core_query_caching : Individual INSERT/COMMIT pairs using Core
+            with query caching (10000 iterations); total time 9.209010 sec
+        test_dbapi_raw_w_connect : Individual INSERT/COMMIT pairs w/ DBAPI +
+            connection each time (10000 iterations); total time 9.551103 sec
+        test_dbapi_raw_w_pool : Individual INSERT/COMMIT pairs w/ DBAPI +
+            connection pool (10000 iterations); total time 8.001813 sec
+
+.. tab:: 英文
+
+
+    This is the default form of run::
+
+        $ python -m examples.performance single_inserts
+        Tests to run: test_orm_commit, test_bulk_save,
+                      test_bulk_insert_dictionaries, test_core,
+                      test_core_query_caching, test_dbapi_raw_w_connect,
+                      test_dbapi_raw_w_pool
+
+        test_orm_commit : Individual INSERT/COMMIT pairs via the
+            ORM (10000 iterations); total time 13.690218 sec
+        test_bulk_save : Individual INSERT/COMMIT pairs using
+            the "bulk" API  (10000 iterations); total time 11.290371 sec
+        test_bulk_insert_dictionaries : Individual INSERT/COMMIT pairs using
+            the "bulk" API with dictionaries (10000 iterations);
+            total time 10.814626 sec
+        test_core : Individual INSERT/COMMIT pairs using Core.
+            (10000 iterations); total time 9.665620 sec
+        test_core_query_caching : Individual INSERT/COMMIT pairs using Core
+            with query caching (10000 iterations); total time 9.209010 sec
+        test_dbapi_raw_w_connect : Individual INSERT/COMMIT pairs w/ DBAPI +
+            connection each time (10000 iterations); total time 9.551103 sec
+        test_dbapi_raw_w_pool : Individual INSERT/COMMIT pairs w/ DBAPI +
+            connection pool (10000 iterations); total time 8.001813 sec
+
+转储单个测试的配置文件
 --------------------------------------
 
-A Python profile output can be dumped for all tests, or more commonly
-individual tests::
+Dumping Profiles for Individual Tests
 
-    $ python -m examples.performance single_inserts --test test_core --num 1000 --dump
-    Tests to run: test_core
-    test_core : Individual INSERT/COMMIT pairs using Core. (1000 iterations); total fn calls 186109
-             186109 function calls (186102 primitive calls) in 1.089 seconds
+.. tab:: 中文
 
-       Ordered by: internal time, call count
 
-       ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-         1000    0.634    0.001    0.634    0.001 {method 'commit' of 'sqlite3.Connection' objects}
-         1000    0.154    0.000    0.154    0.000 {method 'execute' of 'sqlite3.Cursor' objects}
-         1000    0.021    0.000    0.074    0.000 /Users/classic/dev/sqlalchemy/lib/sqlalchemy/sql/compiler.py:1950(_get_colparams)
-         1000    0.015    0.000    0.034    0.000 /Users/classic/dev/sqlalchemy/lib/sqlalchemy/engine/default.py:503(_init_compiled)
-            1    0.012    0.012    1.091    1.091 examples/performance/single_inserts.py:79(test_core)
+    可以为所有测试转储 Python 配置文件输出，或者更常见的是单个测试::
+    
+        $ python -m examples.performance single_inserts --test test_core --num 1000 --dump
+        Tests to run: test_core
+        test_core : Individual INSERT/COMMIT pairs using Core. (1000 iterations); total fn calls 186109
+                 186109 function calls (186102 primitive calls) in 1.089 seconds
+    
+           Ordered by: internal time, call count
+    
+           ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+             1000    0.634    0.001    0.634    0.001 {method 'commit' of 'sqlite3.Connection' objects}
+             1000    0.154    0.000    0.154    0.000 {method 'execute' of 'sqlite3.Cursor' objects}
+             1000    0.021    0.000    0.074    0.000 /Users/classic/dev/sqlalchemy/lib/sqlalchemy/sql/compiler.py:1950(_get_colparams)
+             1000    0.015    0.000    0.034    0.000 /Users/classic/dev/sqlalchemy/lib/sqlalchemy/engine/default.py:503(_init_compiled)
+                1    0.012    0.012    1.091    1.091 examples/performance/single_inserts.py:79(test_core)
+    
+            ...
 
-        ...
+
+
+
+.. tab:: 英文
+
+
+    A Python profile output can be dumped for all tests, or more commonly
+    individual tests::
+    
+        $ python -m examples.performance single_inserts --test test_core --num 1000 --dump
+        Tests to run: test_core
+        test_core : Individual INSERT/COMMIT pairs using Core. (1000 iterations); total fn calls 186109
+                 186109 function calls (186102 primitive calls) in 1.089 seconds
+    
+           Ordered by: internal time, call count
+    
+           ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+             1000    0.634    0.001    0.634    0.001 {method 'commit' of 'sqlite3.Connection' objects}
+             1000    0.154    0.000    0.154    0.000 {method 'execute' of 'sqlite3.Cursor' objects}
+             1000    0.021    0.000    0.074    0.000 /Users/classic/dev/sqlalchemy/lib/sqlalchemy/sql/compiler.py:1950(_get_colparams)
+             1000    0.015    0.000    0.034    0.000 /Users/classic/dev/sqlalchemy/lib/sqlalchemy/engine/default.py:503(_init_compiled)
+                1    0.012    0.012    1.091    1.091 examples/performance/single_inserts.py:79(test_core)
+    
+            ...
 
 
 .. _examples_profiling_writeyourown:
 
-Writing your Own Suites
+编写您自己的套件
 -----------------------
 
-The profiler suite system is extensible, and can be applied to your own set
-of tests.  This is a valuable technique to use in deciding upon the proper
-approach for some performance-critical set of routines.  For example,
-if we wanted to profile the difference between several kinds of loading,
-we can create a file ``test_loads.py``, with the following content::
+Writing your Own Suites
 
-    from examples.performance import Profiler
-    from sqlalchemy import Integer, Column, create_engine, ForeignKey
-    from sqlalchemy.orm import relationship, joinedload, subqueryload, Session
-    from sqlalchemy.ext.declarative import declarative_base
+.. tab:: 中文
 
-    Base = declarative_base()
-    engine = None
-    session = None
+    性能分析套件系统是可扩展的，可以应用于你自己的一组测试中。这在决定某些对性能要求较高的代码路径的最佳实现方式时，是一个非常有价值的技术。例如，如果我们想分析几种加载方式之间的性能差异，我们可以创建一个名为 ``test_loads.py`` 的文件，内容如下::
+    
+        from examples.performance import Profiler
+        from sqlalchemy import Integer, Column, create_engine, ForeignKey
+        from sqlalchemy.orm import relationship, joinedload, subqueryload, Session
+        from sqlalchemy.ext.declarative import declarative_base
+    
+        Base = declarative_base()
+        engine = None
+        session = None
+    
+    
+        class Parent(Base):
+            __tablename__ = "parent"
+            id = Column(Integer, primary_key=True)
+            children = relationship("Child")
+    
+    
+        class Child(Base):
+            __tablename__ = "child"
+            id = Column(Integer, primary_key=True)
+            parent_id = Column(Integer, ForeignKey("parent.id"))
+    
+    
+        # 使用文件名和默认数据量进行初始化
+        Profiler.init("test_loads", 1000)
+    
+    
+        @Profiler.setup_once
+        def setup_once(dburl, echo, num):
+            "仅初始化一次。创建引擎并插入测试数据。"
+            global engine
+            engine = create_engine(dburl, echo=echo)
+            Base.metadata.drop_all(engine)
+            Base.metadata.create_all(engine)
+            sess = Session(engine)
+            sess.add_all(
+                [
+                    Parent(children=[Child() for j in range(100)])
+                    for i in range(num)
+                ]
+            )
+            sess.commit()
+    
+    
+        @Profiler.setup
+        def setup(dburl, echo, num):
+            "每次测试初始化。创建一个新的 Session。"
+            global session
+            session = Session(engine)
+            # 提前连接，避免这部分被计入性能分析（可选）
+            session.connection()
+    
+    
+        @Profiler.profile
+        def test_lazyload(n):
+            "加载所有数据，不使用任何预加载。"
+    
+            for parent in session.query(Parent):
+                parent.children
+    
+    
+        @Profiler.profile
+        def test_joinedload(n):
+            "加载所有数据，使用 join 方式的预加载。"
+    
+            for parent in session.query(Parent).options(joinedload("children")):
+                parent.children
+    
+    
+        @Profiler.profile
+        def test_subqueryload(n):
+            "加载所有数据，使用子查询方式的预加载。"
+    
+            for parent in session.query(Parent).options(subqueryload("children")):
+                parent.children
+    
+    
+        if __name__ == "__main__":
+            Profiler.main()
+    
+    我们可以直接运行这个新脚本::
+    
+        $ python test_loads.py  --dburl postgresql+psycopg2://scott:tiger@localhost/test
+        Running setup once...
+        Tests to run: test_lazyload, test_joinedload, test_subqueryload
+        test_lazyload : load everything, no eager loading. (1000 iterations); total time 11.971159 sec
+        test_joinedload : load everything, joined eager loading. (1000 iterations); total time 2.754592 sec
+        test_subqueryload : load everything, subquery eager loading. (1000 iterations); total time 2.977696 sec
 
 
-    class Parent(Base):
-        __tablename__ = "parent"
-        id = Column(Integer, primary_key=True)
-        children = relationship("Child")
+.. tab:: 英文
 
 
-    class Child(Base):
-        __tablename__ = "child"
-        id = Column(Integer, primary_key=True)
-        parent_id = Column(Integer, ForeignKey("parent.id"))
-
-
-    # Init with name of file, default number of items
-    Profiler.init("test_loads", 1000)
-
-
-    @Profiler.setup_once
-    def setup_once(dburl, echo, num):
-        "setup once.  create an engine, insert fixture data"
-        global engine
-        engine = create_engine(dburl, echo=echo)
-        Base.metadata.drop_all(engine)
-        Base.metadata.create_all(engine)
-        sess = Session(engine)
-        sess.add_all(
-            [
-                Parent(children=[Child() for j in range(100)])
-                for i in range(num)
-            ]
-        )
-        sess.commit()
-
-
-    @Profiler.setup
-    def setup(dburl, echo, num):
-        "setup per test.  create a new Session."
-        global session
-        session = Session(engine)
-        # pre-connect so this part isn't profiled (if we choose)
-        session.connection()
-
-
-    @Profiler.profile
-    def test_lazyload(n):
-        "load everything, no eager loading."
-
-        for parent in session.query(Parent):
-            parent.children
-
-
-    @Profiler.profile
-    def test_joinedload(n):
-        "load everything, joined eager loading."
-
-        for parent in session.query(Parent).options(joinedload("children")):
-            parent.children
-
-
-    @Profiler.profile
-    def test_subqueryload(n):
-        "load everything, subquery eager loading."
-
-        for parent in session.query(Parent).options(subqueryload("children")):
-            parent.children
-
-
-    if __name__ == "__main__":
-        Profiler.main()
-
-We can run our new script directly::
-
-    $ python test_loads.py  --dburl postgresql+psycopg2://scott:tiger@localhost/test
-    Running setup once...
-    Tests to run: test_lazyload, test_joinedload, test_subqueryload
-    test_lazyload : load everything, no eager loading. (1000 iterations); total time 11.971159 sec
-    test_joinedload : load everything, joined eager loading. (1000 iterations); total time 2.754592 sec
-    test_subqueryload : load everything, subquery eager loading. (1000 iterations); total time 2.977696 sec
-
-
+    The profiler suite system is extensible, and can be applied to your own set
+    of tests.  This is a valuable technique to use in deciding upon the proper
+    approach for some performance-critical set of routines.  For example,
+    if we wanted to profile the difference between several kinds of loading,
+    we can create a file ``test_loads.py``, with the following content::
+    
+        from examples.performance import Profiler
+        from sqlalchemy import Integer, Column, create_engine, ForeignKey
+        from sqlalchemy.orm import relationship, joinedload, subqueryload, Session
+        from sqlalchemy.ext.declarative import declarative_base
+    
+        Base = declarative_base()
+        engine = None
+        session = None
+    
+    
+        class Parent(Base):
+            __tablename__ = "parent"
+            id = Column(Integer, primary_key=True)
+            children = relationship("Child")
+    
+    
+        class Child(Base):
+            __tablename__ = "child"
+            id = Column(Integer, primary_key=True)
+            parent_id = Column(Integer, ForeignKey("parent.id"))
+    
+    
+        # Init with name of file, default number of items
+        Profiler.init("test_loads", 1000)
+    
+    
+        @Profiler.setup_once
+        def setup_once(dburl, echo, num):
+            "setup once.  create an engine, insert fixture data"
+            global engine
+            engine = create_engine(dburl, echo=echo)
+            Base.metadata.drop_all(engine)
+            Base.metadata.create_all(engine)
+            sess = Session(engine)
+            sess.add_all(
+                [
+                    Parent(children=[Child() for j in range(100)])
+                    for i in range(num)
+                ]
+            )
+            sess.commit()
+    
+    
+        @Profiler.setup
+        def setup(dburl, echo, num):
+            "setup per test.  create a new Session."
+            global session
+            session = Session(engine)
+            # pre-connect so this part isn't profiled (if we choose)
+            session.connection()
+    
+    
+        @Profiler.profile
+        def test_lazyload(n):
+            "load everything, no eager loading."
+    
+            for parent in session.query(Parent):
+                parent.children
+    
+    
+        @Profiler.profile
+        def test_joinedload(n):
+            "load everything, joined eager loading."
+    
+            for parent in session.query(Parent).options(joinedload("children")):
+                parent.children
+    
+    
+        @Profiler.profile
+        def test_subqueryload(n):
+            "load everything, subquery eager loading."
+    
+            for parent in session.query(Parent).options(subqueryload("children")):
+                parent.children
+    
+    
+        if __name__ == "__main__":
+            Profiler.main()
+    
+    We can run our new script directly::
+    
+        $ python test_loads.py  --dburl postgresql+psycopg2://scott:tiger@localhost/test
+        Running setup once...
+        Tests to run: test_lazyload, test_joinedload, test_subqueryload
+        test_lazyload : load everything, no eager loading. (1000 iterations); total time 11.971159 sec
+        test_joinedload : load everything, joined eager loading. (1000 iterations); total time 2.754592 sec
+        test_subqueryload : load everything, subquery eager loading. (1000 iterations); total time 2.977696 sec
+    
+    
 """  # noqa
 
 import argparse
