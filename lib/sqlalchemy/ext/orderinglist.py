@@ -6,127 +6,240 @@
 # the MIT License: https://www.opensource.org/licenses/mit-license.php
 # mypy: ignore-errors
 
-"""A custom list that manages index/position information for contained
-elements.
+"""
+.. tab:: 中文
 
-:author: Jason Kirtland
+    管理包含元素的索引/位置信息的自定义列表。
 
-``orderinglist`` is a helper for mutable ordered relationships.  It will
-intercept list operations performed on a :func:`_orm.relationship`-managed
-collection and
-automatically synchronize changes in list position onto a target scalar
-attribute.
+    :author: Jason Kirtland
 
-Example: A ``slide`` table, where each row refers to zero or more entries
-in a related ``bullet`` table.   The bullets within a slide are
-displayed in order based on the value of the ``position`` column in the
-``bullet`` table.   As entries are reordered in memory, the value of the
-``position`` attribute should be updated to reflect the new sort order::
+    ``orderinglist`` 是一个用于可变有序关系的助手。它会
+    拦截在 :func:`_orm.relationship` 管理的集合上执行的列表操作，并
+    自动将列表位置的更改同步到目标标量属性。
 
+    示例：一个 ``slide`` 表，其中每一行都引用与之相关的零个或多个
+    条目，这些条目存储在一个相关的 ``bullet`` 表中。  ``bullet`` 表中的子弹
+    根据 ``position`` 列的值按顺序显示。 当内存中的条目重新排序时，
+    ``position`` 属性的值应更新以反映新的排序顺序::
 
-    Base = declarative_base()
+        Base = declarative_base()
 
 
-    class Slide(Base):
-        __tablename__ = "slide"
+        class Slide(Base):
+            __tablename__ = "slide"
 
-        id = Column(Integer, primary_key=True)
-        name = Column(String)
+            id = Column(Integer, primary_key=True)
+            name = Column(String)
 
-        bullets = relationship("Bullet", order_by="Bullet.position")
-
-
-    class Bullet(Base):
-        __tablename__ = "bullet"
-        id = Column(Integer, primary_key=True)
-        slide_id = Column(Integer, ForeignKey("slide.id"))
-        position = Column(Integer)
-        text = Column(String)
-
-The standard relationship mapping will produce a list-like attribute on each
-``Slide`` containing all related ``Bullet`` objects,
-but coping with changes in ordering is not handled automatically.
-When appending a ``Bullet`` into ``Slide.bullets``, the ``Bullet.position``
-attribute will remain unset until manually assigned.   When the ``Bullet``
-is inserted into the middle of the list, the following ``Bullet`` objects
-will also need to be renumbered.
-
-The :class:`.OrderingList` object automates this task, managing the
-``position`` attribute on all ``Bullet`` objects in the collection.  It is
-constructed using the :func:`.ordering_list` factory::
-
-    from sqlalchemy.ext.orderinglist import ordering_list
-
-    Base = declarative_base()
+            bullets = relationship("Bullet", order_by="Bullet.position")
 
 
-    class Slide(Base):
-        __tablename__ = "slide"
+        class Bullet(Base):
+            __tablename__ = "bullet"
+            id = Column(Integer, primary_key=True)
+            slide_id = Column(Integer, ForeignKey("slide.id"))
+            position = Column(Integer)
+            text = Column(String)
 
-        id = Column(Integer, primary_key=True)
-        name = Column(String)
+    标准的关系映射会在每个 ``Slide`` 上生成一个类似列表的属性，包含所有相关的 ``Bullet`` 对象，
+    但对于排序更改的处理并不会自动完成。
+    当将 ``Bullet`` 添加到 ``Slide.bullets`` 时，``Bullet.position``
+    属性将保持未设置状态，直到手动分配。当 ``Bullet``
+    插入到列表中间时，后续的 ``Bullet`` 对象也需要重新编号。
 
-        bullets = relationship(
-            "Bullet",
-            order_by="Bullet.position",
-            collection_class=ordering_list("position"),
-        )
+    :class:`.OrderingList` 对象自动化了这一任务，管理集合中所有 ``Bullet`` 对象的
+    ``position`` 属性。它是使用 :func:`.ordering_list` 工厂构造的::
+
+        from sqlalchemy.ext.orderinglist import ordering_list
+
+        Base = declarative_base()
 
 
-    class Bullet(Base):
-        __tablename__ = "bullet"
-        id = Column(Integer, primary_key=True)
-        slide_id = Column(Integer, ForeignKey("slide.id"))
-        position = Column(Integer)
-        text = Column(String)
+        class Slide(Base):
+            __tablename__ = "slide"
 
-With the above mapping the ``Bullet.position`` attribute is managed::
+            id = Column(Integer, primary_key=True)
+            name = Column(String)
 
-    s = Slide()
-    s.bullets.append(Bullet())
-    s.bullets.append(Bullet())
-    s.bullets[1].position
-    >>> 1
-    s.bullets.insert(1, Bullet())
-    s.bullets[2].position
-    >>> 2
+            bullets = relationship(
+                "Bullet",
+                order_by="Bullet.position",
+                collection_class=ordering_list("position"),
+            )
 
-The :class:`.OrderingList` construct only works with **changes** to a
-collection, and not the initial load from the database, and requires that the
-list be sorted when loaded.  Therefore, be sure to specify ``order_by`` on the
-:func:`_orm.relationship` against the target ordering attribute, so that the
-ordering is correct when first loaded.
 
-.. warning::
+        class Bullet(Base):
+            __tablename__ = "bullet"
+            id = Column(Integer, primary_key=True)
+            slide_id = Column(Integer, ForeignKey("slide.id"))
+            position = Column(Integer)
+            text = Column(String)
 
-  :class:`.OrderingList` only provides limited functionality when a primary
-  key column or unique column is the target of the sort.  Operations
-  that are unsupported or are problematic include:
+    通过上述映射，``Bullet.position`` 属性会得到管理::
 
-    * two entries must trade values.  This is not supported directly in the
-      case of a primary key or unique constraint because it means at least
-      one row would need to be temporarily removed first, or changed to
-      a third, neutral value while the switch occurs.
+        s = Slide()
+        s.bullets.append(Bullet())
+        s.bullets.append(Bullet())
+        s.bullets[1].position
+        >>> 1
+        s.bullets.insert(1, Bullet())
+        s.bullets[2].position
+        >>> 2
 
-    * an entry must be deleted in order to make room for a new entry.
-      SQLAlchemy's unit of work performs all INSERTs before DELETEs within a
-      single flush.  In the case of a primary key, it will trade
-      an INSERT/DELETE of the same primary key for an UPDATE statement in order
-      to lessen the impact of this limitation, however this does not take place
-      for a UNIQUE column.
-      A future feature will allow the "DELETE before INSERT" behavior to be
-      possible, alleviating this limitation, though this feature will require
-      explicit configuration at the mapper level for sets of columns that
-      are to be handled in this way.
+    :class:`.OrderingList` 构造只在 **更改** 集合时起作用，
+    而不适用于从数据库的初始加载，并且要求列表在加载时是排序的。
+    因此，务必在 :func:`_orm.relationship` 中指定 ``order_by``，
+    以确保在首次加载时排序正确。
 
-:func:`.ordering_list` takes the name of the related object's ordering
-attribute as an argument.  By default, the zero-based integer index of the
-object's position in the :func:`.ordering_list` is synchronized with the
-ordering attribute: index 0 will get position 0, index 1 position 1, etc.  To
-start numbering at 1 or some other integer, provide ``count_from=1``.
+    .. warning::
+
+      :class:`.OrderingList` 在排序目标是主键列或唯一列时提供的功能有限。
+      不支持或存在问题的操作包括：
+
+      * 两个条目必须交换值。 由于这意味着至少
+        一行需要暂时移除，或者在交换发生时更改为
+        第三方中立值，所以在主键或唯一约束的情况下直接不支持。
+
+      * 必须删除一个条目以为新条目腾出空间。
+        SQLAlchemy 的工作单元会在单次刷新中执行所有 INSERT 操作，
+        然后才执行 DELETE 操作。 在主键的情况下，它会
+        通过 UPDATE 语句替代 INSERT/DELETE，
+        以减少这种限制的影响，但对于唯一列来说则不适用。
+        未来的功能将允许实现“先 DELETE 后 INSERT”的行为，
+        缓解这一限制，尽管此功能需要在映射器级别为
+        需要以这种方式处理的列集进行显式配置。
+
+    :func:`.ordering_list` 接受与之关联的对象排序
+    属性的名称作为参数。 默认情况下， :func:`.ordering_list`
+    中的对象位置的零基整数索引与排序属性同步：
+    索引 0 将对应位置 0，索引 1 对应位置 1，依此类推。
+    要从 1 或其他整数开始编号，可以提供 ``count_from=1``。
+
+
+.. tab:: 英文
+
+    A custom list that manages index/position information for contained
+    elements.
+
+    :author: Jason Kirtland
+
+    ``orderinglist`` is a helper for mutable ordered relationships.  It will
+    intercept list operations performed on a :func:`_orm.relationship`-managed
+    collection and
+    automatically synchronize changes in list position onto a target scalar
+    attribute.
+
+    Example: A ``slide`` table, where each row refers to zero or more entries
+    in a related ``bullet`` table.   The bullets within a slide are
+    displayed in order based on the value of the ``position`` column in the
+    ``bullet`` table.   As entries are reordered in memory, the value of the
+    ``position`` attribute should be updated to reflect the new sort order::
+
+
+        Base = declarative_base()
+
+
+        class Slide(Base):
+            __tablename__ = "slide"
+
+            id = Column(Integer, primary_key=True)
+            name = Column(String)
+
+            bullets = relationship("Bullet", order_by="Bullet.position")
+
+
+        class Bullet(Base):
+            __tablename__ = "bullet"
+            id = Column(Integer, primary_key=True)
+            slide_id = Column(Integer, ForeignKey("slide.id"))
+            position = Column(Integer)
+            text = Column(String)
+
+    The standard relationship mapping will produce a list-like attribute on each
+    ``Slide`` containing all related ``Bullet`` objects,
+    but coping with changes in ordering is not handled automatically.
+    When appending a ``Bullet`` into ``Slide.bullets``, the ``Bullet.position``
+    attribute will remain unset until manually assigned.   When the ``Bullet``
+    is inserted into the middle of the list, the following ``Bullet`` objects
+    will also need to be renumbered.
+
+    The :class:`.OrderingList` object automates this task, managing the
+    ``position`` attribute on all ``Bullet`` objects in the collection.  It is
+    constructed using the :func:`.ordering_list` factory::
+
+        from sqlalchemy.ext.orderinglist import ordering_list
+
+        Base = declarative_base()
+
+
+        class Slide(Base):
+            __tablename__ = "slide"
+
+            id = Column(Integer, primary_key=True)
+            name = Column(String)
+
+            bullets = relationship(
+                "Bullet",
+                order_by="Bullet.position",
+                collection_class=ordering_list("position"),
+            )
+
+
+        class Bullet(Base):
+            __tablename__ = "bullet"
+            id = Column(Integer, primary_key=True)
+            slide_id = Column(Integer, ForeignKey("slide.id"))
+            position = Column(Integer)
+            text = Column(String)
+
+    With the above mapping the ``Bullet.position`` attribute is managed::
+
+        s = Slide()
+        s.bullets.append(Bullet())
+        s.bullets.append(Bullet())
+        s.bullets[1].position
+        >>> 1
+        s.bullets.insert(1, Bullet())
+        s.bullets[2].position
+        >>> 2
+
+    The :class:`.OrderingList` construct only works with **changes** to a
+    collection, and not the initial load from the database, and requires that the
+    list be sorted when loaded.  Therefore, be sure to specify ``order_by`` on the
+    :func:`_orm.relationship` against the target ordering attribute, so that the
+    ordering is correct when first loaded.
+
+    .. warning::
+
+      :class:`.OrderingList` only provides limited functionality when a primary
+      key column or unique column is the target of the sort.  Operations
+      that are unsupported or are problematic include:
+
+      * two entries must trade values.  This is not supported directly in the
+        case of a primary key or unique constraint because it means at least
+        one row would need to be temporarily removed first, or changed to
+        a third, neutral value while the switch occurs.
+
+      * an entry must be deleted in order to make room for a new entry.
+        SQLAlchemy's unit of work performs all INSERTs before DELETEs within a
+        single flush.  In the case of a primary key, it will trade
+        an INSERT/DELETE of the same primary key for an UPDATE statement in order
+        to lessen the impact of this limitation, however this does not take place
+        for a UNIQUE column.
+        A future feature will allow the "DELETE before INSERT" behavior to be
+        possible, alleviating this limitation, though this feature will require
+        explicit configuration at the mapper level for sets of columns that
+        are to be handled in this way.
+
+    :func:`.ordering_list` takes the name of the related object's ordering
+    attribute as an argument.  By default, the zero-based integer index of the
+    object's position in the :func:`.ordering_list` is synchronized with the
+    ordering attribute: index 0 will get position 0, index 1 position 1, etc.  To
+    start numbering at 1 or some other integer, provide ``count_from=1``.
 
 
 """
+
 from __future__ import annotations
 
 from typing import Callable

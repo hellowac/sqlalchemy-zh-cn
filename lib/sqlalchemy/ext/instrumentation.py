@@ -6,23 +6,44 @@
 # the MIT License: https://www.opensource.org/licenses/mit-license.php
 # mypy: ignore-errors
 
-"""Extensible class instrumentation.
+"""
+.. tab:: 中文
 
-The :mod:`sqlalchemy.ext.instrumentation` package provides for alternate
-systems of class instrumentation within the ORM.  Class instrumentation
-refers to how the ORM places attributes on the class which maintain
-data and track changes to that data, as well as event hooks installed
-on the class.
+    可扩展的类注入机制（Instrumentation）
 
-.. note::
-    The extension package is provided for the benefit of integration
-    with other object management packages, which already perform
-    their own instrumentation.  It is not intended for general use.
+    :mod:`sqlalchemy.ext.instrumentation` 模块提供了一种替代方式，
+    用于在 ORM 中对类进行注入（Instrumentation）处理。
+    所谓类注入，指的是 ORM 在类上放置用于维护数据和追踪数据变更的属性，
+    以及安装在类上的事件钩子等机制。
 
-For examples of how the instrumentation extension is used,
-see the example :ref:`examples_instrumentation`.
+    .. note::
+
+        该扩展模块主要用于与其他对象管理系统的集成，
+        这些系统通常已经实现了自己的注入逻辑。
+        它 **不适用于一般性用途**。
+
+    有关该注入扩展的使用示例，请参阅：:ref:`examples_instrumentation`。
+
+.. tab:: 英文
+
+    Extensible class instrumentation.
+
+    The :mod:`sqlalchemy.ext.instrumentation` package provides for alternate
+    systems of class instrumentation within the ORM.  Class instrumentation
+    refers to how the ORM places attributes on the class which maintain
+    data and track changes to that data, as well as event hooks installed
+    on the class.
+
+    .. note::
+        The extension package is provided for the benefit of integration
+        with other object management packages, which already perform
+        their own instrumentation.  It is not intended for general use.
+
+    For examples of how the instrumentation extension is used,
+    see the example :ref:`examples_instrumentation`.
 
 """
+
 import weakref
 
 from .. import util
@@ -110,9 +131,9 @@ class ExtendedInstrumentationRegistry(InstrumentationFactory):
             return None, None
 
     def _check_conflicts(self, class_, factory):
-        existing_factories = self._collect_management_factories_for(
-            class_
-        ).difference([factory])
+        existing_factories = self._collect_management_factories_for(class_).difference(
+            [factory]
+        )
         if existing_factories:
             raise TypeError(
                 "multiple instrumentation implementations specified "
@@ -173,9 +194,7 @@ class ExtendedInstrumentationRegistry(InstrumentationFactory):
 
     def opt_manager_of_class(self, cls):
         try:
-            finder = self._manager_finders.get(
-                cls, _default_opt_manager_getter
-            )
+            finder = self._manager_finders.get(cls, _default_opt_manager_getter)
         except TypeError:
             # due to weakref lookup on invalid object
             return None
@@ -202,16 +221,16 @@ class ExtendedInstrumentationRegistry(InstrumentationFactory):
     def state_of(self, instance):
         if instance is None:
             raise AttributeError("None has no persistent state.")
-        return self._state_finders.get(
-            instance.__class__, _default_state_getter
-        )(instance)
+        return self._state_finders.get(instance.__class__, _default_state_getter)(
+            instance
+        )
 
     def dict_of(self, instance):
         if instance is None:
             raise AttributeError("None has no persistent state.")
-        return self._dict_finders.get(
-            instance.__class__, _default_dict_getter
-        )(instance)
+        return self._dict_finders.get(instance.__class__, _default_dict_getter)(
+            instance
+        )
 
 
 orm_instrumentation._instrumentation_factory = _instrumentation_factory = (
@@ -346,9 +365,7 @@ class _ClassInstrumentationAdapter(ClassManager):
         if delegate:
             return delegate(key, state, factory)
         else:
-            return ClassManager.initialize_collection(
-                self, key, state, factory
-            )
+            return ClassManager.initialize_collection(self, key, state, factory)
 
     def new_instance(self, state=None):
         instance = self.class_.__new__(self.class_)

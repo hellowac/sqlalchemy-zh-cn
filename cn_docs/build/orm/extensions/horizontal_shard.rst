@@ -20,4 +20,3 @@ API Documentation
 
 .. autoclass:: ShardedQuery
    :members:
-

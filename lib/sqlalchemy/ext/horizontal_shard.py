@@ -5,24 +5,42 @@
 # This module is part of SQLAlchemy and is released under
 # the MIT License: https://www.opensource.org/licenses/mit-license.php
 
-"""Horizontal sharding support.
+"""
+.. tab:: 中文
 
-Defines a rudimental 'horizontal sharding' system which allows a Session to
-distribute queries and persistence operations across multiple databases.
+    水平分片支持。
 
-For a usage example, see the :ref:`examples_sharding` example included in
-the source distribution.
+    定义了一个基础的“水平分片”系统，允许会话将查询和持久化操作分发到多个数据库。
 
-.. deepalchemy:: The horizontal sharding extension is an advanced feature,
-   involving a complex statement -> database interaction as well as
-   use of semi-public APIs for non-trivial cases.   Simpler approaches to
-   refering to multiple database "shards", most commonly using a distinct
-   :class:`_orm.Session` per "shard", should always be considered first
-   before using this more complex and less-production-tested system.
+    有关用法示例，请参见源代码分发中的 :ref:`examples_sharding` 示例。
+
+    .. deepalchemy:: 水平分片扩展是一个高级功能，
+       涉及复杂的语句 -> 数据库交互，以及
+       使用半公共 API 处理非平凡的情况。在使用这个更复杂且未经充分生产测试的系统之前，
+       应始终优先考虑使用更简单的方法来引用多个数据库“分片”，
+       通常是为每个“分片”使用不同的 :class:`_orm.Session`。
+
+.. tab:: 英文
+
+    Horizontal sharding support.
+
+    Defines a rudimental 'horizontal sharding' system which allows a Session to
+    distribute queries and persistence operations across multiple databases.
+
+    For a usage example, see the :ref:`examples_sharding` example included in
+    the source distribution.
+
+    .. deepalchemy:: The horizontal sharding extension is an advanced feature,
+       involving a complex statement -> database interaction as well as
+       use of semi-public APIs for non-trivial cases.   Simpler approaches to
+       refering to multiple database "shards", most commonly using a distinct
+       :class:`_orm.Session` per "shard", should always be considered first
+       before using this more complex and less-production-tested system.
 
 
 
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -143,15 +161,11 @@ class ShardedSession(Session):
         self,
         shard_chooser: ShardChooser,
         identity_chooser: Optional[IdentityChooser] = None,
-        execute_chooser: Optional[
-            Callable[[ORMExecuteState], Iterable[Any]]
-        ] = None,
+        execute_chooser: Optional[Callable[[ORMExecuteState], Iterable[Any]]] = None,
         shards: Optional[Dict[str, Any]] = None,
         query_cls: Type[Query[_T]] = ShardedQuery,
         *,
-        id_chooser: Optional[
-            Callable[[Query[_T], Iterable[_T]], Iterable[Any]]
-        ] = None,
+        id_chooser: Optional[Callable[[Query[_T], Iterable[_T]], Iterable[Any]]] = None,
         query_chooser: Optional[Callable[[Executable], Iterable[Any]]] = None,
         **kwargs: Any,
     ) -> None:
@@ -185,9 +199,7 @@ class ShardedSession(Session):
         """
         super().__init__(query_cls=query_cls, **kwargs)
 
-        event.listen(
-            self, "do_orm_execute", execute_and_instances, retval=True
-        )
+        event.listen(self, "do_orm_execute", execute_and_instances, retval=True)
         self.shard_chooser = shard_chooser
 
         if id_chooser:
@@ -216,9 +228,7 @@ class ShardedSession(Session):
         elif identity_chooser:
             self.identity_chooser = identity_chooser
         else:
-            raise exc.ArgumentError(
-                "identity_chooser or id_chooser is required"
-            )
+            raise exc.ArgumentError("identity_chooser or id_chooser is required")
 
         if query_chooser:
             _query_chooser = query_chooser
@@ -229,8 +239,7 @@ class ShardedSession(Session):
             )
             if execute_chooser:
                 raise exc.ArgumentError(
-                    "Can't pass query_chooser and execute_chooser "
-                    "at the same time."
+                    "Can't pass query_chooser and execute_chooser at the same time."
                 )
 
             def _default_execute_chooser(
@@ -242,9 +251,7 @@ class ShardedSession(Session):
                 execute_chooser = _default_execute_chooser
 
         if execute_chooser is None:
-            raise exc.ArgumentError(
-                "execute_chooser or query_chooser is required"
-            )
+            raise exc.ArgumentError("execute_chooser or query_chooser is required")
         self.execute_chooser = execute_chooser
         self.__shards: Dict[ShardIdentifier, _SessionBind] = {}
         if shards is not None:
@@ -341,9 +348,7 @@ class ShardedSession(Session):
             assert trans is not None
             return trans.connection(mapper, shard_id=shard_id)
         else:
-            bind = self.get_bind(
-                mapper=mapper, shard_id=shard_id, instance=instance
-            )
+            bind = self.get_bind(mapper=mapper, shard_id=shard_id, instance=instance)
 
             if isinstance(bind, Engine):
                 return bind.connect(**kw)
@@ -404,9 +409,7 @@ class set_shard_id(ORMOption):
 
     __slots__ = ("shard_id", "propagate_to_loaders")
 
-    def __init__(
-        self, shard_id: ShardIdentifier, propagate_to_loaders: bool = True
-    ):
+    def __init__(self, shard_id: ShardIdentifier, propagate_to_loaders: bool = True):
         """Construct a :class:`_horizontal.set_shard_id` option.
 
         :param shard_id: shard identifier
