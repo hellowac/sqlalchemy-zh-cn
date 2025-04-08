@@ -31,9 +31,11 @@ Selectable Foundational Constructors
 
 .. tab:: 中文
 
+   顶级“FROM 子句”和“SELECT”构造函数。
+
 .. tab:: 英文
 
-Top level "FROM clause" and "SELECT" constructors.
+   Top level "FROM clause" and "SELECT" constructors.
 
 
 .. autofunction:: except_
@@ -66,12 +68,11 @@ Selectable Modifier Constructors
 
 .. tab:: 中文
 
+   这里列出的函数通常可作为 :class:`_sql.FromClause` 和 :class:`_sql.Selectable` 元素中的方法使用，例如 :func:`_sql.alias` 函数通常通过 :meth:`_sql.FromClause.alias` 方法调用。
+
 .. tab:: 英文
 
-Functions listed here are more commonly available as methods from
-:class:`_sql.FromClause` and :class:`_sql.Selectable` elements, for example,
-the :func:`_sql.alias` function is usually invoked via the
-:meth:`_sql.FromClause.alias` method.
+   Functions listed here are more commonly available as methods from :class:`_sql.FromClause` and :class:`_sql.Selectable` elements, for example, the :func:`_sql.alias` function is usually invoked via the :meth:`_sql.FromClause.alias` method.
 
 .. autofunction:: alias
 
@@ -92,12 +93,12 @@ the :func:`_sql.alias` function is usually invoked via the
 Selectable Class Documentation
 
 .. tab:: 中文
+   
+   这里的类是使用 :ref:`selectable_foundational_constructors` 和 :ref:`fromclause_modifier_constructors` 中列出的构造函数生成的。
 
 .. tab:: 英文
 
-The classes here are generated using the constructors listed at
-:ref:`selectable_foundational_constructors` and
-:ref:`fromclause_modifier_constructors`.
+   The classes here are generated using the constructors listed at :ref:`selectable_foundational_constructors` and :ref:`fromclause_modifier_constructors`.
 
 .. autoclass:: Alias
    :members:
@@ -191,10 +192,11 @@ Label Style Constants
 
 .. tab:: 中文
 
+   与 :meth:`_sql.GenerativeSelect.set_label_style` 方法一起使用的常量。
+
 .. tab:: 英文
 
-Constants used with the :meth:`_sql.GenerativeSelect.set_label_style`
-method.
+   Constants used with the :meth:`_sql.GenerativeSelect.set_label_style` method.
 
 .. autoclass:: SelectLabelStyle
     :members:

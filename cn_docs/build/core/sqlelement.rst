@@ -31,10 +31,11 @@ Column Element Foundational Constructors
 
 .. tab:: 中文
 
+   从“sqlalchemy”命名空间导入的独立函数，用于构建 SQLAlchemy 表达式语言构造。
+
 .. tab:: 英文
 
-Standalone functions imported from the ``sqlalchemy`` namespace which are
-used when building up SQLAlchemy Expression Language constructs.
+   Standalone functions imported from the ``sqlalchemy`` namespace which are used when building up SQLAlchemy Expression Language constructs.
 
 .. autofunction:: and_
 
@@ -99,12 +100,11 @@ Column Element Modifier Constructors
 
 .. tab:: 中文
 
+   此处列出的函数通常可作为任何 :class:`_sql.ColumnElement` 构造中的方法使用，例如 :func:`_sql.label` 函数通常通过 :meth:`_sql.ColumnElement.label` 方法调用。
+
 .. tab:: 英文
 
-Functions listed here are more commonly available as methods from any
-:class:`_sql.ColumnElement` construct, for example, the
-:func:`_sql.label` function is usually invoked via the
-:meth:`_sql.ColumnElement.label` method.
+   Functions listed here are more commonly available as methods from any :class:`_sql.ColumnElement` construct, for example, the :func:`_sql.label` function is usually invoked via the :meth:`_sql.ColumnElement.label` method.
 
 .. autofunction:: all_
 
@@ -149,11 +149,11 @@ Column Element Class Documentation
 
 .. tab:: 中文
 
+   这里的类是使用 :ref:`sqlelement_foundational_constructors` 和 :ref:`sqlelement_modifier_constructors` 中列出的构造函数生成的。
+
 .. tab:: 英文
 
-The classes here are generated using the constructors listed at
-:ref:`sqlelement_foundational_constructors` and
-:ref:`sqlelement_modifier_constructors`.
+   The classes here are generated using the constructors listed at :ref:`sqlelement_foundational_constructors` and :ref:`sqlelement_modifier_constructors`.
 
 
 .. autoclass:: BinaryExpression
@@ -185,14 +185,21 @@ The classes here are generated using the constructors listed at
 
 .. data:: ColumnExpressionArgument
 
-   General purpose "column expression" argument.
+   .. tab:: 中文
 
-   .. versionadded:: 2.0.13
+      通用“列表达式”参数。
 
-   This type is used for "column" kinds of expressions that typically represent
-   a single SQL column expression, including :class:`_sql.ColumnElement`, as
-   well as ORM-mapped attributes that will have a ``__clause_element__()``
-   method.
+      .. versionadded:: 2.0.13
+
+      此类型用于通常表示单个 SQL 列表达式的“列”类型的表达式，包括 :class:`_sql.ColumnElement`，以及将具有 ``__clause_element__()`` 方法的 ORM 映射属性。
+
+   .. tab:: 英文
+
+      General purpose "column expression" argument.
+
+      .. versionadded:: 2.0.13
+
+      This type is used for "column" kinds of expressions that typically represent a single SQL column expression, including :class:`_sql.ColumnElement`, as well as ORM-mapped attributes that will have a ``__clause_element__()`` method.
 
 
 .. autoclass:: ColumnOperators
@@ -256,10 +263,11 @@ Column Element Typing Utilities
 
 .. tab:: 中文
 
+   从“sqlalchemy”命名空间导入独立实用程序函数，以改善类型检查器的支持。
+
 .. tab:: 英文
 
-Standalone utility functions imported from the ``sqlalchemy`` namespace
-to improve support by type checkers.
+   Standalone utility functions imported from the ``sqlalchemy`` namespace to improve support by type checkers.
 
 
 .. autofunction:: sqlalchemy.NotNullable

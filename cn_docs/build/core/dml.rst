@@ -22,7 +22,13 @@ DML 基础构造函数
 
 DML Foundational Constructors
 
-Top level "INSERT", "UPDATE", "DELETE" constructors.
+.. tab:: 中文
+
+   顶级“INSERT”、“UPDATE”、“DELETE”构造函数。
+
+.. tab:: 英文
+
+   Top level "INSERT", "UPDATE", "DELETE" constructors.
 
 .. autofunction:: delete
 
@@ -36,8 +42,13 @@ DML 类文档构造函数
 
 DML Class Documentation Constructors
 
-Class documentation for the constructors listed at
-:ref:`dml_foundational_consructors`.
+.. tab:: 中文
+
+   在 :ref:`dml_foundational_consructors` 中列出的构造函数的类文档。
+
+.. tab:: 英文
+
+   Class documentation for the constructors listed at :ref:`dml_foundational_consructors`.
 
 .. autoclass:: Delete
    :members:

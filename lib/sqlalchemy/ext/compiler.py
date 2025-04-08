@@ -7,127 +7,259 @@
 
 r"""Provides an API for creation of custom ClauseElements and compilers.
 
-Synopsis
+摘要
 ========
 
-Usage involves the creation of one or more
-:class:`~sqlalchemy.sql.expression.ClauseElement` subclasses and one or
-more callables defining its compilation::
+Synopsis
 
-    from sqlalchemy.ext.compiler import compiles
-    from sqlalchemy.sql.expression import ColumnClause
+.. tab:: 中文
+
+    使用方式涉及创建一个或多个 :class:`~sqlalchemy.sql.expression.ClauseElement` 的子类，
+    以及一个或多个用于定义其编译方式的可调用对象::
+
+        from sqlalchemy.ext.compiler import compiles
+        from sqlalchemy.sql.expression import ColumnClause
 
 
-    class MyColumn(ColumnClause):
-        inherit_cache = True
+        class MyColumn(ColumnClause):
+            inherit_cache = True
 
 
-    @compiles(MyColumn)
-    def compile_mycolumn(element, compiler, **kw):
-        return "[%s]" % element.name
+        @compiles(MyColumn)
+        def compile_mycolumn(element, compiler, **kw):
+            return "[%s]" % element.name
 
-Above, ``MyColumn`` extends :class:`~sqlalchemy.sql.expression.ColumnClause`,
-the base expression element for named column objects. The ``compiles``
-decorator registers itself with the ``MyColumn`` class so that it is invoked
-when the object is compiled to a string::
+    上面的 ``MyColumn`` 继承自 :class:`~sqlalchemy.sql.expression.ColumnClause`，
+    这是用于命名列对象的基本表达式元素。``compiles`` 装饰器将自身注册到 ``MyColumn`` 类上，
+    从而在该对象被编译为字符串时被调用::
 
-    from sqlalchemy import select
+        from sqlalchemy import select
 
-    s = select(MyColumn("x"), MyColumn("y"))
-    print(str(s))
+        s = select(MyColumn("x"), MyColumn("y"))
+        print(str(s))
 
-Produces:
+    生成如下结果：
 
-.. sourcecode:: sql
+    .. sourcecode:: sql
 
-    SELECT [x], [y]
+        SELECT [x], [y]
 
-Dialect-specific compilation rules
+
+.. tab:: 英文
+
+    Usage involves the creation of one or more
+    :class:`~sqlalchemy.sql.expression.ClauseElement` subclasses and one or
+    more callables defining its compilation::
+
+        from sqlalchemy.ext.compiler import compiles
+        from sqlalchemy.sql.expression import ColumnClause
+
+
+        class MyColumn(ColumnClause):
+            inherit_cache = True
+
+
+        @compiles(MyColumn)
+        def compile_mycolumn(element, compiler, **kw):
+            return "[%s]" % element.name
+
+    Above, ``MyColumn`` extends :class:`~sqlalchemy.sql.expression.ColumnClause`,
+    the base expression element for named column objects. The ``compiles``
+    decorator registers itself with the ``MyColumn`` class so that it is invoked
+    when the object is compiled to a string::
+
+        from sqlalchemy import select
+
+        s = select(MyColumn("x"), MyColumn("y"))
+        print(str(s))
+
+    Produces:
+
+    .. sourcecode:: sql
+
+        SELECT [x], [y]
+
+特定于方言的编译规则
 ==================================
 
-Compilers can also be made dialect-specific. The appropriate compiler will be
-invoked for the dialect in use::
+Dialect-specific compilation rules
 
-    from sqlalchemy.schema import DDLElement
+.. tab:: 中文
 
+    编译器还可以与特定方言（dialect）绑定。当使用某个方言时，将调用相应的编译器::
 
-    class AlterColumn(DDLElement):
-        inherit_cache = False
-
-        def __init__(self, column, cmd):
-            self.column = column
-            self.cmd = cmd
+        from sqlalchemy.schema import DDLElement
 
 
-    @compiles(AlterColumn)
-    def visit_alter_column(element, compiler, **kw):
-        return "ALTER COLUMN %s ..." % element.column.name
+        class AlterColumn(DDLElement):
+            inherit_cache = False
+
+            def __init__(self, column, cmd):
+                self.column = column
+                self.cmd = cmd
 
 
-    @compiles(AlterColumn, "postgresql")
-    def visit_alter_column(element, compiler, **kw):
-        return "ALTER TABLE %s ALTER COLUMN %s ..." % (
-            element.table.name,
-            element.column.name,
-        )
+        @compiles(AlterColumn)
+        def visit_alter_column(element, compiler, **kw):
+            return "ALTER COLUMN %s ..." % element.column.name
 
-The second ``visit_alter_table`` will be invoked when any ``postgresql``
-dialect is used.
+
+        @compiles(AlterColumn, "postgresql")
+        def visit_alter_column(element, compiler, **kw):
+            return "ALTER TABLE %s ALTER COLUMN %s ..." % (
+                element.table.name,
+                element.column.name,
+            )
+
+    当使用 ``postgresql`` 方言时，将调用第二个 ``visit_alter_table``。
+
+
+
+.. tab:: 英文
+
+
+    Compilers can also be made dialect-specific. The appropriate compiler will be
+    invoked for the dialect in use::
+
+        from sqlalchemy.schema import DDLElement
+
+
+        class AlterColumn(DDLElement):
+            inherit_cache = False
+
+            def __init__(self, column, cmd):
+                self.column = column
+                self.cmd = cmd
+
+
+        @compiles(AlterColumn)
+        def visit_alter_column(element, compiler, **kw):
+            return "ALTER COLUMN %s ..." % element.column.name
+
+
+        @compiles(AlterColumn, "postgresql")
+        def visit_alter_column(element, compiler, **kw):
+            return "ALTER TABLE %s ALTER COLUMN %s ..." % (
+                element.table.name,
+                element.column.name,
+            )
+
+    The second ``visit_alter_table`` will be invoked when any ``postgresql``
+    dialect is used.
 
 .. _compilerext_compiling_subelements:
 
-Compiling sub-elements of a custom expression construct
+编译自定义表达式构造的子元素
 =======================================================
 
-The ``compiler`` argument is the
-:class:`~sqlalchemy.engine.interfaces.Compiled` object in use. This object
-can be inspected for any information about the in-progress compilation,
-including ``compiler.dialect``, ``compiler.statement`` etc. The
-:class:`~sqlalchemy.sql.compiler.SQLCompiler` and
-:class:`~sqlalchemy.sql.compiler.DDLCompiler` both include a ``process()``
-method which can be used for compilation of embedded attributes::
+Compiling sub-elements of a custom expression construct
 
-    from sqlalchemy.sql.expression import Executable, ClauseElement
+.. tab:: 中文
 
+    ``compiler`` 参数是当前使用的 :class:`~sqlalchemy.engine.interfaces.Compiled` 对象。
+    该对象可以被检查以获取编译过程中的信息，包括 ``compiler.dialect``、``compiler.statement`` 等。
+    :class:`~sqlalchemy.sql.compiler.SQLCompiler` 和
+    :class:`~sqlalchemy.sql.compiler.DDLCompiler` 都包含一个 ``process()`` 方法，
+    可用于编译嵌套的属性::
 
-    class InsertFromSelect(Executable, ClauseElement):
-        inherit_cache = False
-
-        def __init__(self, table, select):
-            self.table = table
-            self.select = select
+        from sqlalchemy.sql.expression import Executable, ClauseElement
 
 
-    @compiles(InsertFromSelect)
-    def visit_insert_from_select(element, compiler, **kw):
-        return "INSERT INTO %s (%s)" % (
-            compiler.process(element.table, asfrom=True, **kw),
-            compiler.process(element.select, **kw),
+        class InsertFromSelect(Executable, ClauseElement):
+            inherit_cache = False
+
+            def __init__(self, table, select):
+                self.table = table
+                self.select = select
+
+
+        @compiles(InsertFromSelect)
+        def visit_insert_from_select(element, compiler, **kw):
+            return "INSERT INTO %s (%s)" % (
+                compiler.process(element.table, asfrom=True, **kw),
+                compiler.process(element.select, **kw),
+            )
+
+
+        insert = InsertFromSelect(t1, select(t1).where(t1.c.x > 5))
+        print(insert)
+
+    生成如下结果（已格式化以便阅读）：
+
+    .. sourcecode:: sql
+
+        INSERT INTO mytable (
+            SELECT mytable.x, mytable.y, mytable.z
+            FROM mytable
+            WHERE mytable.x > :x_1
         )
 
+    .. note::
 
-    insert = InsertFromSelect(t1, select(t1).where(t1.c.x > 5))
-    print(insert)
+        上述 ``InsertFromSelect`` 构造仅为示例，该功能实际上已通过
+        :meth:`_expression.Insert.from_select` 方法内置提供。
 
-Produces (formatted for readability):
+.. tab:: 英文
 
-.. sourcecode:: sql
 
-    INSERT INTO mytable (
-        SELECT mytable.x, mytable.y, mytable.z
-        FROM mytable
-        WHERE mytable.x > :x_1
-    )
+    The ``compiler`` argument is the
+    :class:`~sqlalchemy.engine.interfaces.Compiled` object in use. This object
+    can be inspected for any information about the in-progress compilation,
+    including ``compiler.dialect``, ``compiler.statement`` etc. The
+    :class:`~sqlalchemy.sql.compiler.SQLCompiler` and
+    :class:`~sqlalchemy.sql.compiler.DDLCompiler` both include a ``process()``
+    method which can be used for compilation of embedded attributes::
 
-.. note::
+        from sqlalchemy.sql.expression import Executable, ClauseElement
 
-    The above ``InsertFromSelect`` construct is only an example, this actual
-    functionality is already available using the
-    :meth:`_expression.Insert.from_select` method.
 
+        class InsertFromSelect(Executable, ClauseElement):
+            inherit_cache = False
+
+            def __init__(self, table, select):
+                self.table = table
+                self.select = select
+
+
+        @compiles(InsertFromSelect)
+        def visit_insert_from_select(element, compiler, **kw):
+            return "INSERT INTO %s (%s)" % (
+                compiler.process(element.table, asfrom=True, **kw),
+                compiler.process(element.select, **kw),
+            )
+
+
+        insert = InsertFromSelect(t1, select(t1).where(t1.c.x > 5))
+        print(insert)
+
+    Produces (formatted for readability):
+
+    .. sourcecode:: sql
+
+        INSERT INTO mytable (
+            SELECT mytable.x, mytable.y, mytable.z
+            FROM mytable
+            WHERE mytable.x > :x_1
+        )
+
+    .. note::
+
+        The above ``InsertFromSelect`` construct is only an example, this actual
+        functionality is already available using the
+        :meth:`_expression.Insert.from_select` method.
+
+
+SQL 和 DDL 编译器之间的交叉编译
+---------------------------------------------
 
 Cross Compiling between SQL and DDL compilers
----------------------------------------------
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 
 SQL and DDL constructs are each compiled using different base compilers -
 ``SQLCompiler`` and ``DDLCompiler``.   A common need is to access the
@@ -152,8 +284,17 @@ a bound parameter;  when emitting DDL, bound parameters are typically not
 supported.
 
 
-Changing the default compilation of existing constructs
+更改现有构造的默认编译
 =======================================================
+
+Changing the default compilation of existing constructs
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 
 The compiler extension applies just as well to the existing constructs.  When
 overriding the compilation of a built in SQL construct, the @compiles
@@ -178,8 +319,17 @@ compiled.
 
 .. _type_compilation_extension:
 
-Changing Compilation of Types
+更改类型的编译
 =============================
+
+Changing Compilation of Types
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 
 ``compiler`` works for types, too, such as below where we implement the
 MS-SQL specific 'max' keyword for ``String``/``VARCHAR``::
@@ -195,8 +345,17 @@ MS-SQL specific 'max' keyword for ``String``/``VARCHAR``::
 
     foo = Table("foo", metadata, Column("data", VARCHAR("max")))
 
-Subclassing Guidelines
+子类化指南
 ======================
+
+Subclassing Guidelines
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 
 A big part of using the compiler extension is subclassing SQLAlchemy
 expression constructs. To make this easier, the expression and
@@ -279,8 +438,17 @@ for background.
 
 .. _compilerext_caching:
 
-Enabling Caching Support for Custom Constructs
+为自定义构造启用缓存支持
 ==============================================
+
+Enabling Caching Support for Custom Constructs
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 
 SQLAlchemy as of version 1.4 includes a
 :ref:`SQL compilation caching facility <sql_caching>` which will allow
@@ -361,11 +529,22 @@ SELECT", **caching is generally less critical** as the lack of caching for such
 a construct will have only localized implications for that specific operation.
 
 
-Further Examples
+更多示例
 ================
 
-"UTC timestamp" function
+Further Examples
+
+“UTC 时间戳”函数
 -------------------------
+
+"UTC timestamp" function
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 
 A function that works like "CURRENT_TIMESTAMP" except applies the
 appropriate conversions so that the time is in UTC time.   Timestamps are best
@@ -409,8 +588,17 @@ Example usage::
         Column("timestamp", DateTime, server_default=utcnow()),
     )
 
-"GREATEST" function
+“GREATEST”函数
 -------------------
+
+"GREATEST" function
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 
 The "GREATEST" function is given any number of arguments and returns the one
 that is of the highest value - its equivalent to Python's ``max``
@@ -446,8 +634,17 @@ Example usage::
         greatest(Account.checking_balance, Account.savings_balance) > 10000
     )
 
-"false" expression
+“false”表达式
 ------------------
+
+"false" expression
+
+.. tab:: 中文
+
+
+
+.. tab:: 英文
+
 
 Render a "false" constant expression, rendering as "0" on platforms that
 don't have a "false" constant::
@@ -481,6 +678,7 @@ Example usage::
     )
 
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -592,9 +790,7 @@ class _dispatcher:
 
         if arm:
             if not arm_collection:
-                arm_collection.append(
-                    (None, None, (element,), sqltypes.NULLTYPE)
-                )
+                arm_collection.append((None, None, (element,), sqltypes.NULLTYPE))
             for tup in arm_collection:
                 arm(*tup)
         return expr
