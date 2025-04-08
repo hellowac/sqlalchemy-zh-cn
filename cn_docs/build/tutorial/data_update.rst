@@ -232,35 +232,35 @@ UPDATE..FROM
 
     某些数据库（如 PostgreSQL 和 MySQL）支持 “UPDATE FROM” 语法，其中可以在一个特殊的 FROM 子句中直接声明其他表。当在语句的 WHERE 子句中找到其他表时，将隐式生成此语法::
 
-    >>> update_stmt = (
-    ...     update(user_table)
-    ...     .where(user_table.c.id == address_table.c.user_id)
-    ...     .where(address_table.c.email_address == "patrick@aol.com")
-    ...     .values(fullname="Pat")
-    ... )
-    >>> print(update_stmt)
-    {printsql}UPDATE user_account SET fullname=:fullname FROM address
-    WHERE user_account.id = address.user_id AND address.email_address = :email_address_1
+        >>> update_stmt = (
+        ...     update(user_table)
+        ...     .where(user_table.c.id == address_table.c.user_id)
+        ...     .where(address_table.c.email_address == "patrick@aol.com")
+        ...     .values(fullname="Pat")
+        ... )
+        >>> print(update_stmt)
+        {printsql}UPDATE user_account SET fullname=:fullname FROM address
+        WHERE user_account.id = address.user_id AND address.email_address = :email_address_1
 
 
     MySQL 还有一种特定语法，可以更新多个表。这要求我们在 VALUES 子句中引用 :class:`_schema.Table` 对象，以便引用其他表::
 
-    >>> update_stmt = (
-    ...     update(user_table)
-    ...     .where(user_table.c.id == address_table.c.user_id)
-    ...     .where(address_table.c.email_address == "patrick@aol.com")
-    ...     .values(
-    ...         {
-    ...             user_table.c.fullname: "Pat",
-    ...             address_table.c.email_address: "pat@aol.com",
-    ...         }
-    ...     )
-    ... )
-    >>> from sqlalchemy.dialects import mysql
-    >>> print(update_stmt.compile(dialect=mysql.dialect()))
-    {printsql}UPDATE user_account, address
-    SET address.email_address=%s, user_account.fullname=%s
-    WHERE user_account.id = address.user_id AND address.email_address = %s
+        >>> update_stmt = (
+        ...     update(user_table)
+        ...     .where(user_table.c.id == address_table.c.user_id)
+        ...     .where(address_table.c.email_address == "patrick@aol.com")
+        ...     .values(
+        ...         {
+        ...             user_table.c.fullname: "Pat",
+        ...             address_table.c.email_address: "pat@aol.com",
+        ...         }
+        ...     )
+        ... )
+        >>> from sqlalchemy.dialects import mysql
+        >>> print(update_stmt.compile(dialect=mysql.dialect()))
+        {printsql}UPDATE user_account, address
+        SET address.email_address=%s, user_account.fullname=%s
+        WHERE user_account.id = address.user_id AND address.email_address = %s
 
 .. tab:: 英文
 
