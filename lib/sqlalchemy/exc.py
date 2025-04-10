@@ -5,13 +5,23 @@
 # This module is part of SQLAlchemy and is released under
 # the MIT License: https://www.opensource.org/licenses/mit-license.php
 
-"""Exceptions used with SQLAlchemy.
+"""
+.. tab:: 中文
 
-The base exception class is :exc:`.SQLAlchemyError`.  Exceptions which are
-raised as a result of DBAPI exceptions are all subclasses of
-:exc:`.DBAPIError`.
+    SQLAlchemy 使用的异常。
+
+    基本异常类是 :exc:`.SQLAlchemyError` 。由于 DBAPI 异常引发的所有异常都是 :exc:`.DBAPIError` 的子类。
+
+.. tab:: 英文
+
+    Exceptions used with SQLAlchemy.
+
+    The base exception class is :exc:`.SQLAlchemyError`.  Exceptions which are
+    raised as a result of DBAPI exceptions are all subclasses of
+    :exc:`.DBAPIError`.
 
 """
+
 from __future__ import annotations
 
 import typing
@@ -653,9 +663,7 @@ class DBAPIError(StatementError):
             for super_ in orig.__class__.__mro__:
                 name = super_.__name__
                 if dialect:
-                    name = dialect.dbapi_exception_translation_map.get(
-                        name, name
-                    )
+                    name = dialect.dbapi_exception_translation_map.get(name, name)
                 if name in glob and issubclass(glob[name], DBAPIError):
                     cls = glob[name]
                     break
@@ -701,8 +709,7 @@ class DBAPIError(StatementError):
             text = "Error in str() of DB-API-generated exception: " + str(e)
         StatementError.__init__(
             self,
-            "(%s.%s) %s"
-            % (orig.__class__.__module__, orig.__class__.__name__, text),
+            "(%s.%s) %s" % (orig.__class__.__module__, orig.__class__.__name__, text),
             statement,
             params,
             orig,

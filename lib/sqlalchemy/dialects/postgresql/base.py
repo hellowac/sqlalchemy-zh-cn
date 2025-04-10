@@ -14,1479 +14,2685 @@ r"""
 
 .. _postgresql_sequences:
 
-Sequences/SERIAL/IDENTITY
+序列/SERIAL/IDENTITY
 -------------------------
 
-PostgreSQL supports sequences, and SQLAlchemy uses these as the default means
-of creating new primary key values for integer-based primary key columns. When
-creating tables, SQLAlchemy will issue the ``SERIAL`` datatype for
-integer-based primary key columns, which generates a sequence and server side
-default corresponding to the column.
+Sequences/SERIAL/IDENTITY
 
-To specify a specific named sequence to be used for primary key generation,
-use the :func:`~sqlalchemy.schema.Sequence` construct::
+.. tab:: 中文
 
-    Table(
-        "sometable",
-        metadata,
-        Column(
-            "id", Integer, Sequence("some_id_seq", start=1), primary_key=True
-        ),
-    )
+    PostgreSQL 支持序列（sequences），SQLAlchemy 将其作为整型主键列生成新主键值的默认方式。在创建表时，SQLAlchemy 会为整型主键列发出 ``SERIAL`` 数据类型，该类型在数据库端自动生成一个序列及其默认值。
 
-When SQLAlchemy issues a single INSERT statement, to fulfill the contract of
-having the "last insert identifier" available, a RETURNING clause is added to
-the INSERT statement which specifies the primary key columns should be
-returned after the statement completes. The RETURNING functionality only takes
-place if PostgreSQL 8.2 or later is in use. As a fallback approach, the
-sequence, whether specified explicitly or implicitly via ``SERIAL``, is
-executed independently beforehand, the returned value to be used in the
-subsequent insert. Note that when an
-:func:`~sqlalchemy.sql.expression.insert()` construct is executed using
-"executemany" semantics, the "last inserted identifier" functionality does not
-apply; no RETURNING clause is emitted nor is the sequence pre-executed in this
-case.
+    要为主键生成指定名称的序列，可以使用 :func:`~sqlalchemy.schema.Sequence` 构造函数指定序列名称，如下所示::
+
+        Table(
+            "sometable",
+            metadata,
+            Column(
+                "id", Integer, Sequence("some_id_seq", start=1), primary_key=True
+            ),
+        )
+
+    当 SQLAlchemy 执行一条单独的 INSERT 语句时，为了满足返回“最后插入的标识符”的需求，会在该语句中添加一个 RETURNING 子句，用于在语句执行完成后返回主键列。此 RETURNING 功能仅在 PostgreSQL 8.2 及更高版本中可用。作为后备方案，无论是显式指定还是通过 ``SERIAL`` 隐式生成的序列，都会在插入语句之前单独执行一次以获取主键值，然后再进行插入操作。需要注意的是，当使用“executemany”语义执行 :func:`~sqlalchemy.sql.expression.insert()` 构造时，将不会启用“最后插入标识符”功能：此时不会添加 RETURNING 子句，也不会预先执行序列。
+
+.. tab:: 英文
+
+    PostgreSQL supports sequences, and SQLAlchemy uses these as the default means
+    of creating new primary key values for integer-based primary key columns. When
+    creating tables, SQLAlchemy will issue the ``SERIAL`` datatype for
+    integer-based primary key columns, which generates a sequence and server side
+    default corresponding to the column.
+
+    To specify a specific named sequence to be used for primary key generation,
+    use the :func:`~sqlalchemy.schema.Sequence` construct::
+
+        Table(
+            "sometable",
+            metadata,
+            Column(
+                "id", Integer, Sequence("some_id_seq", start=1), primary_key=True
+            ),
+        )
+
+    When SQLAlchemy issues a single INSERT statement, to fulfill the contract of
+    having the "last insert identifier" available, a RETURNING clause is added to
+    the INSERT statement which specifies the primary key columns should be
+    returned after the statement completes. The RETURNING functionality only takes
+    place if PostgreSQL 8.2 or later is in use. As a fallback approach, the
+    sequence, whether specified explicitly or implicitly via ``SERIAL``, is
+    executed independently beforehand, the returned value to be used in the
+    subsequent insert. Note that when an
+    :func:`~sqlalchemy.sql.expression.insert()` construct is executed using
+    "executemany" semantics, the "last inserted identifier" functionality does not
+    apply; no RETURNING clause is emitted nor is the sequence pre-executed in this
+    case.
 
 
-PostgreSQL 10 and above IDENTITY columns
+PostgreSQL 10 及以上版本的 IDENTITY 列
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-PostgreSQL 10 and above have a new IDENTITY feature that supersedes the use
-of SERIAL. The :class:`_schema.Identity` construct in a
-:class:`_schema.Column` can be used to control its behavior::
+PostgreSQL 10 and above IDENTITY columns
 
-    from sqlalchemy import Table, Column, MetaData, Integer, Computed
+.. tab:: 中文
 
-    metadata = MetaData()
+    从 PostgreSQL 10 开始，新增了 IDENTITY 特性，可替代传统的 SERIAL 用法。在 :class:`_schema.Column` 中使用 :class:`_schema.Identity` 构造即可控制其行为::
 
-    data = Table(
-        "data",
-        metadata,
-        Column(
-            "id", Integer, Identity(start=42, cycle=True), primary_key=True
-        ),
-        Column("data", String),
-    )
+        from sqlalchemy import Table, Column, MetaData, Integer, Computed
 
-The CREATE TABLE for the above :class:`_schema.Table` object would be:
+        metadata = MetaData()
 
-.. sourcecode:: sql
+        data = Table(
+            "data",
+            metadata,
+            Column(
+                "id", Integer, Identity(start=42, cycle=True), primary_key=True
+            ),
+            Column("data", String),
+        )
 
-    CREATE TABLE data (
-        id INTEGER GENERATED BY DEFAULT AS IDENTITY (START WITH 42 CYCLE),
-        data VARCHAR,
-        PRIMARY KEY (id)
-    )
+    上述 :class:`_schema.Table` 对象所生成的 CREATE TABLE 语句如下：
 
-.. versionchanged::  1.4   Added :class:`_schema.Identity` construct
-   in a :class:`_schema.Column` to specify the option of an autoincrementing
-   column.
+    .. sourcecode:: sql
 
-.. note::
+        CREATE TABLE data (
+            id INTEGER GENERATED BY DEFAULT AS IDENTITY (START WITH 42 CYCLE),
+            data VARCHAR,
+            PRIMARY KEY (id)
+        )
 
-   Previous versions of SQLAlchemy did not have built-in support for rendering
-   of IDENTITY, and could use the following compilation hook to replace
-   occurrences of SERIAL with IDENTITY::
+    .. versionchanged::  1.4
+       在 :class:`_schema.Column` 中新增 :class:`_schema.Identity` 构造，以支持自动递增列的配置。
 
-       from sqlalchemy.schema import CreateColumn
-       from sqlalchemy.ext.compiler import compiles
+    .. note::
+
+       在早期版本中，SQLAlchemy 并不内建对 IDENTITY 的渲染支持，可以通过以下编译钩子将 SERIAL 替换为 IDENTITY::
+
+           from sqlalchemy.schema import CreateColumn
+           from sqlalchemy.ext.compiler import compiles
 
 
-       @compiles(CreateColumn, "postgresql")
-       def use_identity(element, compiler, **kw):
-           text = compiler.visit_create_column(element, **kw)
-           text = text.replace("SERIAL", "INT GENERATED BY DEFAULT AS IDENTITY")
-           return text
+           @compiles(CreateColumn, "postgresql")
+           def use_identity(element, compiler, **kw):
+               text = compiler.visit_create_column(element, **kw)
+               text = text.replace("SERIAL", "INT GENERATED BY DEFAULT AS IDENTITY")
+               return text
 
-   Using the above, a table such as::
+       使用上述方法，诸如以下的表定义::
 
-       t = Table(
-           "t", m, Column("id", Integer, primary_key=True), Column("data", String)
-       )
+           t = Table(
+               "t", m, Column("id", Integer, primary_key=True), Column("data", String)
+           )
 
-   Will generate on the backing database as:
+       将在底层数据库中生成如下 SQL 语句：
 
-   .. sourcecode:: sql
+       .. sourcecode:: sql
 
-       CREATE TABLE t (
-           id INT GENERATED BY DEFAULT AS IDENTITY,
-           data VARCHAR,
-           PRIMARY KEY (id)
-       )
+           CREATE TABLE t (
+               id INT GENERATED BY DEFAULT AS IDENTITY,
+               data VARCHAR,
+               PRIMARY KEY (id)
+           )
+
+.. tab:: 英文
+
+    PostgreSQL 10 and above have a new IDENTITY feature that supersedes the use
+    of SERIAL. The :class:`_schema.Identity` construct in a
+    :class:`_schema.Column` can be used to control its behavior::
+
+        from sqlalchemy import Table, Column, MetaData, Integer, Computed
+
+        metadata = MetaData()
+
+        data = Table(
+            "data",
+            metadata,
+            Column(
+                "id", Integer, Identity(start=42, cycle=True), primary_key=True
+            ),
+            Column("data", String),
+        )
+
+    The CREATE TABLE for the above :class:`_schema.Table` object would be:
+
+    .. sourcecode:: sql
+
+        CREATE TABLE data (
+            id INTEGER GENERATED BY DEFAULT AS IDENTITY (START WITH 42 CYCLE),
+            data VARCHAR,
+            PRIMARY KEY (id)
+        )
+
+    .. versionchanged::  1.4   Added :class:`_schema.Identity` construct
+       in a :class:`_schema.Column` to specify the option of an autoincrementing
+       column.
+
+    .. note::
+
+       Previous versions of SQLAlchemy did not have built-in support for rendering
+       of IDENTITY, and could use the following compilation hook to replace
+       occurrences of SERIAL with IDENTITY::
+
+           from sqlalchemy.schema import CreateColumn
+           from sqlalchemy.ext.compiler import compiles
+
+
+           @compiles(CreateColumn, "postgresql")
+           def use_identity(element, compiler, **kw):
+               text = compiler.visit_create_column(element, **kw)
+               text = text.replace("SERIAL", "INT GENERATED BY DEFAULT AS IDENTITY")
+               return text
+
+       Using the above, a table such as::
+
+           t = Table(
+               "t", m, Column("id", Integer, primary_key=True), Column("data", String)
+           )
+
+       Will generate on the backing database as:
+
+       .. sourcecode:: sql
+
+           CREATE TABLE t (
+               id INT GENERATED BY DEFAULT AS IDENTITY,
+               data VARCHAR,
+               PRIMARY KEY (id)
+           )
 
 .. _postgresql_ss_cursors:
 
-Server Side Cursors
+服务器端游标
 -------------------
 
-Server-side cursor support is available for the psycopg2, asyncpg
-dialects and may also be available in others.
+Server Side Cursors
 
-Server side cursors are enabled on a per-statement basis by using the
-:paramref:`.Connection.execution_options.stream_results` connection execution
-option::
+.. tab:: 中文
 
-    with engine.connect() as conn:
-        result = conn.execution_options(stream_results=True).execute(
-            text("select * from table")
-        )
+    服务器端游标支持适用于 psycopg2、asyncpg 方言，并且可能在其他方言中也可用。
 
-Note that some kinds of SQL statements may not be supported with
-server side cursors; generally, only SQL statements that return rows should be
-used with this option.
+    服务器端游标是按每个语句启用的，可以通过使用 :paramref:`.Connection.execution_options.stream_results` 连接执行选项来启用::
 
-.. deprecated:: 1.4  The dialect-level server_side_cursors flag is deprecated
-   and will be removed in a future release.  Please use the
-   :paramref:`_engine.Connection.stream_results` execution option for
-   unbuffered cursor support.
+        with engine.connect() as conn:
+            result = conn.execution_options(stream_results=True).execute(
+                text("select * from table")
+            )
 
-.. seealso::
+    请注意，某些类型的 SQL 语句可能不支持服务器端游标；通常，仅返回行的 SQL 语句应与此选项一起使用。
 
-    :ref:`engine_stream_results`
+    .. deprecated:: 1.4  方言级别的 server_side_cursors 标志已弃用，将在未来版本中移除。请使用 :paramref:`_engine.Connection.stream_results` 执行选项来支持无缓冲游标。
+
+    .. seealso::
+
+        :ref:`engine_stream_results`
+
+.. tab:: 英文
+
+    Server-side cursor support is available for the psycopg2, asyncpg
+    dialects and may also be available in others.
+
+    Server side cursors are enabled on a per-statement basis by using the
+    :paramref:`.Connection.execution_options.stream_results` connection execution
+    option::
+
+        with engine.connect() as conn:
+            result = conn.execution_options(stream_results=True).execute(
+                text("select * from table")
+            )
+
+    Note that some kinds of SQL statements may not be supported with
+    server side cursors; generally, only SQL statements that return rows should be
+    used with this option.
+
+    .. deprecated:: 1.4  The dialect-level server_side_cursors flag is deprecated
+    and will be removed in a future release.  Please use the
+    :paramref:`_engine.Connection.stream_results` execution option for
+    unbuffered cursor support.
+
+    .. seealso::
+
+        :ref:`engine_stream_results`
 
 .. _postgresql_isolation_level:
 
-Transaction Isolation Level
+事务隔离级别
 ---------------------------
 
-Most SQLAlchemy dialects support setting of transaction isolation level
-using the :paramref:`_sa.create_engine.isolation_level` parameter
-at the :func:`_sa.create_engine` level, and at the :class:`_engine.Connection`
-level via the :paramref:`.Connection.execution_options.isolation_level`
-parameter.
+Transaction Isolation Level
 
-For PostgreSQL dialects, this feature works either by making use of the
-DBAPI-specific features, such as psycopg2's isolation level flags which will
-embed the isolation level setting inline with the ``"BEGIN"`` statement, or for
-DBAPIs with no direct support by emitting ``SET SESSION CHARACTERISTICS AS
-TRANSACTION ISOLATION LEVEL <level>`` ahead of the ``"BEGIN"`` statement
-emitted by the DBAPI.   For the special AUTOCOMMIT isolation level,
-DBAPI-specific techniques are used which is typically an ``.autocommit``
-flag on the DBAPI connection object.
+.. tab:: 中文
 
-To set isolation level using :func:`_sa.create_engine`::
+    大多数 SQLAlchemy 方言支持通过 :paramref:`_sa.create_engine.isolation_level` 参数在 :func:`_sa.create_engine` 级别以及在 :class:`_engine.Connection` 级别通过 :paramref:`.Connection.execution_options.isolation_level` 参数设置事务隔离级别。
 
-    engine = create_engine(
-        "postgresql+pg8000://scott:tiger@localhost/test",
-        isolation_level="REPEATABLE READ",
-    )
+    对于 PostgreSQL 方言，此功能通过使用 DBAPI 特定的功能来实现，例如 psycopg2 的隔离级别标志，它将在 ``"BEGIN"`` 语句中内嵌隔离级别设置；对于没有直接支持的 DBAPI，则通过在 DBAPI 发出的 ``"BEGIN"`` 语句之前发出 ``SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL <level>`` 来实现。对于特殊的 AUTOCOMMIT 隔离级别，使用 DBAPI 特定的技术，通常是在 DBAPI 连接对象上设置 ``.autocommit`` 标志。
 
-To set using per-connection execution options::
+    使用 :func:`_sa.create_engine` 设置隔离级别::
 
-    with engine.connect() as conn:
-        conn = conn.execution_options(isolation_level="REPEATABLE READ")
-        with conn.begin():
-            ...  # work with transaction
+        engine = create_engine(
+            "postgresql+pg8000://scott:tiger@localhost/test",
+            isolation_level="REPEATABLE READ",
+        )
 
-There are also more options for isolation level configurations, such as
-"sub-engine" objects linked to a main :class:`_engine.Engine` which each apply
-different isolation level settings.  See the discussion at
-:ref:`dbapi_autocommit` for background.
+    使用每连接执行选项设置::
 
-Valid values for ``isolation_level`` on most PostgreSQL dialects include:
+        with engine.connect() as conn:
+            conn = conn.execution_options(isolation_level="REPEATABLE READ")
+            with conn.begin():
+                ...  # work with transaction
 
-* ``READ COMMITTED``
-* ``READ UNCOMMITTED``
-* ``REPEATABLE READ``
-* ``SERIALIZABLE``
-* ``AUTOCOMMIT``
+    还可以通过“子引擎”对象应用不同的隔离级别设置，这些对象与主 :class:`_engine.Engine` 相关联。有关更多信息，请参见 :ref:`dbapi_autocommit`。
 
-.. seealso::
+    有效的 PostgreSQL 方言 ``isolation_level`` 值包括：
 
-    :ref:`dbapi_autocommit`
+    * ``READ COMMITTED``
+    * ``READ UNCOMMITTED``
+    * ``REPEATABLE READ``
+    * ``SERIALIZABLE``
+    * ``AUTOCOMMIT``
 
-    :ref:`postgresql_readonly_deferrable`
+    .. seealso::
 
-    :ref:`psycopg2_isolation_level`
+        :ref:`dbapi_autocommit`
 
-    :ref:`pg8000_isolation_level`
+        :ref:`postgresql_readonly_deferrable`
+
+        :ref:`psycopg2_isolation_level`
+
+        :ref:`pg8000_isolation_level`
+
+.. tab:: 英文
+
+    Most SQLAlchemy dialects support setting of transaction isolation level
+    using the :paramref:`_sa.create_engine.isolation_level` parameter
+    at the :func:`_sa.create_engine` level, and at the :class:`_engine.Connection`
+    level via the :paramref:`.Connection.execution_options.isolation_level`
+    parameter.
+
+    For PostgreSQL dialects, this feature works either by making use of the
+    DBAPI-specific features, such as psycopg2's isolation level flags which will
+    embed the isolation level setting inline with the ``"BEGIN"`` statement, or for
+    DBAPIs with no direct support by emitting ``SET SESSION CHARACTERISTICS AS
+    TRANSACTION ISOLATION LEVEL <level>`` ahead of the ``"BEGIN"`` statement
+    emitted by the DBAPI.   For the special AUTOCOMMIT isolation level,
+    DBAPI-specific techniques are used which is typically an ``.autocommit``
+    flag on the DBAPI connection object.
+
+    To set isolation level using :func:`_sa.create_engine`::
+
+        engine = create_engine(
+            "postgresql+pg8000://scott:tiger@localhost/test",
+            isolation_level="REPEATABLE READ",
+        )
+
+    To set using per-connection execution options::
+
+        with engine.connect() as conn:
+            conn = conn.execution_options(isolation_level="REPEATABLE READ")
+            with conn.begin():
+                ...  # work with transaction
+
+    There are also more options for isolation level configurations, such as
+    "sub-engine" objects linked to a main :class:`_engine.Engine` which each apply
+    different isolation level settings.  See the discussion at
+    :ref:`dbapi_autocommit` for background.
+
+    Valid values for ``isolation_level`` on most PostgreSQL dialects include:
+
+    * ``READ COMMITTED``
+    * ``READ UNCOMMITTED``
+    * ``REPEATABLE READ``
+    * ``SERIALIZABLE``
+    * ``AUTOCOMMIT``
+
+    .. seealso::
+
+        :ref:`dbapi_autocommit`
+
+        :ref:`postgresql_readonly_deferrable`
+
+        :ref:`psycopg2_isolation_level`
+
+        :ref:`pg8000_isolation_level`
 
 .. _postgresql_readonly_deferrable:
 
-Setting READ ONLY / DEFERRABLE
+设置 READ ONLY / DEFERRABLE
 ------------------------------
 
-Most PostgreSQL dialects support setting the "READ ONLY" and "DEFERRABLE"
-characteristics of the transaction, which is in addition to the isolation level
-setting. These two attributes can be established either in conjunction with or
-independently of the isolation level by passing the ``postgresql_readonly`` and
-``postgresql_deferrable`` flags with
-:meth:`_engine.Connection.execution_options`.  The example below illustrates
-passing the ``"SERIALIZABLE"`` isolation level at the same time as setting
-"READ ONLY" and "DEFERRABLE"::
+Setting READ ONLY / DEFERRABLE
 
-    with engine.connect() as conn:
-        conn = conn.execution_options(
-            isolation_level="SERIALIZABLE",
-            postgresql_readonly=True,
-            postgresql_deferrable=True,
-        )
-        with conn.begin():
-            ...  # work with transaction
+.. tab:: 中文
 
-Note that some DBAPIs such as asyncpg only support "readonly" with
-SERIALIZABLE isolation.
+    大多数 PostgreSQL 方言支持设置事务的“只读”和“可推迟”特性，除了隔离级别设置之外。这两个属性可以与隔离级别一起设置，或者单独设置，方法是通过 :meth:`_engine.Connection.execution_options` 传递 ``postgresql_readonly`` 和 ``postgresql_deferrable`` 标志。下面的示例演示了在设置“只读”和“可推迟”的同时，传递 ``"SERIALIZABLE"`` 隔离级别::
 
-.. versionadded:: 1.4 added support for the ``postgresql_readonly``
-   and ``postgresql_deferrable`` execution options.
+        with engine.connect() as conn:
+            conn = conn.execution_options(
+                isolation_level="SERIALIZABLE",
+                postgresql_readonly=True,
+                postgresql_deferrable=True,
+            )
+            with conn.begin():
+                ...  # work with transaction
+
+    请注意，某些 DBAPI（如 asyncpg）仅支持在 SERIALIZABLE 隔离级别下使用“只读”。
+
+    .. versionadded:: 1.4 添加对 ``postgresql_readonly`` 和 ``postgresql_deferrable`` 执行选项的支持。
+
+.. tab:: 英文
+
+    Most PostgreSQL dialects support setting the "READ ONLY" and "DEFERRABLE"
+    characteristics of the transaction, which is in addition to the isolation level
+    setting. These two attributes can be established either in conjunction with or
+    independently of the isolation level by passing the ``postgresql_readonly`` and
+    ``postgresql_deferrable`` flags with
+    :meth:`_engine.Connection.execution_options`.  The example below illustrates
+    passing the ``"SERIALIZABLE"`` isolation level at the same time as setting
+    "READ ONLY" and "DEFERRABLE"::
+
+        with engine.connect() as conn:
+            conn = conn.execution_options(
+                isolation_level="SERIALIZABLE",
+                postgresql_readonly=True,
+                postgresql_deferrable=True,
+            )
+            with conn.begin():
+                ...  # work with transaction
+
+    Note that some DBAPIs such as asyncpg only support "readonly" with
+    SERIALIZABLE isolation.
+
+    .. versionadded:: 1.4 added support for the ``postgresql_readonly``
+        and ``postgresql_deferrable`` execution options.
 
 .. _postgresql_reset_on_return:
 
-Temporary Table / Resource Reset for Connection Pooling
+连接池的临时表/资源重置
 -------------------------------------------------------
 
-The :class:`.QueuePool` connection pool implementation used
-by the SQLAlchemy :class:`.Engine` object includes
-:ref:`reset on return <pool_reset_on_return>` behavior that will invoke
-the DBAPI ``.rollback()`` method when connections are returned to the pool.
-While this rollback will clear out the immediate state used by the previous
-transaction, it does not cover a wider range of session-level state, including
-temporary tables as well as other server state such as prepared statement
-handles and statement caches.   The PostgreSQL database includes a variety
-of commands which may be used to reset this state, including
-``DISCARD``, ``RESET``, ``DEALLOCATE``, and ``UNLISTEN``.
+Temporary Table / Resource Reset for Connection Pooling
+
+.. tab:: 中文
+
+    SQLAlchemy :class:`.Engine` 对象使用的 :class:`.QueuePool` 连接池实现包括 :ref:`reset on return <pool_reset_on_return>` 行为，当连接被返回到池中时，将调用 DBAPI 的 ``.rollback()`` 方法。虽然此回滚将清除上一个事务使用的即时状态，但它不会覆盖更广泛的会话级状态，包括临时表以及其他服务器状态，如预处理语句句柄和语句缓存。PostgreSQL 数据库包括多种命令，可用于重置这些状态，包括 ``DISCARD``、``RESET``、``DEALLOCATE`` 和 ``UNLISTEN``。
+
+    要将这些命令之一作为执行重置的手段，可以使用 :meth:`.PoolEvents.reset` 事件钩子，如下所示。该实现将结束当前进行中的事务，并使用 ``CLOSE``、 ``RESET`` 和 ``DISCARD`` 命令丢弃临时表；有关每个语句作用的背景，请参见 PostgreSQL 文档。
+
+    :paramref:`_sa.create_engine.pool_reset_on_return` 参数设置为 ``None``，以便自定义方案可以完全替换默认行为。自定义钩子实现无论如何都会调用 ``.rollback()``，因为通常需要确保 DBAPI 对提交/回滚的跟踪与事务的状态一致::
+
+        from sqlalchemy import create_engine
+        from sqlalchemy import event
+
+        postgresql_engine = create_engine(
+            "postgresql+pyscopg2://scott:tiger@hostname/dbname",
+            # 禁用默认的重置返回方案
+            pool_reset_on_return=None,
+        )
 
 
-To install
-one or more of these commands as the means of performing reset-on-return,
-the :meth:`.PoolEvents.reset` event hook may be used, as demonstrated
-in the example below. The implementation
-will end transactions in progress as well as discard temporary tables
-using the ``CLOSE``, ``RESET`` and ``DISCARD`` commands; see the PostgreSQL
-documentation for background on what each of these statements do.
+        @event.listens_for(postgresql_engine, "reset")
+        def _reset_postgresql(dbapi_connection, connection_record, reset_state):
+            if not reset_state.terminate_only:
+                dbapi_connection.execute("CLOSE ALL")
+                dbapi_connection.execute("RESET ALL")
+                dbapi_connection.execute("DISCARD TEMP")
 
-The :paramref:`_sa.create_engine.pool_reset_on_return` parameter
-is set to ``None`` so that the custom scheme can replace the default behavior
-completely.   The custom hook implementation calls ``.rollback()`` in any case,
-as it's usually important that the DBAPI's own tracking of commit/rollback
-will remain consistent with the state of the transaction::
+            # 确保 DBAPI 本身知道连接已被重置
+            dbapi_connection.rollback()
+
+    .. versionchanged:: 2.0.0b3 添加了更多的状态参数到 :meth:`.PoolEvents.reset` 事件，并确保该事件在所有“重置”事件中被调用，因此它可以作为自定义“重置”处理程序的合适位置。之前使用 :meth:`.PoolEvents.checkin` 处理程序的方案仍然可以使用。
+
+    .. seealso::
+
+        :ref:`pool_reset_on_return` - 在 :ref:`pooling_toplevel` 文档中
+
+.. tab:: 英文
+
+    The :class:`.QueuePool` connection pool implementation used
+    by the SQLAlchemy :class:`.Engine` object includes
+    :ref:`reset on return <pool_reset_on_return>` behavior that will invoke
+    the DBAPI ``.rollback()`` method when connections are returned to the pool.
+    While this rollback will clear out the immediate state used by the previous
+    transaction, it does not cover a wider range of session-level state, including
+    temporary tables as well as other server state such as prepared statement
+    handles and statement caches.   The PostgreSQL database includes a variety
+    of commands which may be used to reset this state, including
+    ``DISCARD``, ``RESET``, ``DEALLOCATE``, and ``UNLISTEN``.
 
 
-    from sqlalchemy import create_engine
-    from sqlalchemy import event
+    To install
+    one or more of these commands as the means of performing reset-on-return,
+    the :meth:`.PoolEvents.reset` event hook may be used, as demonstrated
+    in the example below. The implementation
+    will end transactions in progress as well as discard temporary tables
+    using the ``CLOSE``, ``RESET`` and ``DISCARD`` commands; see the PostgreSQL
+    documentation for background on what each of these statements do.
 
-    postgresql_engine = create_engine(
-        "postgresql+pyscopg2://scott:tiger@hostname/dbname",
-        # disable default reset-on-return scheme
-        pool_reset_on_return=None,
-    )
+    The :paramref:`_sa.create_engine.pool_reset_on_return` parameter
+    is set to ``None`` so that the custom scheme can replace the default behavior
+    completely.   The custom hook implementation calls ``.rollback()`` in any case,
+    as it's usually important that the DBAPI's own tracking of commit/rollback
+    will remain consistent with the state of the transaction::
 
 
-    @event.listens_for(postgresql_engine, "reset")
-    def _reset_postgresql(dbapi_connection, connection_record, reset_state):
-        if not reset_state.terminate_only:
-            dbapi_connection.execute("CLOSE ALL")
-            dbapi_connection.execute("RESET ALL")
-            dbapi_connection.execute("DISCARD TEMP")
+        from sqlalchemy import create_engine
+        from sqlalchemy import event
 
-        # so that the DBAPI itself knows that the connection has been
-        # reset
-        dbapi_connection.rollback()
+        postgresql_engine = create_engine(
+            "postgresql+pyscopg2://scott:tiger@hostname/dbname",
+            # disable default reset-on-return scheme
+            pool_reset_on_return=None,
+        )
 
-.. versionchanged:: 2.0.0b3  Added additional state arguments to
-   the :meth:`.PoolEvents.reset` event and additionally ensured the event
-   is invoked for all "reset" occurrences, so that it's appropriate
-   as a place for custom "reset" handlers.   Previous schemes which
-   use the :meth:`.PoolEvents.checkin` handler remain usable as well.
 
-.. seealso::
+        @event.listens_for(postgresql_engine, "reset")
+        def _reset_postgresql(dbapi_connection, connection_record, reset_state):
+            if not reset_state.terminate_only:
+                dbapi_connection.execute("CLOSE ALL")
+                dbapi_connection.execute("RESET ALL")
+                dbapi_connection.execute("DISCARD TEMP")
 
-    :ref:`pool_reset_on_return` - in the :ref:`pooling_toplevel` documentation
+            # so that the DBAPI itself knows that the connection has been
+            # reset
+            dbapi_connection.rollback()
+
+    .. versionchanged:: 2.0.0b3  Added additional state arguments to
+        the :meth:`.PoolEvents.reset` event and additionally ensured the event
+        is invoked for all "reset" occurrences, so that it's appropriate
+        as a place for custom "reset" handlers.   Previous schemes which
+        use the :meth:`.PoolEvents.checkin` handler remain usable as well.
+
+    .. seealso::
+
+        :ref:`pool_reset_on_return` - in the :ref:`pooling_toplevel` documentation
 
 .. _postgresql_alternate_search_path:
 
-Setting Alternate Search Paths on Connect
+连接时设置备用搜索路径
 ------------------------------------------
 
-The PostgreSQL ``search_path`` variable refers to the list of schema names
-that will be implicitly referenced when a particular table or other
-object is referenced in a SQL statement.  As detailed in the next section
-:ref:`postgresql_schema_reflection`, SQLAlchemy is generally organized around
-the concept of keeping this variable at its default value of ``public``,
-however, in order to have it set to any arbitrary name or names when connections
-are used automatically, the "SET SESSION search_path" command may be invoked
-for all connections in a pool using the following event handler, as discussed
-at :ref:`schema_set_default_connections`::
+Setting Alternate Search Paths on Connect
 
-    from sqlalchemy import event
-    from sqlalchemy import create_engine
+.. tab:: 中文
 
-    engine = create_engine("postgresql+psycopg2://scott:tiger@host/dbname")
+    PostgreSQL 的 ``search_path`` 变量指的是在 SQL 语句中引用特定表或其他对象时，会隐式引用的 schema 名称列表。如下一节 :ref:`postgresql_schema_reflection` 中详细介绍，SQLAlchemy 通常围绕将该变量保持在其默认值 ``public`` 的概念进行组织，然而，为了在使用连接时自动设置为任意名称或多个名称，可以通过以下事件处理程序为池中的所有连接调用 "SET SESSION search_path" 命令，如 :ref:`schema_set_default_connections` 所讨论的那样::
+
+        from sqlalchemy import event
+        from sqlalchemy import create_engine
+
+        engine = create_engine("postgresql+psycopg2://scott:tiger@host/dbname")
+
+        @event.listens_for(engine, "connect", insert=True)
+        def set_search_path(dbapi_connection, connection_record):
+            existing_autocommit = dbapi_connection.autocommit
+            dbapi_connection.autocommit = True
+            cursor = dbapi_connection.cursor()
+            cursor.execute("SET SESSION search_path='%s'" % schema_name)
+            cursor.close()
+            dbapi_connection.autocommit = existing_autocommit
+
+    之所以需要使用 ``.autocommit`` DBAPI 属性，是为了确保当调用 ``SET SESSION search_path`` 指令时，它会在事务的作用域之外执行，因此在 DBAPI 连接回滚时不会被撤销。
+
+    .. seealso::
+
+        :ref:`schema_set_default_connections` - 在 :ref:`metadata_toplevel` 文档中
+
+.. tab:: 英文
+
+    The PostgreSQL ``search_path`` variable refers to the list of schema names
+    that will be implicitly referenced when a particular table or other
+    object is referenced in a SQL statement.  As detailed in the next section
+    :ref:`postgresql_schema_reflection`, SQLAlchemy is generally organized around
+    the concept of keeping this variable at its default value of ``public``,
+    however, in order to have it set to any arbitrary name or names when connections
+    are used automatically, the "SET SESSION search_path" command may be invoked
+    for all connections in a pool using the following event handler, as discussed
+    at :ref:`schema_set_default_connections`::
+
+        from sqlalchemy import event
+        from sqlalchemy import create_engine
+
+        engine = create_engine("postgresql+psycopg2://scott:tiger@host/dbname")
 
 
-    @event.listens_for(engine, "connect", insert=True)
-    def set_search_path(dbapi_connection, connection_record):
-        existing_autocommit = dbapi_connection.autocommit
-        dbapi_connection.autocommit = True
-        cursor = dbapi_connection.cursor()
-        cursor.execute("SET SESSION search_path='%s'" % schema_name)
-        cursor.close()
-        dbapi_connection.autocommit = existing_autocommit
+        @event.listens_for(engine, "connect", insert=True)
+        def set_search_path(dbapi_connection, connection_record):
+            existing_autocommit = dbapi_connection.autocommit
+            dbapi_connection.autocommit = True
+            cursor = dbapi_connection.cursor()
+            cursor.execute("SET SESSION search_path='%s'" % schema_name)
+            cursor.close()
+            dbapi_connection.autocommit = existing_autocommit
 
-The reason the recipe is complicated by use of the ``.autocommit`` DBAPI
-attribute is so that when the ``SET SESSION search_path`` directive is invoked,
-it is invoked outside of the scope of any transaction and therefore will not
-be reverted when the DBAPI connection has a rollback.
+    The reason the recipe is complicated by use of the ``.autocommit`` DBAPI
+    attribute is so that when the ``SET SESSION search_path`` directive is invoked,
+    it is invoked outside of the scope of any transaction and therefore will not
+    be reverted when the DBAPI connection has a rollback.
 
-.. seealso::
+    .. seealso::
 
-  :ref:`schema_set_default_connections` - in the :ref:`metadata_toplevel` documentation
+        :ref:`schema_set_default_connections` - in the :ref:`metadata_toplevel` documentation
 
 .. _postgresql_schema_reflection:
 
-Remote-Schema Table Introspection and PostgreSQL search_path
+远程模式表自检和 PostgreSQL search_path
 ------------------------------------------------------------
 
-.. admonition:: Section Best Practices Summarized
+Remote-Schema Table Introspection and PostgreSQL search_path
 
-    keep the ``search_path`` variable set to its default of ``public``, without
-    any other schema names. Ensure the username used to connect **does not**
-    match remote schemas, or ensure the ``"$user"`` token is **removed** from
-    ``search_path``.  For other schema names, name these explicitly
-    within :class:`_schema.Table` definitions. Alternatively, the
-    ``postgresql_ignore_search_path`` option will cause all reflected
-    :class:`_schema.Table` objects to have a :attr:`_schema.Table.schema`
-    attribute set up.
+.. tab:: 中文
 
-The PostgreSQL dialect can reflect tables from any schema, as outlined in
-:ref:`metadata_reflection_schemas`.
+    .. admonition:: 总结最佳实践
 
-In all cases, the first thing SQLAlchemy does when reflecting tables is
-to **determine the default schema for the current database connection**.
-It does this using the PostgreSQL ``current_schema()``
-function, illustated below using a PostgreSQL client session (i.e. using
-the ``psql`` tool):
+        保持 ``search_path`` 变量设置为默认的 ``public``，并且不包括其他 schema 名称。确保用于连接的用户名 **不** 与远程 schema 名称匹配，或者确保从 ``search_path`` 中 **移除** ``"$user"`` 标记。对于其他 schema 名称，应在 :class:`_schema.Table` 定义中明确指定它们。或者，``postgresql_ignore_search_path`` 选项将导致所有反射的 :class:`_schema.Table` 对象设置 :attr:`_schema.Table.schema` 属性。
 
-.. sourcecode:: sql
+    PostgreSQL 方言可以从任何 schema 反射表，如 :ref:`metadata_reflection_schemas` 所述。
 
-    test=> select current_schema();
-    current_schema
-    ----------------
-    public
-    (1 row)
+    在所有情况下，SQLAlchemy 在反射表时的第一步是 **确定当前数据库连接的默认 schema**。它通过 PostgreSQL 的 ``current_schema()`` 函数来实现，如下所示，使用 PostgreSQL 客户端会话（即使用 ``psql`` 工具）::
 
-Above we see that on a plain install of PostgreSQL, the default schema name
-is the name ``public``.
+        test=> select current_schema();
+        current_schema
+        ----------------
+        public
+        (1 row)
 
-However, if your database username **matches the name of a schema**, PostgreSQL's
-default is to then **use that name as the default schema**.  Below, we log in
-using the username ``scott``.  When we create a schema named ``scott``, **it
-implicitly changes the default schema**:
+    如上所示，在 PostgreSQL 的简单安装中，默认的 schema 名称是 ``public``。
 
-.. sourcecode:: sql
+    然而，如果您的数据库用户名 **与某个 schema 名称匹配** ，PostgreSQL 的默认行为是 **将该名称作为默认 schema**。以下是我们使用用户名 ``scott`` 登录并创建名为 ``scott`` 的 schema 时， **默认 schema 会隐式更改**::
 
-    test=> select current_schema();
-    current_schema
-    ----------------
-    public
-    (1 row)
+        test=> select current_schema();
+        current_schema
+        ----------------
+        public
+        (1 row)
 
-    test=> create schema scott;
-    CREATE SCHEMA
-    test=> select current_schema();
-    current_schema
-    ----------------
-    scott
-    (1 row)
+        test=> create schema scott;
+        CREATE SCHEMA
+        test=> select current_schema();
+        current_schema
+        ----------------
+        scott
+        (1 row)
 
-The behavior of ``current_schema()`` is derived from the
-`PostgreSQL search path
-<https://www.postgresql.org/docs/current/static/ddl-schemas.html#DDL-SCHEMAS-PATH>`_
-variable ``search_path``, which in modern PostgreSQL versions defaults to this:
+    ``current_schema()`` 的行为来源于 PostgreSQL 的 ``search_path`` 变量，如现代版本的 PostgreSQL 中默认设置::
 
-.. sourcecode:: sql
+        test=> show search_path;
+        search_path
+        -----------------
+        "$user", public
+        (1 row)
 
-    test=> show search_path;
-    search_path
-    -----------------
-    "$user", public
-    (1 row)
+    在上述示例中，``"$user"`` 变量会将当前用户名作为默认 schema，如果存在的话。否则，使用 ``public``。
 
-Where above, the ``"$user"`` variable will inject the current username as the
-default schema, if one exists.   Otherwise, ``public`` is used.
+    当反射 :class:`_schema.Table` 对象时，如果它存在于 ``current_schema()`` 函数指示的 schema 中，**则该表的 ``.schema`` 属性将赋值为 Python 的 "None" 值**。否则，``.schema`` 属性将赋值为该 schema 的字符串名称。
 
-When a :class:`_schema.Table` object is reflected, if it is present in the
-schema indicated by the ``current_schema()`` function, **the schema name assigned
-to the ".schema" attribute of the Table is the Python "None" value**.  Otherwise, the
-".schema" attribute will be assigned the string name of that schema.
+    对于这些 :class:`_schema.Table` 对象通过外键约束所引用的表，在该远程 schema 名称也属于当前 ``search_path`` 的情况下，必须决定如何在这些远程表中表示 ``.schema``。
 
-With regards to tables which these :class:`_schema.Table`
-objects refer to via foreign key constraint, a decision must be made as to how
-the ``.schema`` is represented in those remote tables, in the case where that
-remote schema name is also a member of the current ``search_path``.
+    默认情况下，PostgreSQL 方言模仿 PostgreSQL 自己的 ``pg_get_constraintdef()`` 内建过程的行为。此函数返回某个外键约束的示例定义，当引用的 schema 名称也在 PostgreSQL schema search path 中时，会省略该 schema 名称。下面的交互演示了这一行为::
 
-By default, the PostgreSQL dialect mimics the behavior encouraged by
-PostgreSQL's own ``pg_get_constraintdef()`` builtin procedure.  This function
-returns a sample definition for a particular foreign key constraint,
-omitting the referenced schema name from that definition when the name is
-also in the PostgreSQL schema search path.  The interaction below
-illustrates this behavior:
+        test=> CREATE TABLE test_schema.referred(id INTEGER PRIMARY KEY);
+        CREATE TABLE
+        test=> CREATE TABLE referring(
+        test(>         id INTEGER PRIMARY KEY,
+        test(>         referred_id INTEGER REFERENCES test_schema.referred(id));
+        CREATE TABLE
+        test=> SET search_path TO public, test_schema;
+        test=> SELECT pg_catalog.pg_get_constraintdef(r.oid, true) FROM
+        test-> pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n
+        test-> ON n.oid = c.relnamespace
+        test-> JOIN pg_catalog.pg_constraint r  ON c.oid = r.conrelid
+        test-> WHERE c.relname='referring' AND r.contype = 'f';
+                        pg_get_constraintdef
+        ---------------------------------------------------
+        FOREIGN KEY (referred_id) REFERENCES referred(id)
+        (1 row)
 
-.. sourcecode:: sql
+    如上所示，我们创建了 ``referred`` 表作为 ``test_schema`` 远程 schema 的成员，然而当我们将 ``test_schema`` 添加到 PG ``search_path`` 并请求 ``pg_get_constraintdef()`` 返回 ``FOREIGN KEY`` 语法时，``test_schema`` 并未包含在该函数的输出中。
 
-    test=> CREATE TABLE test_schema.referred(id INTEGER PRIMARY KEY);
-    CREATE TABLE
-    test=> CREATE TABLE referring(
-    test(>         id INTEGER PRIMARY KEY,
-    test(>         referred_id INTEGER REFERENCES test_schema.referred(id));
-    CREATE TABLE
-    test=> SET search_path TO public, test_schema;
-    test=> SELECT pg_catalog.pg_get_constraintdef(r.oid, true) FROM
-    test-> pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n
-    test-> ON n.oid = c.relnamespace
-    test-> JOIN pg_catalog.pg_constraint r  ON c.oid = r.conrelid
-    test-> WHERE c.relname='referring' AND r.contype = 'f'
-    test-> ;
-                   pg_get_constraintdef
-    ---------------------------------------------------
-     FOREIGN KEY (referred_id) REFERENCES referred(id)
-    (1 row)
+    另一方面，如果我们将 search_path 设置回典型的默认值 ``public``::
 
-Above, we created a table ``referred`` as a member of the remote schema
-``test_schema``, however when we added ``test_schema`` to the
-PG ``search_path`` and then asked ``pg_get_constraintdef()`` for the
-``FOREIGN KEY`` syntax, ``test_schema`` was not included in the output of
-the function.
+        test=> SET search_path TO public;
+        SET
 
-On the other hand, if we set the search path back to the typical default
-of ``public``:
+    相同的查询对 ``pg_get_constraintdef()`` 返回的结果现在包含完整的 schema 资格名称::
 
-.. sourcecode:: sql
+        test=> SELECT pg_catalog.pg_get_constraintdef(r.oid, true) FROM
+        test-> pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n
+        test-> ON n.oid = c.relnamespace
+        test-> JOIN pg_catalog.pg_constraint r  ON c.oid = r.conrelid
+        test-> WHERE c.relname='referring' AND r.contype = 'f';
+                                pg_get_constraintdef
+        ---------------------------------------------------------------
+        FOREIGN KEY (referred_id) REFERENCES test_schema.referred(id)
+        (1 row)
 
-    test=> SET search_path TO public;
-    SET
+    SQLAlchemy 默认情况下会使用 ``pg_get_constraintdef()`` 返回的值来确定远程 schema 名称。也就是说，如果我们的 ``search_path`` 设置为包括 ``test_schema``，并且我们以如下方式调用表反射过程::
 
-The same query against ``pg_get_constraintdef()`` now returns the fully
-schema-qualified name for us:
+        >>> from sqlalchemy import Table, MetaData, create_engine, text
+        >>> engine = create_engine("postgresql+psycopg2://scott:tiger@localhost/test")
+        >>> with engine.connect() as conn:
+        ...     conn.execute(text("SET search_path TO test_schema, public"))
+        ...     metadata_obj = MetaData()
+        ...     referring = Table("referring", metadata_obj, autoload_with=conn)
+        <sqlalchemy.engine.result.CursorResult object at 0x101612ed0>
 
-.. sourcecode:: sql
+    上述过程会将 ``referred`` 表作为 **没有** schema 的名称存储::
 
-    test=> SELECT pg_catalog.pg_get_constraintdef(r.oid, true) FROM
-    test-> pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n
-    test-> ON n.oid = c.relnamespace
-    test-> JOIN pg_catalog.pg_constraint r  ON c.oid = r.conrelid
-    test-> WHERE c.relname='referring' AND r.contype = 'f';
-                         pg_get_constraintdef
-    ---------------------------------------------------------------
-     FOREIGN KEY (referred_id) REFERENCES test_schema.referred(id)
-    (1 row)
-
-SQLAlchemy will by default use the return value of ``pg_get_constraintdef()``
-in order to determine the remote schema name.  That is, if our ``search_path``
-were set to include ``test_schema``, and we invoked a table
-reflection process as follows::
-
-    >>> from sqlalchemy import Table, MetaData, create_engine, text
-    >>> engine = create_engine("postgresql+psycopg2://scott:tiger@localhost/test")
-    >>> with engine.connect() as conn:
-    ...     conn.execute(text("SET search_path TO test_schema, public"))
-    ...     metadata_obj = MetaData()
-    ...     referring = Table("referring", metadata_obj, autoload_with=conn)
-    <sqlalchemy.engine.result.CursorResult object at 0x101612ed0>
-
-The above process would deliver to the :attr:`_schema.MetaData.tables`
-collection
-``referred`` table named **without** the schema::
-
-    >>> metadata_obj.tables["referred"].schema is None
+        >>> metadata_obj.tables["referred"].schema is None
     True
 
-To alter the behavior of reflection such that the referred schema is
-maintained regardless of the ``search_path`` setting, use the
-``postgresql_ignore_search_path`` option, which can be specified as a
-dialect-specific argument to both :class:`_schema.Table` as well as
-:meth:`_schema.MetaData.reflect`::
+    若要改变反射的行为，以便不管 ``search_path`` 设置如何，仍保持引用的 schema 名称，请使用 ``postgresql_ignore_search_path`` 选项，该选项可以作为方言特定的参数指定给 :class:`_schema.Table` 以及 :meth:`_schema.MetaData.reflect`::
 
-    >>> with engine.connect() as conn:
-    ...     conn.execute(text("SET search_path TO test_schema, public"))
-    ...     metadata_obj = MetaData()
-    ...     referring = Table(
-    ...         "referring",
-    ...         metadata_obj,
-    ...         autoload_with=conn,
-    ...         postgresql_ignore_search_path=True,
-    ...     )
-    <sqlalchemy.engine.result.CursorResult object at 0x1016126d0>
+        >>> with engine.connect() as conn:
+        ...     conn.execute(text("SET search_path TO test_schema, public"))
+        ...     metadata_obj = MetaData()
+        ...     referring = Table(
+        ...         "referring",
+        ...         metadata_obj,
+        ...         autoload_with=conn,
+        ...         postgresql_ignore_search_path=True,
+        ...     )
+        <sqlalchemy.engine.result.CursorResult object at 0x1016126d0>
 
-We will now have ``test_schema.referred`` stored as schema-qualified::
+    现在，我们将 ``test_schema.referred`` 存储为带有 schema 资格的名称::
 
-    >>> metadata_obj.tables["test_schema.referred"].schema
-    'test_schema'
+        >>> metadata_obj.tables["test_schema.referred"].schema
+        'test_schema'
 
-.. sidebar:: Best Practices for PostgreSQL Schema reflection
+    .. sidebar:: PostgreSQL Schema 反射的最佳实践
 
-    The description of PostgreSQL schema reflection behavior is complex, and
-    is the product of many years of dealing with widely varied use cases and
-    user preferences. But in fact, there's no need to understand any of it if
-    you just stick to the simplest use pattern: leave the ``search_path`` set
-    to its default of ``public`` only, never refer to the name ``public`` as
-    an explicit schema name otherwise, and refer to all other schema names
-    explicitly when building up a :class:`_schema.Table` object.  The options
-    described here are only for those users who can't, or prefer not to, stay
-    within these guidelines.
+        PostgreSQL schema 反射行为的描述是复杂的，并且是多年来处理各种不同用例和用户偏好的结果。但事实上，如果您仅遵循最简单的使用模式，就不需要理解这些细节：将 ``search_path`` 保持在其默认值 ``public``，不要将 ``public`` 作为显式 schema 名称引用，且在构建 :class:`_schema.Table` 对象时显式引用所有其他 schema 名称。这里描述的选项仅适用于那些不能或不愿遵守这些准则的用户。
 
-.. seealso::
+    .. seealso::
 
-    :ref:`reflection_schema_qualified_interaction` - discussion of the issue
-    from a backend-agnostic perspective
+        :ref:`reflection_schema_qualified_interaction` - 从后端无关的角度讨论该问题
 
-    `The Schema Search Path
+        `The Schema Search Path
+        <https://www.postgresql.org/docs/current/static/ddl-schemas.html#DDL-SCHEMAS-PATH>`_
+        - 在 PostgreSQL 网站上。
+
+.. tab:: 英文
+
+    .. admonition:: Section Best Practices Summarized
+
+        keep the ``search_path`` variable set to its default of ``public``, without
+        any other schema names. Ensure the username used to connect **does not**
+        match remote schemas, or ensure the ``"$user"`` token is **removed** from
+        ``search_path``.  For other schema names, name these explicitly
+        within :class:`_schema.Table` definitions. Alternatively, the
+        ``postgresql_ignore_search_path`` option will cause all reflected
+        :class:`_schema.Table` objects to have a :attr:`_schema.Table.schema`
+        attribute set up.
+
+    The PostgreSQL dialect can reflect tables from any schema, as outlined in
+    :ref:`metadata_reflection_schemas`.
+
+    In all cases, the first thing SQLAlchemy does when reflecting tables is
+    to **determine the default schema for the current database connection**.
+    It does this using the PostgreSQL ``current_schema()``
+    function, illustated below using a PostgreSQL client session (i.e. using
+    the ``psql`` tool):
+
+    .. sourcecode:: sql
+
+        test=> select current_schema();
+        current_schema
+        ----------------
+        public
+        (1 row)
+
+    Above we see that on a plain install of PostgreSQL, the default schema name
+    is the name ``public``.
+
+    However, if your database username **matches the name of a schema**, PostgreSQL's
+    default is to then **use that name as the default schema**.  Below, we log in
+    using the username ``scott``.  When we create a schema named ``scott``, **it
+    implicitly changes the default schema**:
+
+    .. sourcecode:: sql
+
+        test=> select current_schema();
+        current_schema
+        ----------------
+        public
+        (1 row)
+
+        test=> create schema scott;
+        CREATE SCHEMA
+        test=> select current_schema();
+        current_schema
+        ----------------
+        scott
+        (1 row)
+
+    The behavior of ``current_schema()`` is derived from the
+    `PostgreSQL search path
     <https://www.postgresql.org/docs/current/static/ddl-schemas.html#DDL-SCHEMAS-PATH>`_
-    - on the PostgreSQL website.
+    variable ``search_path``, which in modern PostgreSQL versions defaults to this:
+
+    .. sourcecode:: sql
+
+        test=> show search_path;
+        search_path
+        -----------------
+        "$user", public
+        (1 row)
+
+    Where above, the ``"$user"`` variable will inject the current username as the
+    default schema, if one exists.   Otherwise, ``public`` is used.
+
+    When a :class:`_schema.Table` object is reflected, if it is present in the
+    schema indicated by the ``current_schema()`` function, **the schema name assigned
+    to the ".schema" attribute of the Table is the Python "None" value**.  Otherwise, the
+    ".schema" attribute will be assigned the string name of that schema.
+
+    With regards to tables which these :class:`_schema.Table`
+    objects refer to via foreign key constraint, a decision must be made as to how
+    the ``.schema`` is represented in those remote tables, in the case where that
+    remote schema name is also a member of the current ``search_path``.
+
+    By default, the PostgreSQL dialect mimics the behavior encouraged by
+    PostgreSQL's own ``pg_get_constraintdef()`` builtin procedure.  This function
+    returns a sample definition for a particular foreign key constraint,
+    omitting the referenced schema name from that definition when the name is
+    also in the PostgreSQL schema search path.  The interaction below
+    illustrates this behavior:
+
+    .. sourcecode:: sql
+
+        test=> CREATE TABLE test_schema.referred(id INTEGER PRIMARY KEY);
+        CREATE TABLE
+        test=> CREATE TABLE referring(
+        test(>         id INTEGER PRIMARY KEY,
+        test(>         referred_id INTEGER REFERENCES test_schema.referred(id));
+        CREATE TABLE
+        test=> SET search_path TO public, test_schema;
+        test=> SELECT pg_catalog.pg_get_constraintdef(r.oid, true) FROM
+        test-> pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n
+        test-> ON n.oid = c.relnamespace
+        test-> JOIN pg_catalog.pg_constraint r  ON c.oid = r.conrelid
+        test-> WHERE c.relname='referring' AND r.contype = 'f'
+        test-> ;
+                    pg_get_constraintdef
+        ---------------------------------------------------
+        FOREIGN KEY (referred_id) REFERENCES referred(id)
+        (1 row)
+
+    Above, we created a table ``referred`` as a member of the remote schema
+    ``test_schema``, however when we added ``test_schema`` to the
+    PG ``search_path`` and then asked ``pg_get_constraintdef()`` for the
+    ``FOREIGN KEY`` syntax, ``test_schema`` was not included in the output of
+    the function.
+
+    On the other hand, if we set the search path back to the typical default
+    of ``public``:
+
+    .. sourcecode:: sql
+
+        test=> SET search_path TO public;
+        SET
+
+    The same query against ``pg_get_constraintdef()`` now returns the fully
+    schema-qualified name for us:
+
+    .. sourcecode:: sql
+
+        test=> SELECT pg_catalog.pg_get_constraintdef(r.oid, true) FROM
+        test-> pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n
+        test-> ON n.oid = c.relnamespace
+        test-> JOIN pg_catalog.pg_constraint r  ON c.oid = r.conrelid
+        test-> WHERE c.relname='referring' AND r.contype = 'f';
+                            pg_get_constraintdef
+        ---------------------------------------------------------------
+        FOREIGN KEY (referred_id) REFERENCES test_schema.referred(id)
+        (1 row)
+
+    SQLAlchemy will by default use the return value of ``pg_get_constraintdef()``
+    in order to determine the remote schema name.  That is, if our ``search_path``
+    were set to include ``test_schema``, and we invoked a table
+    reflection process as follows::
+
+        >>> from sqlalchemy import Table, MetaData, create_engine, text
+        >>> engine = create_engine("postgresql+psycopg2://scott:tiger@localhost/test")
+        >>> with engine.connect() as conn:
+        ...     conn.execute(text("SET search_path TO test_schema, public"))
+        ...     metadata_obj = MetaData()
+        ...     referring = Table("referring", metadata_obj, autoload_with=conn)
+        <sqlalchemy.engine.result.CursorResult object at 0x101612ed0>
+
+    The above process would deliver to the :attr:`_schema.MetaData.tables`
+    collection
+    ``referred`` table named **without** the schema::
+
+        >>> metadata_obj.tables["referred"].schema is None
+        True
+
+    To alter the behavior of reflection such that the referred schema is
+    maintained regardless of the ``search_path`` setting, use the
+    ``postgresql_ignore_search_path`` option, which can be specified as a
+    dialect-specific argument to both :class:`_schema.Table` as well as
+    :meth:`_schema.MetaData.reflect`::
+
+        >>> with engine.connect() as conn:
+        ...     conn.execute(text("SET search_path TO test_schema, public"))
+        ...     metadata_obj = MetaData()
+        ...     referring = Table(
+        ...         "referring",
+        ...         metadata_obj,
+        ...         autoload_with=conn,
+        ...         postgresql_ignore_search_path=True,
+        ...     )
+        <sqlalchemy.engine.result.CursorResult object at 0x1016126d0>
+
+    We will now have ``test_schema.referred`` stored as schema-qualified::
+
+        >>> metadata_obj.tables["test_schema.referred"].schema
+        'test_schema'
+
+    .. sidebar:: Best Practices for PostgreSQL Schema reflection
+
+        The description of PostgreSQL schema reflection behavior is complex, and
+        is the product of many years of dealing with widely varied use cases and
+        user preferences. But in fact, there's no need to understand any of it if
+        you just stick to the simplest use pattern: leave the ``search_path`` set
+        to its default of ``public`` only, never refer to the name ``public`` as
+        an explicit schema name otherwise, and refer to all other schema names
+        explicitly when building up a :class:`_schema.Table` object.  The options
+        described here are only for those users who can't, or prefer not to, stay
+        within these guidelines.
+
+    .. seealso::
+
+        :ref:`reflection_schema_qualified_interaction` - discussion of the issue
+        from a backend-agnostic perspective
+
+        `The Schema Search Path
+        <https://www.postgresql.org/docs/current/static/ddl-schemas.html#DDL-SCHEMAS-PATH>`_
+        - on the PostgreSQL website.
 
 INSERT/UPDATE...RETURNING
 -------------------------
 
-The dialect supports PG 8.2's ``INSERT..RETURNING``, ``UPDATE..RETURNING`` and
-``DELETE..RETURNING`` syntaxes.   ``INSERT..RETURNING`` is used by default
-for single-row INSERT statements in order to fetch newly generated
-primary key identifiers.   To specify an explicit ``RETURNING`` clause,
-use the :meth:`._UpdateBase.returning` method on a per-statement basis::
+INSERT/UPDATE...RETURNING
 
-    # INSERT..RETURNING
-    result = (
-        table.insert().returning(table.c.col1, table.c.col2).values(name="foo")
-    )
-    print(result.fetchall())
+.. tab:: 中文
 
-    # UPDATE..RETURNING
-    result = (
-        table.update()
-        .returning(table.c.col1, table.c.col2)
-        .where(table.c.name == "foo")
-        .values(name="bar")
-    )
-    print(result.fetchall())
+    该方言支持 PostgreSQL 8.2 的 ``INSERT..RETURNING``、``UPDATE..RETURNING`` 和 ``DELETE..RETURNING`` 语法。默认情况下，``INSERT..RETURNING`` 用于单行插入语句，以便获取新生成的主键标识符。要指定显式的 ``RETURNING`` 子句，可以在每个语句基础上使用 :meth:`._UpdateBase.returning` 方法::
 
-    # DELETE..RETURNING
-    result = (
-        table.delete()
-        .returning(table.c.col1, table.c.col2)
-        .where(table.c.name == "foo")
-    )
-    print(result.fetchall())
+        # INSERT..RETURNING
+        result = (
+            table.insert().returning(table.c.col1, table.c.col2).values(name="foo")
+        )
+        print(result.fetchall())
+
+        # UPDATE..RETURNING
+        result = (
+            table.update()
+            .returning(table.c.col1, table.c.col2)
+            .where(table.c.name == "foo")
+            .values(name="bar")
+        )
+        print(result.fetchall())
+
+        # DELETE..RETURNING
+        result = (
+            table.delete()
+            .returning(table.c.col1, table.c.col2)
+            .where(table.c.name == "foo")
+        )
+        print(result.fetchall())
+
+.. tab:: 英文
+
+    The dialect supports PG 8.2's ``INSERT..RETURNING``, ``UPDATE..RETURNING`` and
+    ``DELETE..RETURNING`` syntaxes.   ``INSERT..RETURNING`` is used by default
+    for single-row INSERT statements in order to fetch newly generated
+    primary key identifiers.   To specify an explicit ``RETURNING`` clause,
+    use the :meth:`._UpdateBase.returning` method on a per-statement basis::
+
+        # INSERT..RETURNING
+        result = (
+            table.insert().returning(table.c.col1, table.c.col2).values(name="foo")
+        )
+        print(result.fetchall())
+
+        # UPDATE..RETURNING
+        result = (
+            table.update()
+            .returning(table.c.col1, table.c.col2)
+            .where(table.c.name == "foo")
+            .values(name="bar")
+        )
+        print(result.fetchall())
+
+        # DELETE..RETURNING
+        result = (
+            table.delete()
+            .returning(table.c.col1, table.c.col2)
+            .where(table.c.name == "foo")
+        )
+        print(result.fetchall())
 
 .. _postgresql_insert_on_conflict:
 
-INSERT...ON CONFLICT (Upsert)
+INSERT...ON CONFLICT（更新插入）
 ------------------------------
 
-Starting with version 9.5, PostgreSQL allows "upserts" (update or insert) of
-rows into a table via the ``ON CONFLICT`` clause of the ``INSERT`` statement. A
-candidate row will only be inserted if that row does not violate any unique
-constraints.  In the case of a unique constraint violation, a secondary action
-can occur which can be either "DO UPDATE", indicating that the data in the
-target row should be updated, or "DO NOTHING", which indicates to silently skip
-this row.
+INSERT...ON CONFLICT (Upsert)
 
-Conflicts are determined using existing unique constraints and indexes.  These
-constraints may be identified either using their name as stated in DDL,
-or they may be inferred by stating the columns and conditions that comprise
-the indexes.
+.. tab:: 中文
 
-SQLAlchemy provides ``ON CONFLICT`` support via the PostgreSQL-specific
-:func:`_postgresql.insert()` function, which provides
-the generative methods :meth:`_postgresql.Insert.on_conflict_do_update`
-and :meth:`~.postgresql.Insert.on_conflict_do_nothing`:
+    从 PostgreSQL 9.5 版本开始，PostgreSQL 允许通过 ``INSERT`` 语句的 ``ON CONFLICT`` 子句进行“upsert”（更新或插入）操作。如果候选行不违反任何唯一约束，则将插入该行。如果发生唯一约束冲突，可以执行一个附加操作，操作可以是“DO UPDATE”，表示应该更新目标行的数据，或者“DO NOTHING”，表示静默跳过该行。
 
-.. sourcecode:: pycon+sql
+    冲突是通过现有的唯一约束和索引来确定的。这些约束可以通过其在 DDL 中声明的名称来识别，也可以通过声明组成索引的列和条件来推断。
 
-    >>> from sqlalchemy.dialects.postgresql import insert
-    >>> insert_stmt = insert(my_table).values(
-    ...     id="some_existing_id", data="inserted value"
-    ... )
-    >>> do_nothing_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["id"])
-    >>> print(do_nothing_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT (id) DO NOTHING
-    {stop}
+    SQLAlchemy 通过 PostgreSQL 特定的 :func:`_postgresql.insert()` 函数提供 ``ON CONFLICT`` 支持，该函数提供了生成方法 :meth:`_postgresql.Insert.on_conflict_do_update` 和 :meth:`~.postgresql.Insert.on_conflict_do_nothing`：
 
-    >>> do_update_stmt = insert_stmt.on_conflict_do_update(
-    ...     constraint="pk_my_table", set_=dict(data="updated value")
-    ... )
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT ON CONSTRAINT pk_my_table DO UPDATE SET data = %(param_1)s
+    .. sourcecode:: pycon+sql
 
-.. seealso::
+        >>> from sqlalchemy.dialects.postgresql import insert
+        >>> insert_stmt = insert(my_table).values(
+        ...     id="some_existing_id", data="inserted value"
+        ... )
+        >>> do_nothing_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["id"])
+        >>> print(do_nothing_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO NOTHING
+        {stop}
 
-    `INSERT .. ON CONFLICT
-    <https://www.postgresql.org/docs/current/static/sql-insert.html#SQL-ON-CONFLICT>`_
-    - in the PostgreSQL documentation.
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     constraint="pk_my_table", set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT ON CONSTRAINT pk_my_table DO UPDATE SET data = %(param_1)s
 
-Specifying the Target
+    .. seealso::
+
+        `INSERT .. ON CONFLICT
+        <https://www.postgresql.org/docs/current/static/sql-insert.html#SQL-ON-CONFLICT>`_
+        - 在 PostgreSQL 文档中。
+
+.. tab:: 英文
+
+    Starting with version 9.5, PostgreSQL allows "upserts" (update or insert) of
+    rows into a table via the ``ON CONFLICT`` clause of the ``INSERT`` statement. A
+    candidate row will only be inserted if that row does not violate any unique
+    constraints.  In the case of a unique constraint violation, a secondary action
+    can occur which can be either "DO UPDATE", indicating that the data in the
+    target row should be updated, or "DO NOTHING", which indicates to silently skip
+    this row.
+
+    Conflicts are determined using existing unique constraints and indexes.  These
+    constraints may be identified either using their name as stated in DDL,
+    or they may be inferred by stating the columns and conditions that comprise
+    the indexes.
+
+    SQLAlchemy provides ``ON CONFLICT`` support via the PostgreSQL-specific
+    :func:`_postgresql.insert()` function, which provides
+    the generative methods :meth:`_postgresql.Insert.on_conflict_do_update`
+    and :meth:`~.postgresql.Insert.on_conflict_do_nothing`:
+
+    .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy.dialects.postgresql import insert
+        >>> insert_stmt = insert(my_table).values(
+        ...     id="some_existing_id", data="inserted value"
+        ... )
+        >>> do_nothing_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["id"])
+        >>> print(do_nothing_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO NOTHING
+        {stop}
+
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     constraint="pk_my_table", set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT ON CONSTRAINT pk_my_table DO UPDATE SET data = %(param_1)s
+
+    .. seealso::
+
+        `INSERT .. ON CONFLICT
+        <https://www.postgresql.org/docs/current/static/sql-insert.html#SQL-ON-CONFLICT>`_
+        - in the PostgreSQL documentation.
+
+指定目标
 ^^^^^^^^^^^^^^^^^^^^^
 
-Both methods supply the "target" of the conflict using either the
-named constraint or by column inference:
+Specifying the Target
 
-* The :paramref:`_postgresql.Insert.on_conflict_do_update.index_elements` argument
-  specifies a sequence containing string column names, :class:`_schema.Column`
-  objects, and/or SQL expression elements, which would identify a unique
-  index:
+.. tab:: 中文
 
-  .. sourcecode:: pycon+sql
+    这两种方法都通过列出约束的名称或通过列推断来提供冲突的“目标”：
 
-    >>> do_update_stmt = insert_stmt.on_conflict_do_update(
-    ...     index_elements=["id"], set_=dict(data="updated value")
-    ... )
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
-    {stop}
+    * :paramref:`_postgresql.Insert.on_conflict_do_update.index_elements` 参数
+      指定一个包含字符串列名、:class:`_schema.Column` 对象和/或 SQL 表达式元素的序列，用于识别唯一索引：
 
-    >>> do_update_stmt = insert_stmt.on_conflict_do_update(
-    ...     index_elements=[my_table.c.id], set_=dict(data="updated value")
-    ... )
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+      .. sourcecode:: pycon+sql
 
-* When using :paramref:`_postgresql.Insert.on_conflict_do_update.index_elements` to
-  infer an index, a partial index can be inferred by also specifying the
-  use the :paramref:`_postgresql.Insert.on_conflict_do_update.index_where` parameter:
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     index_elements=["id"], set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+        {stop}
 
-  .. sourcecode:: pycon+sql
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     index_elements=[my_table.c.id], set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
 
-    >>> stmt = insert(my_table).values(user_email="a@b.com", data="inserted data")
-    >>> stmt = stmt.on_conflict_do_update(
-    ...     index_elements=[my_table.c.user_email],
-    ...     index_where=my_table.c.user_email.like("%@gmail.com"),
-    ...     set_=dict(data=stmt.excluded.data),
-    ... )
-    >>> print(stmt)
-    {printsql}INSERT INTO my_table (data, user_email)
-    VALUES (%(data)s, %(user_email)s) ON CONFLICT (user_email)
-    WHERE user_email LIKE %(user_email_1)s DO UPDATE SET data = excluded.data
+    * 使用 :paramref:`_postgresql.Insert.on_conflict_do_update.index_elements` 推断索引时，可以通过还指定 :paramref:`_postgresql.Insert.on_conflict_do_update.index_where` 参数来推断部分索引：
 
-* The :paramref:`_postgresql.Insert.on_conflict_do_update.constraint` argument is
-  used to specify an index directly rather than inferring it.  This can be
-  the name of a UNIQUE constraint, a PRIMARY KEY constraint, or an INDEX:
+      .. sourcecode:: pycon+sql
 
-  .. sourcecode:: pycon+sql
+        >>> stmt = insert(my_table).values(user_email="a@b.com", data="inserted data")
+        >>> stmt = stmt.on_conflict_do_update(
+        ...     index_elements=[my_table.c.user_email],
+        ...     index_where=my_table.c.user_email.like("%@gmail.com"),
+        ...     set_=dict(data=stmt.excluded.data),
+        ... )
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (data, user_email)
+        VALUES (%(data)s, %(user_email)s) ON CONFLICT (user_email)
+        WHERE user_email LIKE %(user_email_1)s DO UPDATE SET data = excluded.data
 
-    >>> do_update_stmt = insert_stmt.on_conflict_do_update(
-    ...     constraint="my_table_idx_1", set_=dict(data="updated value")
-    ... )
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT ON CONSTRAINT my_table_idx_1 DO UPDATE SET data = %(param_1)s
-    {stop}
+    * :paramref:`_postgresql.Insert.on_conflict_do_update.constraint` 参数
+      用于直接指定一个索引，而不是推断它。这可以是唯一约束、主键约束或索引的名称：
 
-    >>> do_update_stmt = insert_stmt.on_conflict_do_update(
-    ...     constraint="my_table_pk", set_=dict(data="updated value")
-    ... )
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT ON CONSTRAINT my_table_pk DO UPDATE SET data = %(param_1)s
-    {stop}
+      .. sourcecode:: pycon+sql
 
-* The :paramref:`_postgresql.Insert.on_conflict_do_update.constraint` argument may
-  also refer to a SQLAlchemy construct representing a constraint,
-  e.g. :class:`.UniqueConstraint`, :class:`.PrimaryKeyConstraint`,
-  :class:`.Index`, or :class:`.ExcludeConstraint`.   In this use,
-  if the constraint has a name, it is used directly.  Otherwise, if the
-  constraint is unnamed, then inference will be used, where the expressions
-  and optional WHERE clause of the constraint will be spelled out in the
-  construct.  This use is especially convenient
-  to refer to the named or unnamed primary key of a :class:`_schema.Table`
-  using the
-  :attr:`_schema.Table.primary_key` attribute:
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     constraint="my_table_idx_1", set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT ON CONSTRAINT my_table_idx_1 DO UPDATE SET data = %(param_1)s
+        {stop}
 
-  .. sourcecode:: pycon+sql
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     constraint="my_table_pk", set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT ON CONSTRAINT my_table_pk DO UPDATE SET data = %(param_1)s
+        {stop}
 
-    >>> do_update_stmt = insert_stmt.on_conflict_do_update(
-    ...     constraint=my_table.primary_key, set_=dict(data="updated value")
-    ... )
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+    * :paramref:`_postgresql.Insert.on_conflict_do_update.constraint` 参数
+      也可以引用表示约束的 SQLAlchemy 构造，
+      例如 :class:`.UniqueConstraint`、:class:`.PrimaryKeyConstraint`、
+      :class:`.Index` 或 :class:`.ExcludeConstraint`。在这种使用中，
+      如果约束有名称，则直接使用它。否则，如果约束没有名称，则将使用推断，
+      约束的表达式和可选的 WHERE 子句将在构造中详细说明。这种用法特别方便
+      用于通过 :attr:`_schema.Table.primary_key` 属性引用 :class:`_schema.Table` 的命名或未命名主键：
 
-The SET Clause
+      .. sourcecode:: pycon+sql
+
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     constraint=my_table.primary_key, set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+
+.. tab:: 英文
+
+    Both methods supply the "target" of the conflict using either the
+    named constraint or by column inference:
+
+    * The :paramref:`_postgresql.Insert.on_conflict_do_update.index_elements` argument
+      specifies a sequence containing string column names, :class:`_schema.Column`
+      objects, and/or SQL expression elements, which would identify a unique
+      index:
+
+      .. sourcecode:: pycon+sql
+
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     index_elements=["id"], set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+        {stop}
+
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     index_elements=[my_table.c.id], set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+
+    * When using :paramref:`_postgresql.Insert.on_conflict_do_update.index_elements` to
+      infer an index, a partial index can be inferred by also specifying the
+      use the :paramref:`_postgresql.Insert.on_conflict_do_update.index_where` parameter:
+
+      .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(user_email="a@b.com", data="inserted data")
+        >>> stmt = stmt.on_conflict_do_update(
+        ...     index_elements=[my_table.c.user_email],
+        ...     index_where=my_table.c.user_email.like("%@gmail.com"),
+        ...     set_=dict(data=stmt.excluded.data),
+        ... )
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (data, user_email)
+        VALUES (%(data)s, %(user_email)s) ON CONFLICT (user_email)
+        WHERE user_email LIKE %(user_email_1)s DO UPDATE SET data = excluded.data
+
+    * The :paramref:`_postgresql.Insert.on_conflict_do_update.constraint` argument is
+      used to specify an index directly rather than inferring it.  This can be
+      the name of a UNIQUE constraint, a PRIMARY KEY constraint, or an INDEX:
+
+      .. sourcecode:: pycon+sql
+
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     constraint="my_table_idx_1", set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT ON CONSTRAINT my_table_idx_1 DO UPDATE SET data = %(param_1)s
+        {stop}
+
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     constraint="my_table_pk", set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT ON CONSTRAINT my_table_pk DO UPDATE SET data = %(param_1)s
+        {stop}
+
+    * The :paramref:`_postgresql.Insert.on_conflict_do_update.constraint` argument may
+      also refer to a SQLAlchemy construct representing a constraint,
+      e.g. :class:`.UniqueConstraint`, :class:`.PrimaryKeyConstraint`,
+      :class:`.Index`, or :class:`.ExcludeConstraint`.   In this use,
+      if the constraint has a name, it is used directly.  Otherwise, if the
+      constraint is unnamed, then inference will be used, where the expressions
+      and optional WHERE clause of the constraint will be spelled out in the
+      construct.  This use is especially convenient
+      to refer to the named or unnamed primary key of a :class:`_schema.Table`
+      using the
+      :attr:`_schema.Table.primary_key` attribute:
+
+      .. sourcecode:: pycon+sql
+
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     constraint=my_table.primary_key, set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+
+SET 子句
 ^^^^^^^^^^^^^^^
 
-``ON CONFLICT...DO UPDATE`` is used to perform an update of the already
-existing row, using any combination of new values as well as values
-from the proposed insertion.   These values are specified using the
-:paramref:`_postgresql.Insert.on_conflict_do_update.set_` parameter.  This
-parameter accepts a dictionary which consists of direct values
-for UPDATE:
+The SET Clause
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
-    >>> do_update_stmt = stmt.on_conflict_do_update(
-    ...     index_elements=["id"], set_=dict(data="updated value")
-    ... )
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+    ``ON CONFLICT...DO UPDATE`` 用于对已经存在的行执行更新操作，使用新值和拟插入的值的任意组合。这些值通过 :paramref:`_postgresql.Insert.on_conflict_do_update.set_` 参数指定。此参数接受一个字典，其中包含用于 UPDATE 的直接值：
 
-.. warning::
+    .. sourcecode:: pycon+sql
 
-    The :meth:`_expression.Insert.on_conflict_do_update`
-    method does **not** take into
-    account Python-side default UPDATE values or generation functions, e.g.
-    those specified using :paramref:`_schema.Column.onupdate`.
-    These values will not be exercised for an ON CONFLICT style of UPDATE,
-    unless they are manually specified in the
-    :paramref:`_postgresql.Insert.on_conflict_do_update.set_` dictionary.
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"], set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
 
-Updating using the Excluded INSERT Values
+    .. warning::
+
+        :meth:`_expression.Insert.on_conflict_do_update`
+        方法 **不** 考虑 Python 端的默认 UPDATE 值或生成函数，
+        例如通过 :paramref:`_schema.Column.onupdate` 指定的那些值。
+        除非这些值在 :paramref:`_postgresql.Insert.on_conflict_do_update.set_` 字典中手动指定，
+        否则它们不会在 ``ON CONFLICT`` 样式的 UPDATE 中被使用。
+
+.. tab:: 英文
+
+    ``ON CONFLICT...DO UPDATE`` is used to perform an update of the already
+    existing row, using any combination of new values as well as values
+    from the proposed insertion.   These values are specified using the
+    :paramref:`_postgresql.Insert.on_conflict_do_update.set_` parameter.  This
+    parameter accepts a dictionary which consists of direct values
+    for UPDATE:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"], set_=dict(data="updated value")
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s
+
+    .. warning::
+
+        The :meth:`_expression.Insert.on_conflict_do_update`
+        method does **not** take into
+        account Python-side default UPDATE values or generation functions, e.g.
+        those specified using :paramref:`_schema.Column.onupdate`.
+        These values will not be exercised for an ON CONFLICT style of UPDATE,
+        unless they are manually specified in the
+        :paramref:`_postgresql.Insert.on_conflict_do_update.set_` dictionary.
+
+使用排除的 INSERT 值进行更新
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In order to refer to the proposed insertion row, the special alias
-:attr:`~.postgresql.Insert.excluded` is available as an attribute on
-the :class:`_postgresql.Insert` object; this object is a
-:class:`_expression.ColumnCollection`
-which alias contains all columns of the target
-table:
+Updating using the Excluded INSERT Values
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> stmt = insert(my_table).values(
-    ...     id="some_id", data="inserted value", author="jlh"
-    ... )
-    >>> do_update_stmt = stmt.on_conflict_do_update(
-    ...     index_elements=["id"],
-    ...     set_=dict(data="updated value", author=stmt.excluded.author),
-    ... )
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data, author)
-    VALUES (%(id)s, %(data)s, %(author)s)
-    ON CONFLICT (id) DO UPDATE SET data = %(param_1)s, author = excluded.author
+    为了引用拟插入的行，可以使用特殊别名 :attr:`~.postgresql.Insert.excluded`，该别名作为 :class:`_postgresql.Insert` 对象的一个属性；此对象是一个 :class:`_expression.ColumnCollection`，其别名包含目标表的所有列：
 
-Additional WHERE Criteria
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"],
+        ...     set_=dict(data="updated value", author=stmt.excluded.author),
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author)
+        VALUES (%(id)s, %(data)s, %(author)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s, author = excluded.author
+
+.. tab:: 英文
+
+    In order to refer to the proposed insertion row, the special alias
+    :attr:`~.postgresql.Insert.excluded` is available as an attribute on
+    the :class:`_postgresql.Insert` object; this object is a
+    :class:`_expression.ColumnCollection`
+    which alias contains all columns of the target
+    table:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"],
+        ...     set_=dict(data="updated value", author=stmt.excluded.author),
+        ... )
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author)
+        VALUES (%(id)s, %(data)s, %(author)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s, author = excluded.author
+
+附加 WHERE 条件
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The :meth:`_expression.Insert.on_conflict_do_update` method also accepts
-a WHERE clause using the :paramref:`_postgresql.Insert.on_conflict_do_update.where`
-parameter, which will limit those rows which receive an UPDATE:
+Additional WHERE Criteria
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> stmt = insert(my_table).values(
-    ...     id="some_id", data="inserted value", author="jlh"
-    ... )
-    >>> on_update_stmt = stmt.on_conflict_do_update(
-    ...     index_elements=["id"],
-    ...     set_=dict(data="updated value", author=stmt.excluded.author),
-    ...     where=(my_table.c.status == 2),
-    ... )
-    >>> print(on_update_stmt)
-    {printsql}INSERT INTO my_table (id, data, author)
-    VALUES (%(id)s, %(data)s, %(author)s)
-    ON CONFLICT (id) DO UPDATE SET data = %(param_1)s, author = excluded.author
-    WHERE my_table.status = %(status_1)s
+    :meth:`_expression.Insert.on_conflict_do_update` 方法还接受一个使用 :paramref:`_postgresql.Insert.on_conflict_do_update.where` 参数的 WHERE 子句，该子句将限制执行 UPDATE 的行：
 
-Skipping Rows with DO NOTHING
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+        >>> on_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"],
+        ...     set_=dict(data="updated value", author=stmt.excluded.author),
+        ...     where=(my_table.c.status == 2),
+        ... )
+        >>> print(on_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author)
+        VALUES (%(id)s, %(data)s, %(author)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s, author = excluded.author
+        WHERE my_table.status = %(status_1)s
+
+.. tab:: 英文
+
+    The :meth:`_expression.Insert.on_conflict_do_update` method also accepts
+    a WHERE clause using the :paramref:`_postgresql.Insert.on_conflict_do_update.where`
+    parameter, which will limit those rows which receive an UPDATE:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+        >>> on_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"],
+        ...     set_=dict(data="updated value", author=stmt.excluded.author),
+        ...     where=(my_table.c.status == 2),
+        ... )
+        >>> print(on_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author)
+        VALUES (%(id)s, %(data)s, %(author)s)
+        ON CONFLICT (id) DO UPDATE SET data = %(param_1)s, author = excluded.author
+        WHERE my_table.status = %(status_1)s
+
+使用 DO NOTHING 跳过行
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``ON CONFLICT`` may be used to skip inserting a row entirely
-if any conflict with a unique or exclusion constraint occurs; below
-this is illustrated using the
-:meth:`~.postgresql.Insert.on_conflict_do_nothing` method:
+Skipping Rows with DO NOTHING
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
-    >>> stmt = stmt.on_conflict_do_nothing(index_elements=["id"])
-    >>> print(stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT (id) DO NOTHING
+    ``ON CONFLICT`` 可用于在发生唯一或排除约束冲突时完全跳过插入行；以下是使用 :meth:`~.postgresql.Insert.on_conflict_do_nothing` 方法的示例：
 
-If ``DO NOTHING`` is used without specifying any columns or constraint,
-it has the effect of skipping the INSERT for any unique or exclusion
-constraint violation which occurs:
+    .. sourcecode:: pycon+sql
 
-.. sourcecode:: pycon+sql
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> stmt = stmt.on_conflict_do_nothing(index_elements=["id"])
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO NOTHING
 
-    >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
-    >>> stmt = stmt.on_conflict_do_nothing()
-    >>> print(stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
-    ON CONFLICT DO NOTHING
+    如果使用 ``DO NOTHING`` 而不指定任何列或约束，则在发生任何唯一或排除约束冲突时，将跳过插入：
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> stmt = stmt.on_conflict_do_nothing()
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT DO NOTHING
+
+.. tab:: 英文
+
+    ``ON CONFLICT`` may be used to skip inserting a row entirely
+    if any conflict with a unique or exclusion constraint occurs; below
+    this is illustrated using the
+    :meth:`~.postgresql.Insert.on_conflict_do_nothing` method:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> stmt = stmt.on_conflict_do_nothing(index_elements=["id"])
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT (id) DO NOTHING
+
+    If ``DO NOTHING`` is used without specifying any columns or constraint,
+    it has the effect of skipping the INSERT for any unique or exclusion
+    constraint violation which occurs:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> stmt = stmt.on_conflict_do_nothing()
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%(id)s, %(data)s)
+        ON CONFLICT DO NOTHING
 
 .. _postgresql_match:
 
-Full Text Search
+全文搜索
 ----------------
 
-PostgreSQL's full text search system is available through the use of the
-:data:`.func` namespace, combined with the use of custom operators
-via the :meth:`.Operators.bool_op` method.    For simple cases with some
-degree of cross-backend compatibility, the :meth:`.Operators.match` operator
-may also be used.
+Full Text Search
+
+.. tab:: 中文
+
+
+    PostgreSQL 的全文搜索系统可通过 :data:`.func` 命名空间结合 :meth:`.Operators.bool_op` 方法使用自定义操作符来实现。对于某些具有跨数据库兼容性的简单场景，也可以使用 :meth:`.Operators.match` 操作符。
+
+.. tab:: 英文
+
+    PostgreSQL's full text search system is available through the use of the
+    :data:`.func` namespace, combined with the use of custom operators
+    via the :meth:`.Operators.bool_op` method.    For simple cases with some
+    degree of cross-backend compatibility, the :meth:`.Operators.match` operator
+    may also be used.
 
 .. _postgresql_simple_match:
 
-Simple plain text matching with ``match()``
+使用 ``match()`` 进行简单的纯文本匹配
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The :meth:`.Operators.match` operator provides for cross-compatible simple
-text matching.   For the PostgreSQL backend, it's hardcoded to generate
-an expression using the ``@@`` operator in conjunction with the
-``plainto_tsquery()`` PostgreSQL function.
+Simple plain text matching with ``match()``
 
-On the PostgreSQL dialect, an expression like the following::
+.. tab:: 中文
 
-    select(sometable.c.text.match("search string"))
+    :meth:`.Operators.match` 操作符提供了跨平台兼容的简单文本匹配功能。对于 PostgreSQL 后端，它被硬编码为使用 ``@@`` 操作符结合 PostgreSQL 的 ``plainto_tsquery()`` 函数生成表达式。
 
-would emit to the database:
+    在 PostgreSQL 方言中，以下表达式::
 
-.. sourcecode:: sql
+        select(sometable.c.text.match("search string"))
 
-    SELECT text @@ plainto_tsquery('search string') FROM table
+    将生成如下 SQL：
 
-Above, passing a plain string to :meth:`.Operators.match` will automatically
-make use of ``plainto_tsquery()`` to specify the type of tsquery.  This
-establishes basic database cross-compatibility for :meth:`.Operators.match`
-with other backends.
+    .. sourcecode:: sql
 
-.. versionchanged:: 2.0 The default tsquery generation function used by the
-   PostgreSQL dialect with :meth:`.Operators.match` is ``plainto_tsquery()``.
+        SELECT text @@ plainto_tsquery('search string') FROM table
 
-   To render exactly what was rendered in 1.4, use the following form::
+    如上所示，将普通字符串传递给 :meth:`.Operators.match` 时会自动使用 ``plainto_tsquery()`` 来指定 tsquery 的类型。这为 :meth:`.Operators.match` 提供了基本的数据库兼容性。
 
-        from sqlalchemy import func
+    .. versionchanged:: 2.0 PostgreSQL 方言在使用 :meth:`.Operators.match` 时默认使用的 tsquery 生成函数改为 ``plainto_tsquery()``。
 
-        select(sometable.c.text.bool_op("@@")(func.to_tsquery("search string")))
+    若要生成与 1.4 版本中相同的 SQL，可使用如下形式::
 
-   Which would emit:
+            from sqlalchemy import func
 
-   .. sourcecode:: sql
+            select(sometable.c.text.bool_op("@@")(func.to_tsquery("search string")))
 
-        SELECT text @@ to_tsquery('search string') FROM table
+    生成的 SQL 如下：
 
-Using PostgreSQL full text functions and operators directly
+    .. sourcecode:: sql
+
+            SELECT text @@ to_tsquery('search string') FROM table
+
+.. tab:: 英文
+
+    The :meth:`.Operators.match` operator provides for cross-compatible simple
+    text matching.   For the PostgreSQL backend, it's hardcoded to generate
+    an expression using the ``@@`` operator in conjunction with the
+    ``plainto_tsquery()`` PostgreSQL function.
+
+    On the PostgreSQL dialect, an expression like the following::
+
+        select(sometable.c.text.match("search string"))
+
+    would emit to the database:
+
+    .. sourcecode:: sql
+
+        SELECT text @@ plainto_tsquery('search string') FROM table
+
+    Above, passing a plain string to :meth:`.Operators.match` will automatically
+    make use of ``plainto_tsquery()`` to specify the type of tsquery.  This
+    establishes basic database cross-compatibility for :meth:`.Operators.match`
+    with other backends.
+
+    .. versionchanged:: 2.0 The default tsquery generation function used by the
+    PostgreSQL dialect with :meth:`.Operators.match` is ``plainto_tsquery()``.
+
+    To render exactly what was rendered in 1.4, use the following form::
+
+            from sqlalchemy import func
+
+            select(sometable.c.text.bool_op("@@")(func.to_tsquery("search string")))
+
+    Which would emit:
+
+    .. sourcecode:: sql
+
+            SELECT text @@ to_tsquery('search string') FROM table
+
+直接使用 PostgreSQL 全文函数和运算符
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Text search operations beyond the simple use of :meth:`.Operators.match`
-may make use of the :data:`.func` namespace to generate PostgreSQL full-text
-functions, in combination with :meth:`.Operators.bool_op` to generate
-any boolean operator.
+Using PostgreSQL full text functions and operators directly
 
-For example, the query::
+.. tab:: 中文
 
-    select(func.to_tsquery("cat").bool_op("@>")(func.to_tsquery("cat & rat")))
+    除了简单使用 :meth:`.Operators.match` 外，更复杂的文本搜索操作可通过 :data:`.func` 命名空间来生成 PostgreSQL 的全文搜索函数，结合 :meth:`.Operators.bool_op` 生成任意布尔操作符。
 
-would generate:
+    例如，以下查询::
 
-.. sourcecode:: sql
+        select(func.to_tsquery("cat").bool_op("@>")(func.to_tsquery("cat & rat")))
 
-    SELECT to_tsquery('cat') @> to_tsquery('cat & rat')
+    将生成如下 SQL：
+
+    .. sourcecode:: sql
+
+        SELECT to_tsquery('cat') @> to_tsquery('cat & rat')
+
+    :class:`_postgresql.TSVECTOR` 类型可用于显式 CAST 操作::
+
+        from sqlalchemy.dialects.postgresql import TSVECTOR
+        from sqlalchemy import select, cast
+
+        select(cast("some text", TSVECTOR))
+
+    生成的 SQL 等价于：
+
+    .. sourcecode:: sql
+
+        SELECT CAST('some text' AS TSVECTOR) AS anon_1
+
+    PostgreSQL 方言扩展了 ``func`` 命名空间，为大多数全文搜索函数设置了正确的参数与返回类型。这些函数在使用 :attr:`_sql.func` 命名空间时会自动启用，前提是已导入 ``sqlalchemy.dialects.postgresql`` 包，或已使用 ``postgresql`` 方言调用了 :func:`_sa.create_engine`。这些函数包括：
+
+    * :class:`_postgresql.to_tsvector`
+    * :class:`_postgresql.to_tsquery`
+    * :class:`_postgresql.plainto_tsquery`
+    * :class:`_postgresql.phraseto_tsquery`
+    * :class:`_postgresql.websearch_to_tsquery`
+    * :class:`_postgresql.ts_headline`
+
+.. tab:: 英文
+
+    Text search operations beyond the simple use of :meth:`.Operators.match`
+    may make use of the :data:`.func` namespace to generate PostgreSQL full-text
+    functions, in combination with :meth:`.Operators.bool_op` to generate
+    any boolean operator.
+
+    For example, the query::
+
+        select(func.to_tsquery("cat").bool_op("@>")(func.to_tsquery("cat & rat")))
+
+    would generate:
+
+    .. sourcecode:: sql
+
+        SELECT to_tsquery('cat') @> to_tsquery('cat & rat')
 
 
-The :class:`_postgresql.TSVECTOR` type can provide for explicit CAST::
+    The :class:`_postgresql.TSVECTOR` type can provide for explicit CAST::
 
-    from sqlalchemy.dialects.postgresql import TSVECTOR
-    from sqlalchemy import select, cast
+        from sqlalchemy.dialects.postgresql import TSVECTOR
+        from sqlalchemy import select, cast
 
-    select(cast("some text", TSVECTOR))
+        select(cast("some text", TSVECTOR))
 
-produces a statement equivalent to:
+    produces a statement equivalent to:
 
-.. sourcecode:: sql
+    .. sourcecode:: sql
 
-    SELECT CAST('some text' AS TSVECTOR) AS anon_1
+        SELECT CAST('some text' AS TSVECTOR) AS anon_1
 
-The ``func`` namespace is augmented by the PostgreSQL dialect to set up
-correct argument and return types for most full text search functions.
-These functions are used automatically by the :attr:`_sql.func` namespace
-assuming the ``sqlalchemy.dialects.postgresql`` package has been imported,
-or :func:`_sa.create_engine` has been invoked using a ``postgresql``
-dialect.  These functions are documented at:
+    The ``func`` namespace is augmented by the PostgreSQL dialect to set up
+    correct argument and return types for most full text search functions.
+    These functions are used automatically by the :attr:`_sql.func` namespace
+    assuming the ``sqlalchemy.dialects.postgresql`` package has been imported,
+    or :func:`_sa.create_engine` has been invoked using a ``postgresql``
+    dialect.  These functions are documented at:
 
-* :class:`_postgresql.to_tsvector`
-* :class:`_postgresql.to_tsquery`
-* :class:`_postgresql.plainto_tsquery`
-* :class:`_postgresql.phraseto_tsquery`
-* :class:`_postgresql.websearch_to_tsquery`
-* :class:`_postgresql.ts_headline`
+    * :class:`_postgresql.to_tsvector`
+    * :class:`_postgresql.to_tsquery`
+    * :class:`_postgresql.plainto_tsquery`
+    * :class:`_postgresql.phraseto_tsquery`
+    * :class:`_postgresql.websearch_to_tsquery`
+    * :class:`_postgresql.ts_headline`
 
-Specifying the "regconfig" with ``match()`` or custom operators
+使用 ``match()`` 或自定义运算符指定“regconfig”
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-PostgreSQL's ``plainto_tsquery()`` function accepts an optional
-"regconfig" argument that is used to instruct PostgreSQL to use a
-particular pre-computed GIN or GiST index in order to perform the search.
-When using :meth:`.Operators.match`, this additional parameter may be
-specified using the ``postgresql_regconfig`` parameter, such as::
+Specifying the "regconfig" with ``match()`` or custom operators
 
-    select(mytable.c.id).where(
-        mytable.c.title.match("somestring", postgresql_regconfig="english")
-    )
+.. tab:: 中文
 
-Which would emit:
+    PostgreSQL 的 ``plainto_tsquery()`` 函数支持一个可选的 “regconfig” 参数，该参数用于指定 PostgreSQL 使用某个预计算的 GIN 或 GiST 索引来执行搜索。当使用 :meth:`.Operators.match` 时，可以通过 ``postgresql_regconfig`` 参数传递此额外参数，例如::
 
-.. sourcecode:: sql
-
-    SELECT mytable.id FROM mytable
-    WHERE mytable.title @@ plainto_tsquery('english', 'somestring')
-
-When using other PostgreSQL search functions with :data:`.func`, the
-"regconfig" parameter may be passed directly as the initial argument::
-
-    select(mytable.c.id).where(
-        func.to_tsvector("english", mytable.c.title).bool_op("@@")(
-            func.to_tsquery("english", "somestring")
+        select(mytable.c.id).where(
+            mytable.c.title.match("somestring", postgresql_regconfig="english")
         )
-    )
 
-produces a statement equivalent to:
+    将生成如下 SQL：
 
-.. sourcecode:: sql
+    .. sourcecode:: sql
 
-    SELECT mytable.id FROM mytable
-    WHERE to_tsvector('english', mytable.title) @@
-        to_tsquery('english', 'somestring')
+        SELECT mytable.id FROM mytable
+        WHERE mytable.title @@ plainto_tsquery('english', 'somestring')
 
-It is recommended that you use the ``EXPLAIN ANALYZE...`` tool from
-PostgreSQL to ensure that you are generating queries with SQLAlchemy that
-take full advantage of any indexes you may have created for full text search.
+    当使用 :data:`.func` 进行其他 PostgreSQL 搜索函数调用时，可将 "regconfig" 参数作为第一个参数直接传递::
 
-.. seealso::
+        select(mytable.c.id).where(
+            func.to_tsvector("english", mytable.c.title).bool_op("@@")(
+                func.to_tsquery("english", "somestring")
+            )
+        )
 
-    `Full Text Search <https://www.postgresql.org/docs/current/textsearch-controls.html>`_ - in the PostgreSQL documentation
+    生成的 SQL 等价于：
+
+    .. sourcecode:: sql
+
+        SELECT mytable.id FROM mytable
+        WHERE to_tsvector('english', mytable.title) @@
+            to_tsquery('english', 'somestring')
+
+    建议使用 PostgreSQL 的 ``EXPLAIN ANALYZE...`` 工具，以确保你通过 SQLAlchemy 生成的查询能够充分利用为全文搜索创建的索引。
+
+    .. seealso::
+
+        `Full Text Search <https://www.postgresql.org/docs/current/textsearch-controls.html>`_ - PostgreSQL 官方文档中的全文搜索章节
+
+.. tab:: 英文
+
+    PostgreSQL's ``plainto_tsquery()`` function accepts an optional
+    "regconfig" argument that is used to instruct PostgreSQL to use a
+    particular pre-computed GIN or GiST index in order to perform the search.
+    When using :meth:`.Operators.match`, this additional parameter may be
+    specified using the ``postgresql_regconfig`` parameter, such as::
+
+        select(mytable.c.id).where(
+            mytable.c.title.match("somestring", postgresql_regconfig="english")
+        )
+
+    Which would emit:
+
+    .. sourcecode:: sql
+
+        SELECT mytable.id FROM mytable
+        WHERE mytable.title @@ plainto_tsquery('english', 'somestring')
+
+    When using other PostgreSQL search functions with :data:`.func`, the
+    "regconfig" parameter may be passed directly as the initial argument::
+
+        select(mytable.c.id).where(
+            func.to_tsvector("english", mytable.c.title).bool_op("@@")(
+                func.to_tsquery("english", "somestring")
+            )
+        )
+
+    produces a statement equivalent to:
+
+    .. sourcecode:: sql
+
+        SELECT mytable.id FROM mytable
+        WHERE to_tsvector('english', mytable.title) @@
+            to_tsquery('english', 'somestring')
+
+    It is recommended that you use the ``EXPLAIN ANALYZE...`` tool from
+    PostgreSQL to ensure that you are generating queries with SQLAlchemy that
+    take full advantage of any indexes you may have created for full text search.
+
+    .. seealso::
+
+        `Full Text Search <https://www.postgresql.org/docs/current/textsearch-controls.html>`_ - in the PostgreSQL documentation
 
 
 FROM ONLY ...
 -------------
 
-The dialect supports PostgreSQL's ONLY keyword for targeting only a particular
-table in an inheritance hierarchy. This can be used to produce the
-``SELECT ... FROM ONLY``, ``UPDATE ONLY ...``, and ``DELETE FROM ONLY ...``
-syntaxes. It uses SQLAlchemy's hints mechanism::
+FROM ONLY ...
 
-    # SELECT ... FROM ONLY ...
-    result = table.select().with_hint(table, "ONLY", "postgresql")
-    print(result.fetchall())
+.. tab:: 中文
 
-    # UPDATE ONLY ...
-    table.update(values=dict(foo="bar")).with_hint(
-        "ONLY", dialect_name="postgresql"
-    )
+    该方言支持 PostgreSQL 的 ONLY 关键字，用于在继承结构中仅针对某个特定的表。这可用于生成 ``SELECT ... FROM ONLY``、``UPDATE ONLY ...`` 以及 ``DELETE FROM ONLY ...`` 的语法形式。它通过 SQLAlchemy 的 hint 机制实现::
 
-    # DELETE FROM ONLY ...
-    table.delete().with_hint("ONLY", dialect_name="postgresql")
+        # SELECT ... FROM ONLY ...
+        result = table.select().with_hint(table, "ONLY", "postgresql")
+        print(result.fetchall())
+
+        # UPDATE ONLY ...
+        table.update(values=dict(foo="bar")).with_hint(
+            "ONLY", dialect_name="postgresql"
+        )
+
+        # DELETE FROM ONLY ...
+        table.delete().with_hint("ONLY", dialect_name="postgresql")
+
+.. tab:: 英文
+
+    The dialect supports PostgreSQL's ONLY keyword for targeting only a particular
+    table in an inheritance hierarchy. This can be used to produce the
+    ``SELECT ... FROM ONLY``, ``UPDATE ONLY ...``, and ``DELETE FROM ONLY ...``
+    syntaxes. It uses SQLAlchemy's hints mechanism::
+
+        # SELECT ... FROM ONLY ...
+        result = table.select().with_hint(table, "ONLY", "postgresql")
+        print(result.fetchall())
+
+        # UPDATE ONLY ...
+        table.update(values=dict(foo="bar")).with_hint(
+            "ONLY", dialect_name="postgresql"
+        )
+
+        # DELETE FROM ONLY ...
+        table.delete().with_hint("ONLY", dialect_name="postgresql")
 
 .. _postgresql_indexes:
 
-PostgreSQL-Specific Index Options
+PostgreSQL 特定的索引选项
 ---------------------------------
 
-Several extensions to the :class:`.Index` construct are available, specific
-to the PostgreSQL dialect.
+PostgreSQL-Specific Index Options
 
-Covering Indexes
+.. tab:: 中文
+
+    若干扩展功能可用于 PostgreSQL 方言下的 :class:`.Index` 构造。
+
+.. tab:: 英文
+
+    Several extensions to the :class:`.Index` construct are available, specific to the PostgreSQL dialect.
+
+覆盖索引
 ^^^^^^^^^^^^^^^^
 
-The ``postgresql_include`` option renders INCLUDE(colname) for the given
-string names::
+Covering Indexes
 
-    Index("my_index", table.c.x, postgresql_include=["y"])
+.. tab:: 中文
 
-would render the index as ``CREATE INDEX my_index ON table (x) INCLUDE (y)``
+    ``postgresql_include`` 选项可为指定列名渲染 INCLUDE(colname) 语法::
 
-Note that this feature requires PostgreSQL 11 or later.
+        Index("my_index", table.c.x, postgresql_include=["y"])
 
-.. versionadded:: 1.4
+    上述代码将渲染为： ``CREATE INDEX my_index ON table (x) INCLUDE (y)``
+
+    请注意，此功能需要 PostgreSQL 11 或更高版本。
+
+    .. versionadded:: 1.4
+
+.. tab:: 英文
+
+    The ``postgresql_include`` option renders INCLUDE(colname) for the given
+    string names::
+
+        Index("my_index", table.c.x, postgresql_include=["y"])
+
+    would render the index as ``CREATE INDEX my_index ON table (x) INCLUDE (y)``
+
+    Note that this feature requires PostgreSQL 11 or later.
+
+    .. versionadded:: 1.4
 
 .. _postgresql_partial_indexes:
 
-Partial Indexes
+部分索引
 ^^^^^^^^^^^^^^^
 
-Partial indexes add criterion to the index definition so that the index is
-applied to a subset of rows.   These can be specified on :class:`.Index`
-using the ``postgresql_where`` keyword argument::
+Partial Indexes
 
-  Index("my_index", my_table.c.id, postgresql_where=my_table.c.value > 10)
+.. tab:: 中文
+
+    部分索引（Partial Index）可为索引定义添加条件，使该索引仅应用于部分行。可通过在 :class:`.Index` 上使用 ``postgresql_where`` 关键字参数指定::
+
+        Index("my_index", my_table.c.id, postgresql_where=my_table.c.value > 10)
+
+.. tab:: 英文
+
+    Partial indexes add criterion to the index definition so that the index is
+    applied to a subset of rows.   These can be specified on :class:`.Index`
+    using the ``postgresql_where`` keyword argument::
+
+        Index("my_index", my_table.c.id, postgresql_where=my_table.c.value > 10)
 
 .. _postgresql_operator_classes:
 
-Operator Classes
+运算符类
 ^^^^^^^^^^^^^^^^
 
-PostgreSQL allows the specification of an *operator class* for each column of
-an index (see
-https://www.postgresql.org/docs/current/interactive/indexes-opclass.html).
-The :class:`.Index` construct allows these to be specified via the
-``postgresql_ops`` keyword argument::
+Operator Classes
 
-    Index(
-        "my_index",
-        my_table.c.id,
-        my_table.c.data,
-        postgresql_ops={"data": "text_pattern_ops", "id": "int4_ops"},
-    )
+.. tab:: 中文
 
-Note that the keys in the ``postgresql_ops`` dictionaries are the
-"key" name of the :class:`_schema.Column`, i.e. the name used to access it from
-the ``.c`` collection of :class:`_schema.Table`, which can be configured to be
-different than the actual name of the column as expressed in the database.
+    PostgreSQL 允许为索引的每个列指定 *操作符类*（operator class），详见：
+    https://www.postgresql.org/docs/current/interactive/indexes-opclass.html。
+    :class:`.Index` 构造可通过 ``postgresql_ops`` 关键字参数来指定这些操作符类::
 
-If ``postgresql_ops`` is to be used against a complex SQL expression such
-as a function call, then to apply to the column it must be given a label
-that is identified in the dictionary by name, e.g.::
+        Index(
+            "my_index",
+            my_table.c.id,
+            my_table.c.data,
+            postgresql_ops={"data": "text_pattern_ops", "id": "int4_ops"},
+        )
 
-    Index(
-        "my_index",
-        my_table.c.id,
-        func.lower(my_table.c.data).label("data_lower"),
-        postgresql_ops={"data_lower": "text_pattern_ops", "id": "int4_ops"},
-    )
+    请注意，``postgresql_ops`` 字典中的键为 :class:`_schema.Column` 的 “key” 名称，即用于通过 :class:`_schema.Table` 的 ``.c`` 集合访问该列的名称，该名称可配置为不同于数据库中实际定义的列名。
 
-Operator classes are also supported by the
-:class:`_postgresql.ExcludeConstraint` construct using the
-:paramref:`_postgresql.ExcludeConstraint.ops` parameter. See that parameter for
-details.
+    如果要对函数调用等复杂 SQL 表达式使用 ``postgresql_ops``，则必须为其指定一个标签（label），并在字典中以该标签名称为键指定操作符类，例如::
 
-Index Types
+        Index(
+            "my_index",
+            my_table.c.id,
+            func.lower(my_table.c.data).label("data_lower"),
+            postgresql_ops={"data_lower": "text_pattern_ops", "id": "int4_ops"},
+        )
+
+    操作符类同样适用于 :class:`_postgresql.ExcludeConstraint` 构造，可通过 :paramref:`_postgresql.ExcludeConstraint.ops` 参数指定。详情请参阅该参数的说明。
+
+.. tab:: 英文
+
+    PostgreSQL allows the specification of an *operator class* for each column of
+    an index (see
+    https://www.postgresql.org/docs/current/interactive/indexes-opclass.html).
+    The :class:`.Index` construct allows these to be specified via the
+    ``postgresql_ops`` keyword argument::
+
+        Index(
+            "my_index",
+            my_table.c.id,
+            my_table.c.data,
+            postgresql_ops={"data": "text_pattern_ops", "id": "int4_ops"},
+        )
+
+    Note that the keys in the ``postgresql_ops`` dictionaries are the
+    "key" name of the :class:`_schema.Column`, i.e. the name used to access it from
+    the ``.c`` collection of :class:`_schema.Table`, which can be configured to be
+    different than the actual name of the column as expressed in the database.
+
+    If ``postgresql_ops`` is to be used against a complex SQL expression such
+    as a function call, then to apply to the column it must be given a label
+    that is identified in the dictionary by name, e.g.::
+
+        Index(
+            "my_index",
+            my_table.c.id,
+            func.lower(my_table.c.data).label("data_lower"),
+            postgresql_ops={"data_lower": "text_pattern_ops", "id": "int4_ops"},
+        )
+
+    Operator classes are also supported by the
+    :class:`_postgresql.ExcludeConstraint` construct using the
+    :paramref:`_postgresql.ExcludeConstraint.ops` parameter. See that parameter for
+    details.
+
+索引类型
 ^^^^^^^^^^^
 
-PostgreSQL provides several index types: B-Tree, Hash, GiST, and GIN, as well
-as the ability for users to create their own (see
-https://www.postgresql.org/docs/current/static/indexes-types.html). These can be
-specified on :class:`.Index` using the ``postgresql_using`` keyword argument::
+Index Types
 
-    Index("my_index", my_table.c.data, postgresql_using="gin")
+.. tab:: 中文
 
-The value passed to the keyword argument will be simply passed through to the
-underlying CREATE INDEX command, so it *must* be a valid index type for your
-version of PostgreSQL.
+    PostgreSQL 提供了多种索引类型：B-Tree、Hash、GiST 和 GIN，此外还支持用户自定义索引类型（参见 https://www.postgresql.org/docs/current/static/indexes-types.html）。这些类型可通过在 :class:`.Index` 上使用 ``postgresql_using`` 关键字参数指定::
+
+        Index("my_index", my_table.c.data, postgresql_using="gin")
+
+    传递给该关键字参数的值将直接传递至底层的 CREATE INDEX 命令，因此它 *必须* 是适用于当前 PostgreSQL 版本的有效索引类型。
+
+.. tab:: 英文
+
+    PostgreSQL provides several index types: B-Tree, Hash, GiST, and GIN, as well
+    as the ability for users to create their own (see
+    https://www.postgresql.org/docs/current/static/indexes-types.html). These can be
+    specified on :class:`.Index` using the ``postgresql_using`` keyword argument::
+
+        Index("my_index", my_table.c.data, postgresql_using="gin")
+
+    The value passed to the keyword argument will be simply passed through to the
+    underlying CREATE INDEX command, so it *must* be a valid index type for your
+    version of PostgreSQL.
 
 .. _postgresql_index_storage:
 
-Index Storage Parameters
+索引存储参数
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-PostgreSQL allows storage parameters to be set on indexes. The storage
-parameters available depend on the index method used by the index. Storage
-parameters can be specified on :class:`.Index` using the ``postgresql_with``
-keyword argument::
+Index Storage Parameters
 
-    Index("my_index", my_table.c.data, postgresql_with={"fillfactor": 50})
+.. tab:: 中文
 
-PostgreSQL allows to define the tablespace in which to create the index.
-The tablespace can be specified on :class:`.Index` using the
-``postgresql_tablespace`` keyword argument::
+    PostgreSQL 允许为索引设置存储参数。可用的存储参数取决于索引所使用的方法。可通过在 :class:`.Index` 上使用 ``postgresql_with`` 关键字参数指定这些参数::
 
-    Index("my_index", my_table.c.data, postgresql_tablespace="my_tablespace")
+        Index("my_index", my_table.c.data, postgresql_with={"fillfactor": 50})
 
-Note that the same option is available on :class:`_schema.Table` as well.
+    PostgreSQL 支持指定索引所在的表空间。可通过在 :class:`.Index` 上使用 ``postgresql_tablespace`` 关键字参数进行设置::
+
+        Index("my_index", my_table.c.data, postgresql_tablespace="my_tablespace")
+
+    注意， :class:`_schema.Table` 也支持相同的选项。
+
+.. tab:: 英文
+
+    PostgreSQL allows storage parameters to be set on indexes. The storage
+    parameters available depend on the index method used by the index. Storage
+    parameters can be specified on :class:`.Index` using the ``postgresql_with``
+    keyword argument::
+
+        Index("my_index", my_table.c.data, postgresql_with={"fillfactor": 50})
+
+    PostgreSQL allows to define the tablespace in which to create the index.
+    The tablespace can be specified on :class:`.Index` using the
+    ``postgresql_tablespace`` keyword argument::
+
+        Index("my_index", my_table.c.data, postgresql_tablespace="my_tablespace")
+
+    Note that the same option is available on :class:`_schema.Table` as well.
 
 .. _postgresql_index_concurrently:
 
-Indexes with CONCURRENTLY
+索引并发
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The PostgreSQL index option CONCURRENTLY is supported by passing the
-flag ``postgresql_concurrently`` to the :class:`.Index` construct::
+Indexes with CONCURRENTLY
 
-    tbl = Table("testtbl", m, Column("data", Integer))
+.. tab:: 中文
 
-    idx1 = Index("test_idx1", tbl.c.data, postgresql_concurrently=True)
+    PostgreSQL 的 CONCURRENTLY 索引选项可以通过在 :class:`.Index` 构造中传入 ``postgresql_concurrently`` 标志启用::
 
-The above index construct will render DDL for CREATE INDEX, assuming
-PostgreSQL 8.2 or higher is detected or for a connection-less dialect, as:
+        tbl = Table("testtbl", m, Column("data", Integer))
 
-.. sourcecode:: sql
+        idx1 = Index("test_idx1", tbl.c.data, postgresql_concurrently=True)
 
-    CREATE INDEX CONCURRENTLY test_idx1 ON testtbl (data)
+    上述索引构造在检测到 PostgreSQL 8.2 或更高版本时，或在无连接方言下，将生成如下 CREATE INDEX 的 DDL 语句：
 
-For DROP INDEX, assuming PostgreSQL 9.2 or higher is detected or for
-a connection-less dialect, it will emit:
+    .. sourcecode:: sql
 
-.. sourcecode:: sql
+        CREATE INDEX CONCURRENTLY test_idx1 ON testtbl (data)
 
-    DROP INDEX CONCURRENTLY test_idx1
+    在 DROP INDEX 场景中，当检测到 PostgreSQL 9.2 或更高版本，或在无连接方言下，将生成如下语句：
 
-When using CONCURRENTLY, the PostgreSQL database requires that the statement
-be invoked outside of a transaction block.   The Python DBAPI enforces that
-even for a single statement, a transaction is present, so to use this
-construct, the DBAPI's "autocommit" mode must be used::
+    .. sourcecode:: sql
 
-    metadata = MetaData()
-    table = Table("foo", metadata, Column("id", String))
-    index = Index("foo_idx", table.c.id, postgresql_concurrently=True)
+        DROP INDEX CONCURRENTLY test_idx1
 
-    with engine.connect() as conn:
-        with conn.execution_options(isolation_level="AUTOCOMMIT"):
-            table.create(conn)
+    使用 CONCURRENTLY 时，PostgreSQL 要求该语句必须在事务块之外执行。而 Python DBAPI 即使对单条语句也默认存在事务，因此要使用该构造，必须启用 DBAPI 的 “自动提交”（autocommit）模式::
 
-.. seealso::
+        metadata = MetaData()
+        table = Table("foo", metadata, Column("id", String))
+        index = Index("foo_idx", table.c.id, postgresql_concurrently=True)
 
-    :ref:`postgresql_isolation_level`
+        with engine.connect() as conn:
+            with conn.execution_options(isolation_level="AUTOCOMMIT"):
+                table.create(conn)
+
+    .. seealso::
+
+        :ref:`postgresql_isolation_level`
+
+.. tab:: 英文
+
+    The PostgreSQL index option CONCURRENTLY is supported by passing the
+    flag ``postgresql_concurrently`` to the :class:`.Index` construct::
+
+        tbl = Table("testtbl", m, Column("data", Integer))
+
+        idx1 = Index("test_idx1", tbl.c.data, postgresql_concurrently=True)
+
+    The above index construct will render DDL for CREATE INDEX, assuming
+    PostgreSQL 8.2 or higher is detected or for a connection-less dialect, as:
+
+    .. sourcecode:: sql
+
+        CREATE INDEX CONCURRENTLY test_idx1 ON testtbl (data)
+
+    For DROP INDEX, assuming PostgreSQL 9.2 or higher is detected or for
+    a connection-less dialect, it will emit:
+
+    .. sourcecode:: sql
+
+        DROP INDEX CONCURRENTLY test_idx1
+
+    When using CONCURRENTLY, the PostgreSQL database requires that the statement
+    be invoked outside of a transaction block.   The Python DBAPI enforces that
+    even for a single statement, a transaction is present, so to use this
+    construct, the DBAPI's "autocommit" mode must be used::
+
+        metadata = MetaData()
+        table = Table("foo", metadata, Column("id", String))
+        index = Index("foo_idx", table.c.id, postgresql_concurrently=True)
+
+        with engine.connect() as conn:
+            with conn.execution_options(isolation_level="AUTOCOMMIT"):
+                table.create(conn)
+
+    .. seealso::
+
+        :ref:`postgresql_isolation_level`
 
 .. _postgresql_index_reflection:
 
-PostgreSQL Index Reflection
+PostgreSQL 索引反射
 ---------------------------
 
-The PostgreSQL database creates a UNIQUE INDEX implicitly whenever the
-UNIQUE CONSTRAINT construct is used.   When inspecting a table using
-:class:`_reflection.Inspector`, the :meth:`_reflection.Inspector.get_indexes`
-and the :meth:`_reflection.Inspector.get_unique_constraints`
-will report on these
-two constructs distinctly; in the case of the index, the key
-``duplicates_constraint`` will be present in the index entry if it is
-detected as mirroring a constraint.   When performing reflection using
-``Table(..., autoload_with=engine)``, the UNIQUE INDEX is **not** returned
-in :attr:`_schema.Table.indexes` when it is detected as mirroring a
-:class:`.UniqueConstraint` in the :attr:`_schema.Table.constraints` collection
-.
+PostgreSQL Index Reflection
 
-Special Reflection Options
+.. tab:: 中文
+
+    当使用 UNIQUE CONSTRAINT 构造时，PostgreSQL 数据库会隐式地创建一个 UNIQUE INDEX。在使用 :class:`_reflection.Inspector` 对表结构进行检查时，:meth:`_reflection.Inspector.get_indexes` 与 :meth:`_reflection.Inspector.get_unique_constraints` 会将这两个构造分别返回；如果某个索引被检测为与某个约束相对应，则其条目中将包含键 ``duplicates_constraint``。在使用 ``Table(..., autoload_with=engine)`` 进行结构反射时，若某个 UNIQUE INDEX 被识别为与 :attr:`_schema.Table.constraints` 中的某个 :class:`.UniqueConstraint` 匹配，则该索引将 **不会** 出现在 :attr:`_schema.Table.indexes` 中。
+
+.. tab:: 英文
+
+    The PostgreSQL database creates a UNIQUE INDEX implicitly whenever the
+    UNIQUE CONSTRAINT construct is used.   When inspecting a table using
+    :class:`_reflection.Inspector`, the :meth:`_reflection.Inspector.get_indexes`
+    and the :meth:`_reflection.Inspector.get_unique_constraints`
+    will report on these
+    two constructs distinctly; in the case of the index, the key
+    ``duplicates_constraint`` will be present in the index entry if it is
+    detected as mirroring a constraint.   When performing reflection using
+    ``Table(..., autoload_with=engine)``, the UNIQUE INDEX is **not** returned
+    in :attr:`_schema.Table.indexes` when it is detected as mirroring a
+    :class:`.UniqueConstraint` in the :attr:`_schema.Table.constraints` collection
+    .
+
+特殊反射选项
 --------------------------
 
-The :class:`_reflection.Inspector`
-used for the PostgreSQL backend is an instance
-of :class:`.PGInspector`, which offers additional methods::
+Special Reflection Options
 
-    from sqlalchemy import create_engine, inspect
+.. tab:: 中文
 
-    engine = create_engine("postgresql+psycopg2://localhost/test")
-    insp = inspect(engine)  # will be a PGInspector
+    用于 PostgreSQL 后端的 :class:`_reflection.Inspector` 实际是 :class:`.PGInspector` 的实例，后者提供了额外的方法::
 
-    print(insp.get_enums())
+        from sqlalchemy import create_engine, inspect
+
+        engine = create_engine("postgresql+psycopg2://localhost/test")
+        insp = inspect(engine)  # 将会是 PGInspector 实例
+
+        print(insp.get_enums())
+
+.. tab:: 英文
+
+    The :class:`_reflection.Inspector`
+    used for the PostgreSQL backend is an instance
+    of :class:`.PGInspector`, which offers additional methods::
+
+        from sqlalchemy import create_engine, inspect
+
+        engine = create_engine("postgresql+psycopg2://localhost/test")
+        insp = inspect(engine)  # will be a PGInspector
+
+        print(insp.get_enums())
 
 .. autoclass:: PGInspector
     :members:
 
 .. _postgresql_table_options:
 
-PostgreSQL Table Options
+PostgreSQL 表选项
 ------------------------
 
-Several options for CREATE TABLE are supported directly by the PostgreSQL
-dialect in conjunction with the :class:`_schema.Table` construct:
+PostgreSQL Table Options
 
-* ``INHERITS``::
+.. tab:: 中文
 
-    Table("some_table", metadata, ..., postgresql_inherits="some_supertable")
+    PostgreSQL 方言在结合 :class:`_schema.Table` 构造使用时，支持多种 CREATE TABLE 选项：
 
-    Table("some_table", metadata, ..., postgresql_inherits=("t1", "t2", ...))
+    * ``INHERITS``::
 
-* ``ON COMMIT``::
+        Table("some_table", metadata, ..., postgresql_inherits="some_supertable")
 
-    Table("some_table", metadata, ..., postgresql_on_commit="PRESERVE ROWS")
+        Table("some_table", metadata, ..., postgresql_inherits=("t1", "t2", ...))
 
-*
-  ``PARTITION BY``::
+    * ``ON COMMIT``::
 
-    Table(
-        "some_table",
-        metadata,
-        ...,
-        postgresql_partition_by="LIST (part_column)",
-    )
+        Table("some_table", metadata, ..., postgresql_on_commit="PRESERVE ROWS")
 
-*
-  ``TABLESPACE``::
+    *
+      ``PARTITION BY``::
 
-    Table("some_table", metadata, ..., postgresql_tablespace="some_tablespace")
+        Table(
+            "some_table",
+            metadata,
+            ...,
+            postgresql_partition_by="LIST (part_column)",
+        )
 
-  The above option is also available on the :class:`.Index` construct.
+    *
+      ``TABLESPACE``::
 
-*
-  ``USING``::
+        Table("some_table", metadata, ..., postgresql_tablespace="some_tablespace")
 
-    Table("some_table", metadata, ..., postgresql_using="heap")
+      上述选项在 :class:`.Index` 构造中也可用。
 
-  .. versionadded:: 2.0.26
+    *
+      ``USING``::
 
-* ``WITH OIDS``::
+        Table("some_table", metadata, ..., postgresql_using="heap")
 
-    Table("some_table", metadata, ..., postgresql_with_oids=True)
+      .. versionadded:: 2.0.26
 
-* ``WITHOUT OIDS``::
+    * ``WITH OIDS``::
 
-    Table("some_table", metadata, ..., postgresql_with_oids=False)
+        Table("some_table", metadata, ..., postgresql_with_oids=True)
 
-.. seealso::
+    * ``WITHOUT OIDS``::
 
-    `PostgreSQL CREATE TABLE options
-    <https://www.postgresql.org/docs/current/static/sql-createtable.html>`_ -
-    in the PostgreSQL documentation.
+        Table("some_table", metadata, ..., postgresql_with_oids=False)
+
+    .. seealso::
+
+        `PostgreSQL CREATE TABLE options
+        <https://www.postgresql.org/docs/current/static/sql-createtable.html>`_ -
+        参见 PostgreSQL 文档。
+
+.. tab:: 英文
+
+    Several options for CREATE TABLE are supported directly by the PostgreSQL
+    dialect in conjunction with the :class:`_schema.Table` construct:
+
+    * ``INHERITS``::
+
+        Table("some_table", metadata, ..., postgresql_inherits="some_supertable")
+
+        Table("some_table", metadata, ..., postgresql_inherits=("t1", "t2", ...))
+
+    * ``ON COMMIT``::
+
+        Table("some_table", metadata, ..., postgresql_on_commit="PRESERVE ROWS")
+
+    *
+      ``PARTITION BY``::
+
+        Table(
+            "some_table",
+            metadata,
+            ...,
+            postgresql_partition_by="LIST (part_column)",
+        )
+
+    *
+      ``TABLESPACE``::
+
+        Table("some_table", metadata, ..., postgresql_tablespace="some_tablespace")
+
+      The above option is also available on the :class:`.Index` construct.
+
+    *
+      ``USING``::
+
+        Table("some_table", metadata, ..., postgresql_using="heap")
+
+      .. versionadded:: 2.0.26
+
+    * ``WITH OIDS``::
+
+        Table("some_table", metadata, ..., postgresql_with_oids=True)
+
+    * ``WITHOUT OIDS``::
+
+        Table("some_table", metadata, ..., postgresql_with_oids=False)
+
+    .. seealso::
+
+        `PostgreSQL CREATE TABLE options
+        <https://www.postgresql.org/docs/current/static/sql-createtable.html>`_ -
+        in the PostgreSQL documentation.
 
 .. _postgresql_constraint_options:
 
-PostgreSQL Constraint Options
+PostgreSQL 约束选项
 -----------------------------
 
-The following option(s) are supported by the PostgreSQL dialect in conjunction
-with selected constraint constructs:
+PostgreSQL Constraint Options
 
-* ``NOT VALID``:  This option applies towards CHECK and FOREIGN KEY constraints
-  when the constraint is being added to an existing table via ALTER TABLE,
-  and has the effect that existing rows are not scanned during the ALTER
-  operation against the constraint being added.
+.. tab:: 中文
 
-  When using a SQL migration tool such as `Alembic <https://alembic.sqlalchemy.org>`_
-  that renders ALTER TABLE constructs, the ``postgresql_not_valid`` argument
-  may be specified as an additional keyword argument within the operation
-  that creates the constraint, as in the following Alembic example::
+    下列选项可与特定约束构造配合使用，由 PostgreSQL 方言支持：
 
-        def update():
-            op.create_foreign_key(
-                "fk_user_address",
-                "address",
-                "user",
-                ["user_id"],
-                ["id"],
-                postgresql_not_valid=True,
+    * ``NOT VALID``：该选项适用于 CHECK 和 FOREIGN KEY 约束，在通过 ALTER TABLE 向已存在的表添加约束时使用，其效果是跳过已有数据行的扫描。
+
+      在使用如 `Alembic <https://alembic.sqlalchemy.org>`_ 这类渲染 ALTER TABLE 构造的 SQL 迁移工具时，可以在创建约束的操作中，通过额外的关键字参数 ``postgresql_not_valid`` 指定该选项，例如如下 Alembic 示例::
+
+            def update():
+                op.create_foreign_key(
+                    "fk_user_address",
+                    "address",
+                    "user",
+                    ["user_id"],
+                    ["id"],
+                    postgresql_not_valid=True,
+                )
+
+      该关键字最终会被 :class:`_schema.CheckConstraint`、:class:`_schema.ForeignKeyConstraint` 与 :class:`_schema.ForeignKey` 构造直接接收；在使用如 Alembic 等工具时，方言特有的关键字参数将从迁移操作指令中传递给这些构造::
+
+           CheckConstraint("some_field IS NOT NULL", postgresql_not_valid=True)
+
+           ForeignKeyConstraint(
+               ["some_id"], ["some_table.some_id"], postgresql_not_valid=True
+           )
+
+      .. versionadded:: 1.4.32
+
+      .. seealso::
+
+          `PostgreSQL ALTER TABLE options
+          <https://www.postgresql.org/docs/current/static/sql-altertable.html>`_ -
+          参见 PostgreSQL 文档。
+
+    * 含外键 ``ON DELETE SET`` 操作的列列表：适用于 :class:`.ForeignKey` 和 :class:`.ForeignKeyConstraint`。参数 :paramref:`.ForeignKey.ondelete` 在 PostgreSQL 后端中可以接受一个列名字符串列表（置于括号中），结合 ``SET NULL`` 或 ``SET DEFAULT``，从而限制哪些列会受到该动作的影响::
+
+            fktable = Table(
+                "fktable",
+                metadata,
+                Column("tid", Integer),
+                Column("id", Integer),
+                Column("fk_id_del_set_null", Integer),
+                ForeignKeyConstraint(
+                    columns=["tid", "fk_id_del_set_null"],
+                    refcolumns=[pktable.c.tid, pktable.c.id],
+                    ondelete="SET NULL (fk_id_del_set_null)",
+                ),
             )
 
-  The keyword is ultimately accepted directly by the
-  :class:`_schema.CheckConstraint`, :class:`_schema.ForeignKeyConstraint`
-  and :class:`_schema.ForeignKey` constructs; when using a tool like
-  Alembic, dialect-specific keyword arguments are passed through to
-  these constructs from the migration operation directives::
+      .. versionadded:: 2.0.40
 
-       CheckConstraint("some_field IS NOT NULL", postgresql_not_valid=True)
+.. tab:: 英文
 
-       ForeignKeyConstraint(
-           ["some_id"], ["some_table.some_id"], postgresql_not_valid=True
-       )
+    The following option(s) are supported by the PostgreSQL dialect in conjunction
+    with selected constraint constructs:
 
-  .. versionadded:: 1.4.32
+    * ``NOT VALID``:  This option applies towards CHECK and FOREIGN KEY constraints
+      when the constraint is being added to an existing table via ALTER TABLE,
+      and has the effect that existing rows are not scanned during the ALTER
+      operation against the constraint being added.
 
-  .. seealso::
+      When using a SQL migration tool such as `Alembic <https://alembic.sqlalchemy.org>`_
+      that renders ALTER TABLE constructs, the ``postgresql_not_valid`` argument
+      may be specified as an additional keyword argument within the operation
+      that creates the constraint, as in the following Alembic example::
 
-      `PostgreSQL ALTER TABLE options
-      <https://www.postgresql.org/docs/current/static/sql-altertable.html>`_ -
-      in the PostgreSQL documentation.
+            def update():
+                op.create_foreign_key(
+                    "fk_user_address",
+                    "address",
+                    "user",
+                    ["user_id"],
+                    ["id"],
+                    postgresql_not_valid=True,
+                )
 
-* Column list with foreign key ``ON DELETE SET`` actions:  This applies to
-  :class:`.ForeignKey` and :class:`.ForeignKeyConstraint`, the :paramref:`.ForeignKey.ondelete`
-  parameter will accept on the PostgreSQL backend only a string list of column
-  names inside parenthesis, following the ``SET NULL`` or ``SET DEFAULT``
-  phrases, which will limit the set of columns that are subject to the
-  action::
+      The keyword is ultimately accepted directly by the
+      :class:`_schema.CheckConstraint`, :class:`_schema.ForeignKeyConstraint`
+      and :class:`_schema.ForeignKey` constructs; when using a tool like
+      Alembic, dialect-specific keyword arguments are passed through to
+      these constructs from the migration operation directives::
 
-        fktable = Table(
-            "fktable",
-            metadata,
-            Column("tid", Integer),
-            Column("id", Integer),
-            Column("fk_id_del_set_null", Integer),
-            ForeignKeyConstraint(
-                columns=["tid", "fk_id_del_set_null"],
-                refcolumns=[pktable.c.tid, pktable.c.id],
-                ondelete="SET NULL (fk_id_del_set_null)",
-            ),
-        )
+           CheckConstraint("some_field IS NOT NULL", postgresql_not_valid=True)
 
-  .. versionadded:: 2.0.40
+           ForeignKeyConstraint(
+               ["some_id"], ["some_table.some_id"], postgresql_not_valid=True
+           )
+
+      .. versionadded:: 1.4.32
+
+      .. seealso::
+
+          `PostgreSQL ALTER TABLE options
+          <https://www.postgresql.org/docs/current/static/sql-altertable.html>`_ -
+          in the PostgreSQL documentation.
+
+    * Column list with foreign key ``ON DELETE SET`` actions:  This applies to
+      :class:`.ForeignKey` and :class:`.ForeignKeyConstraint`, the :paramref:`.ForeignKey.ondelete`
+      parameter will accept on the PostgreSQL backend only a string list of column
+      names inside parenthesis, following the ``SET NULL`` or ``SET DEFAULT``
+      phrases, which will limit the set of columns that are subject to the
+      action::
+
+            fktable = Table(
+                "fktable",
+                metadata,
+                Column("tid", Integer),
+                Column("id", Integer),
+                Column("fk_id_del_set_null", Integer),
+                ForeignKeyConstraint(
+                    columns=["tid", "fk_id_del_set_null"],
+                    refcolumns=[pktable.c.tid, pktable.c.id],
+                    ondelete="SET NULL (fk_id_del_set_null)",
+                ),
+            )
+
+      .. versionadded:: 2.0.40
 
 
 .. _postgresql_table_valued_overview:
 
-Table values, Table and Column valued functions, Row and Tuple objects
+表值、表值和列值函数、行和元组对象
 -----------------------------------------------------------------------
 
-PostgreSQL makes great use of modern SQL forms such as table-valued functions,
-tables and rows as values.   These constructs are commonly used as part
-of PostgreSQL's support for complex datatypes such as JSON, ARRAY, and other
-datatypes.  SQLAlchemy's SQL expression language has native support for
-most table-valued and row-valued forms.
+Table values, Table and Column valued functions, Row and Tuple objects
+
+.. tab:: 中文
+
+    PostgreSQL 广泛使用现代 SQL 表达形式，如表值函数（table-valued functions）、表和行作为值。这些构造在 PostgreSQL 对复杂数据类型（如 JSON、ARRAY 及其他数据类型）的支持中被广泛应用。SQLAlchemy 的 SQL 表达语言原生支持大多数表值和行值的表达形式。
+
+.. tab:: 英文
+
+    PostgreSQL makes great use of modern SQL forms such as table-valued functions,
+    tables and rows as values.   These constructs are commonly used as part
+    of PostgreSQL's support for complex datatypes such as JSON, ARRAY, and other
+    datatypes.  SQLAlchemy's SQL expression language has native support for
+    most table-valued and row-valued forms.
 
 .. _postgresql_table_valued:
 
-Table-Valued Functions
+表值函数
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Many PostgreSQL built-in functions are intended to be used in the FROM clause
-of a SELECT statement, and are capable of returning table rows or sets of table
-rows. A large portion of PostgreSQL's JSON functions for example such as
-``json_array_elements()``, ``json_object_keys()``, ``json_each_text()``,
-``json_each()``, ``json_to_record()``, ``json_populate_recordset()`` use such
-forms. These classes of SQL function calling forms in SQLAlchemy are available
-using the :meth:`_functions.FunctionElement.table_valued` method in conjunction
-with :class:`_functions.Function` objects generated from the :data:`_sql.func`
-namespace.
+Table-Valued Functions
 
-Examples from PostgreSQL's reference documentation follow below:
+.. tab:: 中文
 
-* ``json_each()``:
+    许多 PostgreSQL 内置函数被设计为在 SELECT 语句的 FROM 子句中使用，并可返回单行或多行结果。例如大量 JSON 函数如 ``json_array_elements()``、``json_object_keys()``、``json_each_text()``、``json_each()``、``json_to_record()``、``json_populate_recordset()`` 等都采用此形式。在 SQLAlchemy 中，这类 SQL 函数调用形式可通过 :meth:`_functions.FunctionElement.table_valued` 方法与从 :data:`_sql.func` 命名空间生成的 :class:`_functions.Function` 对象配合使用。
 
-  .. sourcecode:: pycon+sql
+    以下示例摘自 PostgreSQL 官方文档：
 
-    >>> from sqlalchemy import select, func
-    >>> stmt = select(
-    ...     func.json_each('{"a":"foo", "b":"bar"}').table_valued("key", "value")
-    ... )
-    >>> print(stmt)
-    {printsql}SELECT anon_1.key, anon_1.value
-    FROM json_each(:json_each_1) AS anon_1
+    * ``json_each()``：
 
-* ``json_populate_record()``:
+      .. sourcecode:: pycon+sql
 
-  .. sourcecode:: pycon+sql
+        >>> from sqlalchemy import select, func
+        >>> stmt = select(
+        ...     func.json_each('{"a":"foo", "b":"bar"}').table_valued("key", "value")
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT anon_1.key, anon_1.value
+        FROM json_each(:json_each_1) AS anon_1
 
-    >>> from sqlalchemy import select, func, literal_column
-    >>> stmt = select(
-    ...     func.json_populate_record(
-    ...         literal_column("null::myrowtype"), '{"a":1,"b":2}'
-    ...     ).table_valued("a", "b", name="x")
-    ... )
-    >>> print(stmt)
-    {printsql}SELECT x.a, x.b
-    FROM json_populate_record(null::myrowtype, :json_populate_record_1) AS x
+    * ``json_populate_record()``：
 
-* ``json_to_record()`` - this form uses a PostgreSQL specific form of derived
-  columns in the alias, where we may make use of :func:`_sql.column` elements with
-  types to produce them.  The :meth:`_functions.FunctionElement.table_valued`
-  method produces  a :class:`_sql.TableValuedAlias` construct, and the method
-  :meth:`_sql.TableValuedAlias.render_derived` method sets up the derived
-  columns specification:
+      .. sourcecode:: pycon+sql
 
-  .. sourcecode:: pycon+sql
+        >>> from sqlalchemy import select, func, literal_column
+        >>> stmt = select(
+        ...     func.json_populate_record(
+        ...         literal_column("null::myrowtype"), '{"a":1,"b":2}'
+        ...     ).table_valued("a", "b", name="x")
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT x.a, x.b
+        FROM json_populate_record(null::myrowtype, :json_populate_record_1) AS x
 
-    >>> from sqlalchemy import select, func, column, Integer, Text
-    >>> stmt = select(
-    ...     func.json_to_record('{"a":1,"b":[1,2,3],"c":"bar"}')
-    ...     .table_valued(
-    ...         column("a", Integer),
-    ...         column("b", Text),
-    ...         column("d", Text),
-    ...     )
-    ...     .render_derived(name="x", with_types=True)
-    ... )
-    >>> print(stmt)
-    {printsql}SELECT x.a, x.b, x.d
-    FROM json_to_record(:json_to_record_1) AS x(a INTEGER, b TEXT, d TEXT)
+    * ``json_to_record()`` —— 该形式使用 PostgreSQL 特有的派生列语法，我们可使用带类型的 :func:`_sql.column` 元素来构建。:meth:`_functions.FunctionElement.table_valued` 方法会生成一个 :class:`_sql.TableValuedAlias` 构造，而 :meth:`_sql.TableValuedAlias.render_derived` 方法设置派生列定义：
 
-* ``WITH ORDINALITY`` - part of the SQL standard, ``WITH ORDINALITY`` adds an
-  ordinal counter to the output of a function and is accepted by a limited set
-  of PostgreSQL functions including ``unnest()`` and ``generate_series()``. The
-  :meth:`_functions.FunctionElement.table_valued` method accepts a keyword
-  parameter ``with_ordinality`` for this purpose, which accepts the string name
-  that will be applied to the "ordinality" column:
+      .. sourcecode:: pycon+sql
 
-  .. sourcecode:: pycon+sql
+        >>> from sqlalchemy import select, func, column, Integer, Text
+        >>> stmt = select(
+        ...     func.json_to_record('{"a":1,"b":[1,2,3],"c":"bar"}')
+        ...     .table_valued(
+        ...         column("a", Integer),
+        ...         column("b", Text),
+        ...         column("d", Text),
+        ...     )
+        ...     .render_derived(name="x", with_types=True)
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT x.a, x.b, x.d
+        FROM json_to_record(:json_to_record_1) AS x(a INTEGER, b TEXT, d TEXT)
 
-    >>> from sqlalchemy import select, func
-    >>> stmt = select(
-    ...     func.generate_series(4, 1, -1)
-    ...     .table_valued("value", with_ordinality="ordinality")
-    ...     .render_derived()
-    ... )
-    >>> print(stmt)
-    {printsql}SELECT anon_1.value, anon_1.ordinality
-    FROM generate_series(:generate_series_1, :generate_series_2, :generate_series_3)
-    WITH ORDINALITY AS anon_1(value, ordinality)
+    * ``WITH ORDINALITY`` —— 作为 SQL 标准的一部分，``WITH ORDINALITY`` 为函数输出添加一个序号列，PostgreSQL 中仅部分函数（如 ``unnest()`` 和 ``generate_series()``）支持此语法。:meth:`_functions.FunctionElement.table_valued` 方法接受一个关键字参数 ``with_ordinality``，其值为用于“序号”列的字符串名称：
 
-.. versionadded:: 1.4.0b2
+      .. sourcecode:: pycon+sql
 
-.. seealso::
+        >>> from sqlalchemy import select, func
+        >>> stmt = select(
+        ...     func.generate_series(4, 1, -1)
+        ...     .table_valued("value", with_ordinality="ordinality")
+        ...     .render_derived()
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT anon_1.value, anon_1.ordinality
+        FROM generate_series(:generate_series_1, :generate_series_2, :generate_series_3)
+        WITH ORDINALITY AS anon_1(value, ordinality)
 
-    :ref:`tutorial_functions_table_valued` - in the :ref:`unified_tutorial`
+    .. versionadded:: 1.4.0b2
+
+    .. seealso::
+
+        :ref:`tutorial_functions_table_valued` - 参见 :ref:`unified_tutorial` 中的相关章节。
+
+.. tab:: 英文
+
+    Many PostgreSQL built-in functions are intended to be used in the FROM clause
+    of a SELECT statement, and are capable of returning table rows or sets of table
+    rows. A large portion of PostgreSQL's JSON functions for example such as
+    ``json_array_elements()``, ``json_object_keys()``, ``json_each_text()``,
+    ``json_each()``, ``json_to_record()``, ``json_populate_recordset()`` use such
+    forms. These classes of SQL function calling forms in SQLAlchemy are available
+    using the :meth:`_functions.FunctionElement.table_valued` method in conjunction
+    with :class:`_functions.Function` objects generated from the :data:`_sql.func`
+    namespace.
+
+    Examples from PostgreSQL's reference documentation follow below:
+
+    * ``json_each()``:
+
+      .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import select, func
+        >>> stmt = select(
+        ...     func.json_each('{"a":"foo", "b":"bar"}').table_valued("key", "value")
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT anon_1.key, anon_1.value
+        FROM json_each(:json_each_1) AS anon_1
+
+    * ``json_populate_record()``:
+
+      .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import select, func, literal_column
+        >>> stmt = select(
+        ...     func.json_populate_record(
+        ...         literal_column("null::myrowtype"), '{"a":1,"b":2}'
+        ...     ).table_valued("a", "b", name="x")
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT x.a, x.b
+        FROM json_populate_record(null::myrowtype, :json_populate_record_1) AS x
+
+    * ``json_to_record()`` - this form uses a PostgreSQL specific form of derived
+      columns in the alias, where we may make use of :func:`_sql.column` elements with
+      types to produce them.  The :meth:`_functions.FunctionElement.table_valued`
+      method produces  a :class:`_sql.TableValuedAlias` construct, and the method
+      :meth:`_sql.TableValuedAlias.render_derived` method sets up the derived
+      columns specification:
+
+      .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import select, func, column, Integer, Text
+        >>> stmt = select(
+        ...     func.json_to_record('{"a":1,"b":[1,2,3],"c":"bar"}')
+        ...     .table_valued(
+        ...         column("a", Integer),
+        ...         column("b", Text),
+        ...         column("d", Text),
+        ...     )
+        ...     .render_derived(name="x", with_types=True)
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT x.a, x.b, x.d
+        FROM json_to_record(:json_to_record_1) AS x(a INTEGER, b TEXT, d TEXT)
+
+    * ``WITH ORDINALITY`` - part of the SQL standard, ``WITH ORDINALITY`` adds an
+      ordinal counter to the output of a function and is accepted by a limited set
+      of PostgreSQL functions including ``unnest()`` and ``generate_series()``. The
+      :meth:`_functions.FunctionElement.table_valued` method accepts a keyword
+      parameter ``with_ordinality`` for this purpose, which accepts the string name
+      that will be applied to the "ordinality" column:
+
+      .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import select, func
+        >>> stmt = select(
+        ...     func.generate_series(4, 1, -1)
+        ...     .table_valued("value", with_ordinality="ordinality")
+        ...     .render_derived()
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT anon_1.value, anon_1.ordinality
+        FROM generate_series(:generate_series_1, :generate_series_2, :generate_series_3)
+        WITH ORDINALITY AS anon_1(value, ordinality)
+
+    .. versionadded:: 1.4.0b2
+
+    .. seealso::
+
+        :ref:`tutorial_functions_table_valued` - in the :ref:`unified_tutorial`
 
 .. _postgresql_column_valued:
 
-Column Valued Functions
+列值函数
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Similar to the table valued function, a column valued function is present
-in the FROM clause, but delivers itself to the columns clause as a single
-scalar value.  PostgreSQL functions such as ``json_array_elements()``,
-``unnest()`` and ``generate_series()`` may use this form. Column valued functions are available using the
-:meth:`_functions.FunctionElement.column_valued` method of :class:`_functions.FunctionElement`:
+Column Valued Functions
 
-* ``json_array_elements()``:
+.. tab:: 中文
 
-  .. sourcecode:: pycon+sql
+    与表值函数类似，列值函数也出现在 `FROM` 子句中，但它会以单个标量值的形式呈现到 `SELECT` 子句的列中。PostgreSQL 中的函数如 ``json_array_elements()``、``unnest()`` 和 ``generate_series()`` 可以使用此形式。列值函数可通过 :class:`_functions.FunctionElement` 的 :meth:`_functions.FunctionElement.column_valued` 方法使用：
 
-    >>> from sqlalchemy import select, func
-    >>> stmt = select(
-    ...     func.json_array_elements('["one", "two"]').column_valued("x")
-    ... )
-    >>> print(stmt)
-    {printsql}SELECT x
-    FROM json_array_elements(:json_array_elements_1) AS x
+    * ``json_array_elements()``：
 
-* ``unnest()`` - in order to generate a PostgreSQL ARRAY literal, the
-  :func:`_postgresql.array` construct may be used:
+      .. sourcecode:: pycon+sql
 
-  .. sourcecode:: pycon+sql
+        >>> from sqlalchemy import select, func
+        >>> stmt = select(
+        ...     func.json_array_elements('["one", "two"]').column_valued("x")
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT x
+        FROM json_array_elements(:json_array_elements_1) AS x
 
-    >>> from sqlalchemy.dialects.postgresql import array
-    >>> from sqlalchemy import select, func
-    >>> stmt = select(func.unnest(array([1, 2])).column_valued())
-    >>> print(stmt)
-    {printsql}SELECT anon_1
-    FROM unnest(ARRAY[%(param_1)s, %(param_2)s]) AS anon_1
+    * ``unnest()`` —— 若要生成 PostgreSQL 的 ARRAY 字面量，可使用 :func:`_postgresql.array` 构造器：
 
-  The function can of course be used against an existing table-bound column
-  that's of type :class:`_types.ARRAY`:
+      .. sourcecode:: pycon+sql
 
-  .. sourcecode:: pycon+sql
+        >>> from sqlalchemy.dialects.postgresql import array
+        >>> from sqlalchemy import select, func
+        >>> stmt = select(func.unnest(array([1, 2])).column_valued())
+        >>> print(stmt)
+        {printsql}SELECT anon_1
+        FROM unnest(ARRAY[%(param_1)s, %(param_2)s]) AS anon_1
 
-    >>> from sqlalchemy import table, column, ARRAY, Integer
-    >>> from sqlalchemy import select, func
-    >>> t = table("t", column("value", ARRAY(Integer)))
-    >>> stmt = select(func.unnest(t.c.value).column_valued("unnested_value"))
-    >>> print(stmt)
-    {printsql}SELECT unnested_value
-    FROM unnest(t.value) AS unnested_value
+      当然，该函数也可以用于现有表绑定的列，该列的类型为 :class:`_types.ARRAY`：
 
-.. seealso::
+      .. sourcecode:: pycon+sql
 
-    :ref:`tutorial_functions_column_valued` - in the :ref:`unified_tutorial`
+        >>> from sqlalchemy import table, column, ARRAY, Integer
+        >>> from sqlalchemy import select, func
+        >>> t = table("t", column("value", ARRAY(Integer)))
+        >>> stmt = select(func.unnest(t.c.value).column_valued("unnested_value"))
+        >>> print(stmt)
+        {printsql}SELECT unnested_value
+        FROM unnest(t.value) AS unnested_value
+
+    .. seealso::
+
+        :ref:`tutorial_functions_column_valued` - 位于 :ref:`unified_tutorial`
+
+.. tab:: 英文
+
+    Similar to the table valued function, a column valued function is present
+    in the FROM clause, but delivers itself to the columns clause as a single
+    scalar value.  PostgreSQL functions such as ``json_array_elements()``,
+    ``unnest()`` and ``generate_series()`` may use this form. Column valued functions are available using the
+    :meth:`_functions.FunctionElement.column_valued` method of :class:`_functions.FunctionElement`:
+
+    * ``json_array_elements()``:
+
+      .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import select, func
+        >>> stmt = select(
+        ...     func.json_array_elements('["one", "two"]').column_valued("x")
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT x
+        FROM json_array_elements(:json_array_elements_1) AS x
+
+    * ``unnest()`` - in order to generate a PostgreSQL ARRAY literal, the
+      :func:`_postgresql.array` construct may be used:
+
+      .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy.dialects.postgresql import array
+        >>> from sqlalchemy import select, func
+        >>> stmt = select(func.unnest(array([1, 2])).column_valued())
+        >>> print(stmt)
+        {printsql}SELECT anon_1
+        FROM unnest(ARRAY[%(param_1)s, %(param_2)s]) AS anon_1
+
+      The function can of course be used against an existing table-bound column
+      that's of type :class:`_types.ARRAY`:
+
+      .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import table, column, ARRAY, Integer
+        >>> from sqlalchemy import select, func
+        >>> t = table("t", column("value", ARRAY(Integer)))
+        >>> stmt = select(func.unnest(t.c.value).column_valued("unnested_value"))
+        >>> print(stmt)
+        {printsql}SELECT unnested_value
+        FROM unnest(t.value) AS unnested_value
+
+    .. seealso::
+
+        :ref:`tutorial_functions_column_valued` - in the :ref:`unified_tutorial`
 
 
-Row Types
+行类型
 ^^^^^^^^^
 
-Built-in support for rendering a ``ROW`` may be approximated using
-``func.ROW`` with the :attr:`_sa.func` namespace, or by using the
-:func:`_sql.tuple_` construct:
+Row Types
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> from sqlalchemy import table, column, func, tuple_
-    >>> t = table("t", column("id"), column("fk"))
-    >>> stmt = (
-    ...     t.select()
-    ...     .where(tuple_(t.c.id, t.c.fk) > (1, 2))
-    ...     .where(func.ROW(t.c.id, t.c.fk) < func.ROW(3, 7))
-    ... )
-    >>> print(stmt)
-    {printsql}SELECT t.id, t.fk
-    FROM t
-    WHERE (t.id, t.fk) > (:param_1, :param_2) AND ROW(t.id, t.fk) < ROW(:ROW_1, :ROW_2)
+    内建的 ``ROW`` 渲染支持可通过 ``func.ROW`` 和 :attr:`_sa.func` 命名空间模拟，或通过 :func:`_sql.tuple_` 构造器实现：
 
-.. seealso::
+    .. sourcecode:: pycon+sql
 
-    `PostgreSQL Row Constructors
-    <https://www.postgresql.org/docs/current/sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS>`_
+        >>> from sqlalchemy import table, column, func, tuple_
+        >>> t = table("t", column("id"), column("fk"))
+        >>> stmt = (
+        ...     t.select()
+        ...     .where(tuple_(t.c.id, t.c.fk) > (1, 2))
+        ...     .where(func.ROW(t.c.id, t.c.fk) < func.ROW(3, 7))
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT t.id, t.fk
+        FROM t
+        WHERE (t.id, t.fk) > (:param_1, :param_2) AND ROW(t.id, t.fk) < ROW(:ROW_1, :ROW_2)
 
-    `PostgreSQL Row Constructor Comparison
-    <https://www.postgresql.org/docs/current/functions-comparisons.html#ROW-WISE-COMPARISON>`_
+    .. seealso::
 
-Table Types passed to Functions
+        `PostgreSQL 行构造器（Row Constructors）
+        <https://www.postgresql.org/docs/current/sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS>`_
+
+        `PostgreSQL 行构造器比较（Row Constructor Comparison）
+        <https://www.postgresql.org/docs/current/functions-comparisons.html#ROW-WISE-COMPARISON>`_
+
+.. tab:: 英文
+
+    Built-in support for rendering a ``ROW`` may be approximated using
+    ``func.ROW`` with the :attr:`_sa.func` namespace, or by using the
+    :func:`_sql.tuple_` construct:
+
+    .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import table, column, func, tuple_
+        >>> t = table("t", column("id"), column("fk"))
+        >>> stmt = (
+        ...     t.select()
+        ...     .where(tuple_(t.c.id, t.c.fk) > (1, 2))
+        ...     .where(func.ROW(t.c.id, t.c.fk) < func.ROW(3, 7))
+        ... )
+        >>> print(stmt)
+        {printsql}SELECT t.id, t.fk
+        FROM t
+        WHERE (t.id, t.fk) > (:param_1, :param_2) AND ROW(t.id, t.fk) < ROW(:ROW_1, :ROW_2)
+
+    .. seealso::
+
+        `PostgreSQL Row Constructors
+        <https://www.postgresql.org/docs/current/sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS>`_
+
+        `PostgreSQL Row Constructor Comparison
+        <https://www.postgresql.org/docs/current/functions-comparisons.html#ROW-WISE-COMPARISON>`_
+
+传递给函数的表类型
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-PostgreSQL supports passing a table as an argument to a function, which is
-known as a "record" type. SQLAlchemy :class:`_sql.FromClause` objects
-such as :class:`_schema.Table` support this special form using the
-:meth:`_sql.FromClause.table_valued` method, which is comparable to the
-:meth:`_functions.FunctionElement.table_valued` method except that the collection
-of columns is already established by that of the :class:`_sql.FromClause`
-itself:
+Table Types passed to Functions
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> from sqlalchemy import table, column, func, select
-    >>> a = table("a", column("id"), column("x"), column("y"))
-    >>> stmt = select(func.row_to_json(a.table_valued()))
-    >>> print(stmt)
-    {printsql}SELECT row_to_json(a) AS row_to_json_1
-    FROM a
+    PostgreSQL 支持将一个表作为函数的参数传递，这种类型被称为 "record" 类型。SQLAlchemy 中的 :class:`_sql.FromClause` 对象（如 :class:`_schema.Table` ）通过 :meth:`_sql.FromClause.table_valued` 方法支持这种特殊形式。这个方法类似于 :meth:`_functions.FunctionElement.table_valued`，但列的集合由该 :class:`_sql.FromClause` 本身预先定义：
 
-.. versionadded:: 1.4.0b2
+    .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import table, column, func, select
+        >>> a = table("a", column("id"), column("x"), column("y"))
+        >>> stmt = select(func.row_to_json(a.table_valued()))
+        >>> print(stmt)
+        {printsql}SELECT row_to_json(a) AS row_to_json_1
+        FROM a
+
+    .. versionadded:: 1.4.0b2
+
+.. tab:: 英文
+
+    PostgreSQL supports passing a table as an argument to a function, which is
+    known as a "record" type. SQLAlchemy :class:`_sql.FromClause` objects
+    such as :class:`_schema.Table` support this special form using the
+    :meth:`_sql.FromClause.table_valued` method, which is comparable to the
+    :meth:`_functions.FunctionElement.table_valued` method except that the collection
+    of columns is already established by that of the :class:`_sql.FromClause`
+    itself:
+
+    .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy import table, column, func, select
+        >>> a = table("a", column("id"), column("x"), column("y"))
+        >>> stmt = select(func.row_to_json(a.table_valued()))
+        >>> print(stmt)
+        {printsql}SELECT row_to_json(a) AS row_to_json_1
+        FROM a
+
+    .. versionadded:: 1.4.0b2
 
 
 
@@ -1820,13 +3026,8 @@ class PGCompiler(compiler.SQLCompiler):
     def visit_bitwise_xor_op_binary(self, binary, operator, **kw):
         return self._generate_generic_binary(binary, " # ", **kw)
 
-    def visit_json_getitem_op_binary(
-        self, binary, operator, _cast_applied=False, **kw
-    ):
-        if (
-            not _cast_applied
-            and binary.type._type_affinity is not sqltypes.JSON
-        ):
+    def visit_json_getitem_op_binary(self, binary, operator, _cast_applied=False, **kw):
+        if not _cast_applied and binary.type._type_affinity is not sqltypes.JSON:
             kw["_cast_applied"] = True
             return self.process(sql.cast(binary, binary.type), **kw)
 
@@ -1839,10 +3040,7 @@ class PGCompiler(compiler.SQLCompiler):
     def visit_json_path_getitem_op_binary(
         self, binary, operator, _cast_applied=False, **kw
     ):
-        if (
-            not _cast_applied
-            and binary.type._type_affinity is not sqltypes.JSON
-        ):
+        if not _cast_applied and binary.type._type_affinity is not sqltypes.JSON:
             kw["_cast_applied"] = True
             return self.process(sql.cast(binary, binary.type), **kw)
 
@@ -1908,13 +3106,9 @@ class PGCompiler(compiler.SQLCompiler):
     def _regexp_match(self, base_op, binary, operator, kw):
         flags = binary.modifiers["flags"]
         if flags is None:
-            return self._generate_generic_binary(
-                binary, " %s " % base_op, **kw
-            )
+            return self._generate_generic_binary(binary, " %s " % base_op, **kw)
         if flags == "i":
-            return self._generate_generic_binary(
-                binary, " %s* " % base_op, **kw
-            )
+            return self._generate_generic_binary(binary, " %s* " % base_op, **kw)
         return "%s %s CONCAT('(?', %s, ')', %s)" % (
             self.process(binary.left, **kw),
             base_op,
@@ -1994,10 +3188,7 @@ class PGCompiler(compiler.SQLCompiler):
                 return (
                     "DISTINCT ON ("
                     + ", ".join(
-                        [
-                            self.process(col, **kw)
-                            for col in select._distinct_on
-                        ]
+                        [self.process(col, **kw) for col in select._distinct_on]
                     )
                     + ") "
                 )
@@ -2014,9 +3205,7 @@ class PGCompiler(compiler.SQLCompiler):
             )
 
         if element._distinct_on:
-            cols = ", ".join(
-                self.process(col, **kw) for col in element._distinct_on
-            )
+            cols = ", ".join(self.process(col, **kw) for col in element._distinct_on)
             return f"ON ({cols})"
         else:
             return None
@@ -2039,9 +3228,7 @@ class PGCompiler(compiler.SQLCompiler):
 
             of_kw = dict(kw)
             of_kw.update(ashint=True, use_schema=False)
-            tmp += " OF " + ", ".join(
-                self.process(table, **of_kw) for table in tables
-            )
+            tmp += " OF " + ", ".join(self.process(table, **of_kw) for table in tables)
 
         if select._for_update_arg.nowait:
             tmp += " NOWAIT"
@@ -2123,10 +3310,7 @@ class PGCompiler(compiler.SQLCompiler):
                 continue
 
             assert not coercions._is_literal(value)
-            if (
-                isinstance(value, elements.BindParameter)
-                and value.type._isnull
-            ):
+            if isinstance(value, elements.BindParameter) and value.type._isnull:
                 value = value._with_binary_element_type(c.type)
             value_text = self.process(value.self_group(), use_schema=False)
 
@@ -2168,8 +3352,7 @@ class PGCompiler(compiler.SQLCompiler):
     ):
         kw["asfrom"] = True
         return "FROM " + ", ".join(
-            t._compiler_dispatch(self, fromhints=from_hints, **kw)
-            for t in extra_froms
+            t._compiler_dispatch(self, fromhints=from_hints, **kw) for t in extra_froms
         )
 
     def delete_extra_from_clause(
@@ -2178,8 +3361,7 @@ class PGCompiler(compiler.SQLCompiler):
         """Render the DELETE .. USING clause specific to PostgreSQL."""
         kw["asfrom"] = True
         return "USING " + ", ".join(
-            t._compiler_dispatch(self, fromhints=from_hints, **kw)
-            for t in extra_froms
+            t._compiler_dispatch(self, fromhints=from_hints, **kw) for t in extra_froms
         )
 
     def fetch_clause(self, select, **kw):
@@ -2188,18 +3370,12 @@ class PGCompiler(compiler.SQLCompiler):
         # so it's easiest to just always add it
         text = ""
         if select._offset_clause is not None:
-            text += "\n OFFSET (%s) ROWS" % self.process(
-                select._offset_clause, **kw
-            )
+            text += "\n OFFSET (%s) ROWS" % self.process(select._offset_clause, **kw)
         if select._fetch_clause is not None:
             text += "\n FETCH FIRST (%s)%s ROWS %s" % (
                 self.process(select._fetch_clause, **kw),
                 " PERCENT" if select._fetch_clause_options["percent"] else "",
-                (
-                    "WITH TIES"
-                    if select._fetch_clause_options["with_ties"]
-                    else "ONLY"
-                ),
+                ("WITH TIES" if select._fetch_clause_options["with_ties"] else "ONLY"),
             )
         return text
 
@@ -2212,8 +3388,7 @@ class PGDDLCompiler(compiler.DDLCompiler):
             impl_type = impl_type.impl
 
         has_identity = (
-            column.identity is not None
-            and self.dialect.supports_identity_columns
+            column.identity is not None and self.dialect.supports_identity_columns
         )
 
         if (
@@ -2410,9 +3585,7 @@ class PGDDLCompiler(compiler.DDLCompiler):
                 [preparer.quote(c.name) for c in inclusions]
             )
 
-        nulls_not_distinct = index.dialect_options["postgresql"][
-            "nulls_not_distinct"
-        ]
+        nulls_not_distinct = index.dialect_options["postgresql"]["nulls_not_distinct"]
         if nulls_not_distinct is True:
             text += " NULLS NOT DISTINCT"
         elif nulls_not_distinct is False:
@@ -2435,9 +3608,7 @@ class PGDDLCompiler(compiler.DDLCompiler):
 
         whereclause = index.dialect_options["postgresql"]["where"]
         if whereclause is not None:
-            whereclause = coercions.expect(
-                roles.DDLExpressionRole, whereclause
-            )
+            whereclause = coercions.expect(roles.DDLExpressionRole, whereclause)
 
             where_compiled = self.sql_compiler.process(
                 whereclause, include_table=False, literal_binds=True
@@ -2477,9 +3648,7 @@ class PGDDLCompiler(compiler.DDLCompiler):
     def visit_exclude_constraint(self, constraint, **kw):
         text = ""
         if constraint.name is not None:
-            text += "CONSTRAINT %s " % self.preparer.format_constraint(
-                constraint
-            )
+            text += "CONSTRAINT %s " % self.preparer.format_constraint(constraint)
         elements = []
         kw["include_table"] = False
         kw["literal_binds"] = True
@@ -2492,9 +3661,7 @@ class PGDDLCompiler(compiler.DDLCompiler):
 
             elements.append("%s WITH %s" % (exclude_element, op))
         text += "EXCLUDE USING %s (%s)" % (
-            self.preparer.validate_sql_phrase(
-                constraint.using, IDX_USING
-            ).lower(),
+            self.preparer.validate_sql_phrase(constraint.using, IDX_USING).lower(),
             ", ".join(elements),
         )
         if constraint.where is not None:
@@ -2535,9 +3702,7 @@ class PGDDLCompiler(compiler.DDLCompiler):
 
         if pg_opts["tablespace"]:
             tablespace_name = pg_opts["tablespace"]
-            table_opts.append(
-                "\n TABLESPACE %s" % self.preparer.quote(tablespace_name)
-            )
+            table_opts.append("\n TABLESPACE %s" % self.preparer.quote(tablespace_name))
 
         return "".join(table_opts)
 
@@ -2556,9 +3721,7 @@ class PGDDLCompiler(compiler.DDLCompiler):
     def visit_create_sequence(self, create, **kw):
         prefix = None
         if create.element.data_type is not None:
-            prefix = " AS %s" % self.type_compiler.process(
-                create.element.data_type
-            )
+            prefix = " AS %s" % self.type_compiler.process(create.element.data_type)
 
         return super().visit_create_sequence(create, prefix=prefix, **kw)
 
@@ -2566,8 +3729,7 @@ class PGDDLCompiler(compiler.DDLCompiler):
         constraint = ddl_instance.element
         if constraint.name is None:
             raise exc.CompileError(
-                f"Can't emit COMMENT ON for constraint {constraint!r}: "
-                "it has no name"
+                f"Can't emit COMMENT ON for constraint {constraint!r}: it has no name"
             )
         if constraint.table is None:
             raise exc.CompileError(
@@ -2767,10 +3929,7 @@ class PGTypeCompiler(compiler.GenericTypeCompiler):
             r"((?: COLLATE.*)?)$",
             (
                 r"%s\1"
-                % (
-                    "[]"
-                    * (type_.dimensions if type_.dimensions is not None else 1)
-                )
+                % ("[]" * (type_.dimensions if type_.dimensions is not None else 1))
             ),
             inner,
             count=1,
@@ -2788,9 +3947,7 @@ class PGIdentifierPreparer(compiler.IdentifierPreparer):
 
     def _unquote_identifier(self, value):
         if value[0] == self.initial_quote:
-            value = value[1:-1].replace(
-                self.escape_to_quote, self.escape_quote
-            )
+            value = value[1:-1].replace(self.escape_to_quote, self.escape_quote)
         return value
 
     def format_type(self, type_, use_schema=True):
@@ -2802,11 +3959,7 @@ class PGIdentifierPreparer(compiler.IdentifierPreparer):
         name = self.quote(type_.name)
         effective_schema = self.schema_for_object(type_)
 
-        if (
-            not self.omit_schema
-            and use_schema
-            and effective_schema is not None
-        ):
+        if not self.omit_schema and use_schema and effective_schema is not None:
             name = f"{self.quote_schema(effective_schema)}.{name}"
         return name
 
@@ -2860,9 +4013,7 @@ class ReflectedEnum(ReflectedNamedType):
 class PGInspector(reflection.Inspector):
     dialect: PGDialect
 
-    def get_table_oid(
-        self, table_name: str, schema: Optional[str] = None
-    ) -> int:
+    def get_table_oid(self, table_name: str, schema: Optional[str] = None) -> int:
         """Return the OID for the given table name.
 
         :param table_name: string name of the table.  For special quoting,
@@ -2879,9 +4030,7 @@ class PGInspector(reflection.Inspector):
                 conn, table_name, schema, info_cache=self.info_cache
             )
 
-    def get_domains(
-        self, schema: Optional[str] = None
-    ) -> List[ReflectedDomain]:
+    def get_domains(self, schema: Optional[str] = None) -> List[ReflectedDomain]:
         """Return a list of DOMAIN objects.
 
         Each member is a dictionary containing these fields:
@@ -2906,9 +4055,7 @@ class PGInspector(reflection.Inspector):
 
         """
         with self._operation_context() as conn:
-            return self.dialect._load_domains(
-                conn, schema, info_cache=self.info_cache
-            )
+            return self.dialect._load_domains(conn, schema, info_cache=self.info_cache)
 
     def get_enums(self, schema: Optional[str] = None) -> List[ReflectedEnum]:
         """Return a list of ENUM objects.
@@ -2927,13 +4074,9 @@ class PGInspector(reflection.Inspector):
 
         """
         with self._operation_context() as conn:
-            return self.dialect._load_enums(
-                conn, schema, info_cache=self.info_cache
-            )
+            return self.dialect._load_enums(conn, schema, info_cache=self.info_cache)
 
-    def get_foreign_table_names(
-        self, schema: Optional[str] = None
-    ) -> List[str]:
+    def get_foreign_table_names(self, schema: Optional[str] = None) -> List[str]:
         """Return a list of FOREIGN TABLE names.
 
         Behavior is similar to that of
@@ -2947,9 +4090,7 @@ class PGInspector(reflection.Inspector):
                 conn, schema, info_cache=self.info_cache
             )
 
-    def has_type(
-        self, type_name: str, schema: Optional[str] = None, **kw: Any
-    ) -> bool:
+    def has_type(self, type_name: str, schema: Optional[str] = None, **kw: Any) -> bool:
         """Return if the database has the specified type in the provided
         schema.
 
@@ -2970,10 +4111,7 @@ class PGInspector(reflection.Inspector):
 class PGExecutionContext(default.DefaultExecutionContext):
     def fire_sequence(self, seq, type_):
         return self._execute_scalar(
-            (
-                "select nextval('%s')"
-                % self.identifier_preparer.format_sequence(seq)
-            ),
+            ("select nextval('%s')" % self.identifier_preparer.format_sequence(seq)),
             type_,
         )
 
@@ -3003,9 +4141,7 @@ class PGExecutionContext(default.DefaultExecutionContext):
                     column._postgresql_seq_name = seq_name = name
 
                 if column.table is not None:
-                    effective_schema = self.connection.schema_for_object(
-                        column.table
-                    )
+                    effective_schema = self.connection.schema_for_object(column.table)
                 else:
                     effective_schema = None
 
@@ -3022,9 +4158,7 @@ class PGExecutionContext(default.DefaultExecutionContext):
         return super().get_insert_default(column)
 
 
-class PGReadOnlyConnectionCharacteristic(
-    characteristics.ConnectionCharacteristic
-):
+class PGReadOnlyConnectionCharacteristic(characteristics.ConnectionCharacteristic):
     transactional = True
 
     def reset_characteristic(self, dialect, dbapi_conn):
@@ -3037,9 +4171,7 @@ class PGReadOnlyConnectionCharacteristic(
         return dialect.get_readonly(dbapi_conn)
 
 
-class PGDeferrableConnectionCharacteristic(
-    characteristics.ConnectionCharacteristic
-):
+class PGDeferrableConnectionCharacteristic(characteristics.ConnectionCharacteristic):
     transactional = True
 
     def reset_characteristic(self, dialect, dbapi_conn):
@@ -3108,9 +4240,7 @@ class PGDialect(default.DefaultDialect):
     update_returning_multifrom = True
     delete_returning_multifrom = True
 
-    connection_characteristics = (
-        default.DefaultDialect.connection_characteristics
-    )
+    connection_characteristics = default.DefaultDialect.connection_characteristics
     connection_characteristics = connection_characteristics.union(
         {
             "postgresql_readonly": PGReadOnlyConnectionCharacteristic(),
@@ -3208,8 +4338,7 @@ class PGDialect(default.DefaultDialect):
     def set_isolation_level(self, dbapi_connection, level):
         cursor = dbapi_connection.cursor()
         cursor.execute(
-            "SET SESSION CHARACTERISTICS AS TRANSACTION "
-            f"ISOLATION LEVEL {level}"
+            f"SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL {level}"
         )
         cursor.execute("COMMIT")
         cursor.close()
@@ -3233,7 +4362,9 @@ class PGDialect(default.DefaultDialect):
     def get_deferrable(self, connection):
         raise NotImplementedError()
 
-    def _split_multihost_from_url(self, url: URL) -> Union[
+    def _split_multihost_from_url(
+        self, url: URL
+    ) -> Union[
         Tuple[None, None],
         Tuple[Tuple[Optional[str], ...], Tuple[Optional[int], ...]],
     ]:
@@ -3255,11 +4386,7 @@ class PGDialect(default.DefaultDialect):
             elif isinstance(url.query["host"], str):
                 hosts = tuple(url.query["host"].split(","))
 
-                if (
-                    "port" not in url.query
-                    and len(hosts) == 1
-                    and ":" in hosts[0]
-                ):
+                if "port" not in url.query and len(hosts) == 1 and ":" in hosts[0]:
                     # internet host is alphanumeric plus dots or hyphens.
                     # this is essentially rfc1123, which refers to rfc952.
                     # https://stackoverflow.com/questions/3523028/
@@ -3323,9 +4450,7 @@ class PGDialect(default.DefaultDialect):
     def do_prepare_twophase(self, connection, xid):
         connection.exec_driver_sql("PREPARE TRANSACTION '%s'" % xid)
 
-    def do_rollback_twophase(
-        self, connection, xid, is_prepared=True, recover=False
-    ):
+    def do_rollback_twophase(self, connection, xid, is_prepared=True, recover=False):
         if is_prepared:
             if recover:
                 # FIXME: ugly hack to get out of transaction
@@ -3339,9 +4464,7 @@ class PGDialect(default.DefaultDialect):
         else:
             self.do_rollback(connection.connection)
 
-    def do_commit_twophase(
-        self, connection, xid, is_prepared=True, recover=False
-    ):
+    def do_commit_twophase(self, connection, xid, is_prepared=True, recover=False):
         if is_prepared:
             if recover:
                 connection.exec_driver_sql("ROLLBACK")
@@ -3352,9 +4475,7 @@ class PGDialect(default.DefaultDialect):
             self.do_commit(connection.connection)
 
     def do_recover_twophase(self, connection):
-        return connection.scalars(
-            sql.text("SELECT gid FROM pg_prepared_xacts")
-        ).all()
+        return connection.scalars(sql.text("SELECT gid FROM pg_prepared_xacts")).all()
 
     def _get_default_schema_name(self, connection):
         return connection.exec_driver_sql("select current_schema()").scalar()
@@ -3366,9 +4487,7 @@ class PGDialect(default.DefaultDialect):
         )
         return bool(connection.scalar(query))
 
-    def _pg_class_filter_scope_schema(
-        self, query, schema, scope, pg_class_table=None
-    ):
+    def _pg_class_filter_scope_schema(self, query, schema, scope, pg_class_table=None):
         if pg_class_table is None:
             pg_class_table = pg_catalog.pg_class
         query = query.join(
@@ -3402,13 +4521,9 @@ class PGDialect(default.DefaultDialect):
     def _has_table_query(self, schema):
         query = select(pg_catalog.pg_class.c.relname).where(
             pg_catalog.pg_class.c.relname == bindparam("table_name"),
-            self._pg_class_relkind_condition(
-                pg_catalog.RELKINDS_ALL_TABLE_LIKE
-            ),
+            self._pg_class_relkind_condition(pg_catalog.RELKINDS_ALL_TABLE_LIKE),
         )
-        return self._pg_class_filter_scope_schema(
-            query, schema, scope=ObjectScope.ANY
-        )
+        return self._pg_class_filter_scope_schema(query, schema, scope=ObjectScope.ANY)
 
     @reflection.cache
     def has_table(self, connection, table_name, schema=None, **kw):
@@ -3422,9 +4537,7 @@ class PGDialect(default.DefaultDialect):
             pg_catalog.pg_class.c.relkind == "S",
             pg_catalog.pg_class.c.relname == sequence_name,
         )
-        query = self._pg_class_filter_scope_schema(
-            query, schema, scope=ObjectScope.ANY
-        )
+        query = self._pg_class_filter_scope_schema(query, schema, scope=ObjectScope.ANY)
         return bool(connection.scalar(query))
 
     @reflection.cache
@@ -3433,8 +4546,7 @@ class PGDialect(default.DefaultDialect):
             select(pg_catalog.pg_type.c.typname)
             .join(
                 pg_catalog.pg_namespace,
-                pg_catalog.pg_namespace.c.oid
-                == pg_catalog.pg_type.c.typnamespace,
+                pg_catalog.pg_namespace.c.oid == pg_catalog.pg_type.c.typnamespace,
             )
             .where(pg_catalog.pg_type.c.typname == type_name)
         )
@@ -3457,9 +4569,7 @@ class PGDialect(default.DefaultDialect):
             v,
         )
         if not m:
-            raise AssertionError(
-                "Could not determine version from string '%s'" % v
-            )
+            raise AssertionError("Could not determine version from string '%s'" % v)
         return tuple([int(x) for x in m.group(1, 2, 3) if x is not None])
 
     @reflection.cache
@@ -3467,13 +4577,9 @@ class PGDialect(default.DefaultDialect):
         """Fetch the oid for schema.table_name."""
         query = select(pg_catalog.pg_class.c.oid).where(
             pg_catalog.pg_class.c.relname == table_name,
-            self._pg_class_relkind_condition(
-                pg_catalog.RELKINDS_ALL_TABLE_LIKE
-            ),
+            self._pg_class_relkind_condition(pg_catalog.RELKINDS_ALL_TABLE_LIKE),
         )
-        query = self._pg_class_filter_scope_schema(
-            query, schema, scope=ObjectScope.ANY
-        )
+        query = self._pg_class_filter_scope_schema(query, schema, scope=ObjectScope.ANY)
         table_oid = connection.scalar(query)
         if table_oid is None:
             raise exc.NoSuchTableError(
@@ -3568,14 +4674,10 @@ class PGDialect(default.DefaultDialect):
                 ),
             )
         )
-        query = self._pg_class_filter_scope_schema(
-            query, schema, scope=ObjectScope.ANY
-        )
+        query = self._pg_class_filter_scope_schema(query, schema, scope=ObjectScope.ANY)
         res = connection.scalar(query)
         if res is None:
-            raise exc.NoSuchTableError(
-                f"{schema}.{view_name}" if schema else view_name
-            )
+            raise exc.NoSuchTableError(f"{schema}.{view_name}" if schema else view_name)
         else:
             return res
 
@@ -3688,10 +4790,8 @@ class PGDialect(default.DefaultDialect):
             )
             .select_from(pg_catalog.pg_attrdef)
             .where(
-                pg_catalog.pg_attrdef.c.adrelid
-                == pg_catalog.pg_attribute.c.attrelid,
-                pg_catalog.pg_attrdef.c.adnum
-                == pg_catalog.pg_attribute.c.attnum,
+                pg_catalog.pg_attrdef.c.adrelid == pg_catalog.pg_attribute.c.attrelid,
+                pg_catalog.pg_attrdef.c.adnum == pg_catalog.pg_attribute.c.attnum,
                 pg_catalog.pg_attribute.c.atthasdef,
             )
             .correlate(pg_catalog.pg_attribute)
@@ -3720,8 +4820,7 @@ class PGDialect(default.DefaultDialect):
             .outerjoin(
                 pg_catalog.pg_attribute,
                 sql.and_(
-                    pg_catalog.pg_class.c.oid
-                    == pg_catalog.pg_attribute.c.attrelid,
+                    pg_catalog.pg_class.c.oid == pg_catalog.pg_attribute.c.attrelid,
                     pg_catalog.pg_attribute.c.attnum > 0,
                     ~pg_catalog.pg_attribute.c.attisdropped,
                 ),
@@ -3736,9 +4835,7 @@ class PGDialect(default.DefaultDialect):
                 ),
             )
             .where(self._pg_class_relkind_condition(relkinds))
-            .order_by(
-                pg_catalog.pg_class.c.relname, pg_catalog.pg_attribute.c.attnum
-            )
+            .order_by(pg_catalog.pg_class.c.relname, pg_catalog.pg_attribute.c.attnum)
         )
         query = self._pg_class_filter_scope_schema(query, schema, scope=scope)
         if has_filter_names:
@@ -3747,9 +4844,7 @@ class PGDialect(default.DefaultDialect):
             )
         return query
 
-    def get_multi_columns(
-        self, connection, schema, filter_names, scope, kind, **kw
-    ):
+    def get_multi_columns(self, connection, schema, filter_names, scope, kind, **kw):
         has_filter_names, params = self._prepare_filter_names(filter_names)
         query = self._columns_query(schema, has_filter_names, scope, kind)
         rows = connection.execute(query, params).mappings()
@@ -3802,16 +4897,13 @@ class PGDialect(default.DefaultDialect):
         type_description = type_description or "unknown type"
         if format_type is None:
             util.warn(
-                "PostgreSQL format_type() returned NULL for %s"
-                % type_description
+                "PostgreSQL format_type() returned NULL for %s" % type_description
             )
             return sqltypes.NULLTYPE
 
         attype_args_match = self._format_type_args_pattern.search(format_type)
         if attype_args_match and attype_args_match.group(1):
-            attype_args = self._format_type_args_delim.split(
-                attype_args_match.group(1)
-            )
+            attype_args = self._format_type_args_delim.split(attype_args_match.group(1))
         else:
             attype_args = ()
 
@@ -3916,10 +5008,7 @@ class PGDialect(default.DefaultDialect):
                     args = attype_args
 
         if not schema_type:
-            util.warn(
-                "Did not recognize type '%s' of %s"
-                % (attype, type_description)
-            )
+            util.warn("Did not recognize type '%s' of %s" % (attype, type_description))
             return sqltypes.NULLTYPE
 
         data_type = schema_type(*args, **kwargs)
@@ -3934,9 +5023,7 @@ class PGDialect(default.DefaultDialect):
         for row_dict in rows:
             # ensure that each table has an entry, even if it has no columns
             if row_dict["name"] is None:
-                columns[(schema, row_dict["table_name"])] = (
-                    ReflectionDefaults.columns()
-                )
+                columns[(schema, row_dict["table_name"])] = ReflectionDefaults.columns()
                 continue
             table_cols = columns[(schema, row_dict["table_name"])]
 
@@ -3968,9 +5055,7 @@ class PGDialect(default.DefaultDialect):
             # Otherwise, s = stored. (Other values might be added in the
             # future.)
             if generated not in (None, "", b"\x00"):
-                computed = dict(
-                    sqltext=default, persisted=generated in ("s", b"s")
-                )
+                computed = dict(sqltext=default, persisted=generated in ("s", b"s"))
                 default = None
             else:
                 computed = None
@@ -4015,9 +5100,9 @@ class PGDialect(default.DefaultDialect):
     @lru_cache()
     def _table_oids_query(self, schema, has_filter_names, scope, kind):
         relkinds = self._kind_to_relkinds(kind)
-        oid_q = select(
-            pg_catalog.pg_class.c.oid, pg_catalog.pg_class.c.relname
-        ).where(self._pg_class_relkind_condition(relkinds))
+        oid_q = select(pg_catalog.pg_class.c.oid, pg_catalog.pg_class.c.relname).where(
+            self._pg_class_relkind_condition(relkinds)
+        )
         oid_q = self._pg_class_filter_scope_schema(oid_q, schema, scope=scope)
 
         if has_filter_names:
@@ -4032,9 +5117,7 @@ class PGDialect(default.DefaultDialect):
         ("kind", InternalTraversal.dp_plain_obj),
         ("scope", InternalTraversal.dp_plain_obj),
     )
-    def _get_table_oids(
-        self, connection, schema, filter_names, scope, kind, **kw
-    ):
+    def _get_table_oids(self, connection, schema, filter_names, scope, kind, **kw):
         has_filter_names, params = self._prepare_filter_names(filter_names)
         oid_q = self._table_oids_query(schema, has_filter_names, scope, kind)
         result = connection.execute(oid_q, params)
@@ -4047,9 +5130,7 @@ class PGDialect(default.DefaultDialect):
                 pg_catalog.pg_constraint.c.conrelid,
                 pg_catalog.pg_constraint.c.conname,
                 pg_catalog.pg_constraint.c.conindid,
-                sql.func.unnest(pg_catalog.pg_constraint.c.conkey).label(
-                    "attnum"
-                ),
+                sql.func.unnest(pg_catalog.pg_constraint.c.conkey).label("attnum"),
                 sql.func.generate_subscripts(
                     pg_catalog.pg_constraint.c.conkey, 1
                 ).label("ord"),
@@ -4057,8 +5138,7 @@ class PGDialect(default.DefaultDialect):
             )
             .outerjoin(
                 pg_catalog.pg_description,
-                pg_catalog.pg_description.c.objoid
-                == pg_catalog.pg_constraint.c.oid,
+                pg_catalog.pg_description.c.objoid == pg_catalog.pg_constraint.c.oid,
             )
             .where(
                 pg_catalog.pg_constraint.c.contype == bindparam("contype"),
@@ -4102,9 +5182,7 @@ class PGDialect(default.DefaultDialect):
                 sql.func.array_agg(
                     # NOTE: cast since some postgresql derivatives may
                     # not support array_agg on the name type
-                    aggregate_order_by(
-                        attr_sq.c.attname.cast(TEXT), attr_sq.c.ord
-                    )
+                    aggregate_order_by(attr_sq.c.attname.cast(TEXT), attr_sq.c.ord)
                 ).label("cols"),
                 attr_sq.c.conname,
                 sql.func.min(attr_sq.c.description).label("description"),
@@ -4119,18 +5197,16 @@ class PGDialect(default.DefaultDialect):
                     pg_catalog.pg_index,
                     attr_sq.c.conindid == pg_catalog.pg_index.c.indexrelid,
                 ).add_columns(
-                    sql.func.bool_and(
-                        pg_catalog.pg_index.c.indnullsnotdistinct
-                    ).label("indnullsnotdistinct")
+                    sql.func.bool_and(pg_catalog.pg_index.c.indnullsnotdistinct).label(
+                        "indnullsnotdistinct"
+                    )
                 )
             else:
                 constraint_query = constraint_query.add_columns(
                     sql.false().label("indnullsnotdistinct")
                 )
         else:
-            constraint_query = constraint_query.add_columns(
-                sql.null().label("extra")
-            )
+            constraint_query = constraint_query.add_columns(sql.null().label("extra"))
         return constraint_query
 
     def _reflect_constraint(
@@ -4154,18 +5230,20 @@ class PGDialect(default.DefaultDialect):
 
             result_by_oid = defaultdict(list)
             for oid, cols, constraint_name, comment, extra in result:
-                result_by_oid[oid].append(
-                    (cols, constraint_name, comment, extra)
-                )
+                result_by_oid[oid].append((cols, constraint_name, comment, extra))
 
             for oid, tablename in batch:
                 for_oid = result_by_oid.get(oid, ())
                 if for_oid:
                     for cols, constraint, comment, extra in for_oid:
                         if is_unique:
-                            yield tablename, cols, constraint, comment, {
-                                "nullsnotdistinct": extra
-                            }
+                            yield (
+                                tablename,
+                                cols,
+                                constraint,
+                                comment,
+                                {"nullsnotdistinct": extra},
+                            )
                         else:
                             yield tablename, cols, constraint, comment, None
                 else:
@@ -4256,8 +5334,7 @@ class PGDialect(default.DefaultDialect):
             .outerjoin(
                 pg_catalog.pg_constraint,
                 sql.and_(
-                    pg_catalog.pg_class.c.oid
-                    == pg_catalog.pg_constraint.c.conrelid,
+                    pg_catalog.pg_class.c.oid == pg_catalog.pg_constraint.c.conrelid,
                     pg_catalog.pg_constraint.c.contype == "f",
                 ),
             )
@@ -4271,8 +5348,7 @@ class PGDialect(default.DefaultDialect):
             )
             .outerjoin(
                 pg_catalog.pg_description,
-                pg_catalog.pg_description.c.objoid
-                == pg_catalog.pg_constraint.c.oid,
+                pg_catalog.pg_description.c.objoid == pg_catalog.pg_constraint.c.oid,
             )
             .order_by(
                 pg_catalog.pg_class.c.relname,
@@ -4429,9 +5505,9 @@ class PGDialect(default.DefaultDialect):
                 pg_catalog.pg_index.c.indexrelid,
                 pg_catalog.pg_index.c.indrelid,
                 sql.func.unnest(pg_catalog.pg_index.c.indkey).label("attnum"),
-                sql.func.generate_subscripts(
-                    pg_catalog.pg_index.c.indkey, 1
-                ).label("ord"),
+                sql.func.generate_subscripts(pg_catalog.pg_index.c.indkey, 1).label(
+                    "ord"
+                ),
             )
             .where(
                 ~pg_catalog.pg_index.c.indisprimary,
@@ -4555,14 +5631,10 @@ class PGDialect(default.DefaultDialect):
                     == sql.any_(_array.array(("p", "u", "x"))),
                 ),
             )
-            .order_by(
-                pg_catalog.pg_index.c.indrelid, pg_catalog.pg_class.c.relname
-            )
+            .order_by(pg_catalog.pg_index.c.indrelid, pg_catalog.pg_class.c.relname)
         )
 
-    def get_multi_indexes(
-        self, connection, schema, filter_names, scope, kind, **kw
-    ):
+    def get_multi_indexes(self, connection, schema, filter_names, scope, kind, **kw):
         table_oids = self._get_table_oids(
             connection, schema, filter_names, scope, kind, **kw
         )
@@ -4607,9 +5679,7 @@ class PGDialect(default.DefaultDialect):
                         # as well as regular index columns
                         inc_cols = all_elements[indnkeyatts:]
                         idx_elements = all_elements[:indnkeyatts]
-                        idx_elements_is_expr = all_elements_is_expr[
-                            :indnkeyatts
-                        ]
+                        idx_elements_is_expr = all_elements_is_expr[:indnkeyatts]
                         # postgresql does not support expression on included
                         # columns as of v14: "ERROR: expressions are not
                         # supported in included columns".
@@ -4626,9 +5696,7 @@ class PGDialect(default.DefaultDialect):
                     if any(idx_elements_is_expr):
                         index["column_names"] = [
                             None if is_expr else expr
-                            for expr, is_expr in zip(
-                                idx_elements, idx_elements_is_expr
-                            )
+                            for expr, is_expr in zip(idx_elements, idx_elements_is_expr)
                         ]
                         index["expressions"] = idx_elements
                     else:
@@ -4656,10 +5724,7 @@ class PGDialect(default.DefaultDialect):
                     dialect_options = {}
                     if row["reloptions"]:
                         dialect_options["postgresql_with"] = dict(
-                            [
-                                option.split("=", 1)
-                                for option in row["reloptions"]
-                            ]
+                            [option.split("=", 1) for option in row["reloptions"]]
                         )
                     # it *might* be nice to include that this is 'btree' in the
                     # reflection info.  But we don't want an Index object
@@ -4669,9 +5734,7 @@ class PGDialect(default.DefaultDialect):
                     if amname != "btree":
                         dialect_options["postgresql_using"] = row["amname"]
                     if row["filter_definition"]:
-                        dialect_options["postgresql_where"] = row[
-                            "filter_definition"
-                        ]
+                        dialect_options["postgresql_where"] = row["filter_definition"]
                     if self.server_version_info >= (11,):
                         # NOTE: this is legacy, this is part of
                         # dialect_options now as of #7382
@@ -4690,9 +5753,7 @@ class PGDialect(default.DefaultDialect):
         return indexes.items()
 
     @reflection.cache
-    def get_unique_constraints(
-        self, connection, table_name, schema=None, **kw
-    ):
+    def get_unique_constraints(self, connection, table_name, schema=None, **kw):
         data = self.get_multi_unique_constraints(
             connection,
             schema=schema,
@@ -4734,9 +5795,7 @@ class PGDialect(default.DefaultDialect):
             if options:
                 if options["nullsnotdistinct"]:
                     uc_dict["dialect_options"] = {
-                        "postgresql_nulls_not_distinct": options[
-                            "nullsnotdistinct"
-                        ]
+                        "postgresql_nulls_not_distinct": options["nullsnotdistinct"]
                     }
 
             uniques[(schema, table_name)].append(uc_dict)
@@ -4766,8 +5825,7 @@ class PGDialect(default.DefaultDialect):
             .outerjoin(
                 pg_catalog.pg_description,
                 sql.and_(
-                    pg_catalog.pg_class.c.oid
-                    == pg_catalog.pg_description.c.objoid,
+                    pg_catalog.pg_class.c.oid == pg_catalog.pg_description.c.objoid,
                     pg_catalog.pg_description.c.objsubid == 0,
                     pg_catalog.pg_description.c.classoid
                     == sql.func.cast("pg_catalog.pg_class", REGCLASS),
@@ -4834,15 +5892,13 @@ class PGDialect(default.DefaultDialect):
             .outerjoin(
                 pg_catalog.pg_constraint,
                 sql.and_(
-                    pg_catalog.pg_class.c.oid
-                    == pg_catalog.pg_constraint.c.conrelid,
+                    pg_catalog.pg_class.c.oid == pg_catalog.pg_constraint.c.conrelid,
                     pg_catalog.pg_constraint.c.contype == "c",
                 ),
             )
             .outerjoin(
                 pg_catalog.pg_description,
-                pg_catalog.pg_description.c.objoid
-                == pg_catalog.pg_constraint.c.oid,
+                pg_catalog.pg_description.c.objoid == pg_catalog.pg_constraint.c.oid,
             )
             .order_by(
                 pg_catalog.pg_class.c.relname,
@@ -4861,9 +5917,7 @@ class PGDialect(default.DefaultDialect):
         self, connection, schema, filter_names, scope, kind, **kw
     ):
         has_filter_names, params = self._prepare_filter_names(filter_names)
-        query = self._check_constraint_query(
-            schema, has_filter_names, scope, kind
-        )
+        query = self._check_constraint_query(schema, has_filter_names, scope, kind)
         result = connection.execute(query, params)
 
         check_constraints = defaultdict(list)
@@ -4891,9 +5945,9 @@ class PGDialect(default.DefaultDialect):
                 util.warn("Could not parse CHECK constraint text: %r" % src)
                 sqltext = ""
             else:
-                sqltext = re.compile(
-                    r"^[\s\n]*\((.+)\)[\s\n]*$", flags=re.DOTALL
-                ).sub(r"\1", m.group(1))
+                sqltext = re.compile(r"^[\s\n]*\((.+)\)[\s\n]*$", flags=re.DOTALL).sub(
+                    r"\1", m.group(1)
+                )
             entry = {
                 "name": check_name,
                 "sqltext": sqltext,
@@ -4951,16 +6005,11 @@ class PGDialect(default.DefaultDialect):
             )
             .join(
                 pg_catalog.pg_namespace,
-                pg_catalog.pg_namespace.c.oid
-                == pg_catalog.pg_type.c.typnamespace,
+                pg_catalog.pg_namespace.c.oid == pg_catalog.pg_type.c.typnamespace,
             )
-            .outerjoin(
-                lbl_agg_sq, pg_catalog.pg_type.c.oid == lbl_agg_sq.c.enumtypid
-            )
+            .outerjoin(lbl_agg_sq, pg_catalog.pg_type.c.oid == lbl_agg_sq.c.enumtypid)
             .where(pg_catalog.pg_type.c.typtype == "e")
-            .order_by(
-                pg_catalog.pg_namespace.c.nspname, pg_catalog.pg_type.c.typname
-            )
+            .order_by(pg_catalog.pg_namespace.c.nspname, pg_catalog.pg_type.c.typname)
         )
 
         return self._pg_type_filter_schema(query, schema)
@@ -5025,22 +6074,18 @@ class PGDialect(default.DefaultDialect):
             )
             .join(
                 pg_catalog.pg_namespace,
-                pg_catalog.pg_namespace.c.oid
-                == pg_catalog.pg_type.c.typnamespace,
+                pg_catalog.pg_namespace.c.oid == pg_catalog.pg_type.c.typnamespace,
             )
             .outerjoin(
                 pg_catalog.pg_collation,
-                pg_catalog.pg_type.c.typcollation
-                == pg_catalog.pg_collation.c.oid,
+                pg_catalog.pg_type.c.typcollation == pg_catalog.pg_collation.c.oid,
             )
             .outerjoin(
                 con_sq,
                 pg_catalog.pg_type.c.oid == con_sq.c.contypid,
             )
             .where(pg_catalog.pg_type.c.typtype == "d")
-            .order_by(
-                pg_catalog.pg_namespace.c.nspname, pg_catalog.pg_type.c.typname
-            )
+            .order_by(pg_catalog.pg_namespace.c.nspname, pg_catalog.pg_type.c.typname)
         )
         return self._pg_type_filter_schema(query, schema)
 

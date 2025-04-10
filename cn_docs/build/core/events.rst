@@ -1,6 +1,6 @@
 .. _core_event_toplevel:
 
-核心事件
+Core 事件
 ===========
 
 Core Events
