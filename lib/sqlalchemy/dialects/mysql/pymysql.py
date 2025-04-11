@@ -18,35 +18,66 @@ r"""
 Unicode
 -------
 
-Please see :ref:`mysql_unicode` for current recommendations on unicode
-handling.
+Unicode
+
+.. tab:: 中文
+
+    请参阅 :ref:`mysql_unicode` 了解有关 unicode 处理的当前建议。
+
+.. tab:: 英文
+
+    Please see :ref:`mysql_unicode` for current recommendations on unicode handling.
 
 .. _pymysql_ssl:
 
-SSL Connections
+SSL 连接
 ------------------
 
-The PyMySQL DBAPI accepts the same SSL arguments as that of MySQLdb,
-described at :ref:`mysqldb_ssl`.   See that section for additional examples.
+SSL Connections
 
-If the server uses an automatically-generated certificate that is self-signed
-or does not match the host name (as seen from the client), it may also be
-necessary to indicate ``ssl_check_hostname=false`` in PyMySQL::
+.. tab:: 中文
 
-    connection_uri = (
-        "mysql+pymysql://scott:tiger@192.168.0.134/test"
-        "?ssl_ca=/home/gord/client-ssl/ca.pem"
-        "&ssl_cert=/home/gord/client-ssl/client-cert.pem"
-        "&ssl_key=/home/gord/client-ssl/client-key.pem"
-        "&ssl_check_hostname=false"
-    )
+    PyMySQL DBAPI 接受与 MySQLdb 相同的 SSL 参数，详情请参阅 :ref:`mysqldb_ssl` 。更多示例请参阅该部分。
 
-MySQL-Python Compatibility
+    如果服务器使用自动生成的自签名证书或与主机名不匹配（从客户端看到），则可能还需要在 PyMySQL 中指示 ``ssl_check_hostname = false`` ::
+
+        connection_uri = (
+            "mysql+pymysql://scott:tiger@192.168.0.134/test"
+            "?ssl_ca=/home/gord/client-ssl/ca.pem"
+            "&ssl_cert=/home/gord/client-ssl/client-cert.pem"
+            "&ssl_key=/home/gord/client-ssl/client-key.pem"
+            "&ssl_check_hostname=false"
+        )
+
+.. tab:: 英文
+
+    The PyMySQL DBAPI accepts the same SSL arguments as that of MySQLdb,
+    described at :ref:`mysqldb_ssl`.   See that section for additional examples.
+
+    If the server uses an automatically-generated certificate that is self-signed
+    or does not match the host name (as seen from the client), it may also be
+    necessary to indicate ``ssl_check_hostname=false`` in PyMySQL::
+
+        connection_uri = (
+            "mysql+pymysql://scott:tiger@192.168.0.134/test"
+            "?ssl_ca=/home/gord/client-ssl/ca.pem"
+            "&ssl_cert=/home/gord/client-ssl/client-cert.pem"
+            "&ssl_key=/home/gord/client-ssl/client-key.pem"
+            "&ssl_check_hostname=false"
+        )
+
+MySQL-Python 兼容性
 --------------------------
 
-The pymysql DBAPI is a pure Python port of the MySQL-python (MySQLdb) driver,
-and targets 100% compatibility.   Most behavioral notes for MySQL-python apply
-to the pymysql driver as well.
+MySQL-Python Compatibility
+
+.. tab:: 中文
+
+    pymysql DBAPI 是 MySQL-python (MySQLdb) 驱动程序的纯 Python 移植，目标是 100% 兼容。MySQL-python 的大部分行为说明也适用于 pymysql 驱动程序。
+
+.. tab:: 英文
+
+    The pymysql DBAPI is a pure Python port of the MySQL-python (MySQLdb) driver, and targets 100% compatibility.   Most behavioral notes for MySQL-python apply to the pymysql driver as well.
 
 """  # noqa
 
@@ -85,9 +116,7 @@ class MySQLDialect_pymysql(MySQLDialect_mysqldb):
         """  # noqa: E501
 
         try:
-            Connection = __import__(
-                "pymysql.connections"
-            ).connections.Connection
+            Connection = __import__("pymysql.connections").connections.Connection
         except (ImportError, AttributeError):
             return True
         else:
@@ -112,18 +141,14 @@ class MySQLDialect_pymysql(MySQLDialect_mysqldb):
     def create_connect_args(self, url, _translate_args=None):
         if _translate_args is None:
             _translate_args = dict(username="user")
-        return super().create_connect_args(
-            url, _translate_args=_translate_args
-        )
+        return super().create_connect_args(url, _translate_args=_translate_args)
 
     def is_disconnect(self, e, connection, cursor):
         if super().is_disconnect(e, connection, cursor):
             return True
         elif isinstance(e, self.dbapi.Error):
             str_e = str(e).lower()
-            return (
-                "already closed" in str_e or "connection was killed" in str_e
-            )
+            return "already closed" in str_e or "connection was killed" in str_e
         else:
             return False
 

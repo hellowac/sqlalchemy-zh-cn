@@ -973,7 +973,7 @@ INSERT/UPDATE...RETURNING
 .. _postgresql_insert_on_conflict:
 
 INSERT...ON CONFLICT（更新插入）
-------------------------------
+--------------------------------------------
 
 INSERT...ON CONFLICT (Upsert)
 

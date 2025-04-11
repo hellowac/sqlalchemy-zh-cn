@@ -12,31 +12,52 @@ r"""
     :connectstring: mssql+aioodbc://<username>:<password>@<dsnname>
     :url: https://pypi.org/project/aioodbc/
 
+.. tab:: 中文
 
-Support for the SQL Server database in asyncio style, using the aioodbc
-driver which itself is a thread-wrapper around pyodbc.
+    对 SQL Server 数据库的 asyncio 风格支持，使用的是 `aioodbc` 驱动，该驱动本质上是对 `pyodbc` 的线程封装。
 
-.. versionadded:: 2.0.23  Added the mssql+aioodbc dialect which builds
-   on top of the pyodbc and general aio* dialect architecture.
+    .. versionadded:: 2.0.23
+    新增了 `mssql+aioodbc` 方言，构建于 `pyodbc` 和通用 `aio*` 方言架构之上。
 
-Using a special asyncio mediation layer, the aioodbc dialect is usable
-as the backend for the :ref:`SQLAlchemy asyncio <asyncio_toplevel>`
-extension package.
+    通过一个特殊的 asyncio 中介层，`aioodbc` 方言可作为 :ref:`SQLAlchemy asyncio <asyncio_toplevel>` 扩展包的后端使用。
 
-Most behaviors and caveats for this driver are the same as that of the
-pyodbc dialect used on SQL Server; see :ref:`mssql_pyodbc` for general
-background.
+    该驱动的大多数行为和注意事项与 SQL Server 所使用的 `pyodbc` 方言相同；一般背景信息请参见 :ref:`mssql_pyodbc`。
 
-This dialect should normally be used only with the
-:func:`_asyncio.create_async_engine` engine creation function; connection
-styles are otherwise equivalent to those documented in the pyodbc section::
+    该方言通常应仅通过 :func:`_asyncio.create_async_engine` 引擎创建函数使用；其连接方式与 `pyodbc` 部分文档中描述的方式一致::
 
-    from sqlalchemy.ext.asyncio import create_async_engine
+        from sqlalchemy.ext.asyncio import create_async_engine
 
-    engine = create_async_engine(
-        "mssql+aioodbc://scott:tiger@mssql2017:1433/test?"
-        "driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
-    )
+        engine = create_async_engine(
+            "mssql+aioodbc://scott:tiger@mssql2017:1433/test?"
+            "driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+        )
+
+.. tab:: 英文
+
+    Support for the SQL Server database in asyncio style, using the aioodbc
+    driver which itself is a thread-wrapper around pyodbc.
+
+    .. versionadded:: 2.0.23  Added the mssql+aioodbc dialect which builds
+        on top of the pyodbc and general aio* dialect architecture.
+
+    Using a special asyncio mediation layer, the aioodbc dialect is usable
+    as the backend for the :ref:`SQLAlchemy asyncio <asyncio_toplevel>`
+    extension package.
+
+    Most behaviors and caveats for this driver are the same as that of the
+    pyodbc dialect used on SQL Server; see :ref:`mssql_pyodbc` for general
+    background.
+
+    This dialect should normally be used only with the
+    :func:`_asyncio.create_async_engine` engine creation function; connection
+    styles are otherwise equivalent to those documented in the pyodbc section::
+
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine(
+            "mssql+aioodbc://scott:tiger@mssql2017:1433/test?"
+            "driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+        )
 
 """
 

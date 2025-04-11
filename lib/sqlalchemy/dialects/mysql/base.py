@@ -14,1055 +14,1917 @@ r"""
     :normal_support: 5.6+ / 10+
     :best_effort: 5.0.2+ / 5.0.2+
 
-Supported Versions and Features
+支持的版本和功能
 -------------------------------
 
-SQLAlchemy supports MySQL starting with version 5.0.2 through modern releases,
-as well as all modern versions of MariaDB.   See the official MySQL
-documentation for detailed information about features supported in any given
-server release.
+Supported Versions and Features
 
-.. versionchanged:: 1.4  minimum MySQL version supported is now 5.0.2.
+.. tab:: 中文
+    
+    SQLAlchemy 支持从 MySQL 5.0.2 版本开始至今的现代版本，同时也支持所有现代版本的 MariaDB。关于各版本服务器所支持特性的详细信息，请参考官方 MySQL 文档。
+    
+    .. versionchanged:: 1.4  
+       最低支持的 MySQL 版本现为 5.0.2。
 
-MariaDB Support
+.. tab:: 英文
+
+    SQLAlchemy supports MySQL starting with version 5.0.2 through modern releases,
+    as well as all modern versions of MariaDB.   See the official MySQL
+    documentation for detailed information about features supported in any given
+    server release.
+
+    .. versionchanged:: 1.4  minimum MySQL version supported is now 5.0.2.
+
+MariaDB 支持
 ~~~~~~~~~~~~~~~
 
-The MariaDB variant of MySQL retains fundamental compatibility with MySQL's
-protocols however the development of these two products continues to diverge.
-Within the realm of SQLAlchemy, the two databases have a small number of
-syntactical and behavioral differences that SQLAlchemy accommodates automatically.
-To connect to a MariaDB database, no changes to the database URL are required::
+MariaDB Support
+
+.. tab:: 中文
+    
+    MariaDB 是 MySQL 的一个变种，其保留了与 MySQL 协议的基本兼容性，但这两个产品的开发正在逐渐分化。在 SQLAlchemy 中，这两个数据库之间存在少量语法和行为上的差异，SQLAlchemy 会自动处理这些差异。要连接 MariaDB 数据库，无需更改数据库 URL 格式::
+    
+        engine = create_engine(
+            "mysql+pymysql://user:pass@some_mariadb/dbname?charset=utf8mb4"
+        )
+    
+    在首次连接时，SQLAlchemy 方言会执行一次服务器版本检测机制，用以识别所连接的数据库是否为 MariaDB。基于这一标志，方言会在需要作出行为差异处理的地方做出相应调整。
+
+.. tab:: 英文
+
+    The MariaDB variant of MySQL retains fundamental compatibility with MySQL's
+    protocols however the development of these two products continues to diverge.
+    Within the realm of SQLAlchemy, the two databases have a small number of
+    syntactical and behavioral differences that SQLAlchemy accommodates automatically.
+    To connect to a MariaDB database, no changes to the database URL are required::
 
 
-    engine = create_engine(
-        "mysql+pymysql://user:pass@some_mariadb/dbname?charset=utf8mb4"
-    )
+        engine = create_engine(
+            "mysql+pymysql://user:pass@some_mariadb/dbname?charset=utf8mb4"
+        )
 
-Upon first connect, the SQLAlchemy dialect employs a
-server version detection scheme that determines if the
-backing database reports as MariaDB.  Based on this flag, the dialect
-can make different choices in those of areas where its behavior
-must be different.
+    Upon first connect, the SQLAlchemy dialect employs a
+    server version detection scheme that determines if the
+    backing database reports as MariaDB.  Based on this flag, the dialect
+    can make different choices in those of areas where its behavior
+    must be different.
 
 .. _mysql_mariadb_only_mode:
 
-MariaDB-Only Mode
+MariaDB 专用模式
 ~~~~~~~~~~~~~~~~~
 
-The dialect also supports an **optional** "MariaDB-only" mode of connection, which may be
-useful for the case where an application makes use of MariaDB-specific features
-and is not compatible with a MySQL database.    To use this mode of operation,
-replace the "mysql" token in the above URL with "mariadb"::
+MariaDB-Only Mode
 
-    engine = create_engine(
-        "mariadb+pymysql://user:pass@some_mariadb/dbname?charset=utf8mb4"
-    )
+.. tab:: 中文
+    
+    该方言还支持一个 **可选的 MariaDB 专用连接模式**，适用于某些依赖 MariaDB 特性、无法兼容 MySQL 的应用程序。若要启用此模式，只需将上述 URL 中的 "mysql" 替换为 "mariadb" 即可::
+    
+        engine = create_engine(
+            "mariadb+pymysql://user:pass@some_mariadb/dbname?charset=utf8mb4"
+        )
+    
+    若在首次连接时检测到所连接的服务器不是 MariaDB，上述引擎将会抛出错误。
+    
+    当使用 ``"mariadb"`` 作为方言名称时， **所有以 "mysql" 开头的方言选项必须改为使用 "mariadb" 开头**。例如，选项 ``mysql_engine`` 应更名为 ``mariadb_engine``，以此类推。对于同时使用 "mysql" 和 "mariadb" URL 的应用程序，两者的选项可同时指定::
+    
+        my_table = Table(
+            "mytable",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("textdata", String(50)),
+            mariadb_engine="InnoDB",
+            mysql_engine="InnoDB",
+        )
+    
+        Index(
+            "textdata_ix",
+            my_table.c.textdata,
+            mysql_prefix="FULLTEXT",
+            mariadb_prefix="FULLTEXT",
+        )
+    
+    当上述结构被反射时也会有类似行为，即当数据库 URL 以 "mariadb" 为前缀时，反射得到的选项也将以 "mariadb" 为前缀。
+    
+    .. versionadded:: 1.4  
+       新增 "mariadb" 方言名称，用于支持 MySQL 方言下的 "MariaDB 专用模式"。
 
-The above engine, upon first connect, will raise an error if the server version
-detection detects that the backing database is not MariaDB.
+.. tab:: 英文
 
-When using an engine with ``"mariadb"`` as the dialect name, **all mysql-specific options
-that include the name "mysql" in them are now named with "mariadb"**.  This means
-options like ``mysql_engine`` should be named ``mariadb_engine``, etc.  Both
-"mysql" and "mariadb" options can be used simultaneously for applications that
-use URLs with both "mysql" and "mariadb" dialects::
+    The dialect also supports an **optional** "MariaDB-only" mode of connection, which may be
+    useful for the case where an application makes use of MariaDB-specific features
+    and is not compatible with a MySQL database.    To use this mode of operation,
+    replace the "mysql" token in the above URL with "mariadb"::
 
-    my_table = Table(
-        "mytable",
-        metadata,
-        Column("id", Integer, primary_key=True),
-        Column("textdata", String(50)),
-        mariadb_engine="InnoDB",
-        mysql_engine="InnoDB",
-    )
+        engine = create_engine(
+            "mariadb+pymysql://user:pass@some_mariadb/dbname?charset=utf8mb4"
+        )
 
-    Index(
-        "textdata_ix",
-        my_table.c.textdata,
-        mysql_prefix="FULLTEXT",
-        mariadb_prefix="FULLTEXT",
-    )
+    The above engine, upon first connect, will raise an error if the server version
+    detection detects that the backing database is not MariaDB.
 
-Similar behavior will occur when the above structures are reflected, i.e. the
-"mariadb" prefix will be present in the option names when the database URL
-is based on the "mariadb" name.
+    When using an engine with ``"mariadb"`` as the dialect name, **all mysql-specific options
+    that include the name "mysql" in them are now named with "mariadb"**.  This means
+    options like ``mysql_engine`` should be named ``mariadb_engine``, etc.  Both
+    "mysql" and "mariadb" options can be used simultaneously for applications that
+    use URLs with both "mysql" and "mariadb" dialects::
 
-.. versionadded:: 1.4 Added "mariadb" dialect name supporting "MariaDB-only mode"
-   for the MySQL dialect.
+        my_table = Table(
+            "mytable",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("textdata", String(50)),
+            mariadb_engine="InnoDB",
+            mysql_engine="InnoDB",
+        )
+
+        Index(
+            "textdata_ix",
+            my_table.c.textdata,
+            mysql_prefix="FULLTEXT",
+            mariadb_prefix="FULLTEXT",
+        )
+
+    Similar behavior will occur when the above structures are reflected, i.e. the
+    "mariadb" prefix will be present in the option names when the database URL
+    is based on the "mariadb" name.
+
+    .. versionadded:: 1.4 Added "mariadb" dialect name supporting "MariaDB-only mode" for the MySQL dialect.
 
 .. _mysql_connection_timeouts:
 
-Connection Timeouts and Disconnects
+连接超时和断开连接
 -----------------------------------
 
-MySQL / MariaDB feature an automatic connection close behavior, for connections that
-have been idle for a fixed period of time, defaulting to eight hours.
-To circumvent having this issue, use
-the :paramref:`_sa.create_engine.pool_recycle` option which ensures that
-a connection will be discarded and replaced with a new one if it has been
-present in the pool for a fixed number of seconds::
+Connection Timeouts and Disconnects
 
-    engine = create_engine("mysql+mysqldb://...", pool_recycle=3600)
+.. tab:: 中文
+    
+    MySQL / MariaDB 存在一个自动关闭空闲连接的行为，空闲时间达到固定时长（默认为 8 小时）后会自动断开。为避免该问题，可使用 :paramref:`_sa.create_engine.pool_recycle` 选项，在连接池中某连接存活超过指定秒数后将其回收替换为新连接::
+    
+        engine = create_engine("mysql+mysqldb://...", pool_recycle=3600)
+    
+    若需更全面地检测连接中断（包括数据库重启、网络中断等），可采用预检测（pre-ping）方式。参见 :ref:`pool_disconnects` 获取当前推荐方法。
+    
+    .. seealso::
+    
+        :ref:`pool_disconnects` — 关于连接超时及数据库重启的多种应对技术。
 
-For more comprehensive disconnect detection of pooled connections, including
-accommodation of  server restarts and network issues, a pre-ping approach may
-be employed.  See :ref:`pool_disconnects` for current approaches.
+.. tab:: 英文
 
-.. seealso::
+    MySQL / MariaDB feature an automatic connection close behavior, for connections that
+    have been idle for a fixed period of time, defaulting to eight hours.
+    To circumvent having this issue, use
+    the :paramref:`_sa.create_engine.pool_recycle` option which ensures that
+    a connection will be discarded and replaced with a new one if it has been
+    present in the pool for a fixed number of seconds::
 
-    :ref:`pool_disconnects` - Background on several techniques for dealing
-    with timed out connections as well as database restarts.
+        engine = create_engine("mysql+mysqldb://...", pool_recycle=3600)
+
+    For more comprehensive disconnect detection of pooled connections, including
+    accommodation of  server restarts and network issues, a pre-ping approach may
+    be employed.  See :ref:`pool_disconnects` for current approaches.
+
+    .. seealso::
+
+        :ref:`pool_disconnects` - Background on several techniques for dealing
+        with timed out connections as well as database restarts.
 
 .. _mysql_storage_engines:
 
-CREATE TABLE arguments including Storage Engines
+CREATE TABLE 参数（包括存储引擎）
 ------------------------------------------------
 
-Both MySQL's and MariaDB's CREATE TABLE syntax includes a wide array of special options,
-including ``ENGINE``, ``CHARSET``, ``MAX_ROWS``, ``ROW_FORMAT``,
-``INSERT_METHOD``, and many more.
-To accommodate the rendering of these arguments, specify the form
-``mysql_argument_name="value"``.  For example, to specify a table with
-``ENGINE`` of ``InnoDB``, ``CHARSET`` of ``utf8mb4``, and ``KEY_BLOCK_SIZE``
-of ``1024``::
+CREATE TABLE arguments including Storage Engines
 
-  Table(
-      "mytable",
-      metadata,
-      Column("data", String(32)),
-      mysql_engine="InnoDB",
-      mysql_charset="utf8mb4",
-      mysql_key_block_size="1024",
-  )
+.. tab:: 中文
+    
+    MySQL 和 MariaDB 的 CREATE TABLE 语法支持一系列特殊选项，如 ``ENGINE``、``CHARSET``、``MAX_ROWS``、``ROW_FORMAT``、``INSERT_METHOD`` 等。为渲染这些选项，可使用 ``mysql_选项名="值"`` 的形式。例如，要创建一个表，使用 ``InnoDB`` 存储引擎，字符集为 ``utf8mb4``，并设置 ``KEY_BLOCK_SIZE`` 为 ``1024``::
+    
+      Table(
+          "mytable",
+          metadata,
+          Column("data", String(32)),
+          mysql_engine="InnoDB",
+          mysql_charset="utf8mb4",
+          mysql_key_block_size="1024",
+      )
+    
+    若启用了 :ref:`mysql_mariadb_only_mode` 模式，则也需使用带 "mariadb" 前缀的键名。各数据库的设置值当然可以不同，从而为 MySQL 与 MariaDB 分别保留不同设置::
+    
+      # 同时支持 "mysql" 和 "mariadb-only" 引擎 URL
+    
+      Table(
+          "mytable",
+          metadata,
+          Column("data", String(32)),
+          mysql_engine="InnoDB",
+          mariadb_engine="InnoDB",
+          mysql_charset="utf8mb4",
+          mariadb_charset="utf8",
+          mysql_key_block_size="1024",
+          mariadb_key_block_size="1024",
+      )
+    
+    MySQL / MariaDB 方言通常会将 ``mysql_关键字名`` 形式的参数转换为 ``CREATE TABLE`` 语句中的 ``KEYWORD_NAME`` 形式。部分选项名会在渲染时以空格而非下划线显示；对此 MySQL 方言会自动处理。这类特例包括 ``DATA DIRECTORY`` （对应 ``mysql_data_directory``）、``CHARACTER SET`` （对应 ``mysql_character_set``）和 ``INDEX DIRECTORY`` （对应 ``mysql_index_directory``）。
+    
+    最常见的参数是 ``mysql_engine``，用于指定表的存储引擎。历史上，MySQL 默认使用 ``MyISAM``，而较新版本一般默认使用 ``InnoDB``。通常推荐使用 ``InnoDB``，因其支持事务和外键。
+    
+    若使用 ``MyISAM`` 存储引擎在 MySQL / MariaDB 中创建 :class:`_schema.Table`，该表将是非事务性的，所有对其的 INSERT/UPDATE/DELETE 操作都会自动提交。此外，它也不支持外键约束；尽管 ``CREATE TABLE`` 可接受外键选项，但在 ``MyISAM`` 下这些选项会被忽略。对这类表进行反射时也不会生成任何外键信息。
+    
+    若要完整支持事务与外键约束，所有相关的 ``CREATE TABLE`` 语句必须指定一个支持事务的引擎，通常即为 ``InnoDB``。
+    
+    分区功能也可以通过类似选项进行指定。例如，以下建表语句将设置 ``PARTITION_BY``、``PARTITIONS``、``SUBPARTITIONS`` 及 ``SUBPARTITION_BY``::
+    
+        # 也可以使用 mariadb_* 前缀
+        Table(
+            "testtable",
+            MetaData(),
+            Column("id", Integer(), primary_key=True, autoincrement=True),
+            Column("other_id", Integer(), primary_key=True, autoincrement=False),
+            mysql_partitions="2",
+            mysql_partition_by="KEY(other_id)",
+            mysql_subpartition_by="HASH(some_expr)",
+            mysql_subpartitions="2",
+        )
+    
+    渲染结果如下：
+    
+    .. sourcecode:: sql
+    
+        CREATE TABLE testtable (
+                id INTEGER NOT NULL AUTO_INCREMENT,
+                other_id INTEGER NOT NULL,
+                PRIMARY KEY (id, other_id)
+        )PARTITION BY KEY(other_id) PARTITIONS 2 SUBPARTITION BY HASH(some_expr) SUBPARTITIONS 2
 
-When supporting :ref:`mysql_mariadb_only_mode` mode, similar keys against
-the "mariadb" prefix must be included as well.  The values can of course
-vary independently so that different settings on MySQL vs. MariaDB may
-be maintained::
+.. tab:: 英文
 
-  # support both "mysql" and "mariadb-only" engine URLs
+    Both MySQL's and MariaDB's CREATE TABLE syntax includes a wide array of special options,
+    including ``ENGINE``, ``CHARSET``, ``MAX_ROWS``, ``ROW_FORMAT``,
+    ``INSERT_METHOD``, and many more.
+    To accommodate the rendering of these arguments, specify the form
+    ``mysql_argument_name="value"``.  For example, to specify a table with
+    ``ENGINE`` of ``InnoDB``, ``CHARSET`` of ``utf8mb4``, and ``KEY_BLOCK_SIZE``
+    of ``1024``::
+    
+      Table(
+          "mytable",
+          metadata,
+          Column("data", String(32)),
+          mysql_engine="InnoDB",
+          mysql_charset="utf8mb4",
+          mysql_key_block_size="1024",
+      )
+    
+    When supporting :ref:`mysql_mariadb_only_mode` mode, similar keys against
+    the "mariadb" prefix must be included as well.  The values can of course
+    vary independently so that different settings on MySQL vs. MariaDB may
+    be maintained::
+    
+      # support both "mysql" and "mariadb-only" engine URLs
+    
+      Table(
+          "mytable",
+          metadata,
+          Column("data", String(32)),
+          mysql_engine="InnoDB",
+          mariadb_engine="InnoDB",
+          mysql_charset="utf8mb4",
+          mariadb_charset="utf8",
+          mysql_key_block_size="1024",
+          mariadb_key_block_size="1024",
+      )
+    
+    The MySQL / MariaDB dialects will normally transfer any keyword specified as
+    ``mysql_keyword_name`` to be rendered as ``KEYWORD_NAME`` in the
+    ``CREATE TABLE`` statement.  A handful of these names will render with a space
+    instead of an underscore; to support this, the MySQL dialect has awareness of
+    these particular names, which include ``DATA DIRECTORY``
+    (e.g. ``mysql_data_directory``), ``CHARACTER SET`` (e.g.
+    ``mysql_character_set``) and ``INDEX DIRECTORY`` (e.g.
+    ``mysql_index_directory``).
+    
+    The most common argument is ``mysql_engine``, which refers to the storage
+    engine for the table.  Historically, MySQL server installations would default
+    to ``MyISAM`` for this value, although newer versions may be defaulting
+    to ``InnoDB``.  The ``InnoDB`` engine is typically preferred for its support
+    of transactions and foreign keys.
+    
+    A :class:`_schema.Table`
+    that is created in a MySQL / MariaDB database with a storage engine
+    of ``MyISAM`` will be essentially non-transactional, meaning any
+    INSERT/UPDATE/DELETE statement referring to this table will be invoked as
+    autocommit.   It also will have no support for foreign key constraints; while
+    the ``CREATE TABLE`` statement accepts foreign key options, when using the
+    ``MyISAM`` storage engine these arguments are discarded.  Reflecting such a
+    table will also produce no foreign key constraint information.
+    
+    For fully atomic transactions as well as support for foreign key
+    constraints, all participating ``CREATE TABLE`` statements must specify a
+    transactional engine, which in the vast majority of cases is ``InnoDB``.
+    
+    Partitioning can similarly be specified using similar options.
+    In the example below the create table will specify ``PARTITION_BY``,
+    ``PARTITIONS``, ``SUBPARTITIONS`` and ``SUBPARTITION_BY``::
+    
+        # can also use mariadb_* prefix
+        Table(
+            "testtable",
+            MetaData(),
+            Column("id", Integer(), primary_key=True, autoincrement=True),
+            Column("other_id", Integer(), primary_key=True, autoincrement=False),
+            mysql_partitions="2",
+            mysql_partition_by="KEY(other_id)",
+            mysql_subpartition_by="HASH(some_expr)",
+            mysql_subpartitions="2",
+        )
+    
+    This will render:
+    
+    .. sourcecode:: sql
+    
+        CREATE TABLE testtable (
+                id INTEGER NOT NULL AUTO_INCREMENT,
+                other_id INTEGER NOT NULL,
+                PRIMARY KEY (id, other_id)
+        )PARTITION BY KEY(other_id) PARTITIONS 2 SUBPARTITION BY HASH(some_expr) SUBPARTITIONS 2
 
-  Table(
-      "mytable",
-      metadata,
-      Column("data", String(32)),
-      mysql_engine="InnoDB",
-      mariadb_engine="InnoDB",
-      mysql_charset="utf8mb4",
-      mariadb_charset="utf8",
-      mysql_key_block_size="1024",
-      mariadb_key_block_size="1024",
-  )
-
-The MySQL / MariaDB dialects will normally transfer any keyword specified as
-``mysql_keyword_name`` to be rendered as ``KEYWORD_NAME`` in the
-``CREATE TABLE`` statement.  A handful of these names will render with a space
-instead of an underscore; to support this, the MySQL dialect has awareness of
-these particular names, which include ``DATA DIRECTORY``
-(e.g. ``mysql_data_directory``), ``CHARACTER SET`` (e.g.
-``mysql_character_set``) and ``INDEX DIRECTORY`` (e.g.
-``mysql_index_directory``).
-
-The most common argument is ``mysql_engine``, which refers to the storage
-engine for the table.  Historically, MySQL server installations would default
-to ``MyISAM`` for this value, although newer versions may be defaulting
-to ``InnoDB``.  The ``InnoDB`` engine is typically preferred for its support
-of transactions and foreign keys.
-
-A :class:`_schema.Table`
-that is created in a MySQL / MariaDB database with a storage engine
-of ``MyISAM`` will be essentially non-transactional, meaning any
-INSERT/UPDATE/DELETE statement referring to this table will be invoked as
-autocommit.   It also will have no support for foreign key constraints; while
-the ``CREATE TABLE`` statement accepts foreign key options, when using the
-``MyISAM`` storage engine these arguments are discarded.  Reflecting such a
-table will also produce no foreign key constraint information.
-
-For fully atomic transactions as well as support for foreign key
-constraints, all participating ``CREATE TABLE`` statements must specify a
-transactional engine, which in the vast majority of cases is ``InnoDB``.
-
-Partitioning can similarly be specified using similar options.
-In the example below the create table will specify ``PARTITION_BY``,
-``PARTITIONS``, ``SUBPARTITIONS`` and ``SUBPARTITION_BY``::
-
-    # can also use mariadb_* prefix
-    Table(
-        "testtable",
-        MetaData(),
-        Column("id", Integer(), primary_key=True, autoincrement=True),
-        Column("other_id", Integer(), primary_key=True, autoincrement=False),
-        mysql_partitions="2",
-        mysql_partition_by="KEY(other_id)",
-        mysql_subpartition_by="HASH(some_expr)",
-        mysql_subpartitions="2",
-    )
-
-This will render:
-
-.. sourcecode:: sql
-
-    CREATE TABLE testtable (
-            id INTEGER NOT NULL AUTO_INCREMENT,
-            other_id INTEGER NOT NULL,
-            PRIMARY KEY (id, other_id)
-    )PARTITION BY KEY(other_id) PARTITIONS 2 SUBPARTITION BY HASH(some_expr) SUBPARTITIONS 2
-
-Case Sensitivity and Table Reflection
+大小写敏感和表反射
 -------------------------------------
 
-Both MySQL and MariaDB have inconsistent support for case-sensitive identifier
-names, basing support on specific details of the underlying
-operating system. However, it has been observed that no matter
-what case sensitivity behavior is present, the names of tables in
-foreign key declarations are *always* received from the database
-as all-lower case, making it impossible to accurately reflect a
-schema where inter-related tables use mixed-case identifier names.
+Case Sensitivity and Table Reflection
 
-Therefore it is strongly advised that table names be declared as
-all lower case both within SQLAlchemy as well as on the MySQL / MariaDB
-database itself, especially if database reflection features are
-to be used.
+.. tab:: 中文
+
+    MySQL 和 MariaDB 对于区分大小写的标识符名称支持不一致，这种行为取决于底层操作系统的具体细节。然而已知的是，无论大小写敏感行为如何，在外键声明中表名总是 *以全小写* 形式从数据库中接收，因此无法准确地反射一个使用混合大小写标识符名称的表之间存在关系的模式。
+
+    因此，强烈建议在 SQLAlchemy 中以及 MySQL / MariaDB 数据库本身中都使用全小写的表名，特别是在使用数据库反射功能时尤为重要。
+
+.. tab:: 英文
+
+    Both MySQL and MariaDB have inconsistent support for case-sensitive identifier
+    names, basing support on specific details of the underlying
+    operating system. However, it has been observed that no matter
+    what case sensitivity behavior is present, the names of tables in
+    foreign key declarations are *always* received from the database
+    as all-lower case, making it impossible to accurately reflect a
+    schema where inter-related tables use mixed-case identifier names.
+
+    Therefore it is strongly advised that table names be declared as
+    all lower case both within SQLAlchemy as well as on the MySQL / MariaDB
+    database itself, especially if database reflection features are
+    to be used.
 
 .. _mysql_isolation_level:
 
-Transaction Isolation Level
+事务隔离级别
 ---------------------------
 
-All MySQL / MariaDB dialects support setting of transaction isolation level both via a
-dialect-specific parameter :paramref:`_sa.create_engine.isolation_level`
-accepted
-by :func:`_sa.create_engine`, as well as the
-:paramref:`.Connection.execution_options.isolation_level` argument as passed to
-:meth:`_engine.Connection.execution_options`.
-This feature works by issuing the
-command ``SET SESSION TRANSACTION ISOLATION LEVEL <level>`` for each new
-connection.  For the special AUTOCOMMIT isolation level, DBAPI-specific
-techniques are used.
+Transaction Isolation Level
 
-To set isolation level using :func:`_sa.create_engine`::
+.. tab:: 中文
 
-    engine = create_engine(
-        "mysql+mysqldb://scott:tiger@localhost/test",
-        isolation_level="READ UNCOMMITTED",
-    )
+    所有 MySQL / MariaDB 方言都支持通过方言特定参数 :paramref:`_sa.create_engine.isolation_level` 或
+    :func:`_sa.create_engine` 的参数设置事务隔离级别，同时也支持通过
+    :paramref:`.Connection.execution_options.isolation_level` 参数传递给
+    :meth:`_engine.Connection.execution_options` 方法进行设置。
+    该功能通过在每个新连接上执行如下命令来实现：
 
-To set using per-connection execution options::
+    ``SET SESSION TRANSACTION ISOLATION LEVEL <level>``。对于特殊的 AUTOCOMMIT 隔离级别，则使用 DBAPI 特定的技术实现。
 
-    connection = engine.connect()
-    connection = connection.execution_options(isolation_level="READ COMMITTED")
+    使用 :func:`_sa.create_engine` 设置隔离级别示例::
 
-Valid values for ``isolation_level`` include:
+        engine = create_engine(
+            "mysql+mysqldb://scott:tiger@localhost/test",
+            isolation_level="READ UNCOMMITTED",
+        )
 
-* ``READ COMMITTED``
-* ``READ UNCOMMITTED``
-* ``REPEATABLE READ``
-* ``SERIALIZABLE``
-* ``AUTOCOMMIT``
+    使用连接执行选项设置隔离级别示例::
 
-The special ``AUTOCOMMIT`` value makes use of the various "autocommit"
-attributes provided by specific DBAPIs, and is currently supported by
-MySQLdb, MySQL-Client, MySQL-Connector Python, and PyMySQL.   Using it,
-the database connection will return true for the value of
-``SELECT @@autocommit;``.
+        connection = engine.connect()
+        connection = connection.execution_options(isolation_level="READ COMMITTED")
 
-There are also more options for isolation level configurations, such as
-"sub-engine" objects linked to a main :class:`_engine.Engine` which each apply
-different isolation level settings.  See the discussion at
-:ref:`dbapi_autocommit` for background.
+    ``isolation_level`` 参数支持的有效值包括：
 
-.. seealso::
+    * ``READ COMMITTED``
+    * ``READ UNCOMMITTED``
+    * ``REPEATABLE READ``
+    * ``SERIALIZABLE``
+    * ``AUTOCOMMIT``
 
-    :ref:`dbapi_autocommit`
+    特殊值 ``AUTOCOMMIT`` 会使用各个 DBAPI 提供的 “autocommit” 属性，目前支持 MySQLdb、MySQL-Client、MySQL-Connector Python 和 PyMySQL。使用该模式时，数据库连接会对如下语句返回 true：
 
-AUTO_INCREMENT Behavior
+    ``SELECT @@autocommit;``
+
+    此外，还可以通过创建与主 :class:`_engine.Engine` 绑定的“子引擎”对象为每个连接配置不同的隔离级别设置。更多背景信息请参见 :ref:`dbapi_autocommit` 部分。
+
+    .. seealso::
+
+        :ref:`dbapi_autocommit`
+
+.. tab:: 英文
+
+    All MySQL / MariaDB dialects support setting of transaction isolation level both via a
+    dialect-specific parameter :paramref:`_sa.create_engine.isolation_level`
+    accepted
+    by :func:`_sa.create_engine`, as well as the
+    :paramref:`.Connection.execution_options.isolation_level` argument as passed to
+    :meth:`_engine.Connection.execution_options`.
+    This feature works by issuing the
+    command ``SET SESSION TRANSACTION ISOLATION LEVEL <level>`` for each new
+    connection.  For the special AUTOCOMMIT isolation level, DBAPI-specific
+    techniques are used.
+
+    To set isolation level using :func:`_sa.create_engine`::
+
+        engine = create_engine(
+            "mysql+mysqldb://scott:tiger@localhost/test",
+            isolation_level="READ UNCOMMITTED",
+        )
+
+    To set using per-connection execution options::
+
+        connection = engine.connect()
+        connection = connection.execution_options(isolation_level="READ COMMITTED")
+
+    Valid values for ``isolation_level`` include:
+
+    * ``READ COMMITTED``
+    * ``READ UNCOMMITTED``
+    * ``REPEATABLE READ``
+    * ``SERIALIZABLE``
+    * ``AUTOCOMMIT``
+
+    The special ``AUTOCOMMIT`` value makes use of the various "autocommit"
+    attributes provided by specific DBAPIs, and is currently supported by
+    MySQLdb, MySQL-Client, MySQL-Connector Python, and PyMySQL.   Using it,
+    the database connection will return true for the value of
+    ``SELECT @@autocommit;``.
+
+    There are also more options for isolation level configurations, such as
+    "sub-engine" objects linked to a main :class:`_engine.Engine` which each apply
+    different isolation level settings.  See the discussion at
+    :ref:`dbapi_autocommit` for background.
+
+    .. seealso::
+
+        :ref:`dbapi_autocommit`
+
+AUTO_INCREMENT 行为
 -----------------------
 
-When creating tables, SQLAlchemy will automatically set ``AUTO_INCREMENT`` on
-the first :class:`.Integer` primary key column which is not marked as a
-foreign key::
+AUTO_INCREMENT Behavior
 
-  >>> t = Table(
-  ...     "mytable", metadata, Column("mytable_id", Integer, primary_key=True)
-  ... )
-  >>> t.create()
-  CREATE TABLE mytable (
-          id INTEGER NOT NULL AUTO_INCREMENT,
-          PRIMARY KEY (id)
-  )
+.. tab:: 中文
 
-You can disable this behavior by passing ``False`` to the
-:paramref:`_schema.Column.autoincrement` argument of :class:`_schema.Column`.
-This flag
-can also be used to enable auto-increment on a secondary column in a
-multi-column key for some storage engines::
+    在创建表时，SQLAlchemy 会自动对第一个未标记为外键的 :class:`.Integer` 主键列设置 ``AUTO_INCREMENT``::
 
-  Table(
-      "mytable",
-      metadata,
-      Column("gid", Integer, primary_key=True, autoincrement=False),
-      Column("id", Integer, primary_key=True),
-  )
+        >>> t = Table(
+        ...     "mytable", metadata, Column("mytable_id", Integer, primary_key=True)
+        ... )
+        >>> t.create()
+        CREATE TABLE mytable (
+                id INTEGER NOT NULL AUTO_INCREMENT,
+                PRIMARY KEY (id)
+        )
+
+    你可以通过向 :class:`_schema.Column` 的参数 :paramref:`_schema.Column.autoincrement` 传递 ``False`` 来禁用该行为。
+    此外，该标志也可用于在某些存储引擎中为多列主键中的次要列启用自动增长::
+
+        Table(
+            "mytable",
+            metadata,
+            Column("gid", Integer, primary_key=True, autoincrement=False),
+            Column("id", Integer, primary_key=True),
+        )
+
+.. tab:: 英文
+
+    When creating tables, SQLAlchemy will automatically set ``AUTO_INCREMENT`` on
+    the first :class:`.Integer` primary key column which is not marked as a
+    foreign key::
+
+        >>> t = Table(
+        ...     "mytable", metadata, Column("mytable_id", Integer, primary_key=True)
+        ... )
+        >>> t.create()
+        CREATE TABLE mytable (
+                id INTEGER NOT NULL AUTO_INCREMENT,
+                PRIMARY KEY (id)
+        )
+
+    You can disable this behavior by passing ``False`` to the
+    :paramref:`_schema.Column.autoincrement` argument of :class:`_schema.Column`.
+    This flag
+    can also be used to enable auto-increment on a secondary column in a
+    multi-column key for some storage engines::
+
+        Table(
+            "mytable",
+            metadata,
+            Column("gid", Integer, primary_key=True, autoincrement=False),
+            Column("id", Integer, primary_key=True),
+        )
 
 .. _mysql_ss_cursors:
 
-Server Side Cursors
+服务器端游标
 -------------------
 
-Server-side cursor support is available for the mysqlclient, PyMySQL,
-mariadbconnector dialects and may also be available in others.   This makes use
-of either the "buffered=True/False" flag if available or by using a class such
-as ``MySQLdb.cursors.SSCursor`` or ``pymysql.cursors.SSCursor`` internally.
+Server Side Cursors
 
+.. tab:: 中文
 
-Server side cursors are enabled on a per-statement basis by using the
-:paramref:`.Connection.execution_options.stream_results` connection execution
-option::
+    对于 mysqlclient、PyMySQL、mariadbconnector 等方言，支持服务端游标，其他方言也可能支持。该特性依赖于 DBAPI 中的 `buffered=True/False` 参数或使用类似 ``MySQLdb.cursors.SSCursor``、``pymysql.cursors.SSCursor`` 的类进行内部处理。
 
-    with engine.connect() as conn:
-        result = conn.execution_options(stream_results=True).execute(
-            text("select * from table")
-        )
+    服务端游标通过设置连接执行选项 :paramref:`.Connection.execution_options.stream_results` 来在每条语句上启用::
 
-Note that some kinds of SQL statements may not be supported with
-server side cursors; generally, only SQL statements that return rows should be
-used with this option.
+        with engine.connect() as conn:
+            result = conn.execution_options(stream_results=True).execute(
+                text("select * from table")
+            )
 
-.. deprecated:: 1.4  The dialect-level server_side_cursors flag is deprecated
-   and will be removed in a future release.  Please use the
-   :paramref:`_engine.Connection.stream_results` execution option for
-   unbuffered cursor support.
+    请注意，某些类型的 SQL 语句可能不支持服务端游标；一般来说，只应使用返回行结果的语句。
 
-.. seealso::
+    .. deprecated:: 1.4
+    方言级的 `server_side_cursors` 标志已被弃用，并将在未来版本中移除。请改用
+    :paramref:`_engine.Connection.stream_results` 执行选项来实现非缓冲游标支持。
 
-    :ref:`engine_stream_results`
+    .. seealso::
 
+        :ref:`engine_stream_results`
+
+.. tab:: 英文
+
+    Server-side cursor support is available for the mysqlclient, PyMySQL,
+    mariadbconnector dialects and may also be available in others.   This makes use
+    of either the "buffered=True/False" flag if available or by using a class such
+    as ``MySQLdb.cursors.SSCursor`` or ``pymysql.cursors.SSCursor`` internally.
+    
+    
+    Server side cursors are enabled on a per-statement basis by using the
+    :paramref:`.Connection.execution_options.stream_results` connection execution
+    option::
+    
+        with engine.connect() as conn:
+            result = conn.execution_options(stream_results=True).execute(
+                text("select * from table")
+            )
+    
+    Note that some kinds of SQL statements may not be supported with
+    server side cursors; generally, only SQL statements that return rows should be
+    used with this option.
+    
+    .. deprecated:: 1.4  The dialect-level server_side_cursors flag is deprecated
+       and will be removed in a future release.  Please use the
+       :paramref:`_engine.Connection.stream_results` execution option for
+       unbuffered cursor support.
+    
+    .. seealso::
+    
+        :ref:`engine_stream_results`
+    
 .. _mysql_unicode:
 
 Unicode
 -------
 
-Charset Selection
+字符集选择
 ~~~~~~~~~~~~~~~~~
 
-Most MySQL / MariaDB DBAPIs offer the option to set the client character set for
-a connection.   This is typically delivered using the ``charset`` parameter
-in the URL, such as::
+Charset Selection
 
-    e = create_engine(
-        "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4"
-    )
+.. tab:: 中文
 
-This charset is the **client character set** for the connection.  Some
-MySQL DBAPIs will default this to a value such as ``latin1``, and some
-will make use of the ``default-character-set`` setting in the ``my.cnf``
-file as well.   Documentation for the DBAPI in use should be consulted
-for specific behavior.
+    大多数 MySQL / MariaDB 的 DBAPI 驱动程序都提供了设置连接的客户端字符集的选项。通常可以通过 URL 中的 ``charset`` 参数进行设置，例如::
 
-The encoding used for Unicode has traditionally been ``'utf8'``.  However, for
-MySQL versions 5.5.3 and MariaDB 5.5 on forward, a new MySQL-specific encoding
-``'utf8mb4'`` has been introduced, and as of MySQL 8.0 a warning is emitted by
-the server if plain ``utf8`` is specified within any server-side directives,
-replaced with ``utf8mb3``.  The rationale for this new encoding is due to the
-fact that MySQL's legacy utf-8 encoding only supports codepoints up to three
-bytes instead of four.  Therefore, when communicating with a MySQL or MariaDB
-database that includes codepoints more than three bytes in size, this new
-charset is preferred, if supported by both the database as well as the client
-DBAPI, as in::
+        e = create_engine(
+            "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4"
+        )
 
-    e = create_engine(
-        "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4"
-    )
+    该字符集是该连接的 **客户端字符集** 。某些 MySQL 的 DBAPI 默认使用 ``latin1``，而有些则使用 ``my.cnf`` 文件中的 ``default-character-set`` 设置。关于具体行为，请查阅所使用的 DBAPI 的文档。
 
-All modern DBAPIs should support the ``utf8mb4`` charset.
+    用于 Unicode 的编码传统上为 ``'utf8'``。然而，从 MySQL 5.5.3 和 MariaDB 5.5 开始，引入了一个新的 MySQL 特有编码 ``'utf8mb4'``；并且从 MySQL 8.0 起，如果在服务器端配置中指定了普通的 ``utf8``，服务器将发出警告，并用 ``utf8mb3`` 取而代之。之所以引入该编码，是因为 MySQL 的传统 utf-8 编码仅支持最多三字节的码位，而非四字节。因此，在与包含四字节以上码位的 MySQL 或 MariaDB 数据库通信时，若数据库和客户端 DBAPI 都支持，推荐使用此新字符集，例如::
 
-In order to use ``utf8mb4`` encoding for a schema that was created with  legacy
-``utf8``, changes to the MySQL/MariaDB schema and/or server configuration may be
-required.
+        e = create_engine(
+            "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4"
+        )
 
-.. seealso::
+    所有现代 DBAPI 都应支持 ``utf8mb4`` 字符集。
 
-    `The utf8mb4 Character Set \
-    <https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html>`_ - \
-    in the MySQL documentation
+    若想在使用旧版 ``utf8`` 创建的数据库结构中使用 ``utf8mb4`` 编码，可能需要修改 MySQL / MariaDB 的模式定义或服务器配置。
+
+    .. seealso::
+
+        `The utf8mb4 Character Set \
+        <https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html>`_ - \
+        来自 MySQL 官方文档
+
+.. tab:: 英文
+
+    Most MySQL / MariaDB DBAPIs offer the option to set the client character set for
+    a connection.   This is typically delivered using the ``charset`` parameter
+    in the URL, such as::
+
+        e = create_engine(
+            "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4"
+        )
+
+    This charset is the **client character set** for the connection.  Some
+    MySQL DBAPIs will default this to a value such as ``latin1``, and some
+    will make use of the ``default-character-set`` setting in the ``my.cnf``
+    file as well.   Documentation for the DBAPI in use should be consulted
+    for specific behavior.
+
+    The encoding used for Unicode has traditionally been ``'utf8'``.  However, for
+    MySQL versions 5.5.3 and MariaDB 5.5 on forward, a new MySQL-specific encoding
+    ``'utf8mb4'`` has been introduced, and as of MySQL 8.0 a warning is emitted by
+    the server if plain ``utf8`` is specified within any server-side directives,
+    replaced with ``utf8mb3``.  The rationale for this new encoding is due to the
+    fact that MySQL's legacy utf-8 encoding only supports codepoints up to three
+    bytes instead of four.  Therefore, when communicating with a MySQL or MariaDB
+    database that includes codepoints more than three bytes in size, this new
+    charset is preferred, if supported by both the database as well as the client
+    DBAPI, as in::
+
+        e = create_engine(
+            "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4"
+        )
+
+    All modern DBAPIs should support the ``utf8mb4`` charset.
+
+    In order to use ``utf8mb4`` encoding for a schema that was created with  legacy
+    ``utf8``, changes to the MySQL/MariaDB schema and/or server configuration may be
+    required.
+
+    .. seealso::
+
+        `The utf8mb4 Character Set \
+        <https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html>`_ - \
+        in the MySQL documentation
 
 .. _mysql_binary_introducer:
 
-Dealing with Binary Data Warnings and Unicode
+处理二进制数据警告和 Unicode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MySQL versions 5.6, 5.7 and later (not MariaDB at the time of this writing) now
-emit a warning when attempting to pass binary data to the database, while a
-character set encoding is also in place, when the binary data itself is not
-valid for that encoding:
+Dealing with Binary Data Warnings and Unicode
 
-.. sourcecode:: text
+.. tab:: 中文
 
-    default.py:509: Warning: (1300, "Invalid utf8mb4 character string:
-    'F9876A'")
-      cursor.execute(statement, parameters)
+    MySQL 从 5.6、5.7 起（撰写本文时 MariaDB 尚未支持）在以下情况下会发出警告：即当已设置字符编码时，将二进制数据传递给数据库，而该二进制数据并不符合该编码的格式：
 
-This warning is due to the fact that the MySQL client library is attempting to
-interpret the binary string as a unicode object even if a datatype such
-as :class:`.LargeBinary` is in use.   To resolve this, the SQL statement requires
-a binary "character set introducer" be present before any non-NULL value
-that renders like this:
+    .. sourcecode:: text
 
-.. sourcecode:: sql
+        default.py:509: Warning: (1300, "Invalid utf8mb4 character string:
+        'F9876A'")
+        cursor.execute(statement, parameters)
 
-    INSERT INTO table (data) VALUES (_binary %s)
+    该警告是由于 MySQL 客户端库试图将二进制字符串解释为 Unicode 对象，即使正在使用的数据类型是 :class:`.LargeBinary`。为了解决该问题，SQL 语句中必须为非 NULL 值添加一个二进制“字符集前缀”，如下所示：
 
-These character set introducers are provided by the DBAPI driver, assuming the
-use of mysqlclient or PyMySQL (both of which are recommended).  Add the query
-string parameter ``binary_prefix=true`` to the URL to repair this warning::
+    .. sourcecode:: sql
 
-    # mysqlclient
-    engine = create_engine(
-        "mysql+mysqldb://scott:tiger@localhost/test?charset=utf8mb4&binary_prefix=true"
-    )
+        INSERT INTO table (data) VALUES (_binary %s)
 
-    # PyMySQL
-    engine = create_engine(
-        "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4&binary_prefix=true"
-    )
+    该字符集前缀由 DBAPI 驱动程序提供支持，前提是使用了 mysqlclient 或 PyMySQL（推荐这两个驱动）。可通过在 URL 中添加 ``binary_prefix=true`` 查询参数来解决该警告::
 
-The ``binary_prefix`` flag may or may not be supported by other MySQL drivers.
+        # mysqlclient
+        engine = create_engine(
+            "mysql+mysqldb://scott:tiger@localhost/test?charset=utf8mb4&binary_prefix=true"
+        )
 
-SQLAlchemy itself cannot render this ``_binary`` prefix reliably, as it does
-not work with the NULL value, which is valid to be sent as a bound parameter.
-As the MySQL driver renders parameters directly into the SQL string, it's the
-most efficient place for this additional keyword to be passed.
+        # PyMySQL
+        engine = create_engine(
+            "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4&binary_prefix=true"
+        )
 
-.. seealso::
+    其他 MySQL 驱动程序可能支持或不支持 ``binary_prefix`` 标志。
 
-    `Character set introducers <https://dev.mysql.com/doc/refman/5.7/en/charset-introducer.html>`_ - on the MySQL website
+    SQLAlchemy 本身无法可靠地生成该 ``_binary`` 前缀，因为它不适用于 NULL 值，而 NULL 值作为绑定参数是合法的。由于 MySQL 驱动程序会将参数直接渲染进 SQL 字符串中，这是添加该关键字最有效的位置。
+
+    .. seealso::
+
+        `Character set introducers <https://dev.mysql.com/doc/refman/5.7/en/charset-introducer.html>`_ - MySQL 官方网站
+
+.. tab:: 英文
+
+    MySQL versions 5.6, 5.7 and later (not MariaDB at the time of this writing) now
+    emit a warning when attempting to pass binary data to the database, while a
+    character set encoding is also in place, when the binary data itself is not
+    valid for that encoding:
+
+    .. sourcecode:: text
+
+        default.py:509: Warning: (1300, "Invalid utf8mb4 character string:
+        'F9876A'")
+        cursor.execute(statement, parameters)
+
+    This warning is due to the fact that the MySQL client library is attempting to
+    interpret the binary string as a unicode object even if a datatype such
+    as :class:`.LargeBinary` is in use.   To resolve this, the SQL statement requires
+    a binary "character set introducer" be present before any non-NULL value
+    that renders like this:
+
+    .. sourcecode:: sql
+
+        INSERT INTO table (data) VALUES (_binary %s)
+
+    These character set introducers are provided by the DBAPI driver, assuming the
+    use of mysqlclient or PyMySQL (both of which are recommended).  Add the query
+    string parameter ``binary_prefix=true`` to the URL to repair this warning::
+
+        # mysqlclient
+        engine = create_engine(
+            "mysql+mysqldb://scott:tiger@localhost/test?charset=utf8mb4&binary_prefix=true"
+        )
+
+        # PyMySQL
+        engine = create_engine(
+            "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4&binary_prefix=true"
+        )
+
+    The ``binary_prefix`` flag may or may not be supported by other MySQL drivers.
+
+    SQLAlchemy itself cannot render this ``_binary`` prefix reliably, as it does
+    not work with the NULL value, which is valid to be sent as a bound parameter.
+    As the MySQL driver renders parameters directly into the SQL string, it's the
+    most efficient place for this additional keyword to be passed.
+
+    .. seealso::
+
+        `Character set introducers <https://dev.mysql.com/doc/refman/5.7/en/charset-introducer.html>`_ - on the MySQL website
 
 
-ANSI Quoting Style
+ANSI 引用样式
 ------------------
 
-MySQL / MariaDB feature two varieties of identifier "quoting style", one using
-backticks and the other using quotes, e.g. ```some_identifier```  vs.
-``"some_identifier"``.   All MySQL dialects detect which version
-is in use by checking the value of :ref:`sql_mode<mysql_sql_mode>` when a connection is first
-established with a particular :class:`_engine.Engine`.
-This quoting style comes
-into play when rendering table and column names as well as when reflecting
-existing database structures.  The detection is entirely automatic and
-no special configuration is needed to use either quoting style.
+ANSI Quoting Style
+
+.. tab:: 中文
+
+    MySQL / MariaDB 支持两种标识符“引用风格”：一种使用反引号（backticks），另一种使用引号，例如：```some_identifier``` 与 ``"some_identifier"``。所有 MySQL 方言在首次与特定 :class:`_engine.Engine` 建立连接时会检查 :ref:`sql_mode<mysql_sql_mode>` 的值来自动检测所使用的引用风格。
+
+.. tab:: 英文
+
+    MySQL / MariaDB feature two varieties of identifier "quoting style", one using
+    backticks and the other using quotes, e.g. ```some_identifier```  vs.
+    ``"some_identifier"``.   All MySQL dialects detect which version
+    is in use by checking the value of :ref:`sql_mode<mysql_sql_mode>` when a connection is first
+    established with a particular :class:`_engine.Engine`.
+    This quoting style comes
+    into play when rendering table and column names as well as when reflecting
+    existing database structures.  The detection is entirely automatic and
+    no special configuration is needed to use either quoting style.
 
 
 .. _mysql_sql_mode:
 
-Changing the sql_mode
+更改 sql_mode
 ---------------------
 
-MySQL supports operating in multiple
-`Server SQL Modes <https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html>`_  for
-both Servers and Clients. To change the ``sql_mode`` for a given application, a
-developer can leverage SQLAlchemy's Events system.
+Changing the sql_mode
 
-In the following example, the event system is used to set the ``sql_mode`` on
-the ``first_connect`` and ``connect`` events::
+.. tab:: 中文
 
-    from sqlalchemy import create_engine, event
+    引用风格会影响表名、列名的渲染，以及对已有数据库结构的反射。该检测过程是完全自动的，无需任何额外配置即可使用任一引用风格。
 
-    eng = create_engine(
-        "mysql+mysqldb://scott:tiger@localhost/test", echo="debug"
-    )
+    MySQL 支持在多个
+    `服务器 SQL 模式 <https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html>`_ 下运行，适用于服务器和客户端。要为某个应用程序更改 ``sql_mode``，开发者可以利用 SQLAlchemy 的事件系统（Events system）。
 
+    在以下示例中，通过事件系统在 ``first_connect`` 和 ``connect`` 事件中设置 ``sql_mode``::
 
-    # `insert=True` will ensure this is the very first listener to run
-    @event.listens_for(eng, "connect", insert=True)
-    def connect(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("SET sql_mode = 'STRICT_ALL_TABLES'")
+        from sqlalchemy import create_engine, event
+
+        eng = create_engine(
+            "mysql+mysqldb://scott:tiger@localhost/test", echo="debug"
+        )
 
 
-    conn = eng.connect()
-
-In the example illustrated above, the "connect" event will invoke the "SET"
-statement on the connection at the moment a particular DBAPI connection is
-first created for a given Pool, before the connection is made available to the
-connection pool.  Additionally, because the function was registered with
-``insert=True``, it will be prepended to the internal list of registered
-functions.
+        # `insert=True` 确保该监听器最先运行
+        @event.listens_for(eng, "connect", insert=True)
+        def connect(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("SET sql_mode = 'STRICT_ALL_TABLES'")
 
 
-MySQL / MariaDB SQL Extensions
+        conn = eng.connect()
+
+    在上述示例中， “connect” 事件会在为某个连接池首次创建 DBAPI 连接时执行该 ``SET`` 语句，此时连接尚未进入连接池可用状态。此外，由于注册事件处理函数时使用了 ``insert=True``，它会被添加到注册函数列表的最前面。
+
+.. tab:: 英文
+
+    MySQL supports operating in multiple
+    `Server SQL Modes <https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html>`_  for
+    both Servers and Clients. To change the ``sql_mode`` for a given application, a
+    developer can leverage SQLAlchemy's Events system.
+
+    In the following example, the event system is used to set the ``sql_mode`` on
+    the ``first_connect`` and ``connect`` events::
+
+        from sqlalchemy import create_engine, event
+
+        eng = create_engine(
+            "mysql+mysqldb://scott:tiger@localhost/test", echo="debug"
+        )
+
+
+        # `insert=True` will ensure this is the very first listener to run
+        @event.listens_for(eng, "connect", insert=True)
+        def connect(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("SET sql_mode = 'STRICT_ALL_TABLES'")
+
+
+        conn = eng.connect()
+
+    In the example illustrated above, the "connect" event will invoke the "SET"
+    statement on the connection at the moment a particular DBAPI connection is
+    first created for a given Pool, before the connection is made available to the
+    connection pool.  Additionally, because the function was registered with
+    ``insert=True``, it will be prepended to the internal list of registered
+    functions.
+
+
+MySQL / MariaDB SQL 扩展
 ------------------------------
 
-Many of the MySQL / MariaDB SQL extensions are handled through SQLAlchemy's generic
-function and operator support::
+MySQL / MariaDB SQL Extensions
 
-  table.select(table.c.password == func.md5("plaintext"))
-  table.select(table.c.username.op("regexp")("^[a-d]"))
+.. tab:: 中文
 
-And of course any valid SQL statement can be executed as a string as well.
+    许多 MySQL / MariaDB 的 SQL 扩展通过 SQLAlchemy 的通用函数和操作符支持得以实现，例如：
+    
+    ::
+    
+      table.select(table.c.password == func.md5("plaintext"))
+      table.select(table.c.username.op("regexp")("^[a-d]"))
+    
+    当然，也可以直接执行任意合法的 SQL 字符串语句。
+    
+    目前对 MySQL / MariaDB SQL 扩展的一些有限直接支持如下：
+    
+    * INSERT..ON DUPLICATE KEY UPDATE：参见
+      :ref:`mysql_insert_on_duplicate_key_update`
+    
+    * SELECT 语句前缀，使用 :meth:`_expression.Select.prefix_with` 和
+      :meth:`_query.Query.prefix_with`::
+    
+        select(...).prefix_with(["HIGH_PRIORITY", "SQL_SMALL_RESULT"])
+    
+    * UPDATE 限制行数::
+    
+        from sqlalchemy.dialects.mysql import limit
+    
+        update(...).ext(limit(10))
+    
+      .. versionchanged:: 2.1 改为使用 :func:`_mysql.limit()` 扩展，替代先前的 ``mysql_limit`` 使用方式
+    
+    * DELETE 限制行数::
+    
+        from sqlalchemy.dialects.mysql import limit
+    
+        delete(...).ext(limit(10))
+    
+      .. versionchanged:: 2.1 改为使用 :func:`_mysql.limit()` 扩展，替代先前的 ``mysql_limit`` 使用方式
+    
+    * 优化器提示，使用 :meth:`_expression.Select.prefix_with` 和
+      :meth:`_query.Query.prefix_with`::
+    
+        select(...).prefix_with("/*+ NO_RANGE_OPTIMIZATION(t4 PRIMARY) */")
+    
+    * 索引提示，使用 :meth:`_expression.Select.with_hint` 和
+      :meth:`_query.Query.with_hint`::
+    
+        select(...).with_hint(some_table, "USE INDEX xyz")
+    
+    * MATCH 操作符支持::
+    
+            from sqlalchemy.dialects.mysql import match
+    
+            select(...).where(match(col1, col2, against="some expr").in_boolean_mode())
+    
+      .. seealso::
+    
+        :class:`_mysql.match`
 
-Some limited direct support for MySQL / MariaDB extensions to SQL is currently
-available.
-
-* INSERT..ON DUPLICATE KEY UPDATE:  See
-  :ref:`mysql_insert_on_duplicate_key_update`
-
-* SELECT pragma, use :meth:`_expression.Select.prefix_with` and
-  :meth:`_query.Query.prefix_with`::
-
-    select(...).prefix_with(["HIGH_PRIORITY", "SQL_SMALL_RESULT"])
-
-* UPDATE
-  with LIMIT::
-
-    from sqlalchemy.dialects.mysql import limit
-
-    update(...).ext(limit(10))
-
-  .. versionchanged:: 2.1 the :func:`_mysql.limit()` extension supersedes the
-     previous use of ``mysql_limit``
-
-* DELETE
-  with LIMIT::
-
-    from sqlalchemy.dialects.mysql import limit
-
-    delete(...).ext(limit(10))
-
-  .. versionchanged:: 2.1 the :func:`_mysql.limit()` extension supersedes the
-     previous use of ``mysql_limit``
-
-* optimizer hints, use :meth:`_expression.Select.prefix_with` and
-  :meth:`_query.Query.prefix_with`::
-
-    select(...).prefix_with("/*+ NO_RANGE_OPTIMIZATION(t4 PRIMARY) */")
-
-* index hints, use :meth:`_expression.Select.with_hint` and
-  :meth:`_query.Query.with_hint`::
-
-    select(...).with_hint(some_table, "USE INDEX xyz")
-
-* MATCH
-  operator support::
-
-        from sqlalchemy.dialects.mysql import match
-
-        select(...).where(match(col1, col2, against="some expr").in_boolean_mode())
-
-  .. seealso::
-
-    :class:`_mysql.match`
+.. tab:: 英文
+    
+    Many of the MySQL / MariaDB SQL extensions are handled through SQLAlchemy's generic
+    function and operator support::
+    
+      table.select(table.c.password == func.md5("plaintext"))
+      table.select(table.c.username.op("regexp")("^[a-d]"))
+    
+    And of course any valid SQL statement can be executed as a string as well.
+    
+    Some limited direct support for MySQL / MariaDB extensions to SQL is currently
+    available.
+    
+    * INSERT..ON DUPLICATE KEY UPDATE:  See
+      :ref:`mysql_insert_on_duplicate_key_update`
+    
+    * SELECT pragma, use :meth:`_expression.Select.prefix_with` and
+      :meth:`_query.Query.prefix_with`::
+    
+        select(...).prefix_with(["HIGH_PRIORITY", "SQL_SMALL_RESULT"])
+    
+    * UPDATE
+      with LIMIT::
+    
+        from sqlalchemy.dialects.mysql import limit
+    
+        update(...).ext(limit(10))
+    
+      .. versionchanged:: 2.1 the :func:`_mysql.limit()` extension supersedes the
+         previous use of ``mysql_limit``
+    
+    * DELETE
+      with LIMIT::
+    
+        from sqlalchemy.dialects.mysql import limit
+    
+        delete(...).ext(limit(10))
+    
+      .. versionchanged:: 2.1 the :func:`_mysql.limit()` extension supersedes the
+         previous use of ``mysql_limit``
+    
+    * optimizer hints, use :meth:`_expression.Select.prefix_with` and
+      :meth:`_query.Query.prefix_with`::
+    
+        select(...).prefix_with("/*+ NO_RANGE_OPTIMIZATION(t4 PRIMARY) */")
+    
+    * index hints, use :meth:`_expression.Select.with_hint` and
+      :meth:`_query.Query.with_hint`::
+    
+        select(...).with_hint(some_table, "USE INDEX xyz")
+    
+    * MATCH
+      operator support::
+    
+            from sqlalchemy.dialects.mysql import match
+    
+            select(...).where(match(col1, col2, against="some expr").in_boolean_mode())
+    
+      .. seealso::
+    
+        :class:`_mysql.match`
 
 INSERT/DELETE...RETURNING
 -------------------------
 
-The MariaDB dialect supports 10.5+'s ``INSERT..RETURNING`` and
-``DELETE..RETURNING`` (10.0+) syntaxes.   ``INSERT..RETURNING`` may be used
-automatically in some cases in order to fetch newly generated identifiers in
-place of the traditional approach of using ``cursor.lastrowid``, however
-``cursor.lastrowid`` is currently still preferred for simple single-statement
-cases for its better performance.
+INSERT/DELETE...RETURNING
 
-To specify an explicit ``RETURNING`` clause, use the
-:meth:`._UpdateBase.returning` method on a per-statement basis::
+.. tab:: 中文
 
-    # INSERT..RETURNING
-    result = connection.execute(
-        table.insert().values(name="foo").returning(table.c.col1, table.c.col2)
-    )
-    print(result.all())
+    MariaDB dialect 支持 10.5+ 的 ``INSERT..RETURNING`` 和 10.0+ 的 ``DELETE..RETURNING`` 语法。``INSERT..RETURNING`` 在某些情况下会被自动使用，以获取新生成的标识符，替代传统的 ``cursor.lastrowid`` 方法。然而，对于简单的单语句操作，目前仍首选使用 ``cursor.lastrowid``，因其性能更优。
 
-    # DELETE..RETURNING
-    result = connection.execute(
-        table.delete()
-        .where(table.c.name == "foo")
-        .returning(table.c.col1, table.c.col2)
-    )
-    print(result.all())
+    要显式指定 ``RETURNING`` 子句，可在每条语句上使用 :meth:`._UpdateBase.returning` 方法：
 
-.. versionadded:: 2.0  Added support for MariaDB RETURNING
+    ::
+
+        # INSERT..RETURNING
+        result = connection.execute(
+            table.insert().values(name="foo").returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+        # DELETE..RETURNING
+        result = connection.execute(
+            table.delete()
+            .where(table.c.name == "foo")
+            .returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+    .. versionadded:: 2.0  增加对 MariaDB RETURNING 的支持
+
+.. tab:: 英文
+
+    The MariaDB dialect supports 10.5+'s ``INSERT..RETURNING`` and
+    ``DELETE..RETURNING`` (10.0+) syntaxes.   ``INSERT..RETURNING`` may be used
+    automatically in some cases in order to fetch newly generated identifiers in
+    place of the traditional approach of using ``cursor.lastrowid``, however
+    ``cursor.lastrowid`` is currently still preferred for simple single-statement
+    cases for its better performance.
+
+    To specify an explicit ``RETURNING`` clause, use the
+    :meth:`._UpdateBase.returning` method on a per-statement basis::
+
+        # INSERT..RETURNING
+        result = connection.execute(
+            table.insert().values(name="foo").returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+        # DELETE..RETURNING
+        result = connection.execute(
+            table.delete()
+            .where(table.c.name == "foo")
+            .returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+    .. versionadded:: 2.0  Added support for MariaDB RETURNING
 
 .. _mysql_insert_on_duplicate_key_update:
 
-INSERT...ON DUPLICATE KEY UPDATE (Upsert)
+INSERT...ON DUPLICATE KEY UPDATE（更新插入）
 ------------------------------------------
 
-MySQL / MariaDB allow "upserts" (update or insert)
-of rows into a table via the ``ON DUPLICATE KEY UPDATE`` clause of the
-``INSERT`` statement.  A candidate row will only be inserted if that row does
-not match an existing primary or unique key in the table; otherwise, an UPDATE
-will be performed.   The statement allows for separate specification of the
-values to INSERT versus the values for UPDATE.
+INSERT...ON DUPLICATE KEY UPDATE (Upsert)
 
-SQLAlchemy provides ``ON DUPLICATE KEY UPDATE`` support via the MySQL-specific
-:func:`.mysql.insert()` function, which provides
-the generative method :meth:`~.mysql.Insert.on_duplicate_key_update`:
+.. tab:: 中文
+    
+    MySQL / MariaDB 支持通过 ``INSERT`` 语句中的 ``ON DUPLICATE KEY UPDATE`` 子句对表中的行执行“插入或更新”（upsert）操作。仅当候选行与表中现有的主键或唯一键不匹配时才会插入该行；否则会执行 UPDATE 操作。该语句支持分别指定 INSERT 和 UPDATE 的值。
+    
+    SQLAlchemy 通过 MySQL 专属的 :func:`.mysql.insert()` 函数支持 ``ON DUPLICATE KEY UPDATE``，该函数提供生成式方法 :meth:`~.mysql.Insert.on_duplicate_key_update`：
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> from sqlalchemy.dialects.mysql import insert
+    
+        >>> insert_stmt = insert(my_table).values(
+        ...     id="some_existing_id", data="inserted value"
+        ... )
+    
+        >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        ...     data=insert_stmt.inserted.data, status="U"
+        ... )
+        >>> print(on_duplicate_key_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE data = VALUES(data), status = %s
+    
+    与 PostgreSQL 的 "ON CONFLICT" 子句不同，"ON DUPLICATE KEY UPDATE" 总是匹配任意主键或唯一键，若匹配成功总是执行 UPDATE；无法选择报错或跳过更新。
+    
+    ``ON DUPLICATE KEY UPDATE`` 可对已存在行执行更新操作，更新值可来自插入的新值，也可自定义指定。这些值通常以关键字参数形式传递给 :meth:`_mysql.Insert.on_duplicate_key_update`，其中键为列的 key（通常即列名，除非设置了 :paramref:`_schema.Column.key`），值为字面量或 SQL 表达式：
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> insert_stmt = insert(my_table).values(
+        ...     id="some_existing_id", data="inserted value"
+        ... )
+    
+        >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        ...     data="some data",
+        ...     updated_at=func.current_timestamp(),
+        ... )
+    
+        >>> print(on_duplicate_key_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE data = %s, updated_at = CURRENT_TIMESTAMP
+    
+    类似于 :meth:`.UpdateBase.values` 的用法，也可以使用其他参数形式，包括字典：
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        ...     {"data": "some data", "updated_at": func.current_timestamp()},
+        ... )
+    
+    还可以使用 2 元组组成的列表，这种方式会自动生成一个按照参数顺序排列的 UPDATE 语句，类似于 :ref:`tutorial_parameter_ordered_updates` 中描述的方式。与 :class:`_expression.Update` 对象不同，在这种上下文中无需特殊标志标明意图，因为其形式明确：
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        ...     [
+        ...         ("data", "some data"),
+        ...         ("updated_at", func.current_timestamp()),
+        ...     ]
+        ... )
+    
+        >>> print(on_duplicate_key_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE data = %s, updated_at = CURRENT_TIMESTAMP
+    
+    .. warning::
+    
+        :meth:`_mysql.Insert.on_duplicate_key_update` 方法 **不会** 考虑 Python 端定义的默认 UPDATE 值或生成函数，
+        例如通过 :paramref:`_schema.Column.onupdate` 指定的值。除非显式指定，这些值不会在 ON DUPLICATE KEY 类型的 UPDATE 中起作用。
+    
+    为了引用即将插入的行，可以使用特殊别名 :attr:`_mysql.Insert.inserted`，它是 :class:`_mysql.Insert` 对象上的一个属性；该对象是一个 :class:`_expression.ColumnCollection`，包含目标表的所有列：
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+    
+        >>> do_update_stmt = stmt.on_duplicate_key_update(
+        ...     data="updated value", author=stmt.inserted.author
+        ... )
+    
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author) VALUES (%s, %s, %s)
+        ON DUPLICATE KEY UPDATE data = %s, author = VALUES(author)
+    
+    渲染时，“inserted” 命名空间将生成 ``VALUES(<columnname>)`` 表达式。
 
-.. sourcecode:: pycon+sql
+.. tab:: 英文
 
-    >>> from sqlalchemy.dialects.mysql import insert
+    MySQL / MariaDB allow "upserts" (update or insert)
+    of rows into a table via the ``ON DUPLICATE KEY UPDATE`` clause of the
+    ``INSERT`` statement.  A candidate row will only be inserted if that row does
+    not match an existing primary or unique key in the table; otherwise, an UPDATE
+    will be performed.   The statement allows for separate specification of the
+    values to INSERT versus the values for UPDATE.
+    
+    SQLAlchemy provides ``ON DUPLICATE KEY UPDATE`` support via the MySQL-specific
+    :func:`.mysql.insert()` function, which provides
+    the generative method :meth:`~.mysql.Insert.on_duplicate_key_update`:
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> from sqlalchemy.dialects.mysql import insert
+    
+        >>> insert_stmt = insert(my_table).values(
+        ...     id="some_existing_id", data="inserted value"
+        ... )
+    
+        >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        ...     data=insert_stmt.inserted.data, status="U"
+        ... )
+        >>> print(on_duplicate_key_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE data = VALUES(data), status = %s
+    
+    
+    Unlike PostgreSQL's "ON CONFLICT" phrase, the "ON DUPLICATE KEY UPDATE"
+    phrase will always match on any primary key or unique key, and will always
+    perform an UPDATE if there's a match; there are no options for it to raise
+    an error or to skip performing an UPDATE.
+    
+    ``ON DUPLICATE KEY UPDATE`` is used to perform an update of the already
+    existing row, using any combination of new values as well as values
+    from the proposed insertion.   These values are normally specified using
+    keyword arguments passed to the
+    :meth:`_mysql.Insert.on_duplicate_key_update`
+    given column key values (usually the name of the column, unless it
+    specifies :paramref:`_schema.Column.key`
+    ) as keys and literal or SQL expressions
+    as values:
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> insert_stmt = insert(my_table).values(
+        ...     id="some_existing_id", data="inserted value"
+        ... )
+    
+        >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        ...     data="some data",
+        ...     updated_at=func.current_timestamp(),
+        ... )
+    
+        >>> print(on_duplicate_key_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE data = %s, updated_at = CURRENT_TIMESTAMP
+    
+    In a manner similar to that of :meth:`.UpdateBase.values`, other parameter
+    forms are accepted, including a single dictionary:
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        ...     {"data": "some data", "updated_at": func.current_timestamp()},
+        ... )
+    
+    as well as a list of 2-tuples, which will automatically provide
+    a parameter-ordered UPDATE statement in a manner similar to that described
+    at :ref:`tutorial_parameter_ordered_updates`.  Unlike the :class:`_expression.Update`
+    object,
+    no special flag is needed to specify the intent since the argument form is
+    this context is unambiguous:
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        ...     [
+        ...         ("data", "some data"),
+        ...         ("updated_at", func.current_timestamp()),
+        ...     ]
+        ... )
+    
+        >>> print(on_duplicate_key_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE data = %s, updated_at = CURRENT_TIMESTAMP
+    
+    .. warning::
+    
+        The :meth:`_mysql.Insert.on_duplicate_key_update`
+        method does **not** take into
+        account Python-side default UPDATE values or generation functions, e.g.
+        e.g. those specified using :paramref:`_schema.Column.onupdate`.
+        These values will not be exercised for an ON DUPLICATE KEY style of UPDATE,
+        unless they are manually specified explicitly in the parameters.
+    
+    
+    
+    In order to refer to the proposed insertion row, the special alias
+    :attr:`_mysql.Insert.inserted` is available as an attribute on
+    the :class:`_mysql.Insert` object; this object is a
+    :class:`_expression.ColumnCollection` which contains all columns of the target
+    table:
+    
+    .. sourcecode:: pycon+sql
+    
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+    
+        >>> do_update_stmt = stmt.on_duplicate_key_update(
+        ...     data="updated value", author=stmt.inserted.author
+        ... )
+    
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author) VALUES (%s, %s, %s)
+        ON DUPLICATE KEY UPDATE data = %s, author = VALUES(author)
+    
+    When rendered, the "inserted" namespace will produce the expression
+    ``VALUES(<columnname>)``.
 
-    >>> insert_stmt = insert(my_table).values(
-    ...     id="some_existing_id", data="inserted value"
-    ... )
-
-    >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
-    ...     data=insert_stmt.inserted.data, status="U"
-    ... )
-    >>> print(on_duplicate_key_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
-    ON DUPLICATE KEY UPDATE data = VALUES(data), status = %s
-
-
-Unlike PostgreSQL's "ON CONFLICT" phrase, the "ON DUPLICATE KEY UPDATE"
-phrase will always match on any primary key or unique key, and will always
-perform an UPDATE if there's a match; there are no options for it to raise
-an error or to skip performing an UPDATE.
-
-``ON DUPLICATE KEY UPDATE`` is used to perform an update of the already
-existing row, using any combination of new values as well as values
-from the proposed insertion.   These values are normally specified using
-keyword arguments passed to the
-:meth:`_mysql.Insert.on_duplicate_key_update`
-given column key values (usually the name of the column, unless it
-specifies :paramref:`_schema.Column.key`
-) as keys and literal or SQL expressions
-as values:
-
-.. sourcecode:: pycon+sql
-
-    >>> insert_stmt = insert(my_table).values(
-    ...     id="some_existing_id", data="inserted value"
-    ... )
-
-    >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
-    ...     data="some data",
-    ...     updated_at=func.current_timestamp(),
-    ... )
-
-    >>> print(on_duplicate_key_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
-    ON DUPLICATE KEY UPDATE data = %s, updated_at = CURRENT_TIMESTAMP
-
-In a manner similar to that of :meth:`.UpdateBase.values`, other parameter
-forms are accepted, including a single dictionary:
-
-.. sourcecode:: pycon+sql
-
-    >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
-    ...     {"data": "some data", "updated_at": func.current_timestamp()},
-    ... )
-
-as well as a list of 2-tuples, which will automatically provide
-a parameter-ordered UPDATE statement in a manner similar to that described
-at :ref:`tutorial_parameter_ordered_updates`.  Unlike the :class:`_expression.Update`
-object,
-no special flag is needed to specify the intent since the argument form is
-this context is unambiguous:
-
-.. sourcecode:: pycon+sql
-
-    >>> on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
-    ...     [
-    ...         ("data", "some data"),
-    ...         ("updated_at", func.current_timestamp()),
-    ...     ]
-    ... )
-
-    >>> print(on_duplicate_key_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (%s, %s)
-    ON DUPLICATE KEY UPDATE data = %s, updated_at = CURRENT_TIMESTAMP
-
-.. warning::
-
-    The :meth:`_mysql.Insert.on_duplicate_key_update`
-    method does **not** take into
-    account Python-side default UPDATE values or generation functions, e.g.
-    e.g. those specified using :paramref:`_schema.Column.onupdate`.
-    These values will not be exercised for an ON DUPLICATE KEY style of UPDATE,
-    unless they are manually specified explicitly in the parameters.
-
-
-
-In order to refer to the proposed insertion row, the special alias
-:attr:`_mysql.Insert.inserted` is available as an attribute on
-the :class:`_mysql.Insert` object; this object is a
-:class:`_expression.ColumnCollection` which contains all columns of the target
-table:
-
-.. sourcecode:: pycon+sql
-
-    >>> stmt = insert(my_table).values(
-    ...     id="some_id", data="inserted value", author="jlh"
-    ... )
-
-    >>> do_update_stmt = stmt.on_duplicate_key_update(
-    ...     data="updated value", author=stmt.inserted.author
-    ... )
-
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data, author) VALUES (%s, %s, %s)
-    ON DUPLICATE KEY UPDATE data = %s, author = VALUES(author)
-
-When rendered, the "inserted" namespace will produce the expression
-``VALUES(<columnname>)``.
-
-rowcount Support
+行数支持
 ----------------
 
-SQLAlchemy standardizes the DBAPI ``cursor.rowcount`` attribute to be the
-usual definition of "number of rows matched by an UPDATE or DELETE" statement.
-This is in contradiction to the default setting on most MySQL DBAPI drivers,
-which is "number of rows actually modified/deleted".  For this reason, the
-SQLAlchemy MySQL dialects always add the ``constants.CLIENT.FOUND_ROWS``
-flag, or whatever is equivalent for the target dialect, upon connection.
-This setting is currently hardcoded.
+rowcount Support
 
-.. seealso::
+.. tab:: 中文
 
-    :attr:`_engine.CursorResult.rowcount`
+    SQLAlchemy 对 DBAPI 的 ``cursor.rowcount`` 属性进行了标准化处理，其语义被统一为“UPDATE 或 DELETE 语句所匹配的行数”。  
+    这一行为与大多数 MySQL DBAPI 驱动的默认设置相反，后者通常返回“实际被修改或删除的行数”。  
+    因此，SQLAlchemy 的 MySQL 方言在建立连接时总是添加 ``constants.CLIENT.FOUND_ROWS`` 标志，或者目标方言等效的设置。  
+    这一配置当前是硬编码实现的。
+
+    .. seealso::
+
+        :attr:`_engine.CursorResult.rowcount`
+
+.. tab:: 英文
+
+    SQLAlchemy standardizes the DBAPI ``cursor.rowcount`` attribute to be the
+    usual definition of "number of rows matched by an UPDATE or DELETE" statement.
+    This is in contradiction to the default setting on most MySQL DBAPI drivers,
+    which is "number of rows actually modified/deleted".  For this reason, the
+    SQLAlchemy MySQL dialects always add the ``constants.CLIENT.FOUND_ROWS``
+    flag, or whatever is equivalent for the target dialect, upon connection.
+    This setting is currently hardcoded.
+
+    .. seealso::
+
+        :attr:`_engine.CursorResult.rowcount`
 
 
 .. _mysql_indexes:
 
-MySQL / MariaDB- Specific Index Options
+MySQL / MariaDB 特定索引选项
 -----------------------------------------
 
-MySQL and MariaDB-specific extensions to the :class:`.Index` construct are available.
+MySQL / MariaDB- Specific Index Options
+
+.. tab:: 中文
+
+    MySQL 和 MariaDB 为 :class:`.Index` 构造器提供了特定的扩展。
+
+.. tab:: 英文
+
+    MySQL and MariaDB-specific extensions to the :class:`.Index` construct are available.
+
+索引长度
+~~~~~~~~~~~~~
 
 Index Length
-~~~~~~~~~~~~~
 
-MySQL and MariaDB both provide an option to create index entries with a certain length, where
-"length" refers to the number of characters or bytes in each value which will
-become part of the index. SQLAlchemy provides this feature via the
-``mysql_length`` and/or ``mariadb_length`` parameters::
+.. tab:: 中文
 
-    Index("my_index", my_table.c.data, mysql_length=10, mariadb_length=10)
+    MySQL 和 MariaDB 都支持在创建索引时为每个索引列指定一个“长度”（length）参数，  
+    该参数表示每个索引值中被用于建立索引的字符或字节数。  
+    SQLAlchemy 通过 ``mysql_length`` 和/或 ``mariadb_length`` 参数提供此功能：
 
-    Index("a_b_idx", my_table.c.a, my_table.c.b, mysql_length={"a": 4, "b": 9})
+    ::
 
-    Index(
-        "a_b_idx", my_table.c.a, my_table.c.b, mariadb_length={"a": 4, "b": 9}
-    )
+        Index("my_index", my_table.c.data, mysql_length=10, mariadb_length=10)
 
-Prefix lengths are given in characters for nonbinary string types and in bytes
-for binary string types. The value passed to the keyword argument *must* be
-either an integer (and, thus, specify the same prefix length value for all
-columns of the index) or a dict in which keys are column names and values are
-prefix length values for corresponding columns. MySQL and MariaDB only allow a
-length for a column of an index if it is for a CHAR, VARCHAR, TEXT, BINARY,
-VARBINARY and BLOB.
+        Index("a_b_idx", my_table.c.a, my_table.c.b, mysql_length={"a": 4, "b": 9})
 
-Index Prefixes
+        Index(
+            "a_b_idx", my_table.c.a, my_table.c.b, mariadb_length={"a": 4, "b": 9}
+        )
+
+    对于非二进制字符串类型，该前缀长度以“字符数”为单位；而对于二进制字符串类型，则以“字节数”为单位。  
+    传入该关键字参数的值必须是一个整数（表示为索引中所有列统一设定前缀长度），  
+    或是一个字典，其中键为列名，值为相应列的前缀长度。
+
+.. tab:: 英文
+
+    MySQL and MariaDB both provide an option to create index entries with a certain length, where
+    "length" refers to the number of characters or bytes in each value which will
+    become part of the index. SQLAlchemy provides this feature via the
+    ``mysql_length`` and/or ``mariadb_length`` parameters::
+
+        Index("my_index", my_table.c.data, mysql_length=10, mariadb_length=10)
+
+        Index("a_b_idx", my_table.c.a, my_table.c.b, mysql_length={"a": 4, "b": 9})
+
+        Index(
+            "a_b_idx", my_table.c.a, my_table.c.b, mariadb_length={"a": 4, "b": 9}
+        )
+
+    Prefix lengths are given in characters for nonbinary string types and in bytes
+    for binary string types. The value passed to the keyword argument *must* be
+    either an integer (and, thus, specify the same prefix length value for all
+    columns of the index) or a dict in which keys are column names and values are
+    prefix length values for corresponding columns. MySQL and MariaDB only allow a
+    length for a column of an index if it is for a CHAR, VARCHAR, TEXT, BINARY,
+    VARBINARY and BLOB.
+
+索引前缀
 ~~~~~~~~~~~~~~
 
-MySQL storage engines permit you to specify an index prefix when creating
-an index. SQLAlchemy provides this feature via the
-``mysql_prefix`` parameter on :class:`.Index`::
+Index Prefixes
 
-    Index("my_index", my_table.c.data, mysql_prefix="FULLTEXT")
+.. tab:: 中文
 
-The value passed to the keyword argument will be simply passed through to the
-underlying CREATE INDEX, so it *must* be a valid index prefix for your MySQL
-storage engine.
+    MySQL 和 MariaDB 仅允许在索引中指定 CHAR、VARCHAR、TEXT、BINARY、VARBINARY 和 BLOB 类型的列的长度。
 
-.. seealso::
+    MySQL 存储引擎支持在创建索引时指定索引前缀。SQLAlchemy 提供了 ``mysql_prefix`` 参数用于 :class:`.Index`：
 
-    `CREATE INDEX <https://dev.mysql.com/doc/refman/5.0/en/create-index.html>`_ - MySQL documentation
+    ::
+
+        Index("my_index", my_table.c.data, mysql_prefix="FULLTEXT")
+
+    该参数的值将原样传递给底层的 CREATE INDEX 语句，因此必须是你所使用的 MySQL 存储引擎支持的有效前缀关键字。
+
+    .. seealso::
+
+        `CREATE INDEX <https://dev.mysql.com/doc/refman/5.0/en/create-index.html>`_ - MySQL 官方文档
+
+.. tab:: 英文
+
+    MySQL storage engines permit you to specify an index prefix when creating
+    an index. SQLAlchemy provides this feature via the
+    ``mysql_prefix`` parameter on :class:`.Index`::
+
+        Index("my_index", my_table.c.data, mysql_prefix="FULLTEXT")
+
+    The value passed to the keyword argument will be simply passed through to the
+    underlying CREATE INDEX, so it *must* be a valid index prefix for your MySQL
+    storage engine.
+
+    .. seealso::
+
+        `CREATE INDEX <https://dev.mysql.com/doc/refman/5.0/en/create-index.html>`_ - MySQL documentation
+
+索引类型
+~~~~~~~~~~~~~
 
 Index Types
+
+.. tab:: 中文
+
+    某些 MySQL 存储引擎还允许在创建索引或主键约束时指定索引类型。  
+    SQLAlchemy 提供了 ``mysql_using`` 参数用于 :class:`.Index`：
+
+    ::
+
+        Index(
+            "my_index", my_table.c.data, mysql_using="hash", mariadb_using="hash"
+        )
+
+    也可以在 :class:`.PrimaryKeyConstraint` 上使用 ``mysql_using`` 参数：
+
+    ::
+
+        PrimaryKeyConstraint("data", mysql_using="hash", mariadb_using="hash")
+
+    该参数的值将被原样传递给 CREATE INDEX 或 PRIMARY KEY 子句，  
+    因此必须是你使用的 MySQL 存储引擎支持的有效索引类型。
+
+    更多信息请参考：
+
+    https://dev.mysql.com/doc/refman/5.0/en/create-index.html  
+    https://dev.mysql.com/doc/refman/5.0/en/create-table.html
+
+.. tab:: 英文
+
+    Some MySQL storage engines permit you to specify an index type when creating
+    an index or primary key constraint. SQLAlchemy provides this feature via the
+    ``mysql_using`` parameter on :class:`.Index`::
+
+        Index(
+            "my_index", my_table.c.data, mysql_using="hash", mariadb_using="hash"
+        )
+
+    As well as the ``mysql_using`` parameter on :class:`.PrimaryKeyConstraint`::
+
+        PrimaryKeyConstraint("data", mysql_using="hash", mariadb_using="hash")
+
+    The value passed to the keyword argument will be simply passed through to the
+    underlying CREATE INDEX or PRIMARY KEY clause, so it *must* be a valid index
+    type for your MySQL storage engine.
+
+    More information can be found at:
+
+    https://dev.mysql.com/doc/refman/5.0/en/create-index.html
+
+    https://dev.mysql.com/doc/refman/5.0/en/create-table.html
+
+索引解析器
 ~~~~~~~~~~~~~
-
-Some MySQL storage engines permit you to specify an index type when creating
-an index or primary key constraint. SQLAlchemy provides this feature via the
-``mysql_using`` parameter on :class:`.Index`::
-
-    Index(
-        "my_index", my_table.c.data, mysql_using="hash", mariadb_using="hash"
-    )
-
-As well as the ``mysql_using`` parameter on :class:`.PrimaryKeyConstraint`::
-
-    PrimaryKeyConstraint("data", mysql_using="hash", mariadb_using="hash")
-
-The value passed to the keyword argument will be simply passed through to the
-underlying CREATE INDEX or PRIMARY KEY clause, so it *must* be a valid index
-type for your MySQL storage engine.
-
-More information can be found at:
-
-https://dev.mysql.com/doc/refman/5.0/en/create-index.html
-
-https://dev.mysql.com/doc/refman/5.0/en/create-table.html
 
 Index Parsers
-~~~~~~~~~~~~~
 
-CREATE FULLTEXT INDEX in MySQL also supports a "WITH PARSER" option.  This
-is available using the keyword argument ``mysql_with_parser``::
+.. tab:: 中文
 
-    Index(
-        "my_index",
-        my_table.c.data,
-        mysql_prefix="FULLTEXT",
-        mysql_with_parser="ngram",
-        mariadb_prefix="FULLTEXT",
-        mariadb_with_parser="ngram",
-    )
+    MySQL 中的 CREATE FULLTEXT INDEX 还支持 "WITH PARSER" 选项。  
+    此功能可通过 ``mysql_with_parser`` 关键字参数实现：
+
+    ::
+
+        Index(
+            "my_index",
+            my_table.c.data,
+            mysql_prefix="FULLTEXT",
+            mysql_with_parser="ngram",
+            mariadb_prefix="FULLTEXT",
+            mariadb_with_parser="ngram",
+        )
+
+.. tab:: 英文
+
+    CREATE FULLTEXT INDEX in MySQL also supports a "WITH PARSER" option.  This
+    is available using the keyword argument ``mysql_with_parser``::
+
+        Index(
+            "my_index",
+            my_table.c.data,
+            mysql_prefix="FULLTEXT",
+            mysql_with_parser="ngram",
+            mariadb_prefix="FULLTEXT",
+            mariadb_with_parser="ngram",
+        )
 
 .. _mysql_foreign_keys:
 
-MySQL / MariaDB Foreign Keys
+MySQL / MariaDB 外键
 -----------------------------
 
-MySQL and MariaDB's behavior regarding foreign keys has some important caveats.
+MySQL / MariaDB Foreign Keys
 
-Foreign Key Arguments to Avoid
+.. tab:: 中文
+
+    MySQL 和 MariaDB 关于外键的行为有一些重要的警告。
+
+.. tab:: 英文
+
+    MySQL and MariaDB's behavior regarding foreign keys has some important caveats.
+
+应避免使用的外键参数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Neither MySQL nor MariaDB support the foreign key arguments "DEFERRABLE", "INITIALLY",
-or "MATCH".  Using the ``deferrable`` or ``initially`` keyword argument with
-:class:`_schema.ForeignKeyConstraint` or :class:`_schema.ForeignKey`
-will have the effect of
-these keywords being rendered in a DDL expression, which will then raise an
-error on MySQL or MariaDB.  In order to use these keywords on a foreign key while having
-them ignored on a MySQL / MariaDB backend, use a custom compile rule::
+Foreign Key Arguments to Avoid
 
-    from sqlalchemy.ext.compiler import compiles
-    from sqlalchemy.schema import ForeignKeyConstraint
+.. tab:: 中文
+
+    MySQL 和 MariaDB 均不支持外键参数 "DEFERRABLE"、"INITIALLY" 或 "MATCH"。  
+    在 :class:`_schema.ForeignKeyConstraint` 或 :class:`_schema.ForeignKey` 中使用 ``deferrable`` 或 ``initially`` 关键字参数，会导致这些关键字出现在生成的 DDL 表达式中，从而在 MySQL 或 MariaDB 上引发错误。  
+    若希望在外键中使用这些关键字但又希望在 MySQL / MariaDB 后端中忽略它们，可使用自定义编译规则实现::
+
+        from sqlalchemy.ext.compiler import compiles
+        from sqlalchemy.schema import ForeignKeyConstraint
+
+        @compiles(ForeignKeyConstraint, "mysql", "mariadb")
+        def process(element, compiler, **kw):
+            element.deferrable = element.initially = None
+            return compiler.visit_foreign_key_constraint(element, **kw)
+
+    " MATCH " 关键字则更为棘手，SQLAlchemy 明确禁止其与 MySQL 或 MariaDB 后端同时使用。  
+    虽然 MySQL / MariaDB 会静默忽略该参数，但其副作用是导致 ON UPDATE 和 ON DELETE 选项也被后端忽略。  
+    因此，在 MySQL / MariaDB 后端中 **绝不可使用 MATCH**；如同 DEFERRABLE 和 INITIALLY，可使用自定义编译规则在定义 DDL 时修正 ForeignKeyConstraint。
+
+.. tab:: 英文
+
+    Neither MySQL nor MariaDB support the foreign key arguments "DEFERRABLE", "INITIALLY",
+    or "MATCH".  Using the ``deferrable`` or ``initially`` keyword argument with
+    :class:`_schema.ForeignKeyConstraint` or :class:`_schema.ForeignKey`
+    will have the effect of
+    these keywords being rendered in a DDL expression, which will then raise an
+    error on MySQL or MariaDB.  In order to use these keywords on a foreign key while having
+    them ignored on a MySQL / MariaDB backend, use a custom compile rule::
+
+        from sqlalchemy.ext.compiler import compiles
+        from sqlalchemy.schema import ForeignKeyConstraint
 
 
-    @compiles(ForeignKeyConstraint, "mysql", "mariadb")
-    def process(element, compiler, **kw):
-        element.deferrable = element.initially = None
-        return compiler.visit_foreign_key_constraint(element, **kw)
+        @compiles(ForeignKeyConstraint, "mysql", "mariadb")
+        def process(element, compiler, **kw):
+            element.deferrable = element.initially = None
+            return compiler.visit_foreign_key_constraint(element, **kw)
 
-The "MATCH" keyword is in fact more insidious, and is explicitly disallowed
-by SQLAlchemy in conjunction with the MySQL or MariaDB backends.  This argument is
-silently ignored by MySQL / MariaDB, but in addition has the effect of ON UPDATE and ON
-DELETE options also being ignored by the backend.   Therefore MATCH should
-never be used with the MySQL / MariaDB backends; as is the case with DEFERRABLE and
-INITIALLY, custom compilation rules can be used to correct a
-ForeignKeyConstraint at DDL definition time.
+    The "MATCH" keyword is in fact more insidious, and is explicitly disallowed
+    by SQLAlchemy in conjunction with the MySQL or MariaDB backends.  This argument is
+    silently ignored by MySQL / MariaDB, but in addition has the effect of ON UPDATE and ON
+    DELETE options also being ignored by the backend.   Therefore MATCH should
+    never be used with the MySQL / MariaDB backends; as is the case with DEFERRABLE and
+    INITIALLY, custom compilation rules can be used to correct a
+    ForeignKeyConstraint at DDL definition time.
 
-Reflection of Foreign Key Constraints
+外键约束的反射
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Not all MySQL / MariaDB storage engines support foreign keys.  When using the
-very common ``MyISAM`` MySQL storage engine, the information loaded by table
-reflection will not include foreign keys.  For these tables, you may supply a
-:class:`~sqlalchemy.ForeignKeyConstraint` at reflection time::
+Reflection of Foreign Key Constraints
 
-  Table(
-      "mytable",
-      metadata,
-      ForeignKeyConstraint(["other_id"], ["othertable.other_id"]),
-      autoload_with=engine,
-  )
+.. tab:: 中文
 
-.. seealso::
+    并非所有 MySQL / MariaDB 存储引擎都支持外键。若使用常见的 ``MyISAM`` 存储引擎，通过表反射机制加载的信息将 **不包含外键信息**。对于此类表，您可以在反射时显式提供 :class:`~sqlalchemy.ForeignKeyConstraint`::
 
-    :ref:`mysql_storage_engines`
+    Table(
+        "mytable",
+        metadata,
+        ForeignKeyConstraint(["other_id"], ["othertable.other_id"]),
+        autoload_with=engine,
+    )
+
+    .. seealso::
+
+        :ref:`mysql_storage_engines`
+
+.. tab:: 英文
+
+    Not all MySQL / MariaDB storage engines support foreign keys.  When using the
+    very common ``MyISAM`` MySQL storage engine, the information loaded by table
+    reflection will not include foreign keys.  For these tables, you may supply a
+    :class:`~sqlalchemy.ForeignKeyConstraint` at reflection time::
+
+    Table(
+        "mytable",
+        metadata,
+        ForeignKeyConstraint(["other_id"], ["othertable.other_id"]),
+        autoload_with=engine,
+    )
+
+    .. seealso::
+
+        :ref:`mysql_storage_engines`
 
 .. _mysql_unique_constraints:
 
-MySQL / MariaDB Unique Constraints and Reflection
+MySQL / MariaDB 唯一约束和反射
 ----------------------------------------------------
 
-SQLAlchemy supports both the :class:`.Index` construct with the
-flag ``unique=True``, indicating a UNIQUE index, as well as the
-:class:`.UniqueConstraint` construct, representing a UNIQUE constraint.
-Both objects/syntaxes are supported by MySQL / MariaDB when emitting DDL to create
-these constraints.  However, MySQL / MariaDB does not have a unique constraint
-construct that is separate from a unique index; that is, the "UNIQUE"
-constraint on MySQL / MariaDB is equivalent to creating a "UNIQUE INDEX".
+MySQL / MariaDB Unique Constraints and Reflection
 
-When reflecting these constructs, the
-:meth:`_reflection.Inspector.get_indexes`
-and the :meth:`_reflection.Inspector.get_unique_constraints`
-methods will **both**
-return an entry for a UNIQUE index in MySQL / MariaDB.  However, when performing
-full table reflection using ``Table(..., autoload_with=engine)``,
-the :class:`.UniqueConstraint` construct is
-**not** part of the fully reflected :class:`_schema.Table` construct under any
-circumstances; this construct is always represented by a :class:`.Index`
-with the ``unique=True`` setting present in the :attr:`_schema.Table.indexes`
-collection.
+.. tab:: 中文
 
+    SQLAlchemy 支持使用 ``unique=True`` 标志的 :class:`.Index` 构造，用于表示唯一索引，以及 :class:`.UniqueConstraint` 构造，用于表示唯一约束。  
+    在发出用于创建这些约束的 DDL 时，MySQL / MariaDB 同时支持这两种对象/语法。  
+    然而，MySQL / MariaDB 并不存在与唯一索引分离的唯一约束结构；也就是说，在 MySQL / MariaDB 中的 "UNIQUE" 约束等同于创建 "UNIQUE INDEX"。
+
+    在反射这些结构时，:meth:`_reflection.Inspector.get_indexes` 与 :meth:`_reflection.Inspector.get_unique_constraints` 方法 **都** 会返回 MySQL / MariaDB 中的唯一索引条目。  
+    但在使用 ``Table(..., autoload_with=engine)`` 进行完整表反射时，:class:`.UniqueConstraint` 构造 **不会** 出现在任何情况下反射得到的 :class:`_schema.Table` 构造中；此构造总是由 ``unique=True`` 标志的 :class:`.Index` 表示，并包含在 :attr:`_schema.Table.indexes` 集合中。
+
+
+.. tab:: 英文
+
+    SQLAlchemy supports both the :class:`.Index` construct with the
+    flag ``unique=True``, indicating a UNIQUE index, as well as the
+    :class:`.UniqueConstraint` construct, representing a UNIQUE constraint.
+    Both objects/syntaxes are supported by MySQL / MariaDB when emitting DDL to create
+    these constraints.  However, MySQL / MariaDB does not have a unique constraint
+    construct that is separate from a unique index; that is, the "UNIQUE"
+    constraint on MySQL / MariaDB is equivalent to creating a "UNIQUE INDEX".
+
+    When reflecting these constructs, the
+    :meth:`_reflection.Inspector.get_indexes`
+    and the :meth:`_reflection.Inspector.get_unique_constraints`
+    methods will **both**
+    return an entry for a UNIQUE index in MySQL / MariaDB.  However, when performing
+    full table reflection using ``Table(..., autoload_with=engine)``,
+    the :class:`.UniqueConstraint` construct is
+    **not** part of the fully reflected :class:`_schema.Table` construct under any
+    circumstances; this construct is always represented by a :class:`.Index`
+    with the ``unique=True`` setting present in the :attr:`_schema.Table.indexes`
+    collection.
+
+
+TIMESTAMP / DATETIME 问题
+---------------------------
 
 TIMESTAMP / DATETIME issues
----------------------------
 
 .. _mysql_timestamp_onupdate:
 
+MySQL/MariaDB 的 explicit_defaults_for_timestamp 在更新当前时间戳时渲染
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Rendering ON UPDATE CURRENT TIMESTAMP for MySQL / MariaDB's explicit_defaults_for_timestamp
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MySQL / MariaDB have historically expanded the DDL for the :class:`_types.TIMESTAMP`
-datatype into the phrase "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE
-CURRENT_TIMESTAMP", which includes non-standard SQL that automatically updates
-the column with the current timestamp when an UPDATE occurs, eliminating the
-usual need to use a trigger in such a case where server-side update changes are
-desired.
+.. tab:: 中文
 
-MySQL 5.6 introduced a new flag `explicit_defaults_for_timestamp
-<https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html
-#sysvar_explicit_defaults_for_timestamp>`_ which disables the above behavior,
-and in MySQL 8 this flag defaults to true, meaning in order to get a MySQL
-"on update timestamp" without changing this flag, the above DDL must be
-rendered explicitly.   Additionally, the same DDL is valid for use of the
-``DATETIME`` datatype as well.
+    MySQL / MariaDB 历来会将 :class:`_types.TIMESTAMP` 数据类型的 DDL 扩展为 "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"，  
+    其中包含非标准 SQL 语法，使列在 UPDATE 操作时自动更新为当前时间戳，从而省去了使用触发器实现服务端更新的需求。
 
-SQLAlchemy's MySQL dialect does not yet have an option to generate
-MySQL's "ON UPDATE CURRENT_TIMESTAMP" clause, noting that this is not a general
-purpose "ON UPDATE" as there is no such syntax in standard SQL.  SQLAlchemy's
-:paramref:`_schema.Column.server_onupdate` parameter is currently not related
-to this special MySQL behavior.
+    MySQL 5.6 引入了一个新标志 `explicit_defaults_for_timestamp <https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_explicit_defaults_for_timestamp>`_，  
+    用于禁用上述行为；在 MySQL 8 中，该标志默认开启。  
+    因此，为了在不更改该标志的前提下启用 MySQL 的 “on update timestamp” 行为，必须显式生成上述 DDL。  
+    此外，对于 ``DATETIME`` 类型也同样适用。
 
-To generate this DDL, make use of the :paramref:`_schema.Column.server_default`
-parameter and pass a textual clause that also includes the ON UPDATE clause::
+    SQLAlchemy 的 MySQL 方言目前尚未提供用于生成 MySQL 的 "ON UPDATE CURRENT_TIMESTAMP" 子句的选项；  
+    需要注意的是，这并非通用的 “ON UPDATE” 功能，因为标准 SQL 中并无此类语法。  
+    SQLAlchemy 的 :paramref:`_schema.Column.server_onupdate` 参数当前与 MySQL 特有的行为无关。
 
-    from sqlalchemy import Table, MetaData, Column, Integer, String, TIMESTAMP
-    from sqlalchemy import text
+    若要生成该 DDL，可使用 :paramref:`_schema.Column.server_default` 参数，并传入包含 ON UPDATE 子句的文本表达式::
 
-    metadata = MetaData()
+        from sqlalchemy import Table, MetaData, Column, Integer, String, TIMESTAMP
+        from sqlalchemy import text
 
-    mytable = Table(
-        "mytable",
-        metadata,
-        Column("id", Integer, primary_key=True),
-        Column("data", String(50)),
-        Column(
-            "last_updated",
-            TIMESTAMP,
-            server_default=text(
-                "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        metadata = MetaData()
+
+        mytable = Table(
+            "mytable",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("data", String(50)),
+            Column(
+                "last_updated",
+                TIMESTAMP,
+                server_default=text(
+                    "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                ),
             ),
-        ),
-    )
-
-The same instructions apply to use of the :class:`_types.DateTime` and
-:class:`_types.DATETIME` datatypes::
-
-    from sqlalchemy import DateTime
-
-    mytable = Table(
-        "mytable",
-        metadata,
-        Column("id", Integer, primary_key=True),
-        Column("data", String(50)),
-        Column(
-            "last_updated",
-            DateTime,
-            server_default=text(
-                "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-            ),
-        ),
-    )
-
-Even though the :paramref:`_schema.Column.server_onupdate` feature does not
-generate this DDL, it still may be desirable to signal to the ORM that this
-updated value should be fetched.  This syntax looks like the following::
-
-    from sqlalchemy.schema import FetchedValue
-
-
-    class MyClass(Base):
-        __tablename__ = "mytable"
-
-        id = Column(Integer, primary_key=True)
-        data = Column(String(50))
-        last_updated = Column(
-            TIMESTAMP,
-            server_default=text(
-                "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-            ),
-            server_onupdate=FetchedValue(),
         )
+
+    对于 :class:`_types.DateTime` 和 :class:`_types.DATETIME` 数据类型，同样适用上述用法::
+
+        from sqlalchemy import DateTime
+
+        mytable = Table(
+            "mytable",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("data", String(50)),
+            Column(
+                "last_updated",
+                DateTime,
+                server_default=text(
+                    "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                ),
+            ),
+        )
+
+    尽管 :paramref:`_schema.Column.server_onupdate` 不会生成上述 DDL，  
+    但仍可用于向 ORM 表明该字段的更新值应被提取。语法如下::
+
+        from sqlalchemy.schema import FetchedValue
+
+        class MyClass(Base):
+            __tablename__ = "mytable"
+
+            id = Column(Integer, primary_key=True)
+            data = Column(String(50))
+            last_updated = Column(
+                TIMESTAMP,
+                server_default=text(
+                    "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                ),
+                server_onupdate=FetchedValue(),
+            )
+
+.. tab:: 英文
+
+
+    MySQL / MariaDB have historically expanded the DDL for the :class:`_types.TIMESTAMP`
+    datatype into the phrase "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE
+    CURRENT_TIMESTAMP", which includes non-standard SQL that automatically updates
+    the column with the current timestamp when an UPDATE occurs, eliminating the
+    usual need to use a trigger in such a case where server-side update changes are
+    desired.
+
+    MySQL 5.6 introduced a new flag `explicit_defaults_for_timestamp
+    <https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html
+    #sysvar_explicit_defaults_for_timestamp>`_ which disables the above behavior,
+    and in MySQL 8 this flag defaults to true, meaning in order to get a MySQL
+    "on update timestamp" without changing this flag, the above DDL must be
+    rendered explicitly.   Additionally, the same DDL is valid for use of the
+    ``DATETIME`` datatype as well.
+
+    SQLAlchemy's MySQL dialect does not yet have an option to generate
+    MySQL's "ON UPDATE CURRENT_TIMESTAMP" clause, noting that this is not a general
+    purpose "ON UPDATE" as there is no such syntax in standard SQL.  SQLAlchemy's
+    :paramref:`_schema.Column.server_onupdate` parameter is currently not related
+    to this special MySQL behavior.
+
+    To generate this DDL, make use of the :paramref:`_schema.Column.server_default`
+    parameter and pass a textual clause that also includes the ON UPDATE clause::
+
+        from sqlalchemy import Table, MetaData, Column, Integer, String, TIMESTAMP
+        from sqlalchemy import text
+
+        metadata = MetaData()
+
+        mytable = Table(
+            "mytable",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("data", String(50)),
+            Column(
+                "last_updated",
+                TIMESTAMP,
+                server_default=text(
+                    "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                ),
+            ),
+        )
+
+    The same instructions apply to use of the :class:`_types.DateTime` and
+    :class:`_types.DATETIME` datatypes::
+
+        from sqlalchemy import DateTime
+
+        mytable = Table(
+            "mytable",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("data", String(50)),
+            Column(
+                "last_updated",
+                DateTime,
+                server_default=text(
+                    "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                ),
+            ),
+        )
+
+    Even though the :paramref:`_schema.Column.server_onupdate` feature does not
+    generate this DDL, it still may be desirable to signal to the ORM that this
+    updated value should be fetched.  This syntax looks like the following::
+
+        from sqlalchemy.schema import FetchedValue
+
+
+        class MyClass(Base):
+            __tablename__ = "mytable"
+
+            id = Column(Integer, primary_key=True)
+            data = Column(String(50))
+            last_updated = Column(
+                TIMESTAMP,
+                server_default=text(
+                    "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                ),
+                server_onupdate=FetchedValue(),
+            )
 
 .. _mysql_timestamp_null:
 
-TIMESTAMP Columns and NULL
+TIMESTAMP 列和 NULL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MySQL historically enforces that a column which specifies the
-TIMESTAMP datatype implicitly includes a default value of
-CURRENT_TIMESTAMP, even though this is not stated, and additionally
-sets the column as NOT NULL, the opposite behavior vs. that of all
-other datatypes:
+TIMESTAMP Columns and NULL
 
-.. sourcecode:: text
+.. tab:: 中文
 
-    mysql> CREATE TABLE ts_test (
-        -> a INTEGER,
-        -> b INTEGER NOT NULL,
-        -> c TIMESTAMP,
-        -> d TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        -> e TIMESTAMP NULL);
-    Query OK, 0 rows affected (0.03 sec)
+    MySQL 一贯要求指定 TIMESTAMP 类型的列隐式包含默认值 CURRENT_TIMESTAMP，  
+    即使未显式声明，并且该列同时被设为 NOT NULL。这种行为与所有其他数据类型正好相反：
 
-    mysql> SHOW CREATE TABLE ts_test;
-    +---------+-----------------------------------------------------
-    | Table   | Create Table
-    +---------+-----------------------------------------------------
-    | ts_test | CREATE TABLE `ts_test` (
-      `a` int(11) DEFAULT NULL,
-      `b` int(11) NOT NULL,
-      `c` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      `d` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      `e` timestamp NULL DEFAULT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1
+    .. sourcecode:: text
 
-Above, we see that an INTEGER column defaults to NULL, unless it is specified
-with NOT NULL.   But when the column is of type TIMESTAMP, an implicit
-default of CURRENT_TIMESTAMP is generated which also coerces the column
-to be a NOT NULL, even though we did not specify it as such.
+        mysql> CREATE TABLE ts_test (
+            -> a INTEGER,
+            -> b INTEGER NOT NULL,
+            -> c TIMESTAMP,
+            -> d TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            -> e TIMESTAMP NULL);
+        Query OK, 0 rows affected (0.03 sec)
 
-This behavior of MySQL can be changed on the MySQL side using the
-`explicit_defaults_for_timestamp
-<https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html
-#sysvar_explicit_defaults_for_timestamp>`_ configuration flag introduced in
-MySQL 5.6.  With this server setting enabled, TIMESTAMP columns behave like
-any other datatype on the MySQL side with regards to defaults and nullability.
+        mysql> SHOW CREATE TABLE ts_test;
+        +---------+-----------------------------------------------------
+        | Table   | Create Table
+        +---------+-----------------------------------------------------
+        | ts_test | CREATE TABLE `ts_test` (
+        `a` int(11) DEFAULT NULL,
+        `b` int(11) NOT NULL,
+        `c` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        `d` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `e` timestamp NULL DEFAULT NULL
+        ) ENGINE=MyISAM DEFAULT CHARSET=latin1
 
-However, to accommodate the vast majority of MySQL databases that do not
-specify this new flag, SQLAlchemy emits the "NULL" specifier explicitly with
-any TIMESTAMP column that does not specify ``nullable=False``.   In order to
-accommodate newer databases that specify ``explicit_defaults_for_timestamp``,
-SQLAlchemy also emits NOT NULL for TIMESTAMP columns that do specify
-``nullable=False``.   The following example illustrates::
+    如上所示，INTEGER 列默认值为 NULL，除非显式指定 NOT NULL；而 TIMESTAMP 类型列则隐式生成 CURRENT_TIMESTAMP 默认值，并强制列为 NOT NULL，尽管未指定。
 
-    from sqlalchemy import MetaData, Integer, Table, Column, text
-    from sqlalchemy.dialects.mysql import TIMESTAMP
+    MySQL 在 5.6 中通过引入 `explicit_defaults_for_timestamp <https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_explicit_defaults_for_timestamp>`_ 配置标志，  
+    可改变上述行为。启用该设置后，TIMESTAMP 列在默认值和可空性方面的行为将与其他数据类型一致。
 
-    m = MetaData()
-    t = Table(
-        "ts_test",
-        m,
-        Column("a", Integer),
-        Column("b", Integer, nullable=False),
-        Column("c", TIMESTAMP),
-        Column("d", TIMESTAMP, nullable=False),
-    )
+    然而，考虑到大多数 MySQL 数据库未启用该标志，SQLAlchemy 在声明未设置 ``nullable=False`` 的 TIMESTAMP 列时会显式发出 "NULL" 修饰符。  
+    而对于启用了 ``nullable=False`` 的列，则显式发出 "NOT NULL"，以兼容新版数据库。以下示例说明该行为::
 
+        from sqlalchemy import MetaData, Integer, Table, Column, text
+        from sqlalchemy.dialects.mysql import TIMESTAMP
 
-    from sqlalchemy import create_engine
+        m = MetaData()
+        t = Table(
+            "ts_test",
+            m,
+            Column("a", Integer),
+            Column("b", Integer, nullable=False),
+            Column("c", TIMESTAMP),
+            Column("d", TIMESTAMP, nullable=False),
+        )
 
-    e = create_engine("mysql+mysqldb://scott:tiger@localhost/test", echo=True)
-    m.create_all(e)
+        from sqlalchemy import create_engine
 
-output:
+        e = create_engine("mysql+mysqldb://scott:tiger@localhost/test", echo=True)
+        m.create_all(e)
 
-.. sourcecode:: sql
+    输出：
 
-    CREATE TABLE ts_test (
-        a INTEGER,
-        b INTEGER NOT NULL,
-        c TIMESTAMP NULL,
-        d TIMESTAMP NOT NULL
-    )
+    .. sourcecode:: sql
+
+        CREATE TABLE ts_test (
+            a INTEGER,
+            b INTEGER NOT NULL,
+            c TIMESTAMP NULL,
+            d TIMESTAMP NOT NULL
+        )
+
+.. tab:: 英文
+
+    MySQL historically enforces that a column which specifies the
+    TIMESTAMP datatype implicitly includes a default value of
+    CURRENT_TIMESTAMP, even though this is not stated, and additionally
+    sets the column as NOT NULL, the opposite behavior vs. that of all
+    other datatypes:
+    
+    .. sourcecode:: text
+    
+        mysql> CREATE TABLE ts_test (
+            -> a INTEGER,
+            -> b INTEGER NOT NULL,
+            -> c TIMESTAMP,
+            -> d TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            -> e TIMESTAMP NULL);
+        Query OK, 0 rows affected (0.03 sec)
+    
+        mysql> SHOW CREATE TABLE ts_test;
+        +---------+-----------------------------------------------------
+        | Table   | Create Table
+        +---------+-----------------------------------------------------
+        | ts_test | CREATE TABLE `ts_test` (
+          `a` int(11) DEFAULT NULL,
+          `b` int(11) NOT NULL,
+          `c` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          `d` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          `e` timestamp NULL DEFAULT NULL
+        ) ENGINE=MyISAM DEFAULT CHARSET=latin1
+    
+    Above, we see that an INTEGER column defaults to NULL, unless it is specified
+    with NOT NULL.   But when the column is of type TIMESTAMP, an implicit
+    default of CURRENT_TIMESTAMP is generated which also coerces the column
+    to be a NOT NULL, even though we did not specify it as such.
+    
+    This behavior of MySQL can be changed on the MySQL side using the
+    `explicit_defaults_for_timestamp
+    <https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html
+    #sysvar_explicit_defaults_for_timestamp>`_ configuration flag introduced in
+    MySQL 5.6.  With this server setting enabled, TIMESTAMP columns behave like
+    any other datatype on the MySQL side with regards to defaults and nullability.
+    
+    However, to accommodate the vast majority of MySQL databases that do not
+    specify this new flag, SQLAlchemy emits the "NULL" specifier explicitly with
+    any TIMESTAMP column that does not specify ``nullable=False``.   In order to
+    accommodate newer databases that specify ``explicit_defaults_for_timestamp``,
+    SQLAlchemy also emits NOT NULL for TIMESTAMP columns that do specify
+    ``nullable=False``.   The following example illustrates::
+    
+        from sqlalchemy import MetaData, Integer, Table, Column, text
+        from sqlalchemy.dialects.mysql import TIMESTAMP
+    
+        m = MetaData()
+        t = Table(
+            "ts_test",
+            m,
+            Column("a", Integer),
+            Column("b", Integer, nullable=False),
+            Column("c", TIMESTAMP),
+            Column("d", TIMESTAMP, nullable=False),
+        )
+    
+    
+        from sqlalchemy import create_engine
+    
+        e = create_engine("mysql+mysqldb://scott:tiger@localhost/test", echo=True)
+        m.create_all(e)
+    
+    output:
+    
+    .. sourcecode:: sql
+    
+        CREATE TABLE ts_test (
+            a INTEGER,
+            b INTEGER NOT NULL,
+            c TIMESTAMP NULL,
+            d TIMESTAMP NOT NULL
+        )
 
 """  # noqa
+
 from __future__ import annotations
 
 from array import array as _array
@@ -1142,9 +2004,7 @@ from ...types import VARBINARY
 from ...util import topological
 
 
-SET_RE = re.compile(
-    r"\s*SET\s+(?:(?:GLOBAL|SESSION)\s+)?\w", re.I | re.UNICODE
-)
+SET_RE = re.compile(r"\s*SET\s+(?:(?:GLOBAL|SESSION)\s+)?\w", re.I | re.UNICODE)
 
 # old names
 MSTime = TIME
@@ -1249,17 +2109,13 @@ class MySQLExecutionContext(default.DefaultExecutionContext):
             # #10505)
             #
             # taken from cx_Oracle implementation
-            self.cursor_fetch_strategy = (
-                _cursor.FullyBufferedCursorFetchStrategy(
-                    self.cursor,
-                    [
-                        (entry.keyname, None)
-                        for entry in cast(
-                            SQLCompiler, self.compiled
-                        )._result_columns
-                    ],
-                    [],
-                )
+            self.cursor_fetch_strategy = _cursor.FullyBufferedCursorFetchStrategy(
+                self.cursor,
+                [
+                    (entry.keyname, None)
+                    for entry in cast(SQLCompiler, self.compiled)._result_columns
+                ],
+                [],
             )
 
     def create_server_side_cursor(self):
@@ -1270,10 +2126,7 @@ class MySQLExecutionContext(default.DefaultExecutionContext):
 
     def fire_sequence(self, seq, type_):
         return self._execute_scalar(
-            (
-                "select nextval(%s)"
-                % self.identifier_preparer.format_sequence(seq)
-            ),
+            ("select nextval(%s)" % self.identifier_preparer.format_sequence(seq)),
             type_,
         )
 
@@ -1301,15 +2154,11 @@ class MySQLCompiler(compiler.SQLCompiler):
         return "rand%s" % self.function_argspec(fn)
 
     def visit_rollup_func(self, fn, **kw):
-        clause = ", ".join(
-            elem._compiler_dispatch(self, **kw) for elem in fn.clauses
-        )
+        clause = ", ".join(elem._compiler_dispatch(self, **kw) for elem in fn.clauses)
         return f"{clause} WITH ROLLUP"
 
     def visit_aggregate_strings_func(self, fn, **kw):
-        expr, delimeter = (
-            elem._compiler_dispatch(self, **kw) for elem in fn.clauses
-        )
+        expr, delimeter = (elem._compiler_dispatch(self, **kw) for elem in fn.clauses)
         return f"group_concat({expr} SEPARATOR {delimeter})"
 
     def visit_sequence(self, seq, **kw):
@@ -1337,18 +2186,12 @@ class MySQLCompiler(compiler.SQLCompiler):
         )
 
         if binary.type._type_affinity is sqltypes.Integer:
-            type_expression = (
-                "ELSE CAST(JSON_EXTRACT(%s, %s) AS SIGNED INTEGER)"
-                % (
-                    self.process(binary.left, **kw),
-                    self.process(binary.right, **kw),
-                )
+            type_expression = "ELSE CAST(JSON_EXTRACT(%s, %s) AS SIGNED INTEGER)" % (
+                self.process(binary.left, **kw),
+                self.process(binary.right, **kw),
             )
         elif binary.type._type_affinity in (sqltypes.Numeric, sqltypes.Float):
-            if (
-                binary.type.scale is not None
-                and binary.type.precision is not None
-            ):
+            if binary.type.scale is not None and binary.type.precision is not None:
                 # using DECIMAL here because MySQL does not recognize NUMERIC
                 type_expression = (
                     "ELSE CAST(JSON_EXTRACT(%s, %s) AS DECIMAL(%s, %s))"
@@ -1435,10 +2278,7 @@ class MySQLCompiler(compiler.SQLCompiler):
             val = on_duplicate_update[column.key]
 
             def replace(obj):
-                if (
-                    isinstance(obj, elements.BindParameter)
-                    and obj.type._isnull
-                ):
+                if isinstance(obj, elements.BindParameter) and obj.type._isnull:
                     return obj._with_binary_element_type(column.type)
                 elif (
                     isinstance(obj, elements.ColumnClause)
@@ -1446,8 +2286,7 @@ class MySQLCompiler(compiler.SQLCompiler):
                 ):
                     if requires_mysql8_alias:
                         column_literal_clause = (
-                            f"{_on_dup_alias_name}."
-                            f"{self.preparer.quote(obj.name)}"
+                            f"{_on_dup_alias_name}.{self.preparer.quote(obj.name)}"
                         )
                     else:
                         column_literal_clause = (
@@ -1477,15 +2316,12 @@ class MySQLCompiler(compiler.SQLCompiler):
 
         if requires_mysql8_alias:
             return (
-                f"AS {_on_dup_alias_name} "
-                f"ON DUPLICATE KEY UPDATE {', '.join(clauses)}"
+                f"AS {_on_dup_alias_name} ON DUPLICATE KEY UPDATE {', '.join(clauses)}"
             )
         else:
             return f"ON DUPLICATE KEY UPDATE {', '.join(clauses)}"
 
-    def visit_concat_op_expression_clauselist(
-        self, clauselist, operator, **kw
-    ):
+    def visit_concat_op_expression_clauselist(self, clauselist, operator, **kw):
         return "concat(%s)" % (
             ", ".join(self.process(elem, **kw) for elem in clauselist.clauses)
         )
@@ -1583,9 +2419,7 @@ class MySQLCompiler(compiler.SQLCompiler):
             ),
         ):
             return self.dialect.type_compiler_instance.process(type_)
-        elif isinstance(type_, sqltypes.String) and not isinstance(
-            type_, (ENUM, SET)
-        ):
+        elif isinstance(type_, sqltypes.String) and not isinstance(type_, (ENUM, SET)):
             adapted = CHAR._adapt_string_for_cast(type_)
             return self.dialect.type_compiler_instance.process(adapted)
         elif isinstance(type_, sqltypes._Binary):
@@ -1596,10 +2430,7 @@ class MySQLCompiler(compiler.SQLCompiler):
             return self.dialect.type_compiler_instance.process(type_).replace(
                 "NUMERIC", "DECIMAL"
             )
-        elif (
-            isinstance(type_, sqltypes.Float)
-            and self.dialect._support_float_cast
-        ):
+        elif isinstance(type_, sqltypes.Float) and self.dialect._support_float_cast:
             return self.dialect.type_compiler_instance.process(type_)
         else:
             return None
@@ -1610,9 +2441,7 @@ class MySQLCompiler(compiler.SQLCompiler):
             util.warn(
                 "Datatype %s does not support CAST on MySQL/MariaDb; "
                 "the CAST will be skipped."
-                % self.dialect.type_compiler_instance.process(
-                    cast.typeclause.type
-                )
+                % self.dialect.type_compiler_instance.process(cast.typeclause.type)
             )
             return self.process(cast.clause.self_group(), **kw)
 
@@ -1665,9 +2494,7 @@ class MySQLCompiler(compiler.SQLCompiler):
 
         return "".join(
             (
-                self.process(
-                    join.left, asfrom=True, from_linter=from_linter, **kwargs
-                ),
+                self.process(join.left, asfrom=True, from_linter=from_linter, **kwargs),
                 join_type,
                 self.process(
                     join.right, asfrom=True, from_linter=from_linter, **kwargs
@@ -1773,8 +2600,7 @@ class MySQLCompiler(compiler.SQLCompiler):
     def update_tables_clause(self, update_stmt, from_table, extra_froms, **kw):
         kw["asfrom"] = True
         return ", ".join(
-            t._compiler_dispatch(self, **kw)
-            for t in [from_table] + list(extra_froms)
+            t._compiler_dispatch(self, **kw) for t in [from_table] + list(extra_froms)
         )
 
     def update_from_clause(
@@ -1802,19 +2628,14 @@ class MySQLCompiler(compiler.SQLCompiler):
         )
 
     def visit_empty_set_expr(self, element_types, **kw):
-        return (
-            "SELECT %(outer)s FROM (SELECT %(inner)s) "
-            "as _empty_set WHERE 1!=1"
-            % {
-                "inner": ", ".join(
-                    "1 AS _in_%s" % idx
-                    for idx, type_ in enumerate(element_types)
-                ),
-                "outer": ", ".join(
-                    "_in_%s" % idx for idx, type_ in enumerate(element_types)
-                ),
-            }
-        )
+        return "SELECT %(outer)s FROM (SELECT %(inner)s) as _empty_set WHERE 1!=1" % {
+            "inner": ", ".join(
+                "1 AS _in_%s" % idx for idx, type_ in enumerate(element_types)
+            ),
+            "outer": ", ".join(
+                "_in_%s" % idx for idx, type_ in enumerate(element_types)
+            ),
+        }
 
     def visit_is_distinct_from_binary(self, binary, operator, **kw):
         return "NOT (%s <=> %s)" % (
@@ -1915,9 +2736,7 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
 
         comment = column.comment
         if comment is not None:
-            literal = self.sql_compiler.render_literal_value(
-                comment, sqltypes.String()
-            )
+            literal = self.sql_compiler.render_literal_value(comment, sqltypes.String())
             colspec.append("COMMENT " + literal)
 
         if (
@@ -1984,9 +2803,7 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
         ):
             arg = opts[opt]
             if opt in _reflection._options_of_type_string:
-                arg = self.sql_compiler.render_literal_value(
-                    arg, sqltypes.String()
-                )
+                arg = self.sql_compiler.render_literal_value(arg, sqltypes.String())
 
             if opt in (
                 "DATA_DIRECTORY",
@@ -2022,9 +2839,7 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
         ):
             arg = opts[opt]
             if opt in _reflection._options_of_type_string:
-                arg = self.sql_compiler.render_literal_value(
-                    arg, sqltypes.String()
-                )
+                arg = self.sql_compiler.render_literal_value(arg, sqltypes.String())
 
             opt = opt.replace("_", " ")
             joiner = " "
@@ -2096,9 +2911,7 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
             else:
                 # or can be an integer value specifying the same
                 # prefix length for all columns of the index
-                columns = ", ".join(
-                    "%s(%d)" % (col, length) for col in columns
-                )
+                columns = ", ".join("%s(%d)" % (col, length) for col in columns)
         else:
             columns = ", ".join(columns)
         text += "(%s)" % columns
@@ -2226,12 +3039,8 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
 
         if attr("national"):
             # NATIONAL (aka NCHAR/NVARCHAR) trumps charsets.
-            return " ".join(
-                [c for c in ("NATIONAL", spec, collation) if c is not None]
-            )
-        return " ".join(
-            [c for c in (spec, charset, collation) if c is not None]
-        )
+            return " ".join([c for c in ("NATIONAL", spec, collation) if c is not None])
+        return " ".join([c for c in (spec, charset, collation) if c is not None])
 
     def _mysql_type(self, type_):
         return isinstance(type_, (_StringType, _NumericCommonType))
@@ -2296,9 +3105,7 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
                 type_, "FLOAT(%s, %s)" % (type_.precision, type_.scale)
             )
         elif type_.precision is not None:
-            return self._extend_numeric(
-                type_, "FLOAT(%s)" % (type_.precision,)
-            )
+            return self._extend_numeric(type_, "FLOAT(%s)" % (type_.precision,))
         else:
             return self._extend_numeric(type_, "FLOAT")
 
@@ -2306,8 +3113,7 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
         if self._mysql_type(type_) and type_.display_width is not None:
             return self._extend_numeric(
                 type_,
-                "INTEGER(%(display_width)s)"
-                % {"display_width": type_.display_width},
+                "INTEGER(%(display_width)s)" % {"display_width": type_.display_width},
             )
         else:
             return self._extend_numeric(type_, "INTEGER")
@@ -2316,8 +3122,7 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
         if self._mysql_type(type_) and type_.display_width is not None:
             return self._extend_numeric(
                 type_,
-                "BIGINT(%(display_width)s)"
-                % {"display_width": type_.display_width},
+                "BIGINT(%(display_width)s)" % {"display_width": type_.display_width},
             )
         else:
             return self._extend_numeric(type_, "BIGINT")
@@ -2326,17 +3131,14 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
         if self._mysql_type(type_) and type_.display_width is not None:
             return self._extend_numeric(
                 type_,
-                "MEDIUMINT(%(display_width)s)"
-                % {"display_width": type_.display_width},
+                "MEDIUMINT(%(display_width)s)" % {"display_width": type_.display_width},
             )
         else:
             return self._extend_numeric(type_, "MEDIUMINT")
 
     def visit_TINYINT(self, type_, **kw):
         if self._mysql_type(type_) and type_.display_width is not None:
-            return self._extend_numeric(
-                type_, "TINYINT(%s)" % type_.display_width
-            )
+            return self._extend_numeric(type_, "TINYINT(%s)" % type_.display_width)
         else:
             return self._extend_numeric(type_, "TINYINT")
 
@@ -2344,8 +3146,7 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
         if self._mysql_type(type_) and type_.display_width is not None:
             return self._extend_numeric(
                 type_,
-                "SMALLINT(%(display_width)s)"
-                % {"display_width": type_.display_width},
+                "SMALLINT(%(display_width)s)" % {"display_width": type_.display_width},
             )
         else:
             return self._extend_numeric(type_, "SMALLINT")
@@ -2479,9 +3280,7 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
             if self.dialect.identifier_preparer._double_percents:
                 e = e.replace("%", "%%")
             quoted_enums.append("'%s'" % e.replace("'", "''"))
-        return self._extend_string(
-            type_, {}, "%s(%s)" % (name, ",".join(quoted_enums))
-        )
+        return self._extend_string(type_, {}, "%s(%s)" % (name, ",".join(quoted_enums)))
 
     def visit_ENUM(self, type_, **kw):
         return self._visit_enumerated_values("ENUM", type_, type_.enums)
@@ -2561,9 +3360,7 @@ class MySQLDialect(default.DefaultDialect):
     supports_default_metavalue = True
 
     use_insertmanyvalues: bool = True
-    insertmanyvalues_implicit_sentinel = (
-        InsertmanyvaluesSentinelOpts.ANY_AUTOINCREMENT
-    )
+    insertmanyvalues_implicit_sentinel = InsertmanyvaluesSentinelOpts.ANY_AUTOINCREMENT
 
     supports_sane_rowcount = True
     supports_sane_multi_rowcount = False
@@ -2644,8 +3441,7 @@ class MySQLDialect(default.DefaultDialect):
         row = cursor.fetchone()
         if row is None:
             util.warn(
-                "Could not retrieve transaction isolation level for MySQL "
-                "connection."
+                "Could not retrieve transaction isolation level for MySQL connection."
             )
             raise NotImplementedError()
         val = row[0]
@@ -2693,9 +3489,7 @@ class MySQLDialect(default.DefaultDialect):
         r = re.compile(r"[.\-+]")
         tokens = r.split(val)
         for token in tokens:
-            parsed_token = re.match(
-                r"^(?:(\d+)(?:a|b|c)?|(MariaDB\w*))$", token
-            )
+            parsed_token = re.match(r"^(?:(\d+)(?:a|b|c)?|(MariaDB\w*))$", token)
             if not parsed_token:
                 continue
             elif parsed_token.group(2):
@@ -2707,9 +3501,7 @@ class MySQLDialect(default.DefaultDialect):
 
         server_version_info = tuple(version)
 
-        self._set_mariadb(
-            server_version_info and is_mariadb, server_version_info
-        )
+        self._set_mariadb(server_version_info and is_mariadb, server_version_info)
 
         if not is_mariadb:
             self._mariadb_normalized_version_info = server_version_info
@@ -2734,7 +3526,6 @@ class MySQLDialect(default.DefaultDialect):
                 % (".".join(map(str, server_version_info)),)
             )
         if is_mariadb:
-
             if not issubclass(self.preparer, MariaDBIdentifierPreparer):
                 self.preparer = MariaDBIdentifierPreparer
                 # this would have been set by the default dialect already,
@@ -2755,16 +3546,12 @@ class MySQLDialect(default.DefaultDialect):
         connection.execute(sql.text("XA END :xid"), dict(xid=xid))
         connection.execute(sql.text("XA PREPARE :xid"), dict(xid=xid))
 
-    def do_rollback_twophase(
-        self, connection, xid, is_prepared=True, recover=False
-    ):
+    def do_rollback_twophase(self, connection, xid, is_prepared=True, recover=False):
         if not is_prepared:
             connection.execute(sql.text("XA END :xid"), dict(xid=xid))
         connection.execute(sql.text("XA ROLLBACK :xid"), dict(xid=xid))
 
-    def do_commit_twophase(
-        self, connection, xid, is_prepared=True, recover=False
-    ):
+    def do_commit_twophase(self, connection, xid, is_prepared=True, recover=False):
         if not is_prepared:
             self.do_prepare_twophase(connection, xid)
         connection.execute(sql.text("XA COMMIT :xid"), dict(xid=xid))
@@ -2791,9 +3578,7 @@ class MySQLDialect(default.DefaultDialect):
             4031,
         ):
             return True
-        elif isinstance(
-            e, (self.dbapi.InterfaceError, self.dbapi.InternalError)
-        ):
+        elif isinstance(e, (self.dbapi.InterfaceError, self.dbapi.InternalError)):
             # if underlying connection is closed,
             # this is the error you get
             return "(0, '')" in str(e)
@@ -2842,9 +3627,7 @@ class MySQLDialect(default.DefaultDialect):
         assert schema is not None
 
         full_name = ".".join(
-            self.identifier_preparer._quote_free_identifiers(
-                schema, table_name
-            )
+            self.identifier_preparer._quote_free_identifiers(schema, table_name)
         )
 
         # DESCRIBE *must* be used because there is no information schema
@@ -2901,8 +3684,7 @@ class MySQLDialect(default.DefaultDialect):
 
     def _sequences_not_supported(self):
         raise NotImplementedError(
-            "Sequences are supported only by the "
-            "MariaDB series 10.3 or greater"
+            "Sequences are supported only by the MariaDB series 10.3 or greater"
         )
 
     @reflection.cache
@@ -2921,9 +3703,7 @@ class MySQLDialect(default.DefaultDialect):
         )
         return [
             row[0]
-            for row in self._compat_fetchall(
-                cursor, charset=self._connection_charset
-            )
+            for row in self._compat_fetchall(cursor, charset=self._connection_charset)
         ]
 
     def initialize(self, connection):
@@ -2947,25 +3727,26 @@ class MySQLDialect(default.DefaultDialect):
                 self, server_ansiquotes=self._server_ansiquotes
             )
 
-        self.supports_sequences = (
-            self.is_mariadb and self.server_version_info >= (10, 3)
+        self.supports_sequences = self.is_mariadb and self.server_version_info >= (
+            10,
+            3,
         )
 
-        self.supports_for_update_of = (
-            self._is_mysql and self.server_version_info >= (8,)
+        self.supports_for_update_of = self._is_mysql and self.server_version_info >= (
+            8,
         )
 
         self._needs_correct_for_88718_96365 = (
             not self.is_mariadb and self.server_version_info >= (8,)
         )
 
-        self.delete_returning = (
-            self.is_mariadb and self.server_version_info >= (10, 0, 5)
+        self.delete_returning = self.is_mariadb and self.server_version_info >= (
+            10,
+            0,
+            5,
         )
 
-        self.insert_returning = (
-            self.is_mariadb and self.server_version_info >= (10, 5)
-        )
+        self.insert_returning = self.is_mariadb and self.server_version_info >= (10, 5)
 
         self._requires_alias_for_on_duplicate_key = (
             self._is_mysql and self.server_version_info >= (8, 0, 20)
@@ -3178,7 +3959,6 @@ class MySQLDialect(default.DefaultDialect):
                 schema_by_table_by_column[sch][tbl].append(col_name)
 
         if schema_by_table_by_column:
-
             condition = sql.or_(
                 *(
                     sql.and_(
@@ -3187,9 +3967,9 @@ class MySQLDialect(default.DefaultDialect):
                             *(
                                 sql.and_(
                                     _info_columns.c.table_name == table,
-                                    sql.func.lower(
-                                        _info_columns.c.column_name
-                                    ).in_(columns),
+                                    sql.func.lower(_info_columns.c.column_name).in_(
+                                        columns
+                                    ),
                                 )
                                 for table, columns in tables.items()
                             )
@@ -3290,17 +4070,13 @@ class MySQLDialect(default.DefaultDialect):
                 pass
 
             if spec["parser"]:
-                dialect_options["%s_with_parser" % (self.name)] = spec[
-                    "parser"
-                ]
+                dialect_options["%s_with_parser" % (self.name)] = spec["parser"]
 
             index_d = {}
 
             index_d["name"] = spec["name"]
             index_d["column_names"] = [s[0] for s in spec["columns"]]
-            mysql_length = {
-                s[0]: s[1] for s in spec["columns"] if s[1] is not None
-            }
+            mysql_length = {s[0]: s[1] for s in spec["columns"] if s[1] is not None}
             if mysql_length:
                 dialect_options["%s_length" % self.name] = mysql_length
 
@@ -3316,9 +4092,7 @@ class MySQLDialect(default.DefaultDialect):
         return indexes if indexes else ReflectionDefaults.indexes()
 
     @reflection.cache
-    def get_unique_constraints(
-        self, connection, table_name, schema=None, **kw
-    ):
+    def get_unique_constraints(self, connection, table_name, schema=None, **kw):
         parsed_state = self._parsed_state_or_create(
             connection, table_name, schema, **kw
         )
@@ -3344,17 +4118,13 @@ class MySQLDialect(default.DefaultDialect):
         full_name = ".".join(
             self.identifier_preparer._quote_free_identifiers(schema, view_name)
         )
-        sql = self._show_create_table(
-            connection, None, charset, full_name=full_name
-        )
+        sql = self._show_create_table(connection, None, charset, full_name=full_name)
         if sql.upper().startswith("CREATE TABLE"):
             # it's a table, not a view
             raise exc.NoSuchTableError(full_name)
         return sql
 
-    def _parsed_state_or_create(
-        self, connection, table_name, schema=None, **kw
-    ):
+    def _parsed_state_or_create(self, connection, table_name, schema=None, **kw):
         return self._setup_parser(
             connection,
             table_name,
@@ -3378,13 +4148,9 @@ class MySQLDialect(default.DefaultDialect):
         charset = self._connection_charset
         parser = self._tabledef_parser
         full_name = ".".join(
-            self.identifier_preparer._quote_free_identifiers(
-                schema, table_name
-            )
+            self.identifier_preparer._quote_free_identifiers(schema, table_name)
         )
-        sql = self._show_create_table(
-            connection, None, charset, full_name=full_name
-        )
+        sql = self._show_create_table(connection, None, charset, full_name=full_name)
         if parser._check_view(sql):
             # Adapt views to something table-like.
             columns = self._describe_table(
@@ -3477,9 +4243,7 @@ class MySQLDialect(default.DefaultDialect):
         # as of MySQL 5.0.1
         self._backslash_escapes = "NO_BACKSLASH_ESCAPES" not in mode
 
-    def _show_create_table(
-        self, connection, table, charset=None, full_name=None
-    ):
+    def _show_create_table(self, connection, table, charset=None, full_name=None):
         """Run SHOW CREATE TABLE for a ``Table``."""
 
         if full_name is None:

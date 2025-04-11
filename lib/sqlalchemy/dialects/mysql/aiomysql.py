@@ -13,22 +13,39 @@ r"""
     :connectstring: mysql+aiomysql://user:password@host:port/dbname[?key=value&key=value...]
     :url: https://github.com/aio-libs/aiomysql
 
-The aiomysql dialect is SQLAlchemy's second Python asyncio dialect.
+.. tab:: 中文
 
-Using a special asyncio mediation layer, the aiomysql dialect is usable
-as the backend for the :ref:`SQLAlchemy asyncio <asyncio_toplevel>`
-extension package.
+    aiomysql 方言是 SQLAlchemy 的第二个 Python asyncio 方言.
 
-This dialect should normally be used only with the
-:func:`_asyncio.create_async_engine` engine creation function::
+    使用特殊的 asyncio 中介层，aiomysql 方言可用作 :ref:`SQLAlchemy asyncio <asyncio_toplevel>` 扩展包的后端.
 
-    from sqlalchemy.ext.asyncio import create_async_engine
+    此方言通常仅应与 :func:`_asyncio.create_async_engine` 引擎创建函数一起使用::
 
-    engine = create_async_engine(
-        "mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4"
-    )
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine(
+            "mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4"
+        )
+
+.. tab:: 英文
+
+    The aiomysql dialect is SQLAlchemy's second Python asyncio dialect.
+
+    Using a special asyncio mediation layer, the aiomysql dialect is usable
+    as the backend for the :ref:`SQLAlchemy asyncio <asyncio_toplevel>`
+    extension package.
+
+    This dialect should normally be used only with the
+    :func:`_asyncio.create_async_engine` engine creation function::
+
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine(
+            "mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4"
+        )
 
 """  # noqa
+
 from .pymysql import MySQLDialect_pymysql
 from ...connectors.asyncio import AsyncAdapt_dbapi_connection
 from ...connectors.asyncio import AsyncAdapt_dbapi_cursor
@@ -49,9 +66,7 @@ class AsyncAdapt_aiomysql_ss_cursor(
     __slots__ = ()
 
     def _make_new_cursor(self, connection):
-        return connection.cursor(
-            self._adapt_connection.dbapi.aiomysql.cursors.SSCursor
-        )
+        return connection.cursor(self._adapt_connection.dbapi.aiomysql.cursors.SSCursor)
 
 
 class AsyncAdapt_aiomysql_connection(AsyncAdapt_dbapi_connection):
@@ -145,9 +160,7 @@ class MySQLDialect_aiomysql(MySQLDialect_pymysql):
 
     @classmethod
     def import_dbapi(cls):
-        return AsyncAdapt_aiomysql_dbapi(
-            __import__("aiomysql"), __import__("pymysql")
-        )
+        return AsyncAdapt_aiomysql_dbapi(__import__("aiomysql"), __import__("pymysql"))
 
     def do_terminate(self, dbapi_connection) -> None:
         dbapi_connection.terminate()

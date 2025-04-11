@@ -15,13 +15,18 @@
     :connectstring: mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>
     :url: https://pypi.org/project/mysqlclient/
 
-Driver Status
+驱动程序状态
 -------------
 
-The mysqlclient DBAPI is a maintained fork of the
-`MySQL-Python <https://sourceforge.net/projects/mysql-python>`_ DBAPI
-that is no longer maintained.  `mysqlclient`_ supports Python 2 and Python 3
-and is very stable.
+Driver Status
+
+.. tab:: 中文
+
+    mysqlclient DBAPI 是 `MySQL-Python <https://sourceforge.net/projects/mysql-python>`_ DBAPI 的一个维护分支，不再维护。`mysqlclient`_ 支持 Python 2 和 Python 3，非常稳定。
+
+.. tab:: 英文
+
+    The mysqlclient DBAPI is a maintained fork of the `MySQL-Python <https://sourceforge.net/projects/mysql-python>`_ DBAPI that is no longer maintained.  `mysqlclient`_ supports Python 2 and Python 3 and is very stable.
 
 .. _mysqlclient: https://github.com/PyMySQL/mysqlclient-python
 
@@ -30,60 +35,118 @@ and is very stable.
 Unicode
 -------
 
-Please see :ref:`mysql_unicode` for current recommendations on unicode
-handling.
+Unicode
+
+.. tab:: 中文
+
+    请参阅：ref:`mysql_unicode` 了解有关 unicode 处理的当前建议。
+
+.. tab:: 英文
+
+    Please see :ref:`mysql_unicode` for current recommendations on unicode handling.
 
 .. _mysqldb_ssl:
 
-SSL Connections
+SSL 连接
 ----------------
 
-The mysqlclient and PyMySQL DBAPIs accept an additional dictionary under the
-key "ssl", which may be specified using the
-:paramref:`_sa.create_engine.connect_args` dictionary::
+SSL Connections
 
-    engine = create_engine(
-        "mysql+mysqldb://scott:tiger@192.168.0.134/test",
-        connect_args={
-            "ssl": {
-                "ca": "/home/gord/client-ssl/ca.pem",
-                "cert": "/home/gord/client-ssl/client-cert.pem",
-                "key": "/home/gord/client-ssl/client-key.pem",
-            }
-        },
-    )
+.. tab:: 中文
 
-For convenience, the following keys may also be specified inline within the URL
-where they will be interpreted into the "ssl" dictionary automatically:
-"ssl_ca", "ssl_cert", "ssl_key", "ssl_capath", "ssl_cipher",
-"ssl_check_hostname". An example is as follows::
+    mysqlclient 和 PyMySQL DBAPI 接受键“ssl”下的附加字典，可以使用 :paramref:`_sa.create_engine.connect_args` 字典指定::
 
-    connection_uri = (
-        "mysql+mysqldb://scott:tiger@192.168.0.134/test"
-        "?ssl_ca=/home/gord/client-ssl/ca.pem"
-        "&ssl_cert=/home/gord/client-ssl/client-cert.pem"
-        "&ssl_key=/home/gord/client-ssl/client-key.pem"
-    )
+        engine = create_engine(
+            "mysql+mysqldb://scott:tiger@192.168.0.134/test",
+            connect_args={
+                "ssl": {
+                    "ca": "/home/gord/client-ssl/ca.pem",
+                    "cert": "/home/gord/client-ssl/client-cert.pem",
+                    "key": "/home/gord/client-ssl/client-key.pem",
+                }
+            },
+        )
 
-.. seealso::
+    为了方便起见，以下键也可以在 URL 中内联指定，它们将被自动解释到“ssl”字典中：“ssl_ca”、“ssl_cert”、“ssl_key”、“ssl_capath”、“ssl_cipher”、“ssl_check_hostname”。示例如下::
 
-    :ref:`pymysql_ssl` in the PyMySQL dialect
+        connection_uri = (
+            "mysql+mysqldb://scott:tiger@192.168.0.134/test"
+            "?ssl_ca=/home/gord/client-ssl/ca.pem"
+            "&ssl_cert=/home/gord/client-ssl/client-cert.pem"
+            "&ssl_key=/home/gord/client-ssl/client-key.pem"
+        )
+
+    .. seealso::
+
+        PyMySQL 方言中的 :ref:`pymysql_ssl`
+
+.. tab:: 英文
+
+    The mysqlclient and PyMySQL DBAPIs accept an additional dictionary under the
+    key "ssl", which may be specified using the
+    :paramref:`_sa.create_engine.connect_args` dictionary::
+
+        engine = create_engine(
+            "mysql+mysqldb://scott:tiger@192.168.0.134/test",
+            connect_args={
+                "ssl": {
+                    "ca": "/home/gord/client-ssl/ca.pem",
+                    "cert": "/home/gord/client-ssl/client-cert.pem",
+                    "key": "/home/gord/client-ssl/client-key.pem",
+                }
+            },
+        )
+
+    For convenience, the following keys may also be specified inline within the URL
+    where they will be interpreted into the "ssl" dictionary automatically:
+    "ssl_ca", "ssl_cert", "ssl_key", "ssl_capath", "ssl_cipher",
+    "ssl_check_hostname". An example is as follows::
+
+        connection_uri = (
+            "mysql+mysqldb://scott:tiger@192.168.0.134/test"
+            "?ssl_ca=/home/gord/client-ssl/ca.pem"
+            "&ssl_cert=/home/gord/client-ssl/client-cert.pem"
+            "&ssl_key=/home/gord/client-ssl/client-key.pem"
+        )
+
+    .. seealso::
+
+        :ref:`pymysql_ssl` in the PyMySQL dialect
 
 
-Using MySQLdb with Google Cloud SQL
+将 MySQLdb 与 Google Cloud SQL 结合使用
 -----------------------------------
 
-Google Cloud SQL now recommends use of the MySQLdb dialect.  Connect
-using a URL like the following:
+Using MySQLdb with Google Cloud SQL
 
-.. sourcecode:: text
+.. tab:: 中文
 
-    mysql+mysqldb://root@/<dbname>?unix_socket=/cloudsql/<projectid>:<instancename>
+    Google Cloud SQL 现推荐使用 MySQLdb 方言。请使用如下 URL 进行连接：
 
-Server Side Cursors
+    .. sourcecode:: text
+
+        mysql+mysqldb://root@/<dbname>?unix_socket=/cloudsql/<projectid>:<instancename>
+
+.. tab:: 英文
+
+    Google Cloud SQL now recommends use of the MySQLdb dialect.  Connect using a URL like the following:
+
+    .. sourcecode:: text
+
+        mysql+mysqldb://root@/<dbname>?unix_socket=/cloudsql/<projectid>:<instancename>
+
+服务器端游标
 -------------------
 
-The mysqldb dialect supports server-side cursors. See :ref:`mysql_ss_cursors`.
+Server Side Cursors
+
+.. tab:: 中文
+
+    mysqldb 方言支持服务器端游标。请参阅 :ref:`mysql_ss_cursors`。
+
+.. tab:: 英文
+
+    The mysqldb dialect supports server-side cursors. See :ref:`mysql_ss_cursors`.
 
 """
 
@@ -202,9 +265,7 @@ class MySQLDialect_mysqldb(MySQLDialect):
 
     def create_connect_args(self, url, _translate_args=None):
         if _translate_args is None:
-            _translate_args = dict(
-                database="db", username="user", password="passwd"
-            )
+            _translate_args = dict(database="db", username="user", password="passwd")
 
         opts = url.translate_connect_args(**_translate_args)
         opts.update(url.query)

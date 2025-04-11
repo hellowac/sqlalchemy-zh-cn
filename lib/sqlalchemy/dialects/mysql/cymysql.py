@@ -14,11 +14,19 @@ r"""
     :connectstring: mysql+cymysql://<username>:<password>@<host>/<dbname>[?<options>]
     :url: https://github.com/nakagami/CyMySQL
 
-.. note::
+.. tab:: 中文
 
-    The CyMySQL dialect is **not tested as part of SQLAlchemy's continuous
-    integration** and may have unresolved issues.  The recommended MySQL
-    dialects are mysqlclient and PyMySQL.
+    .. note::
+
+        CyMySQL 方言 **尚未作为 SQLAlchemy 持续集成的一部分进行测试**，可能存在未解决的问题。推荐的 MySQL 方言是 mysqlclient 和 PyMySQL。
+
+.. tab:: 英文
+
+    .. note::
+
+        The CyMySQL dialect is **not tested as part of SQLAlchemy's continuous
+        integration** and may have unresolved issues.  The recommended MySQL
+        dialects are mysqlclient and PyMySQL.
 
 """  # noqa
 

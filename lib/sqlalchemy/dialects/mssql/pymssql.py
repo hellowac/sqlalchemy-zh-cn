@@ -13,15 +13,26 @@
     :dbapi: pymssql
     :connectstring: mssql+pymssql://<username>:<password>@<freetds_name>/?charset=utf8
 
-pymssql is a Python module that provides a Python DBAPI interface around
-`FreeTDS <https://www.freetds.org/>`_.
+.. tab:: 中文
 
-.. versionchanged:: 2.0.5
+    pymssql 是一个 Python 模块，它围绕 `FreeTDS <https://www.freetds.org/>`_ 提供 Python DBAPI 接口。
 
-    pymssql was restored to SQLAlchemy's continuous integration testing
+    .. versionchanged:: 2.0.5
+
+        pymssql 恢复到 SQLAlchemy 的持续集成测试
+
+.. tab:: 英文
+
+    pymssql is a Python module that provides a Python DBAPI interface around
+    `FreeTDS <https://www.freetds.org/>`_.
+
+    .. versionchanged:: 2.0.5
+
+        pymssql was restored to SQLAlchemy's continuous integration testing
 
 
 """  # noqa
+
 import re
 
 from .base import MSDialect
@@ -111,9 +122,7 @@ class MSDialect_pymssql(MSDialect):
             return False
 
     def get_isolation_level_values(self, dbapi_connection):
-        return super().get_isolation_level_values(dbapi_connection) + [
-            "AUTOCOMMIT"
-        ]
+        return super().get_isolation_level_values(dbapi_connection) + ["AUTOCOMMIT"]
 
     def set_isolation_level(self, dbapi_connection, level):
         if level == "AUTOCOMMIT":

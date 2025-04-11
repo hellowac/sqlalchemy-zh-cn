@@ -13,20 +13,35 @@ r"""
     :connectstring: mysql+asyncmy://user:password@host:port/dbname[?key=value&key=value...]
     :url: https://github.com/long2ice/asyncmy
 
-Using a special asyncio mediation layer, the asyncmy dialect is usable
-as the backend for the :ref:`SQLAlchemy asyncio <asyncio_toplevel>`
-extension package.
+.. tab:: 中文
 
-This dialect should normally be used only with the
-:func:`_asyncio.create_async_engine` engine creation function::
+    使用特殊的 asyncio 中介层，asyncmy 方言可用作 :ref:`SQLAlchemy asyncio <asyncio_toplevel>` 扩展包的后端.
 
-    from sqlalchemy.ext.asyncio import create_async_engine
+    此方言通常仅应与 :func:`_asyncio.create_async_engine` 引擎创建函数一起使用::
 
-    engine = create_async_engine(
-        "mysql+asyncmy://user:pass@hostname/dbname?charset=utf8mb4"
-    )
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine(
+            "mysql+asyncmy://user:pass@hostname/dbname?charset=utf8mb4"
+        )
+
+.. tab:: 英文
+
+    Using a special asyncio mediation layer, the asyncmy dialect is usable
+    as the backend for the :ref:`SQLAlchemy asyncio <asyncio_toplevel>`
+    extension package.
+
+    This dialect should normally be used only with the
+    :func:`_asyncio.create_async_engine` engine creation function::
+
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine(
+            "mysql+asyncmy://user:pass@hostname/dbname?charset=utf8mb4"
+        )
 
 """  # noqa
+
 from __future__ import annotations
 
 from .pymysql import MySQLDialect_pymysql
@@ -47,9 +62,7 @@ class AsyncAdapt_asyncmy_ss_cursor(
     __slots__ = ()
 
     def _make_new_cursor(self, connection):
-        return connection.cursor(
-            self._adapt_connection.dbapi.asyncmy.cursors.SSCursor
-        )
+        return connection.cursor(self._adapt_connection.dbapi.asyncmy.cursors.SSCursor)
 
 
 class AsyncAdapt_asyncmy_connection(AsyncAdapt_dbapi_connection):
@@ -161,9 +174,7 @@ class MySQLDialect_asyncmy(MySQLDialect_pymysql):
             return True
         else:
             str_e = str(e).lower()
-            return (
-                "not connected" in str_e or "network operation failed" in str_e
-            )
+            return "not connected" in str_e or "network operation failed" in str_e
 
     def _found_rows_client_flag(self):
         from asyncmy.constants import CLIENT

@@ -3,8 +3,6 @@
 PostgreSQL
 ==========
 
-PostgreSQL
-
 .. automodule:: sqlalchemy.dialects.postgresql.base
 
 ARRAY 类型
@@ -113,7 +111,7 @@ ENUM Types
 .. _postgresql_array_of_enum:
 
 将 ENUM 与 ARRAY 结合使用
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Using ENUM with ARRAY
 
@@ -206,7 +204,7 @@ Using ENUM with ARRAY
 .. _postgresql_array_of_json:
 
 将 JSON/JSONB 与 ARRAY 结合使用
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Using JSON/JSONB with ARRAY
 

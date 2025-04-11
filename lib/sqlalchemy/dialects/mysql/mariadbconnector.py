@@ -15,20 +15,29 @@
     :connectstring: mariadb+mariadbconnector://<user>:<password>@<host>[:<port>]/<dbname>
     :url: https://pypi.org/project/mariadb/
 
-Driver Status
+驱动状态
 -------------
 
-MariaDB Connector/Python enables Python programs to access MariaDB and MySQL
-databases using an API which is compliant with the Python DB API 2.0 (PEP-249).
-It is written in C and uses MariaDB Connector/C client library for client server
-communication.
+Driver Status
 
-Note that the default driver for a ``mariadb://`` connection URI continues to
-be ``mysqldb``. ``mariadb+mariadbconnector://`` is required to use this driver.
+.. tab:: 中文
 
-.. mariadb: https://github.com/mariadb-corporation/mariadb-connector-python
+    MariaDB Connector/Python 允许 Python 程序使用符合 Python DB API 2.0 (PEP-249) 的 API 访问 MariaDB 和 MySQL 数据库。它使用 C 语言编写，并使用 MariaDB Connector/C 客户端库进行客户端/服务器通信。
+
+    请注意， ``mariadb://`` 连接 URI 的默认驱动程序仍然是 ``mysqldb`` 。使用此驱动程序需要 ``mariadb+mariadbconnector://``。
+
+    .. mariadb：https://github.com/mariadb-corporation/mariadb-connector-python
+
+.. tab:: 英文
+
+    MariaDB Connector/Python enables Python programs to access MariaDB and MySQL databases using an API which is compliant with the Python DB API 2.0 (PEP-249). It is written in C and uses MariaDB Connector/C client library for client server communication.
+
+    Note that the default driver for a ``mariadb://`` connection URI continues to be ``mysqldb``. ``mariadb+mariadbconnector://`` is required to use this driver.
+
+    .. mariadb: https://github.com/mariadb-corporation/mariadb-connector-python
 
 """  # noqa
+
 import re
 from uuid import UUID as _python_UUID
 
@@ -122,9 +131,7 @@ class MySQLDialect_mariadbconnector(MySQLDialect):
 
     supports_server_side_cursors = True
 
-    colspecs = util.update_copy(
-        MySQLDialect.colspecs, {sqltypes.Uuid: _MariaDBUUID}
-    )
+    colspecs = util.update_copy(MySQLDialect.colspecs, {sqltypes.Uuid: _MariaDBUUID})
 
     @util.memoized_property
     def _dbapi_version(self):
@@ -132,9 +139,7 @@ class MySQLDialect_mariadbconnector(MySQLDialect):
             return tuple(
                 [
                     int(x)
-                    for x in re.findall(
-                        r"(\d+)(?:[-\.]?|$)", self.dbapi.__version__
-                    )
+                    for x in re.findall(r"(\d+)(?:[-\.]?|$)", self.dbapi.__version__)
                 ]
             )
         else:
@@ -248,9 +253,7 @@ class MySQLDialect_mariadbconnector(MySQLDialect):
             )
         )
 
-    def do_rollback_twophase(
-        self, connection, xid, is_prepared=True, recover=False
-    ):
+    def do_rollback_twophase(self, connection, xid, is_prepared=True, recover=False):
         if not is_prepared:
             connection.execute(
                 sql.text("XA END :xid").bindparams(
@@ -263,9 +266,7 @@ class MySQLDialect_mariadbconnector(MySQLDialect):
             )
         )
 
-    def do_commit_twophase(
-        self, connection, xid, is_prepared=True, recover=False
-    ):
+    def do_commit_twophase(self, connection, xid, is_prepared=True, recover=False):
         if not is_prepared:
             self.do_prepare_twophase(connection, xid)
         connection.execute(
@@ -275,9 +276,7 @@ class MySQLDialect_mariadbconnector(MySQLDialect):
         )
 
 
-class MariaDBDialect_mariadbconnector(
-    MariaDBDialect, MySQLDialect_mariadbconnector
-):
+class MariaDBDialect_mariadbconnector(MariaDBDialect, MySQLDialect_mariadbconnector):
     supports_statement_cache = True
     _allows_uuid_binds = False
 

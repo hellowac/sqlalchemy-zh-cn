@@ -15,90 +15,168 @@ r"""
     :connectstring: sqlite+aiosqlite:///file_path
     :url: https://pypi.org/project/aiosqlite/
 
-The aiosqlite dialect provides support for the SQLAlchemy asyncio interface
-running on top of pysqlite.
+.. tab:: 中文
 
-aiosqlite is a wrapper around pysqlite that uses a background thread for
-each connection.   It does not actually use non-blocking IO, as SQLite
-databases are not socket-based.  However it does provide a working asyncio
-interface that's useful for testing and prototyping purposes.
+    ``aiosqlite`` 方言为运行在 pysqlite 之上的 SQLAlchemy asyncio 接口提供支持。
 
-Using a special asyncio mediation layer, the aiosqlite dialect is usable
-as the backend for the :ref:`SQLAlchemy asyncio <asyncio_toplevel>`
-extension package.
+    aiosqlite 是 pysqlite 的一个封装器，它为每个连接使用一个后台线程。由于 SQLite 数据库并不是基于套接字的，它并不真正使用非阻塞 IO。然而，它确实提供了一个可用的 asyncio 接口，适用于测试和原型开发场景。
 
-This dialect should normally be used only with the
-:func:`_asyncio.create_async_engine` engine creation function::
+    通过一个特殊的 asyncio 中介层，``aiosqlite`` 方言可以作为 :ref:`SQLAlchemy asyncio <asyncio_toplevel>` 扩展包的后端使用。
 
-    from sqlalchemy.ext.asyncio import create_async_engine
+    该方言通常应仅与 :func:`_asyncio.create_async_engine` 引擎创建函数搭配使用::
 
-    engine = create_async_engine("sqlite+aiosqlite:///filename")
+        from sqlalchemy.ext.asyncio import create_async_engine
 
-The URL passes through all arguments to the ``pysqlite`` driver, so all
-connection arguments are the same as they are for that of :ref:`pysqlite`.
+        engine = create_async_engine("sqlite+aiosqlite:///filename")
+
+    URL 中的所有参数都会传递给 ``pysqlite`` 驱动，因此所有连接参数与 :ref:`pysqlite` 相同。
+
+.. tab:: 英文
+
+    The aiosqlite dialect provides support for the SQLAlchemy asyncio interface
+    running on top of pysqlite.
+
+    aiosqlite is a wrapper around pysqlite that uses a background thread for
+    each connection.   It does not actually use non-blocking IO, as SQLite
+    databases are not socket-based.  However it does provide a working asyncio
+    interface that's useful for testing and prototyping purposes.
+
+    Using a special asyncio mediation layer, the aiosqlite dialect is usable
+    as the backend for the :ref:`SQLAlchemy asyncio <asyncio_toplevel>`
+    extension package.
+
+    This dialect should normally be used only with the
+    :func:`_asyncio.create_async_engine` engine creation function::
+
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine("sqlite+aiosqlite:///filename")
+
+    The URL passes through all arguments to the ``pysqlite`` driver, so all
+    connection arguments are the same as they are for that of :ref:`pysqlite`.
 
 .. _aiosqlite_udfs:
 
-User-Defined Functions
+用户定义的函数
 ----------------------
 
-aiosqlite extends pysqlite to support async, so we can create our own user-defined functions (UDFs)
-in Python and use them directly in SQLite queries as described here: :ref:`pysqlite_udfs`.
+User-Defined Functions
+
+.. tab:: 中文
+
+    aiosqlite 扩展了 pysqlite，以支持 async，因此我们可以在 Python 中创建自定义函数（UDF），并像在 SQLite 查询中使用它们一样使用，详见 :ref:`pysqlite_udfs`。
+
+.. tab:: 英文
+
+    aiosqlite extends pysqlite to support async, so we can create our own user-defined functions (UDFs)
+    in Python and use them directly in SQLite queries as described here: :ref:`pysqlite_udfs`.
 
 .. _aiosqlite_serializable:
 
-Serializable isolation / Savepoints / Transactional DDL (asyncio version)
+可序列化隔离/保存点/事务 DDL（asyncio版本）
 -------------------------------------------------------------------------
 
-Similarly to pysqlite, aiosqlite does not support SAVEPOINT feature.
+Serializable isolation / Savepoints / Transactional DDL (asyncio version)
 
-The solution is similar to :ref:`pysqlite_serializable`. This is achieved by the event listeners in async::
+.. tab:: 中文
 
-    from sqlalchemy import create_engine, event
-    from sqlalchemy.ext.asyncio import create_async_engine
+    与 pysqlite 类似，aiosqlite 也不支持 SAVEPOINT 功能。
 
-    engine = create_async_engine("sqlite+aiosqlite:///myfile.db")
+    解决方案与 :ref:`pysqlite_serializable` 类似，可通过异步事件监听器实现::
 
+        from sqlalchemy import create_engine, event
+        from sqlalchemy.ext.asyncio import create_async_engine
 
-    @event.listens_for(engine.sync_engine, "connect")
-    def do_connect(dbapi_connection, connection_record):
-        # disable aiosqlite's emitting of the BEGIN statement entirely.
-        # also stops it from emitting COMMIT before any DDL.
-        dbapi_connection.isolation_level = None
+        engine = create_async_engine("sqlite+aiosqlite:///myfile.db")
 
 
-    @event.listens_for(engine.sync_engine, "begin")
-    def do_begin(conn):
-        # emit our own BEGIN
-        conn.exec_driver_sql("BEGIN")
+        @event.listens_for(engine.sync_engine, "connect")
+        def do_connect(dbapi_connection, connection_record):
+            # 完全禁用 aiosqlite 对 BEGIN 语句的自动发出行为。
+            # 同时也防止其在任何 DDL 前发出 COMMIT。
+            dbapi_connection.isolation_level = None
 
-.. warning:: When using the above recipe, it is advised to not use the
-   :paramref:`.Connection.execution_options.isolation_level` setting on
-   :class:`_engine.Connection` and :func:`_sa.create_engine`
-   with the SQLite driver,
-   as this function necessarily will also alter the ".isolation_level" setting.
+
+        @event.listens_for(engine.sync_engine, "begin")
+        def do_begin(conn):
+            # 手动发出 BEGIN
+            conn.exec_driver_sql("BEGIN")
+
+    .. warning:: 使用上述方案时，不建议在 SQLite 驱动中使用
+        :class:`_engine.Connection` 与 :func:`_sa.create_engine` 的
+        :paramref:`.Connection.execution_options.isolation_level` 设置，
+        因为该函数也会修改 ``.isolation_level`` 设置，可能导致行为不一致。
+
+.. tab:: 英文
+
+    Similarly to pysqlite, aiosqlite does not support SAVEPOINT feature.
+
+    The solution is similar to :ref:`pysqlite_serializable`. This is achieved by the event listeners in async::
+
+        from sqlalchemy import create_engine, event
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine("sqlite+aiosqlite:///myfile.db")
+
+
+        @event.listens_for(engine.sync_engine, "connect")
+        def do_connect(dbapi_connection, connection_record):
+            # disable aiosqlite's emitting of the BEGIN statement entirely.
+            # also stops it from emitting COMMIT before any DDL.
+            dbapi_connection.isolation_level = None
+
+
+        @event.listens_for(engine.sync_engine, "begin")
+        def do_begin(conn):
+            # emit our own BEGIN
+            conn.exec_driver_sql("BEGIN")
+
+    .. warning:: When using the above recipe, it is advised to not use the
+        :paramref:`.Connection.execution_options.isolation_level` setting on
+        :class:`_engine.Connection` and :func:`_sa.create_engine`
+        with the SQLite driver,
+        as this function necessarily will also alter the ".isolation_level" setting.
 
 .. _aiosqlite_pooling:
 
-Pooling Behavior
+连接池行为
 ----------------
 
-The SQLAlchemy ``aiosqlite`` DBAPI establishes the connection pool differently
-based on the kind of SQLite database that's requested:
+Pooling Behavior
 
-* When a ``:memory:`` SQLite database is specified, the dialect by default
-  will use :class:`.StaticPool`. This pool maintains a single
-  connection, so that all access to the engine
-  use the same ``:memory:`` database.
-* When a file-based database is specified, the dialect will use
-  :class:`.AsyncAdaptedQueuePool` as the source of connections.
+.. tab:: 中文
 
-  .. versionchanged:: 2.0.38
+    SQLAlchemy 的 ``aiosqlite`` DBAPI 根据请求的 SQLite 数据库类型，以不同的方式建立连接池：
 
-    SQLite file database engines now use :class:`.AsyncAdaptedQueuePool` by default.
-    Previously, :class:`.NullPool` were used.  The :class:`.NullPool` class
-    may be used by specifying it via the
-    :paramref:`_sa.create_engine.poolclass` parameter.
+    * 当指定为 ``:memory:`` SQLite 数据库时，方言默认使用 :class:`.StaticPool`。
+      此连接池维护一个单一连接，使得所有访问该 engine 的操作都使用相同的 ``:memory:`` 数据库。
+    * 当指定为基于文件的数据库时，方言将使用 :class:`.AsyncAdaptedQueuePool`
+      作为连接来源。
+
+      .. versionchanged:: 2.0.38
+
+            SQLite 文件数据库引擎现在默认使用 :class:`.AsyncAdaptedQueuePool`。
+            之前默认使用的是 :class:`.NullPool`。若需使用 :class:`.NullPool`，可通过
+            :paramref:`_sa.create_engine.poolclass` 参数指定。
+
+.. tab:: 英文
+
+    The SQLAlchemy ``aiosqlite`` DBAPI establishes the connection pool differently
+    based on the kind of SQLite database that's requested:
+
+    * When a ``:memory:`` SQLite database is specified, the dialect by default
+      will use :class:`.StaticPool`. This pool maintains a single
+      connection, so that all access to the engine
+      use the same ``:memory:`` database.
+    * When a file-based database is specified, the dialect will use
+      :class:`.AsyncAdaptedQueuePool` as the source of connections.
+
+      .. versionchanged:: 2.0.38
+
+            SQLite file database engines now use :class:`.AsyncAdaptedQueuePool` by default.
+            Previously, :class:`.NullPool` were used.  The :class:`.NullPool` class
+            may be used by specifying it via the
+            :paramref:`_sa.create_engine.poolclass` parameter.
 
 """  # noqa
 
@@ -264,10 +342,7 @@ class SQLiteDialect_aiosqlite(SQLiteDialect_pysqlite):
     def is_disconnect(self, e, connection, cursor):
         if isinstance(e, self.dbapi.OperationalError):
             err_lower = str(e).lower()
-            if (
-                "no active connection" in err_lower
-                or "connection closed" in err_lower
-            ):
+            if "no active connection" in err_lower or "connection closed" in err_lower:
                 return True
 
         return super().is_disconnect(e, connection, cursor)

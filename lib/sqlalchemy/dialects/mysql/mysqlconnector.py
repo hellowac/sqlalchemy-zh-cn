@@ -14,27 +14,42 @@ r"""
     :connectstring: mysql+mysqlconnector://<user>:<password>@<host>[:<port>]/<dbname>
     :url: https://pypi.org/project/mysql-connector-python/
 
-Driver Status
+驱动状态
 -------------
 
-MySQL Connector/Python is supported as of SQLAlchemy 2.0.39 to the
-degree which the driver is functional.   There are still ongoing issues
-with features such as server side cursors which remain disabled until
-upstream issues are repaired.
+Driver Status
 
-.. versionchanged:: 2.0.39
+.. tab:: 中文
 
-    The MySQL Connector/Python dialect has been updated to support the
-    latest version of this DBAPI.   Previously, MySQL Connector/Python
-    was not fully supported.
+    从 SQLAlchemy 2.0.39 开始，MySQL Connector/Python 在驱动程序正常运行的范围内受支持。服务器端游标等功能仍然存在问题，在上游问题修复之前，这些功能仍处于禁用状态。
 
-Connecting to MariaDB with MySQL Connector/Python
+    .. versionchanged:: 2.0.39
+
+        MySQL Connector/Python 方言已更新，以支持此 DBAPI 的最新版本。此前，MySQL Connector/Python 并未得到完全支持。
+
+.. tab:: 英文
+
+    MySQL Connector/Python is supported as of SQLAlchemy 2.0.39 to the
+    degree which the driver is functional.   There are still ongoing issues
+    with features such as server side cursors which remain disabled until
+    upstream issues are repaired.
+
+    .. versionchanged:: 2.0.39
+
+        The MySQL Connector/Python dialect has been updated to support the latest version of this DBAPI.   Previously, MySQL Connector/Python was not fully supported.
+
+使用 MySQL Connector/Python 连接到 MariaDB
 --------------------------------------------------
 
-MySQL Connector/Python may attempt to pass an incompatible collation to the
-database when connecting to MariaDB.  Experimentation has shown that using
-``?charset=utf8mb4&collation=utfmb4_general_ci`` or similar MariaDB-compatible
-charset/collation will allow connectivity.
+Connecting to MariaDB with MySQL Connector/Python
+
+.. tab:: 中文
+
+    MySQL Connector/Python 连接 MariaDB 时可能会尝试向数据库传递不兼容的排序规则。实验表明，使用 ``?charset=utf8mb4&collation=utfmb4_general_ci`` 或类似的 MariaDB 兼容字符集/排序规则即可实现连接。
+
+.. tab:: 英文
+
+    MySQL Connector/Python may attempt to pass an incompatible collation to the database when connecting to MariaDB.  Experimentation has shown that using ``?charset=utf8mb4&collation=utfmb4_general_ci`` or similar MariaDB-compatible charset/collation will allow connectivity.
 
 
 """  # noqa
@@ -62,9 +77,7 @@ class MySQLExecutionContext_mysqlconnector(MySQLExecutionContext):
 class MySQLCompiler_mysqlconnector(MySQLCompiler):
     def visit_mod_binary(self, binary, operator, **kw):
         return (
-            self.process(binary.left, **kw)
-            + " % "
-            + self.process(binary.right, **kw)
+            self.process(binary.left, **kw) + " % " + self.process(binary.right, **kw)
         )
 
 
@@ -171,9 +184,7 @@ class MySQLDialect_mysqlconnector(MySQLDialect):
             try:
                 from mysql.connector.constants import ClientFlag
 
-                client_flags = opts.get(
-                    "client_flags", ClientFlag.get_default()
-                )
+                client_flags = opts.get("client_flags", ClientFlag.get_default())
                 client_flags |= ClientFlag.FOUND_ROWS
                 opts["client_flags"] = client_flags
             except Exception:
@@ -233,9 +244,7 @@ class MySQLDialect_mysqlconnector(MySQLDialect):
             super().set_isolation_level(connection, level)
 
 
-class MariaDBDialect_mysqlconnector(
-    MariaDBDialect, MySQLDialect_mysqlconnector
-):
+class MariaDBDialect_mysqlconnector(MariaDBDialect, MySQLDialect_mysqlconnector):
     supports_statement_cache = True
     _allows_uuid_binds = False
     preparer = MariaDBIdentifierPreparer_mysqlconnector

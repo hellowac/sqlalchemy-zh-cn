@@ -16,32 +16,56 @@ r"""
     :connectstring: mysql+pyodbc://<username>:<password>@<dsnname>
     :url: https://pypi.org/project/pyodbc/
 
-.. note::
+.. tab:: 中文
 
-    The PyODBC for MySQL dialect is **not tested as part of
-    SQLAlchemy's continuous integration**.
-    The recommended MySQL dialects are mysqlclient and PyMySQL.
-    However, if you want to use the mysql+pyodbc dialect and require
-    full support for ``utf8mb4`` characters (including supplementary
-    characters like emoji) be sure to use a current release of
-    MySQL Connector/ODBC and specify the "ANSI" (**not** "Unicode")
-    version of the driver in your DSN or connection string.
+    .. note::
 
-Pass through exact pyodbc connection string::
+        PyODBC for MySQL 方言 **尚未作为 SQLAlchemy 持续集成的一部分进行测试** 。推荐的 MySQL 方言是 mysqlclient 和 PyMySQL。但是，如果您想使用 mysql+pyodbc 方言，并且需要完全支持 ``utf8mb4`` 字符（包括表情符号等补充字符），请务必使用最新版本的 MySQL Connector/ODBC，并在 DSN 或连接字符串中指定驱动程序的“ANSI”（ **而非** “Unicode”）版本。
 
-    import urllib
+    传递精确的 pyodbc 连接字符串::
 
-    connection_string = (
-        "DRIVER=MySQL ODBC 8.0 ANSI Driver;"
-        "SERVER=localhost;"
-        "PORT=3307;"
-        "DATABASE=mydb;"
-        "UID=root;"
-        "PWD=(whatever);"
-        "charset=utf8mb4;"
-    )
-    params = urllib.parse.quote_plus(connection_string)
-    connection_uri = "mysql+pyodbc:///?odbc_connect=%s" % params
+        import urllib
+
+        connection_string = (
+            "DRIVER=MySQL ODBC 8.0 ANSI Driver;"
+            "SERVER=localhost;"
+            "PORT=3307;"
+            "DATABASE=mydb;"
+            "UID=root;"
+            "PWD=(whatever);"
+            "charset=utf8mb4;"
+        )
+        params = urllib.parse.quote_plus(connection_string)
+        connection_uri = "mysql+pyodbc:///?odbc_connect=%s" % params
+
+.. tab:: 英文
+
+    .. note::
+
+        The PyODBC for MySQL dialect is **not tested as part of
+        SQLAlchemy's continuous integration**.
+        The recommended MySQL dialects are mysqlclient and PyMySQL.
+        However, if you want to use the mysql+pyodbc dialect and require
+        full support for ``utf8mb4`` characters (including supplementary
+        characters like emoji) be sure to use a current release of
+        MySQL Connector/ODBC and specify the "ANSI" (**not** "Unicode")
+        version of the driver in your DSN or connection string.
+
+    Pass through exact pyodbc connection string::
+
+        import urllib
+
+        connection_string = (
+            "DRIVER=MySQL ODBC 8.0 ANSI Driver;"
+            "SERVER=localhost;"
+            "PORT=3307;"
+            "DATABASE=mydb;"
+            "UID=root;"
+            "PWD=(whatever);"
+            "charset=utf8mb4;"
+        )
+        params = urllib.parse.quote_plus(connection_string)
+        connection_uri = "mysql+pyodbc:///?odbc_connect=%s" % params
 
 """  # noqa
 
@@ -101,10 +125,7 @@ class MySQLDialect_pyodbc(PyODBCConnector, MySQLDialect):
         except exc.DBAPIError:
             pass
 
-        util.warn(
-            "Could not detect the connection character set.  "
-            "Assuming latin1."
-        )
+        util.warn("Could not detect the connection character set.  Assuming latin1.")
         return "latin1"
 
     def _get_server_version_info(self, connection):

@@ -15,895 +15,1645 @@ r'''
 
 .. _sqlite_datetime:
 
-Date and Time Types
+日期和时间类型
 -------------------
 
-SQLite does not have built-in DATE, TIME, or DATETIME types, and pysqlite does
-not provide out of the box functionality for translating values between Python
-`datetime` objects and a SQLite-supported format. SQLAlchemy's own
-:class:`~sqlalchemy.types.DateTime` and related types provide date formatting
-and parsing functionality when SQLite is used. The implementation classes are
-:class:`_sqlite.DATETIME`, :class:`_sqlite.DATE` and :class:`_sqlite.TIME`.
-These types represent dates and times as ISO formatted strings, which also
-nicely support ordering. There's no reliance on typical "libc" internals for
-these functions so historical dates are fully supported.
+Date and Time Types
 
-Ensuring Text affinity
+.. tab:: 中文
+
+    SQLite 不具备内建的 DATE、TIME 或 DATETIME 类型，pysqlite 也不提供开箱即用的功能来在 Python 的 `datetime` 对象与 SQLite 支持的格式之间进行转换。
+    SQLAlchemy 提供的 :class:`~sqlalchemy.types.DateTime` 及相关类型在使用 SQLite 时，提供了日期格式化与解析的功能。其具体实现类为 :class:`_sqlite.DATETIME`、:class:`_sqlite.DATE` 与 :class:`_sqlite.TIME`。
+    这些类型会将日期和时间表示为 ISO 格式的字符串，这种格式在排序时也表现良好。此机制不依赖于传统的 "libc" 内部函数，因此历史日期也能被完全支持。
+
+.. tab:: 英文
+
+    SQLite does not have built-in DATE, TIME, or DATETIME types, and pysqlite does
+    not provide out of the box functionality for translating values between Python
+    `datetime` objects and a SQLite-supported format. SQLAlchemy's own
+    :class:`~sqlalchemy.types.DateTime` and related types provide date formatting
+    and parsing functionality when SQLite is used. The implementation classes are
+    :class:`_sqlite.DATETIME`, :class:`_sqlite.DATE` and :class:`_sqlite.TIME`.
+    These types represent dates and times as ISO formatted strings, which also
+    nicely support ordering. There's no reliance on typical "libc" internals for
+    these functions so historical dates are fully supported.
+
+确保文本关联性
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The DDL rendered for these types is the standard ``DATE``, ``TIME``
-and ``DATETIME`` indicators.    However, custom storage formats can also be
-applied to these types.   When the
-storage format is detected as containing no alpha characters, the DDL for
-these types is rendered as ``DATE_CHAR``, ``TIME_CHAR``, and ``DATETIME_CHAR``,
-so that the column continues to have textual affinity.
+Ensuring Text affinity
 
-.. seealso::
+.. tab:: 中文
 
-    `Type Affinity <https://www.sqlite.org/datatype3.html#affinity>`_ -
-    in the SQLite documentation
+    这些类型在生成 DDL 时会使用标准的 ``DATE``、``TIME`` 和 ``DATETIME`` 类型标识。然而，也可以为这些类型应用自定义的存储格式。
+    当检测到存储格式中不含有字母字符时，这些类型的 DDL 会被渲染为 ``DATE_CHAR``、``TIME_CHAR`` 和 ``DATETIME_CHAR``，
+    以确保列依然具有文本关联性（textual affinity）。
+
+    .. seealso::
+
+        `类型关联性（Type Affinity） <https://www.sqlite.org/datatype3.html#affinity>`_ - SQLite 文档中的相关说明
+
+.. tab:: 英文
+
+    The DDL rendered for these types is the standard ``DATE``, ``TIME``
+    and ``DATETIME`` indicators.    However, custom storage formats can also be
+    applied to these types.   When the
+    storage format is detected as containing no alpha characters, the DDL for
+    these types is rendered as ``DATE_CHAR``, ``TIME_CHAR``, and ``DATETIME_CHAR``,
+    so that the column continues to have textual affinity.
+
+    .. seealso::
+
+        `Type Affinity <https://www.sqlite.org/datatype3.html#affinity>`_ -
+        in the SQLite documentation
 
 .. _sqlite_autoincrement:
 
-SQLite Auto Incrementing Behavior
+SQLite 自动递增行为
 ----------------------------------
 
-Background on SQLite's autoincrement is at: https://sqlite.org/autoinc.html
+SQLite Auto Incrementing Behavior
 
-Key concepts:
+.. tab:: 中文
 
-* SQLite has an implicit "auto increment" feature that takes place for any
-  non-composite primary-key column that is specifically created using
-  "INTEGER PRIMARY KEY" for the type + primary key.
+    关于 SQLite 自增主键的背景资料参见： https://sqlite.org/autoinc.html
 
-* SQLite also has an explicit "AUTOINCREMENT" keyword, that is **not**
-  equivalent to the implicit autoincrement feature; this keyword is not
-  recommended for general use.  SQLAlchemy does not render this keyword
-  unless a special SQLite-specific directive is used (see below).  However,
-  it still requires that the column's type is named "INTEGER".
+    关键概念：
 
-Using the AUTOINCREMENT Keyword
+    * SQLite 拥有一种隐式的 “自动增长” 特性，当某个非复合主键列被定义为 `"INTEGER PRIMARY KEY"` 时，该特性即被启用。
+
+    * SQLite 同时也支持显式的 "AUTOINCREMENT" 关键字，但该关键字 **并不等同于** 上述隐式自动增长机制。
+      此关键字通常 **不推荐使用** 。除非使用了 SQLite 特定的参数，SQLAlchemy 默认不会生成该关键字（见下文）。
+      但无论如何，若要使用该关键字，仍然要求列的数据类型名称必须是 "INTEGER"。
+
+.. tab:: 英文
+
+    Background on SQLite's autoincrement is at: https://sqlite.org/autoinc.html
+
+    Key concepts:
+
+    * SQLite has an implicit "auto increment" feature that takes place for any
+      non-composite primary-key column that is specifically created using
+      "INTEGER PRIMARY KEY" for the type + primary key.
+
+    * SQLite also has an explicit "AUTOINCREMENT" keyword, that is **not**
+      equivalent to the implicit autoincrement feature; this keyword is not
+      recommended for general use.  SQLAlchemy does not render this keyword
+      unless a special SQLite-specific directive is used (see below).  However,
+      it still requires that the column's type is named "INTEGER".
+
+使用 AUTOINCREMENT 关键字
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To specifically render the AUTOINCREMENT keyword on the primary key column
-when rendering DDL, add the flag ``sqlite_autoincrement=True`` to the Table
-construct::
+Using the AUTOINCREMENT Keyword
 
-    Table(
-        "sometable",
-        metadata,
-        Column("id", Integer, primary_key=True),
-        sqlite_autoincrement=True,
-    )
+.. tab:: 中文
 
-Allowing autoincrement behavior SQLAlchemy types other than Integer/INTEGER
+    若要在生成 DDL 时在主键列上显式添加 AUTOINCREMENT 关键字，可以在 :class:`.Table` 构造中添加 ``sqlite_autoincrement=True`` 标志::
+
+        Table(
+            "sometable",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            sqlite_autoincrement=True,
+        )
+
+.. tab:: 英文
+
+    To specifically render the AUTOINCREMENT keyword on the primary key column
+    when rendering DDL, add the flag ``sqlite_autoincrement=True`` to the Table
+    construct::
+
+        Table(
+            "sometable",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            sqlite_autoincrement=True,
+        )
+
+允许 SQLAlchemy 中除 Integer/INTEGER 之外的其他类型的自动递增行为
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-SQLite's typing model is based on naming conventions.  Among other things, this
-means that any type name which contains the substring ``"INT"`` will be
-determined to be of "integer affinity".  A type named ``"BIGINT"``,
-``"SPECIAL_INT"`` or even ``"XYZINTQPR"``, will be considered by SQLite to be
-of "integer" affinity.  However, **the SQLite autoincrement feature, whether
-implicitly or explicitly enabled, requires that the name of the column's type
-is exactly the string "INTEGER"**.  Therefore, if an application uses a type
-like :class:`.BigInteger` for a primary key, on SQLite this type will need to
-be rendered as the name ``"INTEGER"`` when emitting the initial ``CREATE
-TABLE`` statement in order for the autoincrement behavior to be available.
+Allowing autoincrement behavior SQLAlchemy types other than Integer/INTEGER
 
-One approach to achieve this is to use :class:`.Integer` on SQLite
-only using :meth:`.TypeEngine.with_variant`::
+.. tab:: 中文
 
-    table = Table(
-        "my_table",
-        metadata,
-        Column(
-            "id",
-            BigInteger().with_variant(Integer, "sqlite"),
-            primary_key=True,
-        ),
-    )
+    SQLite 的类型模型基于命名约定。这意味着，任何包含 ``"INT"`` 子字符串的类型名称都将被认为具有 “integer 关联性”。
+    例如，类型 ``"BIGINT"``、``"SPECIAL_INT"``，甚至 ``"XYZINTQPR"``，在 SQLite 中都会被视为 "integer" 关联性类型。
+    但需特别注意： **无论使用显式还是隐式的 autoincrement 特性，SQLite 都要求列类型的名称必须** 严格为 ``"INTEGER"``。
+    因此，如果应用中主键使用了 :class:`.BigInteger` 类型，在 SQLite 中，为了启用自增功能，该类型在生成 ``CREATE TABLE`` 语句时必须渲染为 ``"INTEGER"``。
 
-Another is to use a subclass of :class:`.BigInteger` that overrides its DDL
-name to be ``INTEGER`` when compiled against SQLite::
+    一种实现方式是仅在 SQLite 上使用 :class:`.Integer`，并借助 :meth:`.TypeEngine.with_variant`::
 
-    from sqlalchemy import BigInteger
-    from sqlalchemy.ext.compiler import compiles
+        table = Table(
+            "my_table",
+            metadata,
+            Column(
+                "id",
+                BigInteger().with_variant(Integer, "sqlite"),
+                primary_key=True,
+            ),
+        )
+
+    另一种方式是自定义一个继承自 :class:`.BigInteger` 的子类，当其针对 SQLite 编译时将类型名称重写为 ``INTEGER``::
+
+        from sqlalchemy import BigInteger
+        from sqlalchemy.ext.compiler import compiles
 
 
-    class SLBigInteger(BigInteger):
-        pass
+        class SLBigInteger(BigInteger):
+            pass
 
 
-    @compiles(SLBigInteger, "sqlite")
-    def bi_c(element, compiler, **kw):
-        return "INTEGER"
+        @compiles(SLBigInteger, "sqlite")
+        def bi_c(element, compiler, **kw):
+            return "INTEGER"
 
 
-    @compiles(SLBigInteger)
-    def bi_c(element, compiler, **kw):
-        return compiler.visit_BIGINT(element, **kw)
+        @compiles(SLBigInteger)
+        def bi_c(element, compiler, **kw):
+            return compiler.visit_BIGINT(element, **kw)
 
 
-    table = Table(
-        "my_table", metadata, Column("id", SLBigInteger(), primary_key=True)
-    )
+        table = Table(
+            "my_table", metadata, Column("id", SLBigInteger(), primary_key=True)
+        )
 
-.. seealso::
+    .. seealso::
 
-    :meth:`.TypeEngine.with_variant`
+        :meth:`.TypeEngine.with_variant`
 
-    :ref:`sqlalchemy.ext.compiler_toplevel`
+        :ref:`sqlalchemy.ext.compiler_toplevel`
 
-    `Datatypes In SQLite Version 3 <https://sqlite.org/datatype3.html>`_
+        `SQLite 3 中的数据类型 <https://sqlite.org/datatype3.html>`_
+
+.. tab:: 英文
+
+    SQLite's typing model is based on naming conventions.  Among other things, this
+    means that any type name which contains the substring ``"INT"`` will be
+    determined to be of "integer affinity".  A type named ``"BIGINT"``,
+    ``"SPECIAL_INT"`` or even ``"XYZINTQPR"``, will be considered by SQLite to be
+    of "integer" affinity.  However, **the SQLite autoincrement feature, whether
+    implicitly or explicitly enabled, requires that the name of the column's type
+    is exactly the string "INTEGER"**.  Therefore, if an application uses a type
+    like :class:`.BigInteger` for a primary key, on SQLite this type will need to
+    be rendered as the name ``"INTEGER"`` when emitting the initial ``CREATE
+    TABLE`` statement in order for the autoincrement behavior to be available.
+
+    One approach to achieve this is to use :class:`.Integer` on SQLite
+    only using :meth:`.TypeEngine.with_variant`::
+
+        table = Table(
+            "my_table",
+            metadata,
+            Column(
+                "id",
+                BigInteger().with_variant(Integer, "sqlite"),
+                primary_key=True,
+            ),
+        )
+
+    Another is to use a subclass of :class:`.BigInteger` that overrides its DDL
+    name to be ``INTEGER`` when compiled against SQLite::
+
+        from sqlalchemy import BigInteger
+        from sqlalchemy.ext.compiler import compiles
+
+
+        class SLBigInteger(BigInteger):
+            pass
+
+
+        @compiles(SLBigInteger, "sqlite")
+        def bi_c(element, compiler, **kw):
+            return "INTEGER"
+
+
+        @compiles(SLBigInteger)
+        def bi_c(element, compiler, **kw):
+            return compiler.visit_BIGINT(element, **kw)
+
+
+        table = Table(
+            "my_table", metadata, Column("id", SLBigInteger(), primary_key=True)
+        )
+
+    .. seealso::
+
+        :meth:`.TypeEngine.with_variant`
+
+        :ref:`sqlalchemy.ext.compiler_toplevel`
+
+        `Datatypes In SQLite Version 3 <https://sqlite.org/datatype3.html>`_
 
 .. _sqlite_concurrency:
 
-Database Locking Behavior / Concurrency
+数据库锁定行为/并发性
 ---------------------------------------
 
-SQLite is not designed for a high level of write concurrency. The database
-itself, being a file, is locked completely during write operations within
-transactions, meaning exactly one "connection" (in reality a file handle)
-has exclusive access to the database during this period - all other
-"connections" will be blocked during this time.
+Database Locking Behavior / Concurrency
 
-The Python DBAPI specification also calls for a connection model that is
-always in a transaction; there is no ``connection.begin()`` method,
-only ``connection.commit()`` and ``connection.rollback()``, upon which a
-new transaction is to be begun immediately.  This may seem to imply
-that the SQLite driver would in theory allow only a single filehandle on a
-particular database file at any time; however, there are several
-factors both within SQLite itself as well as within the pysqlite driver
-which loosen this restriction significantly.
+.. tab:: 中文
 
-However, no matter what locking modes are used, SQLite will still always
-lock the database file once a transaction is started and DML (e.g. INSERT,
-UPDATE, DELETE) has at least been emitted, and this will block
-other transactions at least at the point that they also attempt to emit DML.
-By default, the length of time on this block is very short before it times out
-with an error.
+    SQLite 并非为高并发写操作而设计。由于数据库本质上是一个文件，在事务中的写操作会将该文件完全锁定，意味着在写期间，只有一个 “连接”（本质上是一个文件句柄）拥有对数据库的独占访问权限 ——
+    所有其他“连接”在此期间都会被阻塞。
 
-This behavior becomes more critical when used in conjunction with the
-SQLAlchemy ORM.  SQLAlchemy's :class:`.Session` object by default runs
-within a transaction, and with its autoflush model, may emit DML preceding
-any SELECT statement.   This may lead to a SQLite database that locks
-more quickly than is expected.   The locking mode of SQLite and the pysqlite
-driver can be manipulated to some degree, however it should be noted that
-achieving a high degree of write-concurrency with SQLite is a losing battle.
+    Python 的 DBAPI 规范也定义了一种始终处于事务中的连接模型；它没有 ``connection.begin()`` 方法，
+    只有 ``connection.commit()`` 与 ``connection.rollback()``，调用这些方法后应立即开始一个新事务。
+    这似乎暗示 SQLite 驱动理论上在任意时间只允许一个文件句柄访问某个数据库文件；
+    但实际上，在 SQLite 自身以及 pysqlite 驱动的多方面因素影响下，这一限制已大大放宽。
 
-For more information on SQLite's lack of write concurrency by design, please
-see
-`Situations Where Another RDBMS May Work Better - High Concurrency
-<https://www.sqlite.org/whentouse.html>`_ near the bottom of the page.
+    然而，无论采用哪种锁定模式，一旦事务开始并至少执行了一条 DML 语句（如 INSERT、UPDATE、DELETE），SQLite 仍会锁定整个数据库文件，
+    此时其他事务在试图执行 DML 时也会被阻塞。默认情况下，该阻塞时间非常短，超时后会报错。
 
-The following subsections introduce areas that are impacted by SQLite's
-file-based architecture and additionally will usually require workarounds to
-work when using the pysqlite driver.
+    在配合 SQLAlchemy ORM 使用时，这一行为尤为关键。
+    SQLAlchemy 的 :class:`.Session` 对象默认运行在一个事务中，且在启用了自动刷新（autoflush）模式时，可能在任意 SELECT 语句之前就会发出 DML。
+    这可能会导致数据库比预期更快地进入锁定状态。虽然可以在一定程度上调整 SQLite 及其 pysqlite 驱动的锁定模式，
+    但需注意的是，在 SQLite 中尝试实现高写入并发本就是一场败战。
+
+    如需了解更多关于 SQLite 在设计上不具备写入并发的资料，请参阅官方文档末尾部分：
+    `哪些场景下应考虑其他关系型数据库 —— 高并发需求 <https://www.sqlite.org/whentouse.html>`_
+
+    以下各小节将介绍 SQLite 的文件架构所影响的领域，这些领域在使用 pysqlite 驱动时通常需要特殊处理或绕过方案。
+
+.. tab:: 英文
+
+    SQLite is not designed for a high level of write concurrency. The database
+    itself, being a file, is locked completely during write operations within
+    transactions, meaning exactly one "connection" (in reality a file handle)
+    has exclusive access to the database during this period - all other
+    "connections" will be blocked during this time.
+
+    The Python DBAPI specification also calls for a connection model that is
+    always in a transaction; there is no ``connection.begin()`` method,
+    only ``connection.commit()`` and ``connection.rollback()``, upon which a
+    new transaction is to be begun immediately.  This may seem to imply
+    that the SQLite driver would in theory allow only a single filehandle on a
+    particular database file at any time; however, there are several
+    factors both within SQLite itself as well as within the pysqlite driver
+    which loosen this restriction significantly.
+
+    However, no matter what locking modes are used, SQLite will still always
+    lock the database file once a transaction is started and DML (e.g. INSERT,
+    UPDATE, DELETE) has at least been emitted, and this will block
+    other transactions at least at the point that they also attempt to emit DML.
+    By default, the length of time on this block is very short before it times out
+    with an error.
+
+    This behavior becomes more critical when used in conjunction with the
+    SQLAlchemy ORM.  SQLAlchemy's :class:`.Session` object by default runs
+    within a transaction, and with its autoflush model, may emit DML preceding
+    any SELECT statement.   This may lead to a SQLite database that locks
+    more quickly than is expected.   The locking mode of SQLite and the pysqlite
+    driver can be manipulated to some degree, however it should be noted that
+    achieving a high degree of write-concurrency with SQLite is a losing battle.
+
+    For more information on SQLite's lack of write concurrency by design, please
+    see
+    `Situations Where Another RDBMS May Work Better - High Concurrency
+    <https://www.sqlite.org/whentouse.html>`_ near the bottom of the page.
+
+    The following subsections introduce areas that are impacted by SQLite's
+    file-based architecture and additionally will usually require workarounds to
+    work when using the pysqlite driver.
 
 .. _sqlite_isolation_level:
 
-Transaction Isolation Level / Autocommit
+事务隔离级别/自动提交
 ----------------------------------------
 
-SQLite supports "transaction isolation" in a non-standard way, along two
-axes.  One is that of the
-`PRAGMA read_uncommitted <https://www.sqlite.org/pragma.html#pragma_read_uncommitted>`_
-instruction.   This setting can essentially switch SQLite between its
-default mode of ``SERIALIZABLE`` isolation, and a "dirty read" isolation
-mode normally referred to as ``READ UNCOMMITTED``.
+Transaction Isolation Level / Autocommit
 
-SQLAlchemy ties into this PRAGMA statement using the
-:paramref:`_sa.create_engine.isolation_level` parameter of
-:func:`_sa.create_engine`.
-Valid values for this parameter when used with SQLite are ``"SERIALIZABLE"``
-and ``"READ UNCOMMITTED"`` corresponding to a value of 0 and 1, respectively.
-SQLite defaults to ``SERIALIZABLE``, however its behavior is impacted by
-the pysqlite driver's default behavior.
+.. tab:: 中文
 
-When using the pysqlite driver, the ``"AUTOCOMMIT"`` isolation level is also
-available, which will alter the pysqlite connection using the ``.isolation_level``
-attribute on the DBAPI connection and set it to None for the duration
-of the setting.
+    SQLite 以一种非标准的方式支持“事务隔离”，主要体现在两个方面。其一是
+    `PRAGMA read_uncommitted <https://www.sqlite.org/pragma.html#pragma_read_uncommitted>`_
+    指令。此设置可在 SQLite 的默认 ``SERIALIZABLE`` 隔离级别与一种通常称为
+    ``READ UNCOMMITTED`` 的“脏读”隔离模式之间切换。
 
-The other axis along which SQLite's transactional locking is impacted is
-via the nature of the ``BEGIN`` statement used.   The three varieties
-are "deferred", "immediate", and "exclusive", as described at
-`BEGIN TRANSACTION <https://sqlite.org/lang_transaction.html>`_.   A straight
-``BEGIN`` statement uses the "deferred" mode, where the database file is
-not locked until the first read or write operation, and read access remains
-open to other transactions until the first write operation.  But again,
-it is critical to note that the pysqlite driver interferes with this behavior
-by *not even emitting BEGIN* until the first write operation.
+    SQLAlchemy 通过 :func:`_sa.create_engine` 的 :paramref:`_sa.create_engine.isolation_level`
+    参数与该 PRAGMA 指令集成。与 SQLite 一起使用时，该参数的有效值为 ``"SERIALIZABLE"``
+    与 ``"READ UNCOMMITTED"``，它们分别对应的 SQLite PRAGMA 值为 0 与 1。SQLite 默认值为
+    ``SERIALIZABLE``，但其行为也受 pysqlite 驱动器默认行为的影响。
 
-.. warning::
+    在使用 pysqlite 驱动时，还可用 ``"AUTOCOMMIT"`` 隔离级别，它会通过 DBAPI 连接的
+    ``.isolation_level`` 属性将其设置为 None，从而修改 pysqlite 的连接行为，在该设置期间启用自动提交。
 
-    SQLite's transactional scope is impacted by unresolved
-    issues in the pysqlite driver, which defers BEGIN statements to a greater
-    degree than is often feasible. See the section :ref:`pysqlite_serializable`
-    or :ref:`aiosqlite_serializable` for techniques to work around this behavior.
+    SQLite 的事务锁定行为受 ``BEGIN`` 语句的形式影响。该语句有三种模式：“deferred”、“immediate”
+    与 “exclusive”，详见
+    `BEGIN TRANSACTION <https://sqlite.org/lang_transaction.html>`_。简单的 ``BEGIN`` 语句使用的是
+    “deferred” 模式，在此模式下，直到第一次读写操作执行前，数据库文件不会被锁定；读操作在第一次写入前
+    对其他事务仍是开放的。但需要特别注意的是，pysqlite 驱动会干扰此行为，它 **甚至不会在第一次写入前发出 BEGIN** 。
 
-.. seealso::
+    .. warning::
 
-    :ref:`dbapi_autocommit`
+        SQLite 的事务范围受到 pysqlite 驱动中未解决问题的影响，后者将 BEGIN 语句推迟到了不可接受的程度。
+        请参阅 :ref:`pysqlite_serializable` 或 :ref:`aiosqlite_serializable` 部分，了解应对该行为的技巧。
+
+    .. seealso::
+
+        :ref:`dbapi_autocommit`
+
+.. tab:: 英文
+
+    SQLite supports "transaction isolation" in a non-standard way, along two
+    axes.  One is that of the
+    `PRAGMA read_uncommitted <https://www.sqlite.org/pragma.html#pragma_read_uncommitted>`_
+    instruction.   This setting can essentially switch SQLite between its
+    default mode of ``SERIALIZABLE`` isolation, and a "dirty read" isolation
+    mode normally referred to as ``READ UNCOMMITTED``.
+
+    SQLAlchemy ties into this PRAGMA statement using the
+    :paramref:`_sa.create_engine.isolation_level` parameter of
+    :func:`_sa.create_engine`.
+    Valid values for this parameter when used with SQLite are ``"SERIALIZABLE"``
+    and ``"READ UNCOMMITTED"`` corresponding to a value of 0 and 1, respectively.
+    SQLite defaults to ``SERIALIZABLE``, however its behavior is impacted by
+    the pysqlite driver's default behavior.
+
+    When using the pysqlite driver, the ``"AUTOCOMMIT"`` isolation level is also
+    available, which will alter the pysqlite connection using the ``.isolation_level``
+    attribute on the DBAPI connection and set it to None for the duration
+    of the setting.
+
+    The other axis along which SQLite's transactional locking is impacted is
+    via the nature of the ``BEGIN`` statement used.   The three varieties
+    are "deferred", "immediate", and "exclusive", as described at
+    `BEGIN TRANSACTION <https://sqlite.org/lang_transaction.html>`_.   A straight
+    ``BEGIN`` statement uses the "deferred" mode, where the database file is
+    not locked until the first read or write operation, and read access remains
+    open to other transactions until the first write operation.  But again,
+    it is critical to note that the pysqlite driver interferes with this behavior
+    by *not even emitting BEGIN* until the first write operation.
+
+    .. warning::
+
+        SQLite's transactional scope is impacted by unresolved
+        issues in the pysqlite driver, which defers BEGIN statements to a greater
+        degree than is often feasible. See the section :ref:`pysqlite_serializable`
+        or :ref:`aiosqlite_serializable` for techniques to work around this behavior.
+
+    .. seealso::
+
+        :ref:`dbapi_autocommit`
 
 INSERT/UPDATE/DELETE...RETURNING
 ---------------------------------
 
-The SQLite dialect supports SQLite 3.35's  ``INSERT|UPDATE|DELETE..RETURNING``
-syntax.   ``INSERT..RETURNING`` may be used
-automatically in some cases in order to fetch newly generated identifiers in
-place of the traditional approach of using ``cursor.lastrowid``, however
-``cursor.lastrowid`` is currently still preferred for simple single-statement
-cases for its better performance.
+INSERT/UPDATE/DELETE...RETURNING
 
-To specify an explicit ``RETURNING`` clause, use the
-:meth:`._UpdateBase.returning` method on a per-statement basis::
+.. tab:: 中文
 
-    # INSERT..RETURNING
-    result = connection.execute(
-        table.insert().values(name="foo").returning(table.c.col1, table.c.col2)
-    )
-    print(result.all())
+    SQLite 方言支持 SQLite 3.35 引入的 ``INSERT|UPDATE|DELETE..RETURNING`` 语法。
+    在某些场景下，可能会自动使用 ``INSERT..RETURNING`` 来获取新生成的标识符，
+    替代传统的 ``cursor.lastrowid`` 方法；不过，在简单的单语句情况下，出于性能考虑，仍优先使用 ``cursor.lastrowid``。
 
-    # UPDATE..RETURNING
-    result = connection.execute(
-        table.update()
-        .where(table.c.name == "foo")
-        .values(name="bar")
-        .returning(table.c.col1, table.c.col2)
-    )
-    print(result.all())
+    要显式指定 ``RETURNING`` 子句，请在每个语句上使用 :meth:`._UpdateBase.returning` 方法::
 
-    # DELETE..RETURNING
-    result = connection.execute(
-        table.delete()
-        .where(table.c.name == "foo")
-        .returning(table.c.col1, table.c.col2)
-    )
-    print(result.all())
+        # INSERT..RETURNING
+        result = connection.execute(
+            table.insert().values(name="foo").returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
 
-.. versionadded:: 2.0  Added support for SQLite RETURNING
+        # UPDATE..RETURNING
+        result = connection.execute(
+            table.update()
+            .where(table.c.name == "foo")
+            .values(name="bar")
+            .returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+        # DELETE..RETURNING
+        result = connection.execute(
+            table.delete()
+            .where(table.c.name == "foo")
+            .returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+    .. versionadded:: 2.0
+        增加对 SQLite RETURNING 的支持
+
+.. tab:: 英文
+
+    The SQLite dialect supports SQLite 3.35's  ``INSERT|UPDATE|DELETE..RETURNING``
+    syntax.   ``INSERT..RETURNING`` may be used
+    automatically in some cases in order to fetch newly generated identifiers in
+    place of the traditional approach of using ``cursor.lastrowid``, however
+    ``cursor.lastrowid`` is currently still preferred for simple single-statement
+    cases for its better performance.
+
+    To specify an explicit ``RETURNING`` clause, use the
+    :meth:`._UpdateBase.returning` method on a per-statement basis::
+
+        # INSERT..RETURNING
+        result = connection.execute(
+            table.insert().values(name="foo").returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+        # UPDATE..RETURNING
+        result = connection.execute(
+            table.update()
+            .where(table.c.name == "foo")
+            .values(name="bar")
+            .returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+        # DELETE..RETURNING
+        result = connection.execute(
+            table.delete()
+            .where(table.c.name == "foo")
+            .returning(table.c.col1, table.c.col2)
+        )
+        print(result.all())
+
+    .. versionadded:: 2.0  Added support for SQLite RETURNING
+
+SAVEPOINT 支持
+----------------------------
 
 SAVEPOINT Support
+
+.. tab:: 中文
+
+    SQLite 支持 SAVEPOINT（保存点），但仅在事务已开始后才生效。
+    SQLAlchemy 通过 Core 层的 :meth:`_engine.Connection.begin_nested` 方法以及 ORM 层的 :meth:`.Session.begin_nested` 方法提供保存点支持。
+    然而，除非使用某些变通方案，否则在使用 pysqlite 驱动时 SAVEPOINT 将无法正常工作。
+
+    .. warning::
+
+        SQLite 的 SAVEPOINT 功能受 pysqlite 和 aiosqlite 驱动中的未解决问题影响，
+        它们将 BEGIN 语句的触发推迟到了通常无法接受的程度。
+        请参阅 :ref:`pysqlite_serializable` 与 :ref:`aiosqlite_serializable`，了解应对技巧。
+
+.. tab:: 英文
+
+    SQLite supports SAVEPOINTs, which only function once a transaction is
+    begun.   SQLAlchemy's SAVEPOINT support is available using the
+    :meth:`_engine.Connection.begin_nested` method at the Core level, and
+    :meth:`.Session.begin_nested` at the ORM level.   However, SAVEPOINTs
+    won't work at all with pysqlite unless workarounds are taken.
+
+    .. warning::
+
+        SQLite's SAVEPOINT feature is impacted by unresolved
+        issues in the pysqlite and aiosqlite drivers, which defer BEGIN statements
+        to a greater degree than is often feasible. See the sections
+        :ref:`pysqlite_serializable` and :ref:`aiosqlite_serializable`
+        for techniques to work around this behavior.
+
+事务性 DDL
 ----------------------------
-
-SQLite supports SAVEPOINTs, which only function once a transaction is
-begun.   SQLAlchemy's SAVEPOINT support is available using the
-:meth:`_engine.Connection.begin_nested` method at the Core level, and
-:meth:`.Session.begin_nested` at the ORM level.   However, SAVEPOINTs
-won't work at all with pysqlite unless workarounds are taken.
-
-.. warning::
-
-    SQLite's SAVEPOINT feature is impacted by unresolved
-    issues in the pysqlite and aiosqlite drivers, which defer BEGIN statements
-    to a greater degree than is often feasible. See the sections
-    :ref:`pysqlite_serializable` and :ref:`aiosqlite_serializable`
-    for techniques to work around this behavior.
 
 Transactional DDL
-----------------------------
 
-The SQLite database supports transactional :term:`DDL` as well.
-In this case, the pysqlite driver is not only failing to start transactions,
-it also is ending any existing transaction when DDL is detected, so again,
-workarounds are required.
+.. tab:: 中文
 
-.. warning::
+    SQLite 数据库支持事务性的 :term:`DDL` 操作。
+    在这种情况下，pysqlite 驱动不仅未能自动开启事务，
+    还在检测到 DDL 时结束了任何已有事务，因此也需要特殊处理。
 
-    SQLite's transactional DDL is impacted by unresolved issues
-    in the pysqlite driver, which fails to emit BEGIN and additionally
-    forces a COMMIT to cancel any transaction when DDL is encountered.
-    See the section :ref:`pysqlite_serializable`
-    for techniques to work around this behavior.
+    .. warning::
+
+        SQLite 的事务性 DDL 操作受到 pysqlite 驱动中未解决问题的影响，
+        它既不发出 BEGIN，也会在遇到 DDL 时强制 COMMIT，取消已有事务。
+        请参阅 :ref:`pysqlite_serializable`，了解应对技巧。
+
+.. tab:: 英文
+
+    The SQLite database supports transactional :term:`DDL` as well.
+    In this case, the pysqlite driver is not only failing to start transactions,
+    it also is ending any existing transaction when DDL is detected, so again,
+    workarounds are required.
+
+    .. warning::
+
+        SQLite's transactional DDL is impacted by unresolved issues
+        in the pysqlite driver, which fails to emit BEGIN and additionally
+        forces a COMMIT to cancel any transaction when DDL is encountered.
+        See the section :ref:`pysqlite_serializable`
+        for techniques to work around this behavior.
 
 .. _sqlite_foreign_keys:
 
-Foreign Key Support
+外键支持
 -------------------
 
-SQLite supports FOREIGN KEY syntax when emitting CREATE statements for tables,
-however by default these constraints have no effect on the operation of the
-table.
+Foreign Key Support
 
-Constraint checking on SQLite has three prerequisites:
+.. tab:: 中文
 
-* At least version 3.6.19 of SQLite must be in use
-* The SQLite library must be compiled *without* the SQLITE_OMIT_FOREIGN_KEY
-  or SQLITE_OMIT_TRIGGER symbols enabled.
-* The ``PRAGMA foreign_keys = ON`` statement must be emitted on all
-  connections before use -- including the initial call to
-  :meth:`sqlalchemy.schema.MetaData.create_all`.
+    SQLite 支持在表的 CREATE 语句中使用 FOREIGN KEY 语法，
+    但默认情况下，这些约束 **对表的行为没有实际影响**。
 
-SQLAlchemy allows for the ``PRAGMA`` statement to be emitted automatically for
-new connections through the usage of events::
+    要使 SQLite 中的外键约束生效，需要满足以下三个前提：
 
-    from sqlalchemy.engine import Engine
-    from sqlalchemy import event
+    * 必须使用 SQLite 版本 3.6.19 或更高版本；
+    * SQLite 库在编译时 **不能启用** SQLITE_OMIT_FOREIGN_KEY 或 SQLITE_OMIT_TRIGGER 宏；
+    * 在所有连接使用前必须显式发出 ``PRAGMA foreign_keys = ON`` 语句，包括调用 :meth:`sqlalchemy.schema.MetaData.create_all` 之前。
+
+    SQLAlchemy 可通过事件机制在新连接建立时自动发出 ``PRAGMA`` 语句::
+
+        from sqlalchemy.engine import Engine
+        from sqlalchemy import event
 
 
-    @event.listens_for(Engine, "connect")
-    def set_sqlite_pragma(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
+        @event.listens_for(Engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
 
-.. warning::
+    .. warning::
 
-    When SQLite foreign keys are enabled, it is **not possible**
-    to emit CREATE or DROP statements for tables that contain
-    mutually-dependent foreign key constraints;
-    to emit the DDL for these tables requires that ALTER TABLE be used to
-    create or drop these constraints separately, for which SQLite has
-    no support.
+        启用 SQLite 外键后，**无法** 对包含相互依赖外键约束的表执行 CREATE 或 DROP 操作；
+        若要为这类表发出 DDL，必须使用 ALTER TABLE 单独创建或删除这些约束，
+        但 SQLite 并 **不支持** 此类操作。
 
-.. seealso::
+    .. seealso::
 
-    `SQLite Foreign Key Support <https://www.sqlite.org/foreignkeys.html>`_
-    - on the SQLite web site.
+        `SQLite Foreign Key Support <https://www.sqlite.org/foreignkeys.html>`_
+        - SQLite 官方网站上的相关说明。
 
-    :ref:`event_toplevel` - SQLAlchemy event API.
+        :ref:`event_toplevel` - SQLAlchemy 的事件 API。
 
-    :ref:`use_alter` - more information on SQLAlchemy's facilities for handling
-     mutually-dependent foreign key constraints.
+        :ref:`use_alter` - 了解 SQLAlchemy 如何处理相互依赖的外键约束的更多信息。
+
+.. tab:: 英文
+
+    SQLite supports FOREIGN KEY syntax when emitting CREATE statements for tables,
+    however by default these constraints have no effect on the operation of the
+    table.
+
+    Constraint checking on SQLite has three prerequisites:
+
+    * At least version 3.6.19 of SQLite must be in use
+    * The SQLite library must be compiled *without* the SQLITE_OMIT_FOREIGN_KEY
+      or SQLITE_OMIT_TRIGGER symbols enabled.
+    * The ``PRAGMA foreign_keys = ON`` statement must be emitted on all
+      connections before use -- including the initial call to
+      :meth:`sqlalchemy.schema.MetaData.create_all`.
+
+    SQLAlchemy allows for the ``PRAGMA`` statement to be emitted automatically for
+    new connections through the usage of events::
+
+        from sqlalchemy.engine import Engine
+        from sqlalchemy import event
+
+
+        @event.listens_for(Engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
+
+    .. warning::
+
+        When SQLite foreign keys are enabled, it is **not possible**
+        to emit CREATE or DROP statements for tables that contain
+        mutually-dependent foreign key constraints;
+        to emit the DDL for these tables requires that ALTER TABLE be used to
+        create or drop these constraints separately, for which SQLite has
+        no support.
+
+    .. seealso::
+
+        `SQLite Foreign Key Support <https://www.sqlite.org/foreignkeys.html>`_
+        - on the SQLite web site.
+
+        :ref:`event_toplevel` - SQLAlchemy event API.
+
+        :ref:`use_alter` - more information on SQLAlchemy's facilities for handling
+         mutually-dependent foreign key constraints.
 
 .. _sqlite_on_conflict_ddl:
 
-ON CONFLICT support for constraints
+ON CONFLICT 约束支持
 -----------------------------------
 
-.. seealso:: This section describes the :term:`DDL` version of "ON CONFLICT" for
-   SQLite, which occurs within a CREATE TABLE statement.  For "ON CONFLICT" as
-   applied to an INSERT statement, see :ref:`sqlite_on_conflict_insert`.
+ON CONFLICT support for constraints
 
-SQLite supports a non-standard DDL clause known as ON CONFLICT which can be applied
-to primary key, unique, check, and not null constraints.   In DDL, it is
-rendered either within the "CONSTRAINT" clause or within the column definition
-itself depending on the location of the target constraint.    To render this
-clause within DDL, the extension parameter ``sqlite_on_conflict`` can be
-specified with a string conflict resolution algorithm within the
-:class:`.PrimaryKeyConstraint`, :class:`.UniqueConstraint`,
-:class:`.CheckConstraint` objects.  Within the :class:`_schema.Column` object,
-there
-are individual parameters ``sqlite_on_conflict_not_null``,
-``sqlite_on_conflict_primary_key``, ``sqlite_on_conflict_unique`` which each
-correspond to the three types of relevant constraint types that can be
-indicated from a :class:`_schema.Column` object.
+.. tab:: 中文
 
-.. seealso::
+    .. seealso:: 本节描述了 SQLite 中出现在 CREATE TABLE 语句中的 :term:`DDL` 版本的 "ON CONFLICT"。关于适用于 INSERT 语句的 "ON CONFLICT"，请参阅 :ref:`sqlite_on_conflict_insert`。
 
-    `ON CONFLICT <https://www.sqlite.org/lang_conflict.html>`_ - in the SQLite
-    documentation
+    SQLite 支持一种非标准的 DDL 子句 ON CONFLICT，可应用于主键、唯一性、检查以及非空约束。在 DDL 中，该子句可以出现在 "CONSTRAINT" 子句中，或直接出现在列定义内，具体取决于目标约束的位置。要在 DDL 中渲染该子句，可以在 :class:`.PrimaryKeyConstraint`、:class:`.UniqueConstraint`、:class:`.CheckConstraint` 对象中指定扩展参数 ``sqlite_on_conflict`` 并传入冲突解决算法的字符串形式。在 :class:`_schema.Column` 对象中，则可以使用 ``sqlite_on_conflict_not_null``、``sqlite_on_conflict_primary_key``、``sqlite_on_conflict_unique`` 等参数，分别对应三种列级约束类型。
 
-The ``sqlite_on_conflict`` parameters accept a  string argument which is just
-the resolution name to be chosen, which on SQLite can be one of ROLLBACK,
-ABORT, FAIL, IGNORE, and REPLACE.   For example, to add a UNIQUE constraint
-that specifies the IGNORE algorithm::
+    .. seealso::
 
-    some_table = Table(
-        "some_table",
-        metadata,
-        Column("id", Integer, primary_key=True),
-        Column("data", Integer),
-        UniqueConstraint("id", "data", sqlite_on_conflict="IGNORE"),
-    )
+        `ON CONFLICT <https://www.sqlite.org/lang_conflict.html>`_ - SQLite 官方文档
 
-The above renders CREATE TABLE DDL as:
+    ``sqlite_on_conflict`` 参数接受一个字符串，表示选择的冲突解决算法，其值可以是 SQLite 支持的 ROLLBACK、ABORT、FAIL、IGNORE 或 REPLACE。例如，添加一个指定使用 IGNORE 算法的 UNIQUE 约束::
 
-.. sourcecode:: sql
+        some_table = Table(
+            "some_table",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("data", Integer),
+            UniqueConstraint("id", "data", sqlite_on_conflict="IGNORE"),
+        )
 
-    CREATE TABLE some_table (
-        id INTEGER NOT NULL,
-        data INTEGER,
-        PRIMARY KEY (id),
-        UNIQUE (id, data) ON CONFLICT IGNORE
-    )
+    上述代码生成的 CREATE TABLE DDL 如下：
+
+    .. sourcecode:: sql
+
+        CREATE TABLE some_table (
+            id INTEGER NOT NULL,
+            data INTEGER,
+            PRIMARY KEY (id),
+            UNIQUE (id, data) ON CONFLICT IGNORE
+        )
+
+    使用 :paramref:`_schema.Column.unique` 标志为单个列添加 UNIQUE 约束时，也可以通过 ``sqlite_on_conflict_unique`` 参数指定冲突策略，该参数将会添加到生成的 UNIQUE 约束中::
+
+        some_table = Table(
+            "some_table",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column(
+                "data", Integer, unique=True, sqlite_on_conflict_unique="IGNORE"
+            ),
+        )
+
+    生成的 SQL 如下：
+
+    .. sourcecode:: sql
+
+        CREATE TABLE some_table (
+            id INTEGER NOT NULL,
+            data INTEGER,
+            PRIMARY KEY (id),
+            UNIQUE (data) ON CONFLICT IGNORE
+        )
+
+    要为 NOT NULL 约束指定 FAIL 算法，可使用 ``sqlite_on_conflict_not_null``::
+
+        some_table = Table(
+            "some_table",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column(
+                "data", Integer, nullable=False, sqlite_on_conflict_not_null="FAIL"
+            ),
+        )
+
+    生成的列定义中会包含 inline 的 ON CONFLICT 子句：
+
+    .. sourcecode:: sql
+
+        CREATE TABLE some_table (
+            id INTEGER NOT NULL,
+            data INTEGER NOT NULL ON CONFLICT FAIL,
+            PRIMARY KEY (id)
+        )
+
+    类似地，若要为 inline 主键指定冲突算法，可使用 ``sqlite_on_conflict_primary_key``::
+
+        some_table = Table(
+            "some_table",
+            metadata,
+            Column(
+                "id",
+                Integer,
+                primary_key=True,
+                sqlite_on_conflict_primary_key="FAIL",
+            ),
+        )
+
+    由于 SQLAlchemy 会单独渲染 PRIMARY KEY 约束，因此冲突解决算法会应用在约束上：
+
+    .. sourcecode:: sql
+
+        CREATE TABLE some_table (
+            id INTEGER NOT NULL,
+            PRIMARY KEY (id) ON CONFLICT FAIL
+        )
+
+.. tab:: 英文
+
+    .. seealso:: This section describes the :term:`DDL` version of "ON CONFLICT" for
+       SQLite, which occurs within a CREATE TABLE statement.  For "ON CONFLICT" as
+       applied to an INSERT statement, see :ref:`sqlite_on_conflict_insert`.
+
+    SQLite supports a non-standard DDL clause known as ON CONFLICT which can be applied
+    to primary key, unique, check, and not null constraints.   In DDL, it is
+    rendered either within the "CONSTRAINT" clause or within the column definition
+    itself depending on the location of the target constraint.    To render this
+    clause within DDL, the extension parameter ``sqlite_on_conflict`` can be
+    specified with a string conflict resolution algorithm within the
+    :class:`.PrimaryKeyConstraint`, :class:`.UniqueConstraint`,
+    :class:`.CheckConstraint` objects.  Within the :class:`_schema.Column` object,
+    there
+    are individual parameters ``sqlite_on_conflict_not_null``,
+    ``sqlite_on_conflict_primary_key``, ``sqlite_on_conflict_unique`` which each
+    correspond to the three types of relevant constraint types that can be
+    indicated from a :class:`_schema.Column` object.
+
+    .. seealso::
+
+        `ON CONFLICT <https://www.sqlite.org/lang_conflict.html>`_ - in the SQLite
+        documentation
+
+    The ``sqlite_on_conflict`` parameters accept a  string argument which is just
+    the resolution name to be chosen, which on SQLite can be one of ROLLBACK,
+    ABORT, FAIL, IGNORE, and REPLACE.   For example, to add a UNIQUE constraint
+    that specifies the IGNORE algorithm::
+
+        some_table = Table(
+            "some_table",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("data", Integer),
+            UniqueConstraint("id", "data", sqlite_on_conflict="IGNORE"),
+        )
+
+    The above renders CREATE TABLE DDL as:
+
+    .. sourcecode:: sql
+
+        CREATE TABLE some_table (
+            id INTEGER NOT NULL,
+            data INTEGER,
+            PRIMARY KEY (id),
+            UNIQUE (id, data) ON CONFLICT IGNORE
+        )
 
 
-When using the :paramref:`_schema.Column.unique`
-flag to add a UNIQUE constraint
-to a single column, the ``sqlite_on_conflict_unique`` parameter can
-be added to the :class:`_schema.Column` as well, which will be added to the
-UNIQUE constraint in the DDL::
+    When using the :paramref:`_schema.Column.unique`
+    flag to add a UNIQUE constraint
+    to a single column, the ``sqlite_on_conflict_unique`` parameter can
+    be added to the :class:`_schema.Column` as well, which will be added to the
+    UNIQUE constraint in the DDL::
 
-    some_table = Table(
-        "some_table",
-        metadata,
-        Column("id", Integer, primary_key=True),
-        Column(
-            "data", Integer, unique=True, sqlite_on_conflict_unique="IGNORE"
-        ),
-    )
+        some_table = Table(
+            "some_table",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column(
+                "data", Integer, unique=True, sqlite_on_conflict_unique="IGNORE"
+            ),
+        )
 
-rendering:
+    rendering:
 
-.. sourcecode:: sql
+    .. sourcecode:: sql
 
-    CREATE TABLE some_table (
-        id INTEGER NOT NULL,
-        data INTEGER,
-        PRIMARY KEY (id),
-        UNIQUE (data) ON CONFLICT IGNORE
-    )
+        CREATE TABLE some_table (
+            id INTEGER NOT NULL,
+            data INTEGER,
+            PRIMARY KEY (id),
+            UNIQUE (data) ON CONFLICT IGNORE
+        )
 
-To apply the FAIL algorithm for a NOT NULL constraint,
-``sqlite_on_conflict_not_null`` is used::
+    To apply the FAIL algorithm for a NOT NULL constraint,
+    ``sqlite_on_conflict_not_null`` is used::
 
-    some_table = Table(
-        "some_table",
-        metadata,
-        Column("id", Integer, primary_key=True),
-        Column(
-            "data", Integer, nullable=False, sqlite_on_conflict_not_null="FAIL"
-        ),
-    )
+        some_table = Table(
+            "some_table",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column(
+                "data", Integer, nullable=False, sqlite_on_conflict_not_null="FAIL"
+            ),
+        )
 
-this renders the column inline ON CONFLICT phrase:
+    this renders the column inline ON CONFLICT phrase:
 
-.. sourcecode:: sql
+    .. sourcecode:: sql
 
-    CREATE TABLE some_table (
-        id INTEGER NOT NULL,
-        data INTEGER NOT NULL ON CONFLICT FAIL,
-        PRIMARY KEY (id)
-    )
+        CREATE TABLE some_table (
+            id INTEGER NOT NULL,
+            data INTEGER NOT NULL ON CONFLICT FAIL,
+            PRIMARY KEY (id)
+        )
 
 
-Similarly, for an inline primary key, use ``sqlite_on_conflict_primary_key``::
+    Similarly, for an inline primary key, use ``sqlite_on_conflict_primary_key``::
 
-    some_table = Table(
-        "some_table",
-        metadata,
-        Column(
-            "id",
-            Integer,
-            primary_key=True,
-            sqlite_on_conflict_primary_key="FAIL",
-        ),
-    )
+        some_table = Table(
+            "some_table",
+            metadata,
+            Column(
+                "id",
+                Integer,
+                primary_key=True,
+                sqlite_on_conflict_primary_key="FAIL",
+            ),
+        )
 
-SQLAlchemy renders the PRIMARY KEY constraint separately, so the conflict
-resolution algorithm is applied to the constraint itself:
+    SQLAlchemy renders the PRIMARY KEY constraint separately, so the conflict
+    resolution algorithm is applied to the constraint itself:
 
-.. sourcecode:: sql
+    .. sourcecode:: sql
 
-    CREATE TABLE some_table (
-        id INTEGER NOT NULL,
-        PRIMARY KEY (id) ON CONFLICT FAIL
-    )
+        CREATE TABLE some_table (
+            id INTEGER NOT NULL,
+            PRIMARY KEY (id) ON CONFLICT FAIL
+        )
 
 .. _sqlite_on_conflict_insert:
 
-INSERT...ON CONFLICT (Upsert)
+INSERT...ON CONFLICT（更新插入）
 -----------------------------
 
-.. seealso:: This section describes the :term:`DML` version of "ON CONFLICT" for
-   SQLite, which occurs within an INSERT statement.  For "ON CONFLICT" as
-   applied to a CREATE TABLE statement, see :ref:`sqlite_on_conflict_ddl`.
+INSERT...ON CONFLICT (Upsert)
 
-From version 3.24.0 onwards, SQLite supports "upserts" (update or insert)
-of rows into a table via the ``ON CONFLICT`` clause of the ``INSERT``
-statement. A candidate row will only be inserted if that row does not violate
-any unique or primary key constraints. In the case of a unique constraint violation, a
-secondary action can occur which can be either "DO UPDATE", indicating that
-the data in the target row should be updated, or "DO NOTHING", which indicates
-to silently skip this row.
+.. tab:: 中文
 
-Conflicts are determined using columns that are part of existing unique
-constraints and indexes.  These constraints are identified by stating the
-columns and conditions that comprise the indexes.
+    .. seealso:: 本节描述了 SQLite 中出现在 INSERT 语句中的 :term:`DML` 版本的 "ON CONFLICT"。关于适用于 CREATE TABLE 语句的版本，请参阅 :ref:`sqlite_on_conflict_ddl`。
 
-SQLAlchemy provides ``ON CONFLICT`` support via the SQLite-specific
-:func:`_sqlite.insert()` function, which provides
-the generative methods :meth:`_sqlite.Insert.on_conflict_do_update`
-and :meth:`_sqlite.Insert.on_conflict_do_nothing`:
+    自 SQLite 3.24.0 版本起，支持通过 ``INSERT`` 语句中的 ``ON CONFLICT`` 子句实现“upsert”（插入或更新）功能。候选行只有在不违反任何唯一或主键约束的情况下才会被插入。若违反唯一性约束，则可以采取两种方式处理：其一是 "DO UPDATE"，表示应更新目标行中的数据；其二是 "DO NOTHING"，表示跳过该行。
 
-.. sourcecode:: pycon+sql
+    冲突的判断基于表中现有的唯一约束或唯一索引。这些约束通过显式声明其包含的列和条件来识别。
 
-    >>> from sqlalchemy.dialects.sqlite import insert
+    SQLAlchemy 提供了 SQLite 特有的 :func:`_sqlite.insert()` 函数以支持 ``ON CONFLICT``，并配套提供了生成式方法 :meth:`_sqlite.Insert.on_conflict_do_update` 和 :meth:`_sqlite.Insert.on_conflict_do_nothing`：
 
-    >>> insert_stmt = insert(my_table).values(
-    ...     id="some_existing_id", data="inserted value"
-    ... )
+    .. sourcecode:: pycon+sql
 
-    >>> do_update_stmt = insert_stmt.on_conflict_do_update(
-    ...     index_elements=["id"], set_=dict(data="updated value")
-    ... )
+        >>> from sqlalchemy.dialects.sqlite import insert
 
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
-    ON CONFLICT (id) DO UPDATE SET data = ?{stop}
+        >>> insert_stmt = insert(my_table).values(
+        ...     id="some_existing_id", data="inserted value"
+        ... )
 
-    >>> do_nothing_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["id"])
-
-    >>> print(do_nothing_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
-    ON CONFLICT (id) DO NOTHING
-
-.. versionadded:: 1.4
-
-.. seealso::
-
-    `Upsert
-    <https://sqlite.org/lang_UPSERT.html>`_
-    - in the SQLite documentation.
-
-
-Specifying the Target
-^^^^^^^^^^^^^^^^^^^^^
-
-Both methods supply the "target" of the conflict using column inference:
-
-* The :paramref:`_sqlite.Insert.on_conflict_do_update.index_elements` argument
-  specifies a sequence containing string column names, :class:`_schema.Column`
-  objects, and/or SQL expression elements, which would identify a unique index
-  or unique constraint.
-
-* When using :paramref:`_sqlite.Insert.on_conflict_do_update.index_elements`
-  to infer an index, a partial index can be inferred by also specifying the
-  :paramref:`_sqlite.Insert.on_conflict_do_update.index_where` parameter:
-
-  .. sourcecode:: pycon+sql
-
-        >>> stmt = insert(my_table).values(user_email="a@b.com", data="inserted data")
-
-        >>> do_update_stmt = stmt.on_conflict_do_update(
-        ...     index_elements=[my_table.c.user_email],
-        ...     index_where=my_table.c.user_email.like("%@gmail.com"),
-        ...     set_=dict(data=stmt.excluded.data),
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     index_elements=["id"], set_=dict(data="updated value")
         ... )
 
         >>> print(do_update_stmt)
-        {printsql}INSERT INTO my_table (data, user_email) VALUES (?, ?)
-        ON CONFLICT (user_email)
-        WHERE user_email LIKE '%@gmail.com'
-        DO UPDATE SET data = excluded.data
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
+        ON CONFLICT (id) DO UPDATE SET data = ?{stop}
 
-The SET Clause
+        >>> do_nothing_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["id"])
+
+        >>> print(do_nothing_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
+        ON CONFLICT (id) DO NOTHING
+
+    .. versionadded:: 1.4
+
+    .. seealso::
+
+        `Upsert
+        <https://sqlite.org/lang_UPSERT.html>`_
+        - SQLite 官方文档
+
+.. tab:: 英文
+
+    .. seealso:: This section describes the :term:`DML` version of "ON CONFLICT" for
+       SQLite, which occurs within an INSERT statement.  For "ON CONFLICT" as
+       applied to a CREATE TABLE statement, see :ref:`sqlite_on_conflict_ddl`.
+
+    From version 3.24.0 onwards, SQLite supports "upserts" (update or insert)
+    of rows into a table via the ``ON CONFLICT`` clause of the ``INSERT``
+    statement. A candidate row will only be inserted if that row does not violate
+    any unique or primary key constraints. In the case of a unique constraint violation, a
+    secondary action can occur which can be either "DO UPDATE", indicating that
+    the data in the target row should be updated, or "DO NOTHING", which indicates
+    to silently skip this row.
+
+    Conflicts are determined using columns that are part of existing unique
+    constraints and indexes.  These constraints are identified by stating the
+    columns and conditions that comprise the indexes.
+
+    SQLAlchemy provides ``ON CONFLICT`` support via the SQLite-specific
+    :func:`_sqlite.insert()` function, which provides
+    the generative methods :meth:`_sqlite.Insert.on_conflict_do_update`
+    and :meth:`_sqlite.Insert.on_conflict_do_nothing`:
+
+    .. sourcecode:: pycon+sql
+
+        >>> from sqlalchemy.dialects.sqlite import insert
+
+        >>> insert_stmt = insert(my_table).values(
+        ...     id="some_existing_id", data="inserted value"
+        ... )
+
+        >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+        ...     index_elements=["id"], set_=dict(data="updated value")
+        ... )
+
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
+        ON CONFLICT (id) DO UPDATE SET data = ?{stop}
+
+        >>> do_nothing_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["id"])
+
+        >>> print(do_nothing_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
+        ON CONFLICT (id) DO NOTHING
+
+    .. versionadded:: 1.4
+
+    .. seealso::
+
+        `Upsert <https://sqlite.org/lang_UPSERT.html>`_ - in the SQLite documentation.
+
+
+指定目标
+^^^^^^^^^^^^^^^^^^^^^
+
+Specifying the Target
+
+.. tab:: 中文
+
+    这两个方法都通过列推断方式指定冲突目标：
+
+    * 参数 :paramref:`_sqlite.Insert.on_conflict_do_update.index_elements` 接受一个序列，可包含字符串形式的列名、:class:`_schema.Column` 对象，或 SQL 表达式，用于标识唯一索引或约束。
+
+    * 使用 :paramref:`_sqlite.Insert.on_conflict_do_update.index_elements` 推断索引时，可结合 :paramref:`_sqlite.Insert.on_conflict_do_update.index_where` 参数推断部分索引：
+
+      .. sourcecode:: pycon+sql
+
+            >>> stmt = insert(my_table).values(user_email="a@b.com", data="inserted data")
+
+            >>> do_update_stmt = stmt.on_conflict_do_update(
+            ...     index_elements=[my_table.c.user_email],
+            ...     index_where=my_table.c.user_email.like("%@gmail.com"),
+            ...     set_=dict(data=stmt.excluded.data),
+            ... )
+
+            >>> print(do_update_stmt)
+            {printsql}INSERT INTO my_table (data, user_email) VALUES (?, ?)
+            ON CONFLICT (user_email)
+            WHERE user_email LIKE '%@gmail.com'
+            DO UPDATE SET data = excluded.data
+
+.. tab:: 英文
+
+    Both methods supply the "target" of the conflict using column inference:
+
+    * The :paramref:`_sqlite.Insert.on_conflict_do_update.index_elements` argument
+      specifies a sequence containing string column names, :class:`_schema.Column`
+      objects, and/or SQL expression elements, which would identify a unique index
+      or unique constraint.
+
+    * When using :paramref:`_sqlite.Insert.on_conflict_do_update.index_elements`
+      to infer an index, a partial index can be inferred by also specifying the
+      :paramref:`_sqlite.Insert.on_conflict_do_update.index_where` parameter:
+
+      .. sourcecode:: pycon+sql
+
+            >>> stmt = insert(my_table).values(user_email="a@b.com", data="inserted data")
+
+            >>> do_update_stmt = stmt.on_conflict_do_update(
+            ...     index_elements=[my_table.c.user_email],
+            ...     index_where=my_table.c.user_email.like("%@gmail.com"),
+            ...     set_=dict(data=stmt.excluded.data),
+            ... )
+
+            >>> print(do_update_stmt)
+            {printsql}INSERT INTO my_table (data, user_email) VALUES (?, ?)
+            ON CONFLICT (user_email)
+            WHERE user_email LIKE '%@gmail.com'
+            DO UPDATE SET data = excluded.data
+
+SET 子句
 ^^^^^^^^^^^^^^^
 
-``ON CONFLICT...DO UPDATE`` is used to perform an update of the already
-existing row, using any combination of new values as well as values
-from the proposed insertion. These values are specified using the
-:paramref:`_sqlite.Insert.on_conflict_do_update.set_` parameter.  This
-parameter accepts a dictionary which consists of direct values
-for UPDATE:
+The SET Clause
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+    ``ON CONFLICT...DO UPDATE`` 用于在已存在行的情况下执行更新操作，该更新可以结合插入操作中提供的新值以及其他值。这些更新值通过参数 :paramref:`_sqlite.Insert.on_conflict_do_update.set_` 指定。该参数接受一个字典，字典中的内容将直接用于 UPDATE：
 
-    >>> do_update_stmt = stmt.on_conflict_do_update(
-    ...     index_elements=["id"], set_=dict(data="updated value")
-    ... )
+    .. sourcecode:: pycon+sql
 
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
-    ON CONFLICT (id) DO UPDATE SET data = ?
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
 
-.. warning::
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"], set_=dict(data="updated value")
+        ... )
 
-    The :meth:`_sqlite.Insert.on_conflict_do_update` method does **not** take
-    into account Python-side default UPDATE values or generation functions,
-    e.g. those specified using :paramref:`_schema.Column.onupdate`. These
-    values will not be exercised for an ON CONFLICT style of UPDATE, unless
-    they are manually specified in the
-    :paramref:`_sqlite.Insert.on_conflict_do_update.set_` dictionary.
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
+        ON CONFLICT (id) DO UPDATE SET data = ?
 
-Updating using the Excluded INSERT Values
+    .. warning::
+
+        方法 :meth:`_sqlite.Insert.on_conflict_do_update` **不会** 考虑 Python 端指定的默认 UPDATE 值或生成函数，例如通过 :paramref:`_schema.Column.onupdate` 指定的那些值。若希望在 ON CONFLICT 风格的 UPDATE 中应用这些值，必须显式地包含在 :paramref:`_sqlite.Insert.on_conflict_do_update.set_` 字典中。
+
+.. tab:: 英文
+
+    ``ON CONFLICT...DO UPDATE`` is used to perform an update of the already
+    existing row, using any combination of new values as well as values
+    from the proposed insertion. These values are specified using the
+    :paramref:`_sqlite.Insert.on_conflict_do_update.set_` parameter.  This
+    parameter accepts a dictionary which consists of direct values
+    for UPDATE:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"], set_=dict(data="updated value")
+        ... )
+
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?)
+        ON CONFLICT (id) DO UPDATE SET data = ?
+
+    .. warning::
+
+        The :meth:`_sqlite.Insert.on_conflict_do_update` method does **not** take
+        into account Python-side default UPDATE values or generation functions,
+        e.g. those specified using :paramref:`_schema.Column.onupdate`. These
+        values will not be exercised for an ON CONFLICT style of UPDATE, unless
+        they are manually specified in the
+        :paramref:`_sqlite.Insert.on_conflict_do_update.set_` dictionary.
+
+使用排除的 INSERT 值进行更新
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In order to refer to the proposed insertion row, the special alias
-:attr:`~.sqlite.Insert.excluded` is available as an attribute on
-the :class:`_sqlite.Insert` object; this object creates an "excluded." prefix
-on a column, that informs the DO UPDATE to update the row with the value that
-would have been inserted had the constraint not failed:
+Updating using the Excluded INSERT Values
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> stmt = insert(my_table).values(
-    ...     id="some_id", data="inserted value", author="jlh"
-    ... )
+    若要引用拟插入的行，可以使用特殊别名 :attr:`~.sqlite.Insert.excluded`，该别名可作为 :class:`_sqlite.Insert` 对象的一个属性使用。它会在列名前加上 "excluded." 前缀，告知 DO UPDATE 使用原本会被插入的值来更新现有行（假如没有冲突）：
 
-    >>> do_update_stmt = stmt.on_conflict_do_update(
-    ...     index_elements=["id"],
-    ...     set_=dict(data="updated value", author=stmt.excluded.author),
-    ... )
+    .. sourcecode:: pycon+sql
 
-    >>> print(do_update_stmt)
-    {printsql}INSERT INTO my_table (id, data, author) VALUES (?, ?, ?)
-    ON CONFLICT (id) DO UPDATE SET data = ?, author = excluded.author
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
 
-Additional WHERE Criteria
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"],
+        ...     set_=dict(data="updated value", author=stmt.excluded.author),
+        ... )
+
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author) VALUES (?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET data = ?, author = excluded.author
+
+.. tab:: 英文
+
+    In order to refer to the proposed insertion row, the special alias
+    :attr:`~.sqlite.Insert.excluded` is available as an attribute on
+    the :class:`_sqlite.Insert` object; this object creates an "excluded." prefix
+    on a column, that informs the DO UPDATE to update the row with the value that
+    would have been inserted had the constraint not failed:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"],
+        ...     set_=dict(data="updated value", author=stmt.excluded.author),
+        ... )
+
+        >>> print(do_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author) VALUES (?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET data = ?, author = excluded.author
+
+其他 WHERE 条件
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The :meth:`_sqlite.Insert.on_conflict_do_update` method also accepts
-a WHERE clause using the :paramref:`_sqlite.Insert.on_conflict_do_update.where`
-parameter, which will limit those rows which receive an UPDATE:
+Additional WHERE Criteria
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> stmt = insert(my_table).values(
-    ...     id="some_id", data="inserted value", author="jlh"
-    ... )
+    方法 :meth:`_sqlite.Insert.on_conflict_do_update` 还接受一个 WHERE 子句，通过参数 :paramref:`_sqlite.Insert.on_conflict_do_update.where` 指定，用于限制执行 UPDATE 的行范围：
 
-    >>> on_update_stmt = stmt.on_conflict_do_update(
-    ...     index_elements=["id"],
-    ...     set_=dict(data="updated value", author=stmt.excluded.author),
-    ...     where=(my_table.c.status == 2),
-    ... )
-    >>> print(on_update_stmt)
-    {printsql}INSERT INTO my_table (id, data, author) VALUES (?, ?, ?)
-    ON CONFLICT (id) DO UPDATE SET data = ?, author = excluded.author
-    WHERE my_table.status = ?
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+
+        >>> on_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"],
+        ...     set_=dict(data="updated value", author=stmt.excluded.author),
+        ...     where=(my_table.c.status == 2),
+        ... )
+        >>> print(on_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author) VALUES (?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET data = ?, author = excluded.author
+        WHERE my_table.status = ?
+
+.. tab:: 英文
+
+    The :meth:`_sqlite.Insert.on_conflict_do_update` method also accepts
+    a WHERE clause using the :paramref:`_sqlite.Insert.on_conflict_do_update.where`
+    parameter, which will limit those rows which receive an UPDATE:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(
+        ...     id="some_id", data="inserted value", author="jlh"
+        ... )
+
+        >>> on_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=["id"],
+        ...     set_=dict(data="updated value", author=stmt.excluded.author),
+        ...     where=(my_table.c.status == 2),
+        ... )
+        >>> print(on_update_stmt)
+        {printsql}INSERT INTO my_table (id, data, author) VALUES (?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET data = ?, author = excluded.author
+        WHERE my_table.status = ?
 
 
-Skipping Rows with DO NOTHING
+使用 DO NOTHING 跳过行
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``ON CONFLICT`` may be used to skip inserting a row entirely
-if any conflict with a unique constraint occurs; below this is illustrated
-using the :meth:`_sqlite.Insert.on_conflict_do_nothing` method:
+Skipping Rows with DO NOTHING
 
-.. sourcecode:: pycon+sql
+.. tab:: 中文
 
-    >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
-    >>> stmt = stmt.on_conflict_do_nothing(index_elements=["id"])
-    >>> print(stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (?, ?) ON CONFLICT (id) DO NOTHING
+    使用 ``ON CONFLICT`` 也可以完全跳过插入操作，当遇到唯一性约束冲突时直接忽略该行的插入。以下示例展示了如何通过方法 :meth:`_sqlite.Insert.on_conflict_do_nothing` 实现这一功能：
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> stmt = stmt.on_conflict_do_nothing(index_elements=["id"])
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?) ON CONFLICT (id) DO NOTHING
+
+    若在 ``DO NOTHING`` 中未指定任何列或约束，则该语句将忽略所有发生唯一性冲突的插入：
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> stmt = stmt.on_conflict_do_nothing()
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?) ON CONFLICT DO NOTHING
+
+.. tab:: 英文
+
+    ``ON CONFLICT`` may be used to skip inserting a row entirely
+    if any conflict with a unique constraint occurs; below this is illustrated
+    using the :meth:`_sqlite.Insert.on_conflict_do_nothing` method:
+
+    .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> stmt = stmt.on_conflict_do_nothing(index_elements=["id"])
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?) ON CONFLICT (id) DO NOTHING
 
 
-If ``DO NOTHING`` is used without specifying any columns or constraint,
-it has the effect of skipping the INSERT for any unique violation which
-occurs:
+    If ``DO NOTHING`` is used without specifying any columns or constraint,
+    it has the effect of skipping the INSERT for any unique violation which
+    occurs:
 
-.. sourcecode:: pycon+sql
+    .. sourcecode:: pycon+sql
 
-    >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
-    >>> stmt = stmt.on_conflict_do_nothing()
-    >>> print(stmt)
-    {printsql}INSERT INTO my_table (id, data) VALUES (?, ?) ON CONFLICT DO NOTHING
+        >>> stmt = insert(my_table).values(id="some_id", data="inserted value")
+        >>> stmt = stmt.on_conflict_do_nothing()
+        >>> print(stmt)
+        {printsql}INSERT INTO my_table (id, data) VALUES (?, ?) ON CONFLICT DO NOTHING
 
 .. _sqlite_type_reflection:
 
-Type Reflection
+类型反射
 ---------------
 
-SQLite types are unlike those of most other database backends, in that
-the string name of the type usually does not correspond to a "type" in a
-one-to-one fashion.  Instead, SQLite links per-column typing behavior
-to one of five so-called "type affinities" based on a string matching
-pattern for the type.
+Type Reflection
 
-SQLAlchemy's reflection process, when inspecting types, uses a simple
-lookup table to link the keywords returned to provided SQLAlchemy types.
-This lookup table is present within the SQLite dialect as it is for all
-other dialects.  However, the SQLite dialect has a different "fallback"
-routine for when a particular type name is not located in the lookup map;
-it instead implements the SQLite "type affinity" scheme located at
-https://www.sqlite.org/datatype3.html section 2.1.
+.. tab:: 中文
 
-The provided typemap will make direct associations from an exact string
-name match for the following types:
+    SQLite 的类型系统不同于大多数其他数据库后端，其类型字符串名称通常并不一一对应于某种具体的“类型”。相反，SQLite 使用所谓的五种“类型亲和性”（type affinities）机制，通过字符串匹配方式为每一列确定类型行为。
 
-:class:`_types.BIGINT`, :class:`_types.BLOB`,
-:class:`_types.BOOLEAN`, :class:`_types.BOOLEAN`,
-:class:`_types.CHAR`, :class:`_types.DATE`,
-:class:`_types.DATETIME`, :class:`_types.FLOAT`,
-:class:`_types.DECIMAL`, :class:`_types.FLOAT`,
-:class:`_types.INTEGER`, :class:`_types.INTEGER`,
-:class:`_types.NUMERIC`, :class:`_types.REAL`,
-:class:`_types.SMALLINT`, :class:`_types.TEXT`,
-:class:`_types.TIME`, :class:`_types.TIMESTAMP`,
-:class:`_types.VARCHAR`, :class:`_types.NVARCHAR`,
-:class:`_types.NCHAR`
+    SQLAlchemy 在执行类型反射时，会使用一个简单的查找表将返回的关键字映射为 SQLAlchemy 提供的类型。这个查找表在 SQLite 方言中与其他方言类似。但是，SQLite 方言在找不到特定类型名的匹配项时，使用一种不同的“回退”策略：它实现了 SQLite 在官方文档 https://www.sqlite.org/datatype3.html 第 2.1 节中描述的“类型亲和性”规则。
 
-When a type name does not match one of the above types, the "type affinity"
-lookup is used instead:
+    此查找表会直接将以下类型名与对应的 SQLAlchemy 类型进行一一匹配：
 
-* :class:`_types.INTEGER` is returned if the type name includes the
-  string ``INT``
-* :class:`_types.TEXT` is returned if the type name includes the
-  string ``CHAR``, ``CLOB`` or ``TEXT``
-* :class:`_types.NullType` is returned if the type name includes the
-  string ``BLOB``
-* :class:`_types.REAL` is returned if the type name includes the string
-  ``REAL``, ``FLOA`` or ``DOUB``.
-* Otherwise, the :class:`_types.NUMERIC` type is used.
+    :class:`_types.BIGINT`、:class:`_types.BLOB`、
+    :class:`_types.BOOLEAN`、:class:`_types.BOOLEAN`、
+    :class:`_types.CHAR`、:class:`_types.DATE`、
+    :class:`_types.DATETIME`、:class:`_types.FLOAT`、
+    :class:`_types.DECIMAL`、:class:`_types.FLOAT`、
+    :class:`_types.INTEGER`、:class:`_types.INTEGER`、
+    :class:`_types.NUMERIC`、:class:`_types.REAL`、
+    :class:`_types.SMALLINT`、:class:`_types.TEXT`、
+    :class:`_types.TIME`、:class:`_types.TIMESTAMP`、
+    :class:`_types.VARCHAR`、:class:`_types.NVARCHAR`、
+    :class:`_types.NCHAR`
+
+    当类型名称未匹配上述任何项时，将采用“类型亲和性”规则进行推断：
+
+    * 若类型名包含字符串 ``INT``，则返回 :class:`_types.INTEGER`
+    * 若类型名包含字符串 ``CHAR``、``CLOB`` 或 ``TEXT``，则返回 :class:`_types.TEXT`
+    * 若类型名包含字符串 ``BLOB``，则返回 :class:`_types.NullType`
+    * 若类型名包含字符串 ``REAL``、``FLOA`` 或 ``DOUB``，则返回 :class:`_types.REAL`
+    * 否则，使用 :class:`*
+
+.. tab:: 英文
+
+    SQLite types are unlike those of most other database backends, in that
+    the string name of the type usually does not correspond to a "type" in a
+    one-to-one fashion.  Instead, SQLite links per-column typing behavior
+    to one of five so-called "type affinities" based on a string matching
+    pattern for the type.
+
+    SQLAlchemy's reflection process, when inspecting types, uses a simple
+    lookup table to link the keywords returned to provided SQLAlchemy types.
+    This lookup table is present within the SQLite dialect as it is for all
+    other dialects.  However, the SQLite dialect has a different "fallback"
+    routine for when a particular type name is not located in the lookup map;
+    it instead implements the SQLite "type affinity" scheme located at
+    https://www.sqlite.org/datatype3.html section 2.1.
+
+    The provided typemap will make direct associations from an exact string
+    name match for the following types:
+
+    :class:`_types.BIGINT`, :class:`_types.BLOB`,
+    :class:`_types.BOOLEAN`, :class:`_types.BOOLEAN`,
+    :class:`_types.CHAR`, :class:`_types.DATE`,
+    :class:`_types.DATETIME`, :class:`_types.FLOAT`,
+    :class:`_types.DECIMAL`, :class:`_types.FLOAT`,
+    :class:`_types.INTEGER`, :class:`_types.INTEGER`,
+    :class:`_types.NUMERIC`, :class:`_types.REAL`,
+    :class:`_types.SMALLINT`, :class:`_types.TEXT`,
+    :class:`_types.TIME`, :class:`_types.TIMESTAMP`,
+    :class:`_types.VARCHAR`, :class:`_types.NVARCHAR`,
+    :class:`_types.NCHAR`
+
+    When a type name does not match one of the above types, the "type affinity"
+    lookup is used instead:
+
+    * :class:`_types.INTEGER` is returned if the type name includes the
+      string ``INT``
+    * :class:`_types.TEXT` is returned if the type name includes the
+      string ``CHAR``, ``CLOB`` or ``TEXT``
+    * :class:`_types.NullType` is returned if the type name includes the
+      string ``BLOB``
+    * :class:`_types.REAL` is returned if the type name includes the string
+      ``REAL``, ``FLOA`` or ``DOUB``.
+    * Otherwise, the :class:`_types.NUMERIC` type is used.
 
 .. _sqlite_partial_index:
 
-Partial Indexes
+部分索引
 ---------------
 
-A partial index, e.g. one which uses a WHERE clause, can be specified
-with the DDL system using the argument ``sqlite_where``::
+Partial Indexes
 
-    tbl = Table("testtbl", m, Column("data", Integer))
-    idx = Index(
-        "test_idx1",
-        tbl.c.data,
-        sqlite_where=and_(tbl.c.data > 5, tbl.c.data < 10),
-    )
+.. tab:: 中文
 
-The index will be rendered at create time as:
+    可以通过 DDL 系统中的 ``sqlite_where`` 参数来定义一个 **部分索引** （例如带有 WHERE 子句的索引）::
 
-.. sourcecode:: sql
+        tbl = Table("testtbl", m, Column("data", Integer))
+        idx = Index(
+            "test_idx1",
+            tbl.c.data,
+            sqlite_where=and_(tbl.c.data > 5, tbl.c.data < 10),
+        )
 
-    CREATE INDEX test_idx1 ON testtbl (data)
-    WHERE data > 5 AND data < 10
+    该索引在创建时将被渲染为：
+
+    .. sourcecode:: sql
+
+        CREATE INDEX test_idx1 ON testtbl (data)
+        WHERE data > 5 AND data < 10
+
+.. tab:: 英文
+
+    A partial index, e.g. one which uses a WHERE clause, can be specified
+    with the DDL system using the argument ``sqlite_where``::
+
+        tbl = Table("testtbl", m, Column("data", Integer))
+        idx = Index(
+            "test_idx1",
+            tbl.c.data,
+            sqlite_where=and_(tbl.c.data > 5, tbl.c.data < 10),
+        )
+
+    The index will be rendered at create time as:
+
+    .. sourcecode:: sql
+
+        CREATE INDEX test_idx1 ON testtbl (data)
+        WHERE data > 5 AND data < 10
 
 .. _sqlite_dotted_column_names:
 
-Dotted Column Names
+点分列名
 -------------------
 
-Using table or column names that explicitly have periods in them is
-**not recommended**.   While this is generally a bad idea for relational
-databases in general, as the dot is a syntactically significant character,
-the SQLite driver up until version **3.10.0** of SQLite has a bug which
-requires that SQLAlchemy filter out these dots in result sets.
+Dotted Column Names
 
-The bug, entirely outside of SQLAlchemy, can be illustrated thusly::
+.. tab:: 中文
 
-    import sqlite3
+    **不推荐** 使用显式包含句点（`.`）的表名或列名。尽管在关系型数据库中这是一个通用的糟糕做法，因为点号是一个具有语法意义的字符，但在 SQLite 驱动中，直到 **3.10.0** 版本之前存在一个 bug，使得 SQLAlchemy 必须在结果集中过滤掉这些点号。
 
-    assert sqlite3.sqlite_version_info < (
-        3,
-        10,
-        0,
-    ), "bug is fixed in this version"
+    这个完全由 SQLite 引擎外部引起的 bug 可以如下重现::
 
-    conn = sqlite3.connect(":memory:")
-    cursor = conn.cursor()
+        import sqlite3
 
-    cursor.execute("create table x (a integer, b integer)")
-    cursor.execute("insert into x (a, b) values (1, 1)")
-    cursor.execute("insert into x (a, b) values (2, 2)")
+        assert sqlite3.sqlite_version_info < (
+            3,
+            10,
+            0,
+        ), "bug 在该版本中已修复"
 
-    cursor.execute("select x.a, x.b from x")
-    assert [c[0] for c in cursor.description] == ["a", "b"]
+        conn = sqlite3.connect(":memory:")
+        cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        select x.a, x.b from x where a=1
-        union
-        select x.a, x.b from x where a=2
-        """
-    )
-    assert [c[0] for c in cursor.description] == ["a", "b"], [
-        c[0] for c in cursor.description
-    ]
+        cursor.execute("create table x (a integer, b integer)")
+        cursor.execute("insert into x (a, b) values (1, 1)")
+        cursor.execute("insert into x (a, b) values (2, 2)")
 
-The second assertion fails:
+        cursor.execute("select x.a, x.b from x")
+        assert [c[0] for c in cursor.description] == ["a", "b"]
 
-.. sourcecode:: text
+        cursor.execute(
+            """
+            select x.a, x.b from x where a=1
+            union
+            select x.a, x.b from x where a=2
+            """
+        )
+        assert [c[0] for c in cursor.description] == ["a", "b"], [
+            c[0] for c in cursor.description
+        ]
 
-    Traceback (most recent call last):
-      File "test.py", line 19, in <module>
-        [c[0] for c in cursor.description]
-    AssertionError: ['x.a', 'x.b']
+    第二个断言将会失败：
 
-Where above, the driver incorrectly reports the names of the columns
-including the name of the table, which is entirely inconsistent vs.
-when the UNION is not present.
+    .. sourcecode:: text
 
-SQLAlchemy relies upon column names being predictable in how they match
-to the original statement, so the SQLAlchemy dialect has no choice but
-to filter these out::
+        Traceback (most recent call last):
+          File "test.py", line 19, in <module>
+            [c[0] for c in cursor.description]
+        AssertionError: ['x.a', 'x.b']
+
+    如上所示，驱动错误地将列名报告为包含表名的形式，这与没有使用 UNION 时的行为完全不一致。
+
+    SQLAlchemy 依赖于列名在与原始语句匹配时的可预测性，因此 SQLite 方言别无选择，只能过滤掉这些点号::
+
+        from sqlalchemy import create_engine
+
+        eng = create_engine("sqlite://")
+        conn = eng.connect()
+
+        conn.exec_driver_sql("create table x (a integer, b integer)")
+        conn.exec_driver_sql("insert into x (a, b) values (1, 1)")
+        conn.exec_driver_sql("insert into x (a, b) values (2, 2)")
+
+        result = conn.exec_driver_sql("select x.a, x.b from x")
+        assert result.keys() == ["a", "b"]
+
+        result = conn.exec_driver_sql(
+            """
+            select x.a, x.b from x where a=1
+            union
+            select x.a, x.b from x where a=2
+            """
+        )
+        assert result.keys() == ["a", "b"]
+
+    注意，尽管 SQLAlchemy 过滤掉了点号，*仍然可以通过带点的形式访问这些列名*::
+
+        >>> row = result.first()
+        >>> row["a"]
+        1
+        >>> row["x.a"]
+        1
+        >>> row["b"]
+        1
+        >>> row["x.b"]
+        1
+
+    因此，SQLAlchemy 所采取的回避策略仅影响公共 API 中的 :meth:`_engine.CursorResult.keys` 与 :meth:`.Row.keys()`。在某些特定场景中，若应用确实 **必须** 使用包含点号的列名，并且需要通过 :meth:`_engine.CursorResult.keys` 或 :meth:`.Row.keys()` 返回这些 **未经修改的原始列名** ，则可以使用 ``sqlite_raw_colnames`` 执行选项来启用这一行为，可在每个 :class:`_engine.Connection` 实例中设置::
+
+        result = conn.execution_options(sqlite_raw_colnames=True).exec_driver_sql(
+            """
+            select x.a, x.b from x where a=1
+            union
+            select x.a, x.b from x where a=2
+            """
+        )
+        assert result.keys() == ["x.a", "x.b"]
+
+    也可在每个 :class:`_engine.Engine` 实例上设置::
+
+        engine = create_engine(
+            "sqlite://", execution_options={"sqlite_raw_colnames": True}
+        )
+
+    使用引擎级别的执行选项时，请注意： **基于 Core 或 ORM 的 UNION 查询可能无法正常工作**。
+
+.. tab:: 英文
+
+    Using table or column names that explicitly have periods in them is
+    **not recommended**.   While this is generally a bad idea for relational
+    databases in general, as the dot is a syntactically significant character,
+    the SQLite driver up until version **3.10.0** of SQLite has a bug which
+    requires that SQLAlchemy filter out these dots in result sets.
+
+    The bug, entirely outside of SQLAlchemy, can be illustrated thusly::
+
+        import sqlite3
+
+        assert sqlite3.sqlite_version_info < (
+            3,
+            10,
+            0,
+        ), "bug is fixed in this version"
+
+        conn = sqlite3.connect(":memory:")
+        cursor = conn.cursor()
+
+        cursor.execute("create table x (a integer, b integer)")
+        cursor.execute("insert into x (a, b) values (1, 1)")
+        cursor.execute("insert into x (a, b) values (2, 2)")
+
+        cursor.execute("select x.a, x.b from x")
+        assert [c[0] for c in cursor.description] == ["a", "b"]
+
+        cursor.execute(
+            """
+            select x.a, x.b from x where a=1
+            union
+            select x.a, x.b from x where a=2
+            """
+        )
+        assert [c[0] for c in cursor.description] == ["a", "b"], [
+            c[0] for c in cursor.description
+        ]
+
+    The second assertion fails:
+
+    .. sourcecode:: text
+
+        Traceback (most recent call last):
+          File "test.py", line 19, in <module>
+            [c[0] for c in cursor.description]
+        AssertionError: ['x.a', 'x.b']
+
+    Where above, the driver incorrectly reports the names of the columns
+    including the name of the table, which is entirely inconsistent vs.
+    when the UNION is not present.
+
+    SQLAlchemy relies upon column names being predictable in how they match
+    to the original statement, so the SQLAlchemy dialect has no choice but
+    to filter these out::
 
 
-    from sqlalchemy import create_engine
+        from sqlalchemy import create_engine
 
-    eng = create_engine("sqlite://")
-    conn = eng.connect()
+        eng = create_engine("sqlite://")
+        conn = eng.connect()
 
-    conn.exec_driver_sql("create table x (a integer, b integer)")
-    conn.exec_driver_sql("insert into x (a, b) values (1, 1)")
-    conn.exec_driver_sql("insert into x (a, b) values (2, 2)")
+        conn.exec_driver_sql("create table x (a integer, b integer)")
+        conn.exec_driver_sql("insert into x (a, b) values (1, 1)")
+        conn.exec_driver_sql("insert into x (a, b) values (2, 2)")
 
-    result = conn.exec_driver_sql("select x.a, x.b from x")
-    assert result.keys() == ["a", "b"]
+        result = conn.exec_driver_sql("select x.a, x.b from x")
+        assert result.keys() == ["a", "b"]
 
-    result = conn.exec_driver_sql(
-        """
-        select x.a, x.b from x where a=1
-        union
-        select x.a, x.b from x where a=2
-        """
-    )
-    assert result.keys() == ["a", "b"]
+        result = conn.exec_driver_sql(
+            """
+            select x.a, x.b from x where a=1
+            union
+            select x.a, x.b from x where a=2
+            """
+        )
+        assert result.keys() == ["a", "b"]
 
-Note that above, even though SQLAlchemy filters out the dots, *both
-names are still addressable*::
+    Note that above, even though SQLAlchemy filters out the dots, *both
+    names are still addressable*::
 
-    >>> row = result.first()
-    >>> row["a"]
-    1
-    >>> row["x.a"]
-    1
-    >>> row["b"]
-    1
-    >>> row["x.b"]
-    1
+        >>> row = result.first()
+        >>> row["a"]
+        1
+        >>> row["x.a"]
+        1
+        >>> row["b"]
+        1
+        >>> row["x.b"]
+        1
 
-Therefore, the workaround applied by SQLAlchemy only impacts
-:meth:`_engine.CursorResult.keys` and :meth:`.Row.keys()` in the public API. In
-the very specific case where an application is forced to use column names that
-contain dots, and the functionality of :meth:`_engine.CursorResult.keys` and
-:meth:`.Row.keys()` is required to return these dotted names unmodified,
-the ``sqlite_raw_colnames`` execution option may be provided, either on a
-per-:class:`_engine.Connection` basis::
+    Therefore, the workaround applied by SQLAlchemy only impacts
+    :meth:`_engine.CursorResult.keys` and :meth:`.Row.keys()` in the public API. In
+    the very specific case where an application is forced to use column names that
+    contain dots, and the functionality of :meth:`_engine.CursorResult.keys` and
+    :meth:`.Row.keys()` is required to return these dotted names unmodified,
+    the ``sqlite_raw_colnames`` execution option may be provided, either on a
+    per-:class:`_engine.Connection` basis::
 
-    result = conn.execution_options(sqlite_raw_colnames=True).exec_driver_sql(
-        """
-        select x.a, x.b from x where a=1
-        union
-        select x.a, x.b from x where a=2
-        """
-    )
-    assert result.keys() == ["x.a", "x.b"]
+        result = conn.execution_options(sqlite_raw_colnames=True).exec_driver_sql(
+            """
+            select x.a, x.b from x where a=1
+            union
+            select x.a, x.b from x where a=2
+            """
+        )
+        assert result.keys() == ["x.a", "x.b"]
 
-or on a per-:class:`_engine.Engine` basis::
+    or on a per-:class:`_engine.Engine` basis::
 
-    engine = create_engine(
-        "sqlite://", execution_options={"sqlite_raw_colnames": True}
-    )
+        engine = create_engine(
+            "sqlite://", execution_options={"sqlite_raw_colnames": True}
+        )
 
-When using the per-:class:`_engine.Engine` execution option, note that
-**Core and ORM queries that use UNION may not function properly**.
+    When using the per-:class:`_engine.Engine` execution option, note that
+    **Core and ORM queries that use UNION may not function properly**.
 
-SQLite-specific table options
+SQLite 特定表选项
 -----------------------------
 
-One option for CREATE TABLE is supported directly by the SQLite
-dialect in conjunction with the :class:`_schema.Table` construct:
+SQLite-specific table options
 
-* ``WITHOUT ROWID``::
+.. tab:: 中文
 
-    Table("some_table", metadata, ..., sqlite_with_rowid=False)
+    SQLite 方言支持与 :class:`_schema.Table` 构造配合使用的 `CREATE TABLE` 选项如下：
 
-*
-  ``STRICT``::
+    * ``WITHOUT ROWID``::
 
-    Table("some_table", metadata, ..., sqlite_strict=True)
+        Table("some_table", metadata, ..., sqlite_with_rowid=False)
 
-  .. versionadded:: 2.0.37
+    *
+      ``STRICT``::
 
-.. seealso::
+        Table("some_table", metadata, ..., sqlite_strict=True)
 
-    `SQLite CREATE TABLE options
-    <https://www.sqlite.org/lang_createtable.html>`_
+      .. versionadded:: 2.0.37
+
+    .. seealso::
+
+        `SQLite CREATE TABLE options
+        <https://www.sqlite.org/lang_createtable.html>`_
+
+.. tab:: 英文
+
+    One option for CREATE TABLE is supported directly by the SQLite
+    dialect in conjunction with the :class:`_schema.Table` construct:
+
+    * ``WITHOUT ROWID``::
+
+        Table("some_table", metadata, ..., sqlite_with_rowid=False)
+
+    *
+      ``STRICT``::
+
+        Table("some_table", metadata, ..., sqlite_strict=True)
+
+      .. versionadded:: 2.0.37
+
+    .. seealso::
+
+        `SQLite CREATE TABLE options
+        <https://www.sqlite.org/lang_createtable.html>`_
 
 .. _sqlite_include_internal:
 
-Reflecting internal schema tables
+反射内部模式表
 ----------------------------------
 
-Reflection methods that return lists of tables will omit so-called
-"SQLite internal schema object" names, which are considered by SQLite
-as any object name that is prefixed with ``sqlite_``.  An example of
-such an object is the ``sqlite_sequence`` table that's generated when
-the ``AUTOINCREMENT`` column parameter is used.   In order to return
-these objects, the parameter ``sqlite_include_internal=True`` may be
-passed to methods such as :meth:`_schema.MetaData.reflect` or
-:meth:`.Inspector.get_table_names`.
+Reflecting internal schema tables
 
-.. versionadded:: 2.0  Added the ``sqlite_include_internal=True`` parameter.
-   Previously, these tables were not ignored by SQLAlchemy reflection
-   methods.
+.. tab:: 中文
 
-.. note::
+    返回表名列表的反射方法会排除所谓的 "SQLite 内部模式对象（internal schema object）"，SQLite 认为这些是名称以 ``sqlite_`` 为前缀的对象。例如使用 ``AUTOINCREMENT`` 列参数时自动生成的 ``sqlite_sequence`` 表。若希望返回这些对象，可以向 :meth:`_schema.MetaData.reflect` 或 :meth:`.Inspector.get_table_names` 等方法传递参数 ``sqlite_include_internal=True``。
 
-    The ``sqlite_include_internal`` parameter does not refer to the
-    "system" tables that are present in schemas such as ``sqlite_master``.
+    .. versionadded:: 2.0
 
-.. seealso::
+        增加了 ``sqlite_include_internal=True`` 参数。此前，SQLAlchemy 反射方法并不会忽略这些表。
 
-    `SQLite Internal Schema Objects <https://www.sqlite.org/fileformat2.html#intschema>`_ - in the SQLite
-    documentation.
+    .. note::
+
+        参数 ``sqlite_include_internal`` 并不作用于存在于 ``sqlite_master`` 等模式中的 “系统” 表。
+
+    .. seealso::
+
+        `SQLite Internal Schema Objects <https://www.sqlite.org/fileformat2.html#intschema>`_ - SQLite 官方文档中的介绍。
+
+.. tab:: 英文
+
+    Reflection methods that return lists of tables will omit so-called
+    "SQLite internal schema object" names, which are considered by SQLite
+    as any object name that is prefixed with ``sqlite_``.  An example of
+    such an object is the ``sqlite_sequence`` table that's generated when
+    the ``AUTOINCREMENT`` column parameter is used.   In order to return
+    these objects, the parameter ``sqlite_include_internal=True`` may be
+    passed to methods such as :meth:`_schema.MetaData.reflect` or
+    :meth:`.Inspector.get_table_names`.
+
+    .. versionadded:: 2.0  Added the ``sqlite_include_internal=True`` parameter.
+       Previously, these tables were not ignored by SQLAlchemy reflection
+       methods.
+
+    .. note::
+
+        The ``sqlite_include_internal`` parameter does not refer to the
+        "system" tables that are present in schemas such as ``sqlite_master``.
+
+    .. seealso::
+
+        `SQLite Internal Schema Objects <https://www.sqlite.org/fileformat2.html#intschema>`_ - in the SQLite documentation.
 
 '''  # noqa
+
 from __future__ import annotations
 
 import datetime
@@ -1068,16 +1818,13 @@ class DATETIME(_DateTimeMixin, sqltypes.DateTime):
         super().__init__(*args, **kwargs)
         if truncate_microseconds:
             assert "storage_format" not in kwargs, (
-                "You can specify only "
-                "one of truncate_microseconds or storage_format."
+                "You can specify only one of truncate_microseconds or storage_format."
             )
             assert "regexp" not in kwargs, (
-                "You can specify only one of "
-                "truncate_microseconds or regexp."
+                "You can specify only one of truncate_microseconds or regexp."
             )
             self._storage_format = (
-                "%(year)04d-%(month)02d-%(day)02d "
-                "%(hour)02d:%(minute)02d:%(second)02d"
+                "%(year)04d-%(month)02d-%(day)02d %(hour)02d:%(minute)02d:%(second)02d"
             )
 
     def bind_processor(self, dialect):
@@ -1186,8 +1933,7 @@ class DATE(_DateTimeMixin, sqltypes.Date):
                 }
             else:
                 raise TypeError(
-                    "SQLite Date type only accepts Python "
-                    "date objects as input."
+                    "SQLite Date type only accepts Python date objects as input."
                 )
 
         return process
@@ -1254,12 +2000,10 @@ class TIME(_DateTimeMixin, sqltypes.Time):
         super().__init__(*args, **kwargs)
         if truncate_microseconds:
             assert "storage_format" not in kwargs, (
-                "You can specify only "
-                "one of truncate_microseconds or storage_format."
+                "You can specify only one of truncate_microseconds or storage_format."
             )
             assert "regexp" not in kwargs, (
-                "You can specify only one of "
-                "truncate_microseconds or regexp."
+                "You can specify only one of truncate_microseconds or regexp."
             )
             self._storage_format = "%(hour)02d:%(minute)02d:%(second)02d"
 
@@ -1279,8 +2023,7 @@ class TIME(_DateTimeMixin, sqltypes.Time):
                 }
             else:
                 raise TypeError(
-                    "SQLite Time type only accepts Python "
-                    "time objects as input."
+                    "SQLite Time type only accepts Python time objects as input."
                 )
 
         return process
@@ -1425,8 +2168,7 @@ class SQLiteCompiler(compiler.SQLCompiler):
     ):
         kw["asfrom"] = True
         return "FROM " + ", ".join(
-            t._compiler_dispatch(self, fromhints=from_hints, **kw)
-            for t in extra_froms
+            t._compiler_dispatch(self, fromhints=from_hints, **kw) for t in extra_froms
         )
 
     def visit_is_distinct_from_binary(self, binary, operator, **kw):
@@ -1533,10 +2275,7 @@ class SQLiteCompiler(compiler.SQLCompiler):
             else:
                 continue
 
-            if (
-                isinstance(value, elements.BindParameter)
-                and value.type._isnull
-            ):
+            if isinstance(value, elements.BindParameter) and value.type._isnull:
                 value = value._with_binary_element_type(c.type)
             value_text = self.process(value.self_group(), use_schema=False)
 
@@ -1589,7 +2328,6 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
         colspec = self.preparer.format_column(column) + " " + coltype
         default = self.get_column_default_string(column)
         if default is not None:
-
             if not re.match(r"""^\s*[\'\"\(]""", default) and re.match(
                 r".*\W.*", default
             ):
@@ -1612,8 +2350,7 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
                 and len(column.table.primary_key.columns) != 1
             ):
                 raise exc.CompileError(
-                    "SQLite does not support autoincrement for "
-                    "composite primary keys"
+                    "SQLite does not support autoincrement for composite primary keys"
                 )
 
             if (
@@ -1653,9 +2390,7 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
 
         text = super().visit_primary_key_constraint(constraint)
 
-        on_conflict_clause = constraint.dialect_options["sqlite"][
-            "on_conflict"
-        ]
+        on_conflict_clause = constraint.dialect_options["sqlite"]["on_conflict"]
         if on_conflict_clause is None and len(constraint.columns) == 1:
             on_conflict_clause = list(constraint)[0].dialect_options["sqlite"][
                 "on_conflict_primary_key"
@@ -1669,15 +2404,13 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
     def visit_unique_constraint(self, constraint, **kw):
         text = super().visit_unique_constraint(constraint)
 
-        on_conflict_clause = constraint.dialect_options["sqlite"][
-            "on_conflict"
-        ]
+        on_conflict_clause = constraint.dialect_options["sqlite"]["on_conflict"]
         if on_conflict_clause is None and len(constraint.columns) == 1:
             col1 = list(constraint)[0]
             if isinstance(col1, schema.SchemaItem):
-                on_conflict_clause = list(constraint)[0].dialect_options[
-                    "sqlite"
-                ]["on_conflict_unique"]
+                on_conflict_clause = list(constraint)[0].dialect_options["sqlite"][
+                    "on_conflict_unique"
+                ]
 
         if on_conflict_clause is not None:
             text += " ON CONFLICT " + on_conflict_clause
@@ -1687,9 +2420,7 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
     def visit_check_constraint(self, constraint, **kw):
         text = super().visit_check_constraint(constraint)
 
-        on_conflict_clause = constraint.dialect_options["sqlite"][
-            "on_conflict"
-        ]
+        on_conflict_clause = constraint.dialect_options["sqlite"]["on_conflict"]
 
         if on_conflict_clause is not None:
             text += " ON CONFLICT " + on_conflict_clause
@@ -1701,8 +2432,7 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
 
         if constraint.dialect_options["sqlite"]["on_conflict"] is not None:
             raise exc.CompileError(
-                "SQLite does not support on conflict clause for "
-                "column check constraint"
+                "SQLite does not support on conflict clause for column check constraint"
             )
 
         return text
@@ -1740,9 +2470,7 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
             self._prepared_index_name(index, include_schema=True),
             preparer.format_table(index.table, use_schema=False),
             ", ".join(
-                self.sql_compiler.process(
-                    expr, include_table=False, literal_binds=True
-                )
+                self.sql_compiler.process(expr, include_table=False, literal_binds=True)
                 for expr in index.expressions
             ),
         )
@@ -1776,28 +2504,19 @@ class SQLiteTypeCompiler(compiler.GenericTypeCompiler):
         return self.visit_BLOB(type_)
 
     def visit_DATETIME(self, type_, **kw):
-        if (
-            not isinstance(type_, _DateTimeMixin)
-            or type_.format_is_text_affinity
-        ):
+        if not isinstance(type_, _DateTimeMixin) or type_.format_is_text_affinity:
             return super().visit_DATETIME(type_)
         else:
             return "DATETIME_CHAR"
 
     def visit_DATE(self, type_, **kw):
-        if (
-            not isinstance(type_, _DateTimeMixin)
-            or type_.format_is_text_affinity
-        ):
+        if not isinstance(type_, _DateTimeMixin) or type_.format_is_text_affinity:
             return super().visit_DATE(type_)
         else:
             return "DATE_CHAR"
 
     def visit_TIME(self, type_, **kw):
-        if (
-            not isinstance(type_, _DateTimeMixin)
-            or type_.format_is_text_affinity
-        ):
+        if not isinstance(type_, _DateTimeMixin) or type_.format_is_text_affinity:
             return super().visit_TIME(type_)
         else:
             return "TIME_CHAR"
@@ -1934,9 +2653,8 @@ class SQLiteIdentifierPreparer(compiler.IdentifierPreparer):
 class SQLiteExecutionContext(default.DefaultExecutionContext):
     @util.memoized_property
     def _preserve_raw_colnames(self):
-        return (
-            not self.dialect._broken_dotted_colnames
-            or self.execution_options.get("sqlite_raw_colnames", False)
+        return not self.dialect._broken_dotted_colnames or self.execution_options.get(
+            "sqlite_raw_colnames", False
         )
 
     def _translate_colname(self, colname):
@@ -2064,8 +2782,7 @@ class SQLiteDialect(default.DefaultDialect):
             self.supports_cast = self.dbapi.sqlite_version_info >= (3, 2, 3)
             self.supports_multivalues_insert = (
                 # https://www.sqlite.org/releaselog/3_7_11.html
-                self.dbapi.sqlite_version_info
-                >= (3, 7, 11)
+                self.dbapi.sqlite_version_info >= (3, 7, 11)
             )
             # see https://www.sqlalchemy.org/trac/ticket/2568
             # as well as https://www.sqlite.org/src/info/600482d161
@@ -2084,9 +2801,7 @@ class SQLiteDialect(default.DefaultDialect):
                 # https://www.sqlite.org/limits.html
                 self.insertmanyvalues_max_parameters = 999
 
-    _isolation_lookup = util.immutabledict(
-        {"READ UNCOMMITTED": 1, "SERIALIZABLE": 0}
-    )
+    _isolation_lookup = util.immutabledict({"READ UNCOMMITTED": 1, "SERIALIZABLE": 0})
 
     def get_isolation_level_values(self, dbapi_connection):
         return list(self._isolation_lookup)
@@ -2148,9 +2863,7 @@ class SQLiteDialect(default.DefaultDialect):
         else:
             filter_table = ""
         query = (
-            f"SELECT name FROM {main} "
-            f"WHERE type='{type_}'{filter_table} "
-            "ORDER BY name"
+            f"SELECT name FROM {main} WHERE type='{type_}'{filter_table} ORDER BY name"
         )
         return query
 
@@ -2165,9 +2878,7 @@ class SQLiteDialect(default.DefaultDialect):
         return names
 
     @reflection.cache
-    def get_temp_table_names(
-        self, connection, sqlite_include_internal=False, **kw
-    ):
+    def get_temp_table_names(self, connection, sqlite_include_internal=False, **kw):
         query = self._sqlite_main_query(
             "sqlite_temp_master", "table", None, sqlite_include_internal
         )
@@ -2175,9 +2886,7 @@ class SQLiteDialect(default.DefaultDialect):
         return names
 
     @reflection.cache
-    def get_temp_view_names(
-        self, connection, sqlite_include_internal=False, **kw
-    ):
+    def get_temp_view_names(self, connection, sqlite_include_internal=False, **kw):
         query = self._sqlite_main_query(
             "sqlite_temp_master", "view", None, sqlite_include_internal
         )
@@ -2188,9 +2897,7 @@ class SQLiteDialect(default.DefaultDialect):
     def has_table(self, connection, table_name, schema=None, **kw):
         self._ensure_has_table_connection(connection)
 
-        if schema is not None and schema not in self.get_schema_names(
-            connection, **kw
-        ):
+        if schema is not None and schema not in self.get_schema_names(connection, **kw):
             return False
 
         info = self._get_table_pragma(
@@ -2216,9 +2923,7 @@ class SQLiteDialect(default.DefaultDialect):
         if schema is not None:
             qschema = self.identifier_preparer.quote_identifier(schema)
             master = f"{qschema}.sqlite_master"
-            s = ("SELECT sql FROM %s WHERE name = ? AND type='view'") % (
-                master,
-            )
+            s = ("SELECT sql FROM %s WHERE name = ? AND type='view'") % (master,)
             rs = connection.exec_driver_sql(s, (view_name,))
         else:
             try:
@@ -2231,19 +2936,14 @@ class SQLiteDialect(default.DefaultDialect):
                 )
                 rs = connection.exec_driver_sql(s, (view_name,))
             except exc.DBAPIError:
-                s = (
-                    "SELECT sql FROM sqlite_master WHERE name = ? "
-                    "AND type='view'"
-                )
+                s = "SELECT sql FROM sqlite_master WHERE name = ? AND type='view'"
                 rs = connection.exec_driver_sql(s, (view_name,))
 
         result = rs.fetchall()
         if result:
             return result[0].sql
         else:
-            raise exc.NoSuchTableError(
-                f"{schema}.{view_name}" if schema else view_name
-            )
+            raise exc.NoSuchTableError(f"{schema}.{view_name}" if schema else view_name)
 
     @reflection.cache
     def get_columns(self, connection, table_name, schema=None, **kw):
@@ -2251,9 +2951,7 @@ class SQLiteDialect(default.DefaultDialect):
         # computed columns are threaded as hidden, they require table_xinfo
         if self.server_version_info >= (3, 31):
             pragma = "table_xinfo"
-        info = self._get_table_pragma(
-            connection, pragma, table_name, schema=schema
-        )
+        info = self._get_table_pragma(connection, pragma, table_name, schema=schema)
         columns = []
         tablesql = None
         for row in info:
@@ -2274,9 +2972,7 @@ class SQLiteDialect(default.DefaultDialect):
             persisted = hidden == 3
 
             if tablesql is None and generated:
-                tablesql = self._get_table_sql(
-                    connection, table_name, schema, **kw
-                )
+                tablesql = self._get_table_sql(connection, table_name, schema, **kw)
                 # remove create table
                 match = re.match(
                     r"create table .*?\((.*)\)$",
@@ -2343,9 +3039,7 @@ class SQLiteDialect(default.DefaultDialect):
                     r"[^,]*\s+GENERATED\s+ALWAYS\s+AS"
                     r"\s+\((.*)\)\s*(?:virtual|stored)?"
                 )
-                match = re.search(
-                    re.escape(name) + pattern, tablesql, re.IGNORECASE
-                )
+                match = re.search(re.escape(name) + pattern, tablesql, re.IGNORECASE)
                 if match:
                     sqltext = match.group(1)
             colspec["computed"] = {"sqltext": sqltext, "persisted": persisted}
@@ -2396,8 +3090,7 @@ class SQLiteDialect(default.DefaultDialect):
             except TypeError:
                 util.warn(
                     "Could not instantiate type %s with "
-                    "reflected arguments %s; using no arguments."
-                    % (coltype, args)
+                    "reflected arguments %s; using no arguments." % (coltype, args)
                 )
                 coltype = coltype()
         else:
@@ -2481,9 +3174,7 @@ class SQLiteDialect(default.DefaultDialect):
 
         def fk_sig(constrained_columns, referred_table, referred_columns):
             return (
-                tuple(constrained_columns)
-                + (referred_table,)
-                + tuple(referred_columns)
+                tuple(constrained_columns) + (referred_table,) + tuple(referred_columns)
             )
 
         # then, parse the actual SQL and attempt to find DDL that matches
@@ -2531,15 +3222,11 @@ class SQLiteDialect(default.DefaultDialect):
                     deferrable,
                     initially,
                 ) = match.group(1, 2, 3, 4, 5, 6, 7, 8)
-                constrained_columns = list(
-                    self._find_cols_in_sig(constrained_columns)
-                )
+                constrained_columns = list(self._find_cols_in_sig(constrained_columns))
                 if not referred_columns:
                     referred_columns = constrained_columns
                 else:
-                    referred_columns = list(
-                        self._find_cols_in_sig(referred_columns)
-                    )
+                    referred_columns = list(self._find_cols_in_sig(referred_columns))
                 referred_name = referred_quoted_name or referred_name
                 options = {}
 
@@ -2601,9 +3288,7 @@ class SQLiteDialect(default.DefaultDialect):
             yield match.group(1) or match.group(2)
 
     @reflection.cache
-    def get_unique_constraints(
-        self, connection, table_name, schema=None, **kw
-    ):
+    def get_unique_constraints(self, connection, table_name, schema=None, **kw):
         auto_index_by_sig = {}
         for idx in self.get_indexes(
             connection,
@@ -2617,9 +3302,7 @@ class SQLiteDialect(default.DefaultDialect):
             sig = tuple(idx["column_names"])
             auto_index_by_sig[sig] = idx
 
-        table_data = self._get_table_sql(
-            connection, table_name, schema=schema, **kw
-        )
+        table_data = self._get_table_sql(connection, table_name, schema=schema, **kw)
         unique_constraints = []
 
         def parse_uqs():
@@ -2639,9 +3322,7 @@ class SQLiteDialect(default.DefaultDialect):
             # a UNIQUE constraint from a UNIQUE INDEX, even though these
             # are kind of the same thing :)
             for match in re.finditer(INLINE_UNIQUE_PATTERN, table_data, re.I):
-                cols = list(
-                    self._find_cols_in_sig(match.group(1) or match.group(2))
-                )
+                cols = list(self._find_cols_in_sig(match.group(1) or match.group(2)))
                 yield None, cols
 
         for name, cols in parse_uqs():
@@ -2659,9 +3340,7 @@ class SQLiteDialect(default.DefaultDialect):
 
     @reflection.cache
     def get_check_constraints(self, connection, table_name, schema=None, **kw):
-        table_data = self._get_table_sql(
-            connection, table_name, schema=schema, **kw
-        )
+        table_data = self._get_table_sql(connection, table_name, schema=schema, **kw)
 
         # NOTE NOTE NOTE
         # DO NOT CHANGE THIS REGULAR EXPRESSION.   There is no known way
@@ -2677,7 +3356,6 @@ class SQLiteDialect(default.DefaultDialect):
         cks = []
 
         for match in re.finditer(CHECK_PATTERN, table_data or "", re.I):
-
             name = match.group(1)
 
             if name:
@@ -2706,9 +3384,7 @@ class SQLiteDialect(default.DefaultDialect):
         partial_pred_re = re.compile(r"\)\s+where\s+(.+)", re.IGNORECASE)
 
         if schema:
-            schema_expr = "%s." % self.identifier_preparer.quote_identifier(
-                schema
-            )
+            schema_expr = "%s." % self.identifier_preparer.quote_identifier(schema)
         else:
             schema_expr = ""
 
@@ -2716,9 +3392,7 @@ class SQLiteDialect(default.DefaultDialect):
         for row in pragma_indexes:
             # ignore implicit primary key index.
             # https://www.mail-archive.com/sqlite-users@sqlite.org/msg30517.html
-            if not include_auto_indexes and row[1].startswith(
-                "sqlite_autoindex"
-            ):
+            if not include_auto_indexes and row[1].startswith("sqlite_autoindex"):
                 continue
             indexes.append(
                 dict(
@@ -2749,9 +3423,7 @@ class SQLiteDialect(default.DefaultDialect):
                     )
                 else:
                     predicate = predicate_match.group(1)
-                    indexes[-1]["dialect_options"]["sqlite_where"] = text(
-                        predicate
-                    )
+                    indexes[-1]["dialect_options"]["sqlite_where"] = text(predicate)
 
         # loop thru unique indexes to get the column names.
         for idx in list(indexes):
@@ -2791,9 +3463,7 @@ class SQLiteDialect(default.DefaultDialect):
     @reflection.cache
     def _get_table_sql(self, connection, table_name, schema=None, **kw):
         if schema:
-            schema_expr = "%s." % (
-                self.identifier_preparer.quote_identifier(schema)
-            )
+            schema_expr = "%s." % (self.identifier_preparer.quote_identifier(schema))
         else:
             schema_expr = ""
         try:
