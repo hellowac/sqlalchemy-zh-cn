@@ -462,7 +462,7 @@ Pyodbc Pooling / connection close behavior
 .. tab:: 中文
 
     PyODBC 默认使用内部 `连接池机制
-    <https://github.com/mkleehammer/pyodbc/wiki/The-pyodbc-Module#pooling>`_，这意味着连接的生命周期会比 SQLAlchemy 自身的连接更长。由于 SQLAlchemy 本身也有连接池机制，通常建议禁用 PyODBC 的连接池。该行为只能在 PyODBC 模块级别全局禁用，且必须在建立任何连接**之前**进行设置::
+    <https://github.com/mkleehammer/pyodbc/wiki/The-pyodbc-Module#pooling>`_，这意味着连接的生命周期会比 SQLAlchemy 自身的连接更长。由于 SQLAlchemy 本身也有连接池机制，通常建议禁用 PyODBC 的连接池。该行为只能在 PyODBC 模块级别全局禁用，且必须在建立任何连接 **之前** 进行设置::
 
         import pyodbc
 
@@ -552,7 +552,7 @@ Fast Executemany Mode
 
 .. tab:: 中文
 
-    PyODBC 驱动程序支持一种名为 “fast executemany” 的快速执行模式，该模式在使用 Microsoft ODBC 驱动程序时能极大减少 DBAPI ``executemany()`` 调用的往返次数，适用于**可全部装入内存的小批量数据**。该功能通过在 DBAPI 游标上设置 ``.fast_executemany`` 属性来启用。当使用 Microsoft ODBC 驱动程序时，SQLAlchemy 的 pyodbc SQL Server 方言支持通过 :func:`_sa.create_engine` 传递 ``fast_executemany`` 参数启用该功能::
+    PyODBC 驱动程序支持一种名为 “fast executemany” 的快速执行模式，该模式在使用 Microsoft ODBC 驱动程序时能极大减少 DBAPI ``executemany()`` 调用的往返次数，适用于 **可全部装入内存的小批量数据** 。该功能通过在 DBAPI 游标上设置 ``.fast_executemany`` 属性来启用。当使用 Microsoft ODBC 驱动程序时，SQLAlchemy 的 pyodbc SQL Server 方言支持通过 :func:`_sa.create_engine` 传递 ``fast_executemany`` 参数启用该功能::
 
         engine = create_engine(
             "mssql+pyodbc://scott:tiger@mssql2017:1433/test?driver=ODBC+Driver+17+for+SQL+Server",
