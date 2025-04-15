@@ -1261,7 +1261,7 @@ An alias is being generated automatically due to overlapping tables
                 "inherit_condition": id == Employee.id,
             }
 
-    以上映射表示 ``Employee`` 和 ``Manager`` 之间存在关系，并且两者都映射到同一个 ``employee`` 数据表。从 SQL 层面看，这是一个 :ref:`self referential relationship <self_referential>`（自引用关系）。若尝试将两个模型连接查询，在 SQL 中必须重复引用  ``employee`` 表，因此需要对其应用别名。
+    以上映射表示 ``Employee`` 和 ``Manager`` 之间存在关系，并且两者都映射到同一个 ``employee`` 数据表。从 SQL 层面看，这是一个 :ref:`self referential relationship <self_referential>` （自引用关系）。若尝试将两个模型连接查询，在 SQL 中必须重复引用  ``employee`` 表，因此需要对其应用别名。
 
     若使用 ORM 执行此类 JOIN，生成的 SQL 类似于：
 
@@ -3133,7 +3133,7 @@ This connection is on an inactive transaction.  Please rollback() fully before p
         # transaction1 仍然存在，但处于非激活状态，此时继续执行将抛出错误
         connection.execute(text("select 1"))
 
-    在上述代码中，``transaction2`` 是一个逻辑上的 “标记事务”，它可以通过 `rollback()` 回滚整个数据库事务，但其 `commit()` 实际上不会提交事务，仅结束其自身的作用域。调用 ``transaction2.rollback()`` 会使得 ``transaction1`` 被 **标记为非激活状态**（实际上数据库级别已经回滚），但从 SQLAlchemy 的角度看，它仍然存在，以维持事务嵌套的结构一致性。
+    在上述代码中，``transaction2`` 是一个逻辑上的 “标记事务”，它可以通过 `rollback()` 回滚整个数据库事务，但其 `commit()` 实际上不会提交事务，仅结束其自身的作用域。调用 ``transaction2.rollback()`` 会使得 ``transaction1`` 被 **标记为非激活状态** （实际上数据库级别已经回滚），但从 SQLAlchemy 的角度看，它仍然存在，以维持事务嵌套的结构一致性。
 
     正确的解决方式是显式回滚外层事务::
 
